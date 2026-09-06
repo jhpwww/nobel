@@ -97,6 +97,13 @@ const index = lectures.map((l) => ({
       <p class="study__count" data-rec-count hidden></p>
     </section>
 
+    {/* a template, not createElement: Astro stamps its scope on compiled
+        markup only, so a span built in the script carries no scope attribute
+        and every rule written for it does nothing */}
+    <template data-rec-tag>
+      <span class="recs__tag"></span>
+    </template>
+
     <template data-rec-template>
       <tr class="recs__row">
         <td class="recs__name"><a data-rec-name href="#"></a></td>
@@ -517,6 +524,7 @@ const index = lectures.map((l) => ({
     const recTable = $<HTMLTableElement>('[data-recs]');
     const recBody = $<HTMLElement>('[data-rec-body]');
     const recTpl = $<HTMLTemplateElement>('[data-rec-template]');
+    const tagTpl = $<HTMLTemplateElement>('[data-rec-tag]');
     const recEmpty = $<HTMLElement>('[data-rec-empty]');
     const recCount = $<HTMLElement>('[data-rec-count]');
     const dateFmt = new Intl.DateTimeFormat(root!.dataset.lang === 'zh' ? 'zh-TW' : 'en-GB',
@@ -549,11 +557,11 @@ const index = lectures.map((l) => ({
 
         const tags = frag.querySelector<HTMLElement>('[data-rec-tags]')!;
         const add = (text: string, kind: string) => {
-          const b = document.createElement('span');
-          b.className = 'recs__tag';
+          const tf = tagTpl.content.cloneNode(true) as DocumentFragment;
+          const b = tf.querySelector<HTMLElement>('.recs__tag')!;
           b.dataset.kind = kind;
           b.textContent = text;
-          tags.append(b);
+          tags.append(tf);
         };
         if (e.picked) add(root!.dataset.tagPicked!, 'pick');
         if (e.watchedTaiwan) add(root!.dataset.tagTw!, 'seen');

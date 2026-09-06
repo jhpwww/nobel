@@ -176,6 +176,16 @@ const groups = { l: t('search.groupLaureate'), r: t('search.groupRoom'), p: t('s
     </p>
   </div>
 
+  {/* Both of these are templates for the same reason: Astro stamps its scope
+      attribute on the markup it compiles, and an element built with
+      createElement in the script below carries no such attribute — so every
+      rule written for it silently does nothing. The group headings and the
+      hand-off row were both plain createElement, and both were rendering
+      unstyled. */}
+  <template data-ss-head>
+    <li class="ss__head" role="presentation"></li>
+  </template>
+
   <template data-ss-row>
     <li class="ss__row" role="option">
       <a class="ss__hit" href="#">
@@ -480,6 +490,7 @@ const groups = { l: t('search.groupLaureate'), r: t('search.groupRoom'), p: t('s
     const lede = dlg.querySelector<HTMLElement>('[data-ss-lede]')!;
     const none = dlg.querySelector<HTMLElement>('[data-ss-none]')!;
     const tpl = dlg.querySelector<HTMLTemplateElement>('[data-ss-row]')!;
+    const headTpl = dlg.querySelector<HTMLTemplateElement>('[data-ss-head]')!;
     const form = dlg.querySelector<HTMLFormElement>('[data-ss-form]')!;
 
     let shown: Row[] = [];
@@ -553,11 +564,9 @@ const groups = { l: t('search.groupLaureate'), r: t('search.groupRoom'), p: t('s
       shown.forEach((r, i) => {
         if (r.g !== group) {
           group = r.g;
-          const h = document.createElement('li');
-          h.className = 'ss__head';
-          h.setAttribute('role', 'presentation');
-          h.textContent = groups[r.g] ?? '';
-          list.append(h);
+          const hf = headTpl.content.cloneNode(true) as DocumentFragment;
+          hf.querySelector('li')!.textContent = groups[r.g] ?? '';
+          list.append(hf);
         }
         const frag = tpl.content.cloneNode(true) as DocumentFragment;
         const li = frag.querySelector<HTMLElement>('.ss__row')!;
@@ -575,23 +584,20 @@ const groups = { l: t('search.groupLaureate'), r: t('search.groupRoom'), p: t('s
       /* the whole index, for a query this drawer could not place: the films'
          own descriptions are searched there and not here */
       if (q) {
-        const li = document.createElement('li');
-        li.className = 'ss__row ss__row--all';
+        /* the same template as a hit, so it carries the same scope and the
+           same shape — only its class and its one line differ */
+        const frag = tpl.content.cloneNode(true) as DocumentFragment;
+        const li = frag.querySelector<HTMLElement>('.ss__row')!;
+        const a = frag.querySelector<HTMLAnchorElement>('.ss__hit')!;
+        li.classList.add('ss__row--all');
         li.dataset.g = 'x';
-        li.setAttribute('role', 'option');
         li.id = `ss-o${shown.length}`;
-        const a = document.createElement('a');
-        a.className = 'ss__hit';
         a.href = `${dlg!.dataset.browse}?q=${encodeURIComponent(input.value.trim())}`;
-        const g = document.createElement('span'); g.className = 'ss__g';
-        const txt = document.createElement('span'); txt.className = 'ss__txt';
-        const n = document.createElement('span'); n.className = 'ss__n';
-        n.textContent = (dlg!.dataset.all ?? '').replace('{q}', input.value.trim());
-        txt.append(n);
-        a.append(g, txt);
-        li.append(a);
-        li.addEventListener('mousemove', () => select(shown.length, false));
-        list.append(li);
+        frag.querySelector('[data-n]')!.textContent =
+          (dlg!.dataset.all ?? '').replace('{q}', input.value.trim());
+        const at2 = shown.length;
+        li.addEventListener('mousemove', () => select(at2, false));
+        list.append(frag);
         shown = [...shown, { n: '', s: '', m: '', h: a.href, g: 'p', k: '' }];
       }
 
