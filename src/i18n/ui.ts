@@ -176,6 +176,12 @@ export const ui = {
     'learn.eyebrow': '諾貝爾講座博物館',
     'learn.blurb': '這一區收錄幾樣工具，供有意深入的訪客使用：整理一場演講的重點、留下自己的想法、寫下想問的問題。',
     'learn.stages': '準備 ‧ 參與 ‧ 反思',
+    /* The same line for the two rooms that had none. Every item is one of
+       the room's own h2 headings, in the room's own order, two characters
+       each — which is what the two above already do: 導讀/講座/專訪 are the
+       index's film kinds and 準備/參與/反思 the learning area's stages. */
+    'nobel.stages': '遺囑 ‧ 獎項 ‧ 評選',
+    'about.stages': '回響 ‧ 橋樑 ‧ 版權',
     'learn.cycleTitle': '看一場演講的 1+3 個階段',
     'learn.cycleNote': '一場諾貝爾獎得主的演講，往往在 50 分鐘內橫跨數十年的研究。單靠現場聽或單看影片，事後能留下的多半只是印象。以下 1+3 個步驟，是把「聽過」變成「學到」的一種作法：先選定一場（第 0 步），再依準備、參與、反思三個階段各做一件小事。三個階段彼此獨立，只做其中一個仍然有用；三個都做，一場演講才會真正留下來。本館任何一場演講都適用，也不限於修課同學。',
     'learn.cycleAid': '第 0 步：還不知道要看哪一場時，從這裡開始。',
@@ -429,6 +435,11 @@ export const ui = {
     'learn.eyebrow': 'Nobel Lecture Museum',
     'learn.blurb': 'A few tools for visitors who want to go further: gather what a lecture argued, set down your own response, and draft the question you would ask.',
     'learn.stages': 'Prepare \u2027 Attend \u2027 Reflect',
+    /* Not a translation of the Han — the same job done again in English,
+       out of the English headings' own words. English can afford the six
+       that two Han characters cannot. */
+    'nobel.stages': 'Will \u2027 Six prizes \u2027 Selection',
+    'about.stages': 'Legacy \u2027 Bridges \u2027 Rights',
     'learn.cycleTitle': 'The 1+3 stages of a lecture',
     'learn.cycleNote': 'A Nobel laureate\u2019s lecture usually crosses decades of work in fifty minutes. Sitting through one, or watching one, mostly leaves an impression. These 1+3 steps are one way of turning having heard it into having learnt something: settle on a lecture first (step 0), then do one small thing at each of the three stages \u2014 prepare, attend, reflect. The three are independent and any one of them is worth doing on its own; do all three and a lecture stays with you. It applies to every lecture in the collection, and to anyone, not only to students on the course.',
     'learn.cycleAid': 'Step 0: start here when you do not yet know which lecture to watch.',

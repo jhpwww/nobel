@@ -431,7 +431,21 @@ html[data-theme='bright'] .gr__lock:hover { filter: brightness(1.04); }
    owner's halving of the gap, measured on the two rooms that still carry a
    sub-title; and the centring holds exactly for any head shorter than the
    reserve, which is every one of the four in both languages. */
-html[data-theme='bright'] { --head-min: calc(var(--emb-h) * 0.82); }
+/* 0.595, down from 0.82. The gap the owner measures is between the INK of the
+   sub-line and the ink of the sentence under it, and three quarters of that
+   distance was never a margin at all: it was the empty half of the head's own
+   reserve (19px at 1440x900) plus the leading two 1.72 line-boxes put between
+   their words. The leading is dealt with above; this is the reserve. At 0.595
+   the slack below the block is 2.5px rather than 19, and the reserve is still
+   longer than the block it holds — 87.5 against 82.6 in Han and 78.7 in
+   English — so the centring on the emblem is untouched.
+   The phone keeps 0.82: its reserve is 64px against a 58px block, so there
+   are only 3px of slack there to take, and taking them would put the head
+   below the emblem's middle for nothing. */
+html[data-theme='bright'] { --head-min: calc(var(--emb-h) * 0.595); }
+@media (max-width: 40rem) {
+  html[data-theme='bright'] { --head-min: calc(var(--emb-h) * 0.82); }
+}
 html[data-theme='bright'] .hall-head {
   margin-block-start: calc(var(--lock-bottom) + 0.15 * var(--emb-h) - 3.4rem
                            + (var(--emb-h) - var(--head-min)) / 2);
@@ -439,12 +453,64 @@ html[data-theme='bright'] .hall-head {
   display: grid;
   align-content: center;
   justify-items: start;
-  /* halved, and then two thirds of that at the owner's word: the sub-line
-     belongs to the name above it, not beside it */
-  row-gap: 0.08rem;
+  /* Halved, then two thirds of that, and now struck between the ink rather
+     than between the boxes: the owner is measuring from the bottom of the
+     title's glyphs to the top of the sub-line's, which is this gap plus the
+     leading of two line-boxes. Most of the closing is the sub-line's own
+     1.72 coming down to 1.15 — see above; this is the remainder. */
+  row-gap: 0.055rem;
   padding-inline-start: var(--hall-indent);
   margin-block-end: 0;
 }
+/* ---------- the line a room is read by ----------
+   Three of the room's own words, two characters each, in the order the room
+   meets you: 導讀 ‧ 講座 ‧ 專訪, 準備 ‧ 參與 ‧ 反思, and now 遺囑 ‧ 獎項 ‧ 評選
+   and 回響 ‧ 橋樑 ‧ 版權. The first two rooms carry theirs on classes of their
+   own, from before there were four; these two share this one. Gold, because
+   it is a signature rather than a sentence, and letterspaced because three
+   words with a point between them are a device and not a line of prose.
+
+   Bright only. The dark museum's two pages carry what they always carried. */
+html[data-theme='bright'] .hall-stages {
+  margin: 0;
+  font-size: var(--step-0);
+  letter-spacing: 0.16em;
+  text-indent: 0.16em;      /* tracking pads the right; give it back */
+  color: var(--gold);
+}
+html:not([data-theme='bright']) .hall-stages { display: none; }
+/* One line of display type, not a paragraph. All three of these inherited the
+   body's 1.72, which on a 16px line is 5.7px of air above the words and 5.7
+   below — and those two figures ARE the gap the owner is measuring, far more
+   than the row-gap is. The gaps below are struck between the ink and the ink;
+   this is where most of the closing happens. */
+html[data-theme='bright'] :is(.browse__kinds, .course__stages, .hall-stages) {
+  line-height: 1.15;
+  /* And its own light, now that the room has none.
+     The wash the photographs carried was doing this line's work for it: gold
+     at 17px with no shadow at all, standing on a pale glass panel in the
+     index of films, had nothing to be read against — and a contrast sweep
+     cannot see it, because it measures against the darkest pixel under the
+     box and the trouble here is the brightest. The same four layers the
+     sentence below carries, which is the same size of type. */
+  text-shadow:
+    0 0 2px rgba(255, 255, 255, 1),
+    0 0 4px rgba(255, 255, 255, 0.98),
+    0 0 10px rgba(255, 255, 255, 0.85),
+    0 0 20px rgba(255, 255, 255, 0.6);
+}
+/* The title's own, and the same one on all four — two of them had a halo and
+   two had nothing, which was survivable while the room was washed white and
+   is not now. Wider and softer than the two lines under it, because it is
+   48px of Han and a tight edge at that size reads as an outline. */
+html[data-theme='bright'] .hall-head h1 {
+  text-shadow:
+    0 0 3px rgba(255, 255, 255, 1),
+    0 0 9px rgba(255, 255, 255, 0.95),
+    0 0 22px rgba(255, 255, 255, 0.78),
+    0 0 44px rgba(255, 255, 255, 0.5);
+}
+
 html[data-theme='bright'] .hall-note {
   /* half the gap it had, and half again — though the figure that governs this
      distance is the head's own reserve above, not this margin */
@@ -660,6 +726,21 @@ html[data-theme='bright'] .topbar__nav :is(.topbar__key, .museum-glass-btn--nav)
   min-height: 37.3px;
   padding-inline: 0.66rem;
 }
+/* ---------- the space between two plates ----------
+   Half again, and in the bright museum only — the dark bar keeps the gap it
+   has always had. 3.8px becomes 1.9: what separates one key from the next is
+   the gold rule drawn round each of them, and the air between was only ever
+   pushing the bar wider.
+
+   Except beside the search. That one is a capsule rather than a plate — a
+   different shape saying it opens a drawer rather than a room — and a
+   different shape needs the air a repeated one does not. It keeps the 3.8 it
+   had, which is this gap given back on each of its sides. */
+html[data-theme='bright'] .topbar__nav {
+  --key-gap: clamp(0.0565rem, 0.1565vw, 0.119rem);
+  column-gap: var(--key-gap);
+}
+html[data-theme='bright'] .topbar__nav .ss__key { margin-inline: var(--key-gap); }
 html[data-theme='bright'] .topbar--ghost .topbar__nav a:hover,
 html[data-theme='bright'] .topbar--ghost .topbar__nav a:focus-visible {
   border-block-end-color: transparent;
@@ -739,11 +820,12 @@ html[data-theme='bright'] .topbar--ghost .topbar__nav a.topbar__lang:focus-visib
     flex-direction: column;
     align-items: flex-end;
     /* two fifths of that again: the keys carry their own plate now, and the
-       space between them no longer has to do any separating. And half of that
-       again at the owner's word — 0.28px between one plate and the next, which
-       is a hairline: what separates two keys here is the gold rule drawn round
-       each of them, not the air between. */
-    row-gap: 0.0175rem;
+       space between them no longer has to do any separating. Then half of that
+       again, and half once more at the owner's word — 0.14px between one plate
+       and the next, which is not a gap at all: what separates two keys here is
+       the gold rule drawn round each of them, and the column is now one strip
+       of plates rather than six things in a line. */
+    row-gap: 0.00875rem;
     column-gap: 0;
   }
   /* Half the gutter, for this bar only. .wrap holds every page's content
@@ -828,7 +910,7 @@ html[data-theme='bright'] .topbar--ghost .topbar__nav a.topbar__lang:focus-visib
     min-height: 0;
     block-size: 0;
     padding-block: 0;
-    margin-block-start: -0.0175rem;
+    margin-block-start: -0.00875rem;
     opacity: 0;
     visibility: hidden;
     translate: 0 -0.5rem;

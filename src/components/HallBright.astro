@@ -908,7 +908,12 @@ const PLATE = { w: 836, h: 470 };
    * and the only one of the three that has ever been about what is on the
    * screen rather than about how far a mouse has been rolled.
    *
-   * Both halves of it are constants, which is why no arithmetic runs on
+   * The reading is the block under 本館推薦 — the page's first real column of
+   * words — and not the strip of figures above it, which is six numbers in
+   * six boxes and is chrome for the hall rather than the page beginning. That
+   * is the owner's own reading of where the page starts.
+   *
+   * Both halves of the cue are constants, which is why no arithmetic runs on
    * scroll. The pieces are on a fixed layer, so where their feet fall on the
    * screen does not depend on how far the page has moved; the reading is in
    * the flow, so where it begins down the document does not either. The
@@ -937,24 +942,35 @@ const PLATE = { w: 836, h: 470 };
   let ringCue = 0;            // and where the ring of stills goes out
 
   function gauge() {
-    /* only while they are standing where they stand — once they have gone
-       back the measurement is of the far row, which is not what the rule is
-       about. The far state cannot be entered before the near one is measured,
-       so there is always a figure to hold. */
-    if (back !== true && pieces.length) {
+    /* Only while they are standing where they stand, and only while they are
+       standing still.
+     *
+     * Once they have gone back the measurement is of the far row, which is not
+     * what the rule is about. And a row in mid-movement is not the row either:
+     * the six walk in from the far end over a second when the page opens, and
+     * they are carried between two grids on a phone — measured during either,
+     * the feet come out wherever the animation had got to. That was the whole
+     * error: 26px out on a desktop, and on a phone the cue landed at 600
+     * against a true 218. */
+    /* `running`, not merely present. A finished CSS animation stays in
+       getAnimations() until the browser decides to drop it, and `bh-arrive`
+       lingered there long enough to refuse every measurement the page ever
+       got at 1440 — the cue fell back to its floor of 60. */
+    const still = !plinths ||
+      !plinths.getAnimations({ subtree: true }).some((a) => a.playState === 'running');
+    if (back !== true && still && pieces.length) {
       feet = Math.max(...pieces.map((p) => {
         const r = (p.querySelector('.bh__art') ?? p).getBoundingClientRect();
         return r.top + 0.957 * r.height;
       }));
     }
-    const text = document.getElementById('more');
+    const text = document.querySelector('.feature__grid') ?? document.getElementById('more');
     if (text) reading = text.getBoundingClientRect().top + scrollY;
     /* The ring has a cue of its own, and it is a later one: the six withdraw
        when the reading reaches their feet, but the ring turns in the air above
        them and there is no reason for it to leave at the same moment. It goes
        when the reading has climbed to the middle of the photograph — the
-       owner's rule — which is 360px at 1440x900 against the row's 97, so the
-       stills are still turning behind the first thing anybody reads.
+       owner's rule — and it is the same reading: the block under 本館推薦.
 
        The photograph, not the window: the plate is the picture's own frame and
        carries its 1672:941, so half of it is a place in the room rather than a
@@ -1038,6 +1054,33 @@ const PLATE = { w: 836, h: 470 };
     /* the document's height changes with the window, and so does whether the
        way on has anywhere left to point — and so do both ends of the cue */
     addEventListener('resize', () => { gauge(); step(false); }, { passive: true });
+    /* Measured again whenever what was measured changes.
+     *
+     * The cue is two constants — where the drums' feet fall on the screen and
+     * where the reading begins down the document — and both of them settle
+     * late. The faces arrive after the first paint and every line of the page
+     * moves down when they do; the six <model-viewer> elements upgrade after
+     * that and a piece's frame is not its final height until they have. Taken
+     * once at script time the cue was 26px out on a desktop and 125px out on
+     * a phone, which is a quarter of the phone's.
+     *
+     * So: the faces, the last subresource, and an observer on a piece's own
+     * frame — which catches the upgrade, and catches anything else that ever
+     * changes the size of the thing the rule is measured from. None of it
+     * runs on scroll. */
+    const remeasure = () => { gauge(); step(false); };
+    document.fonts?.ready.then(remeasure);
+    addEventListener('load', remeasure, { once: true });
+    /* after the six have finished walking in — the first measurement of all is
+       taken while that animation is still running, and is thrown away by the
+       stillness test above */
+    setTimeout(remeasure, 1100);
+    /* and the moment the walk in actually ends, whenever that is */
+    plinths.addEventListener('animationend', remeasure);
+    const frame = pieces[0]?.querySelector('.bh__art');
+    if (frame && 'ResizeObserver' in window) {
+      new ResizeObserver(remeasure).observe(frame);
+    }
     ROOM.addEventListener('change', () => {
       for (const p of pieces) { p.style.transition = 'none'; p.style.transform = ''; }
       back = null;

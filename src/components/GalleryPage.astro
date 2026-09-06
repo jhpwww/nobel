@@ -334,11 +334,13 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
     <div class="wrap np">
       <header class="hall-head" data-cat={cat}>
         <h1 class="gr__title np__title">{introA}<span class="conj">{introConj}</span>{introB}</h1>
-        {/* Out of the bright museum at the owner's word, and hidden rather
-            than removed: the dark museum is preserved as it stands. It said
-            what the room was in three words over a paragraph that says it in
-            forty, and in daylight the title is the door plate on its own. */}
+        {/* 關於這座獎 is out of the bright museum and hidden rather than
+            removed: the dark museum is preserved as it stands. What stands
+            here in daylight instead is the room's own shape, said the way the
+            other three rooms say theirs — see 'the line a room is read by' in
+            bright.css. */}
         <p class="gr__n np__n">{t('hall.nobelRoom')}</p>
+        <p class="hall-stages">{t('nobel.stages')}</p>
       </header>
       {lang === 'zh' ? (
         <p class="np__lede hall-note"><span>
@@ -624,7 +626,13 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
   .gr__rail {
     position: sticky;
     inset-block-start: var(--gr-stick);
-    z-index: 3;
+    /* Over the band the page dissolves into, which is 10 — the same lift the
+       emblem takes on the four rooms that are not prize rooms. A prize's own
+       sculpture shrinks into a mark beside the museum's name and comes to
+       rest exactly inside that band; at 3 the band was drawn over it and the
+       piece faded out with the page it is pinned above. It is chrome, not
+       reading: it does not fade. */
+    z-index: 11;
     /* A hair of height, and the pull-up given straight back underneath.
        The rail has to sit its own height higher than where the flow would put
        it, and must not take that height from anything else — a bare negative
