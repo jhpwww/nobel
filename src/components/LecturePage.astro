@@ -6,7 +6,6 @@ import Sculpture, { type CategoryKey } from './Sculpture.astro';
 import ExtLink from './ExtLink.astro';
 import StudyPanel from './StudyPanel.astro';
 import CompareBlock from './CompareBlock.astro';
-import Explore from './Explore.astro';
 import { useT, type Lang } from '../i18n/ui';
 import { gallery, home, asset } from '../i18n/routing';
 import { createHash } from 'node:crypto';
@@ -212,6 +211,23 @@ const piece = bright ? {
         <StudyPanel lang={lang} rec={rec} />
       </div>
 
+      {/* 5. go deeper — back in the rail down the right, where it was and
+          where it belongs: it is a sidebar to this laureate's page, not a
+          conclusion to it. What it is built from moved to the frontmatter
+          when it was briefly a section at the foot, and stays there, because
+          the prize pages now carry the same list. */}
+      <aside class="lec__aside" aria-labelledby="h-deep">
+        <h3 id="h-deep" class="lec__h">{t('lec.deeper')}</h3>
+        <ul class="links" role="list">
+          {deeper.map((l, i) => (
+            <li class:list={[i === 0 && 'links__key']}>
+              <ExtLink lang={lang} href={l.url}>{l.title}</ExtLink>
+              {l.desc && <span>{l.desc}</span>}
+            </li>
+          ))}
+        </ul>
+      </aside>
+
     </div>
 
     <section class="wrap lec__next" aria-labelledby="h-next">
@@ -221,7 +237,6 @@ const piece = bright ? {
       </ul>
     </section>
 
-    <Explore lang={lang} items={deeper} />
     </div>
   </article>
 </Base>
@@ -310,10 +325,8 @@ const piece = bright ? {
     border: 1px solid var(--line); border-radius: var(--radius-control); padding: 0.14rem 0.7rem;
   }
 
-  /* One column. The 17rem rail down the right held the 延伸探索 links and
-     nothing else; they are a section at the foot now, with the other rooms',
-     so the reading column has the page to itself. */
   .lec__body { display: grid; gap: clamp(2rem, 5vw, 3.5rem); padding-block-start: clamp(2rem, 6vw, 3.5rem); }
+  @media (min-width: 62rem) { .lec__body { grid-template-columns: minmax(0, 1fr) 17rem; align-items: start; } }
 
   .lec__h { font-size: var(--step-1); color: var(--cream); margin-block-end: 0.9rem; }
   .lec__h::before {

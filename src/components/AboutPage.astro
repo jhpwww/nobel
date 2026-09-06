@@ -27,17 +27,34 @@ const hostList = Object.entries(hosts);
         what the page is about, so it opens with it — set beside the title on a
         desktop and above it on a phone, at a size that reads as an object
         rather than as a logo. */}
-    <header class="abt__hero">
-      <picture class="abt__medal">
-        <source media="(max-width: 40rem)" srcset={asset('assets/ui/medal-sm.webp')} />
-        <img src={asset('assets/ui/medal.webp')} alt={t('about.medalAlt')}
-             width="720" height="720" fetchpriority="high" decoding="async" />
-      </picture>
-      <div class="abt__id">
-        <p class="abt__eyebrow">{t('site.university')}</p>
-        <h1>{t('about.title')}</h1>
-        <p class="abt__sub">{t('site.tagline')}</p>
+    {/* The medal rides up with the page and then stops, and once the visitor
+        has gone half its height it becomes a mark beside the museum's name —
+        the same catch the introduction room's laurel makes, and the same
+        machinery: a sticky rail carrying no height of its own, with the medal
+        hanging from it. Out of the hero's grid, because a 147px disc inside a
+        two-row span makes the rows 147px tall and there is then no slack for
+        the alignment the grid was there to give. */}
+    <div class="abt__rail" data-abt-rail aria-hidden="true">
+      <div class="abt__piece">
+        <picture class="abt__medal">
+          <source media="(max-width: 40rem)" srcset={asset('assets/ui/medal-sm.webp')} />
+          <img src={asset('assets/ui/medal.webp')} alt="" width="720" height="720"
+               fetchpriority="high" decoding="async" />
+        </picture>
       </div>
+    </div>
+
+    <header class="abt__hero">
+      {/* Three lines, and the order is the page's own: what this room is, then
+          whose it is, then what it is part of. The university line was leading
+          — an eyebrow, in the way a magazine puts a section over an article —
+          and this is not an article, it is the room's own door plate. Both the
+          lines under the name are gold, which is what this museum signs
+          with. */}
+      <h1 class="abt__name">{t('about.title')}</h1>
+      <p class="abt__uni">{t('site.university')}</p>
+      <p class="abt__sub">{t('site.tagline')}</p>
+      <p class="visually-hidden">{t('about.medalAlt')}</p>
     </header>
 
     {lang === 'zh' ? (
@@ -80,8 +97,9 @@ const hostList = Object.entries(hosts);
 
         <h2>影片與版權</h2>
         <p>
-          本站不儲存、不轉錄、不重製任何影片。所有影片皆以 YouTube 內嵌方式播放，
+          所有影片皆以 YouTube 內嵌方式播放，本站不重製、不轉錄、不再散布影片本身，
           版權屬於原始發布單位，主要為世界和平基金會（International Peace Foundation）頻道與臺大演講網（NTU Speech）。
+          部分場次的代表圖為自該場錄影擷取之單張靜態畫面，僅供辨識該場次之用，著作權仍屬原發布單位所有。
           諾貝爾基金會（Nobel Foundation）的文字與圖像一律以連結方式引用，不複製到本站。
         </p>
         <p>
@@ -148,10 +166,12 @@ const hostList = Object.entries(hosts);
 
         <h2>Video and rights</h2>
         <p>
-          Nothing here is stored, downloaded, re-cut or re-hosted. Every video is embedded from
-          YouTube and remains the copyright of its original publisher, chiefly the International
-          Peace Foundation channel and 臺大演講網. Nobel Foundation text and images are linked, never
-          copied.
+          Every video is embedded from YouTube and remains the copyright of its original
+          publisher, chiefly the International Peace Foundation channel and 臺大演講網; nothing
+          here re-cuts, re-hosts or redistributes a recording. For some sessions the still that
+          represents it is a single frame taken from that recording, used only to identify the
+          session, and the copyright in it remains its publisher's. Nobel Foundation text and
+          images are linked, never copied.
         </p>
         <p>
           "Nobel Prize" and the medal are trademarks of the Nobel Foundation. This is an independent
@@ -190,45 +210,99 @@ const hostList = Object.entries(hosts);
 
 <style>
   :global(html[data-theme='bright']) .about { padding-block-start: 3.4rem; }
+  /* On the page, not on the hero: the rail is the hero's SIBLING and every
+     number in it is built from these two. A var declared on the hero reaches
+     nothing above it, which is how the medal came to sit nineteen pixels high
+     with the margin that should have placed it resolving to nothing at all. */
+  .about {
+    --medal-h: calc(var(--gr-art) * 0.4374);
+    /* NOTE --step--2 is used all over this project and is not declared
+       anywhere in global.css, so every rule that asks for it silently inherits
+       the body size instead. That is why the gold line measures 29.7px and not
+       the 16 the name suggests, and it is why this term is a rem rather than a
+       step: 1.86rem IS the line as it renders. */
+    --abt-two-lines: calc(var(--step-3) * 1.28 + 0.28rem + 1.86rem);
+  }
   .about { padding-block: clamp(2rem, 5vw, 3.5rem) 0; }
   .about h1 { font-size: var(--step-3); color: var(--cream); }
 
-  /* ---------- the medal, and the name under it ----------
-     Two columns on a desktop, the medal first and no wider than a third of the
-     measure — a struck object beside its own title, which is how a medal is
-     photographed for a catalogue. One column on a phone, medal centred over
-     the words, because a 15rem disc beside a heading at 390px leaves the
-     heading four characters wide. */
+  /* ---------- the medal, and the name beside it ----------
+   *
+   * The same lockup the introduction room has — see .gr__wreath in
+   * GalleryPage, where the two relationships are stated:
+   *
+   *   · the emblem begins 15% of its own height below the museum's mark
+   *   · the second line of the name ends where the emblem ends
+   *
+   * Both fall out of one number. The medal hangs from a rail that carries no
+   * height, so it is the text that has to be placed: put its first line at
+   *
+   *     --lock-bottom + 1.15 x medal - (the first two lines' own height)
+   *
+   * and the second line lands on the medal's foot exactly, because the medal
+   * starts a fifth of itself below the mark and ends a whole one further down.
+   */
   .abt__hero {
+    /* NOTE --step--2 is used all over this project and is not declared
+       anywhere in global.css, so every rule that asks for it silently inherits
+       the body size instead. That is why the gold line measures 29.7px and not
+       the 16 the name suggests, and it is why this term is a rem rather than a
+       step: 1.86rem IS the line as it renders. */
     display: grid;
-    gap: clamp(1.1rem, 3vw, 2.2rem);
-    align-items: center;
-    justify-items: center;
-    text-align: center;
+    row-gap: 0.28rem;
+    justify-items: start;
+    text-align: start;
+    padding-block-start: calc(var(--lock-bottom) + 1.15 * var(--medal-h)
+                              - var(--abt-two-lines) - 3.4rem);
+    padding-inline-start: calc(var(--medal-h) + clamp(1.1rem, 3vw, 2.2rem));
     margin-block-end: clamp(1.8rem, 4vw, 2.6rem);
   }
-  @media (min-width: 40.0625rem) {
-    .abt__hero {
-      grid-template-columns: minmax(0, auto) minmax(0, 1fr);
-      justify-items: start;
-      text-align: start;
-    }
+  /* The rail: no height, so the medal takes nothing from the flow, and pulled
+     down to where the medal is meant to begin. One pixel because a box of
+     exactly zero height collapses its own two margins together — the same trap
+     documented on .gr__rail. */
+  .abt__rail {
+    position: sticky;
+    inset-block-start: var(--gr-stick);
+    z-index: 3;
+    block-size: 1px;
+    margin-block-start: calc(var(--lock-bottom) + 0.15 * var(--medal-h) - 3.4rem);
+    margin-block-end: calc(3.4rem - var(--lock-bottom) - 0.15 * var(--medal-h) - 1px);
+    pointer-events: none;
   }
+  .abt__piece {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    transform-origin: 0 0;
+    transition: scale 0.45s var(--ease), translate 0.45s var(--ease);
+  }
+  /* Caught. Beside the museum's name, at the size the prize pages' pieces
+     become, and lifted by a third of what it has become — see .gr__wreath in
+     GalleryPage, whose numbers these are. */
+  .abt__rail[data-pinned] .abt__piece {
+    scale: 0.2;
+    translate:
+      calc(clamp(0.7rem, 2.2vw, 1.6rem) + var(--lock-w, 10.9rem) + 0.55rem
+           - var(--abt-piece-x, 0px))
+      calc(-0.4rem - 0.02916 * var(--gr-art));
+  }
+  :global(html[data-motion='off']) .abt__piece { transition: none; }
   .abt__medal { display: block; line-height: 0; }
   .abt__medal img {
-    inline-size: clamp(8.5rem, 26vw, 14rem);
-    block-size: auto;
+    block-size: calc(var(--gr-art) * 0.4374);
+    inline-size: auto;
+    max-inline-size: 100%;
     /* it is struck metal, so it sits on the page rather than in it */
     filter: drop-shadow(0 10px 22px rgba(70, 52, 16, 0.28));
   }
-  .abt__id { display: grid; gap: 0.28rem; }
-  .abt__eyebrow {
+  .abt__uni {
     margin: 0;
     font-size: var(--step--2);
     letter-spacing: 0.3em;
     text-indent: 0.3em;      /* tracking pads the right; give it back */
     text-transform: uppercase;
-    color: var(--gold-orn, #b8862a);
+    color: var(--gold);
   }
   .abt__sub {
     margin: 0;
@@ -236,8 +310,25 @@ const hostList = Object.entries(hosts);
     font-size: var(--step-0);
     letter-spacing: 0.12em;
     text-indent: 0.12em;
-    color: var(--muted);
+    /* gold, like the line above it — the two together are the signature */
+    color: var(--gold);
   }
+  /* One column on a phone: a 9rem disc beside a heading at 390px leaves the
+     heading four characters wide. The medal comes back into the flow and
+     nothing catches it. */
+  @media (max-width: 40rem) {
+    .abt__rail {
+      position: static;
+      block-size: auto;
+      margin-block: 0 1rem;
+      display: grid;
+      justify-items: center;
+    }
+    .abt__piece { position: static; }
+    .abt__rail[data-pinned] .abt__piece { scale: 1; translate: none; }
+    .abt__hero { padding-block-start: 0; padding-inline-start: 0; }
+  }
+
   /* the first heading of the prose no longer needs to clear a bare h1 */
   .about .prose > h2:first-child { margin-block-start: 0; }
   .about h2 {
@@ -259,3 +350,46 @@ const hostList = Object.entries(hosts);
     border: 1px solid var(--line); border-radius: var(--radius-control); padding: 0.2rem 0.8rem;
   }
 </style>
+
+<script>
+  /* The medal is caught at half its own height of scrolling, and its mark
+     stands beside the museum's name — which is a line of type, not a share of
+     the viewport, so its rendered width is measured and handed to the
+     stylesheet. Both are the introduction room's own rules; see the script at
+     the foot of GalleryPage, where the same two things are done for the
+     laurel. */
+  const rail = document.querySelector<HTMLElement>('[data-abt-rail]');
+  const medal = document.querySelector<HTMLElement>('.abt__medal img');
+  const lock = document.querySelector<HTMLElement>('.gr__lock');
+  const root = document.documentElement;
+  const WIDE = matchMedia('(min-width: 40.0625rem)');
+
+  function measure() {
+    if (lock) root.style.setProperty('--lock-w', `${Math.round(lock.offsetWidth)}px`);
+    /* the rail sits in the page's own gutter, and the mark it becomes belongs
+       to the window — so where the rail starts has to come off the offset */
+    if (rail) root.style.setProperty('--abt-piece-x',
+      `${Math.round(rail.getBoundingClientRect().left)}px`);
+  }
+
+  let ticking = false;
+  const test = () => {
+    ticking = false;
+    if (!rail || !medal) return;
+    const caught = WIDE.matches && scrollY >= medal.offsetHeight / 2;
+    rail.toggleAttribute('data-pinned', caught);
+  };
+
+  if (rail && medal) {
+    measure();
+    document.fonts?.ready.then(() => { measure(); test(); });
+    test();
+    addEventListener('scroll', () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(test);
+    }, { passive: true });
+    addEventListener('resize', () => { measure(); test(); });
+    WIDE.addEventListener('change', test);
+  }
+</script>

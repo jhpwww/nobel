@@ -543,9 +543,38 @@ const PLATE = { w: 836, h: 470 };
     .bh__plinths { scale: 1.1; translate: 0 var(--piece-drop); }
   }
 
-  /* Gone back. On a desktop that is one scale about the vanishing point, which
-     in a one-point perspective is exactly what walking away does. */
-  .bh__plinths[data-state='back'] { transform: scale(0.5); }
+  /* Gone back — and further than they were.
+   *
+   * One scale about the room's vanishing point, which in a one-point
+   * perspective is exactly what walking away does: the row converges on the
+   * centre and its feet climb toward the horizon, both for free.
+   *
+   * At 0.5 they went half the way. The horizon is the top step at the back of
+   * the room, level with the threshold of the far door — see 'the hall's own
+   * measurements' — so a scale of k leaves the feet at horizon + k(floor -
+   * horizon), and 0.5 stopped them in the middle of the floor. 0.26 stands
+   * them at the door, which is where the row was asked to end up: small,
+   * central, and far. Below about 0.2 the six stop being separable at all. */
+  /* And the scale alone barely moved them. The origin IS the horizon, so
+     shrinking about it only ever closes the last 7% of the plate between the
+     floor line and the far step — going from 0.5 to 0.26 lifted the row ten
+     pixels and made it half the size, which reads as the pieces getting
+     smaller where they stand rather than as walking away.
+
+     So the row is also carried up the floor, by 7% of the photograph's own
+     height, which puts its feet on the threshold of the door at the back of
+     the room. A share of the plate rather than a length, because the door is a
+     place in the picture and the picture is sized from the window.
+
+     There is a second reason for that exact figure. The page rises over the
+     room as it scrolls and the retreat fires two wheel-notches in, by which
+     point the strip of figures has reached 525px on a 1440x900 window. At 7%
+     the row lands just clear of it, so the walk away is seen finishing rather
+     than being wiped halfway through. */
+  .bh__plinths[data-state='back'] {
+    transform: scale(0.26);
+    translate: 0 calc(var(--room-plate) * -0.07);
+  }
 
   .bh__n {
     font-size: var(--step--1); color: var(--muted);

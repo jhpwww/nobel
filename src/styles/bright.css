@@ -175,6 +175,14 @@ html[data-theme='bright'] {
   --drum-foot: calc(0.77175 * var(--room-plate) + var(--piece-drop));
   /* and where the piece itself ends, caption and all */
   --piece-foot: calc(var(--drum-foot) + var(--piece-below-drum));
+  /* How far under the pieces the figures sit. A share of the screen rather
+     than a fixed pair of strip-heights: the composition the owner approved
+     puts the captions at 73% of the window and the figures at 81%, an eighth
+     of the screen apart on their machine and the same eighth on a laptop —
+     but two strip-heights is 134px whatever the screen, which on a 1440-tall
+     window opened to twice the band it should be. 5.5vh holds the proportion,
+     with the two strip-heights kept as a ceiling for very tall windows. */
+  --strip-gap: clamp(0.5rem, 4.5vh, calc(2 * var(--strip-h)));
 
   /* ---- and the prize page's own room, which shows one of the six ----
      These lived on .gr and .gr__rail inside GalleryPage. They are here now
@@ -183,6 +191,10 @@ html[data-theme='bright'] {
   --gr-art: clamp(13rem, 38svh, 21rem);
   --gr-floor: clamp(1.2rem, 3.4vh, 2.2rem);
   --gr-stick: 0.45rem;
+  /* where the museum's mark ends, which several things below are measured
+     from — 0.62rem of inset plus its own rendered height */
+  --lock-h: 2.54rem;
+  --lock-bottom: calc(0.62rem + var(--lock-h));
   /* The marble drum, as a share of the frame the piece is drawn in: the
      silhouette runs from 72% to 95.7% of it — the same two readings the label
      on its face is placed against, see .bh__face in plinth.css. */
@@ -647,24 +659,70 @@ html[data-theme='bright'] .pn::before {
 /* it arrives with the keys, and there is nothing to light when they are away */
 html[data-theme='bright'] .pn:has(.pn__b.is-on)::before { opacity: 1; }
 
-/* And the same again under the way on. It is pinned to the foot of the window
-   now, so what is behind it is whatever the page has reached — a card, a
-   paragraph, the room's own floor — and a gold hairline one pixel wide is the
-   thinnest mark on the site. No z-index of its own: on the hall the cue has
-   none and the haze lands behind it inside .bh__foot's layer, and on a prize
-   page .gr__cue carries 45 and makes its own, so -1 is inside it either way. */
-html[data-theme='bright'] .bh__cue { position: relative; }
-html[data-theme='bright'] .bh__cue::before {
+/* ---------- the way on carries its own edge ----------
+ * A haze was the wrong tool here and the pinned keys are why it looked like
+ * the right one. A key is a filled tablet: a soft field of light behind it
+ * only has to lift it off a busy ground. The way on is three hairlines — a
+ * 1px rule, a 1.6px chevron stroke and a word at 11px — and a soft field of
+ * light behind a hairline does nothing at all. On dark marble it vanished; on
+ * a bright complex ground it vanished; the haze itself was the only thing
+ * visible, as a pale smudge.
+ *
+ * So the mark carries its edge rather than standing in a field. Three
+ * drop-shadows in white, tight to wide, applied to the whole cue — which
+ * means the rule, the travelling bead, the chevron's stroke and the word all
+ * get the same treatment, because a filter reaches the SVG's stroke where a
+ * text-shadow cannot. It is the double-stroke a chart label or a map legend
+ * uses, and it works the same way on white, on shadow and on a photograph.
+ *
+ * And the gold goes to its text-safe step. #b8862a is an ornament colour at
+ * 3.24:1; with a white edge under it on a dark ground it reads, but the word
+ * beside it is small type and had no business at that ratio on white.
+ */
+html[data-theme='bright'] .bh__cue {
+  position: relative;
+  filter:
+    drop-shadow(0 0 1px rgba(255, 255, 255, 0.98))
+    drop-shadow(0 0 3px rgba(255, 255, 255, 0.94))
+    drop-shadow(0 0 7px rgba(255, 255, 255, 0.72));
+}
+html[data-theme='bright'] .bh__cue::before { display: none; }
+html[data-theme='bright'] .bh__cue-txt,
+html[data-theme='bright'] .bh__cue-chev { color: var(--gold); stroke: var(--gold); }
+html[data-theme='bright'] .bh__cue-rule {
+  background: linear-gradient(to bottom,
+    transparent, var(--gold) 30%, var(--gold) 70%, transparent);
+}
+
+
+/* ---------- and every room's title stands in the hall's own light ----------
+   The museum's name on the hall has carried a field of light since the room
+   went behind the page — see .bh__lockup::before in HallBright, whose gradient
+   this is. Every other room's title stood on the bare photograph: a prize
+   name, a laureate's name, the index's heading, all of them large type over a
+   colonnade. Large type survives that better than a hairline does, which is
+   why it took longer to notice; it is still the same problem. */
+html[data-theme='bright'] :is(.gr__id, .lec__id, .browse__h, .abt__hero, .course__head) {
+  position: relative;
+  isolation: isolate;
+}
+html[data-theme='bright'] :is(.gr__id, .lec__id, .browse__h, .abt__hero, .course__head)::before {
   content: '';
   position: absolute;
   z-index: -1;
-  inset: -2.4rem -4.8rem -2.2rem;
+  /* The right-hand bleed is small on purpose. In a left-to-right page,
+     overflow to the LEFT is clipped and never scrollable, but overflow to the
+     right adds to the document's width — and a 4rem bleed on a title that
+     already reaches the wrap's right edge pushed every laureate page and the
+     video index 32px sideways at 1280. The gradient is centred at 34% anyway,
+     so the light belongs on the left of the words. */
+  inset: -2.2rem -0.5rem -2.4rem -3.2rem;
   pointer-events: none;
-  background: radial-gradient(42% 42% at 50% 50%,
-    rgba(255, 255, 255, 0.54),
-    rgba(255, 255, 255, 0.4) 38%,
-    rgba(255, 255, 255, 0.19) 64%,
-    rgba(255, 255, 255, 0.06) 84%,
+  background: radial-gradient(52% 56% at 34% 50%,
+    rgba(255, 255, 255, 0.86),
+    rgba(255, 255, 255, 0.62) 40%,
+    rgba(255, 255, 255, 0.28) 66%,
+    rgba(255, 255, 255, 0.08) 85%,
     transparent 100%);
 }
 
@@ -1142,7 +1200,7 @@ html[data-theme='bright'] .after {
     /* never above the pieces' own captions, whatever else happens */
     calc(var(--piece-foot) + 0.5rem - var(--room-hall)),
     min(
-      calc(var(--piece-foot) + 2 * var(--strip-h) - var(--room-hall)),
+      calc(var(--piece-foot) + var(--strip-gap) - var(--room-hall)),
       calc(100svh - var(--cue-clear) - 0.6rem - var(--strip-h) - var(--room-hall))
     )
   );
