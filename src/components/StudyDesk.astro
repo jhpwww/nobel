@@ -1,22 +1,20 @@
 ---
 /**
- * StudyPage.astro — the student's own progress across the course.
+ * StudyDesk.astro — everything the visitor has written, in one place.
  *
- * Reads only from localStorage, so the page ships as an empty shell and is
- * filled in by script. That also means it is correct for a visitor who is not
- * taking the course: they simply see the empty state.
+ * It was a page of its own, /study/, and a page of its own is exactly what it
+ * should not be: it is the third of the learning area's tools and the only
+ * one that keeps anything, so a visitor had to leave the room to see what
+ * they had done in it. It is a section of 學習專區 now, where the three
+ * stages that produced these notes are set out.
+ *
+ * Reads only from localStorage, so it ships as an empty shell and is filled
+ * in by script. That also means it is correct for a visitor who is not taking
+ * the course: they simply see the empty state.
  */
-import Base from '../layouts/Base.astro';
-import RoomBack from './RoomBack.astro';
-import ScrollCue from './ScrollCue.astro';
 import { useT, type Lang } from '../i18n/ui';
 import { path } from '../i18n/routing';
 import { lectures, categories } from '../data/catalog';
-
-/* the museum's own room behind this page too — every other page in the bright
-   museum wears the hall's bar and stands in the hall's room, and this one did
-   not: it opened on a white band with the dark site's brand bar over it */
-const bright = process.env.THEME === 'bright';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
@@ -35,9 +33,7 @@ const index = lectures.map((l) => ({
 }));
 ---
 
-<Base lang={lang} title={t('study.pageTitle')} segments={['study']} bare={bright}>
-  {bright && <RoomBack lang={lang} room="learn-hall" />}
-  <div class="wrap study" data-fade data-study-page data-index={JSON.stringify(index)}
+<div class="study" data-study-page data-index={JSON.stringify(index)}
        data-ok-restore={t('study.restoreOk')} data-bad-restore={t('study.restoreBad')}
        data-confirm-clear={t('study.clearConfirm')}
        data-cat-names={JSON.stringify(catNames)}
@@ -48,11 +44,7 @@ const index = lectures.map((l) => ({
        data-tag-nobel={t('study.recNobel')} data-tag-note={t('study.recNote')}
        data-tag-ask={t('study.recAsk')}
        data-lang={lang}>
-    <header class="study__head">
-      <p class="eyebrow"><a href={path(lang, 'learn')}>{t('study.forCourse')}</a></p>
-      <h1>{t('study.pageTitle')}</h1>
-      <p class="study__blurb">{t('study.pageBlurb')}</p>
-    </header>
+    <p class="study__note study__blurb">{t('study.pageBlurb')}</p>
 
     <section class="study__stats" aria-label={t('study.progress')}>
       <div><b data-stat="picked">0</b><span>{t('study.statPicked')}</span></div>
@@ -196,15 +188,8 @@ const index = lectures.map((l) => ({
     </section>
   </div>
 
-  {bright && <ScrollCue lang={lang} href="#h-rec" />}
-</Base>
-
 <style>
-  :global(html[data-theme='bright']) .study { padding-block-start: 3.4rem; }
-  .study { padding-block: clamp(2rem, 5vw, 3.5rem); max-inline-size: 58rem; }
-  .study__head h1 { font-size: var(--step-3); color: var(--cream); margin-block-start: .3rem; }
-  .study__head a { text-decoration: none; }
-  .study__blurb { color: var(--text); line-height: 1.9; margin-block-start: .8rem; }
+  .study { max-inline-size: 58rem; }
 
   .study__stats {
     display: grid; grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));

@@ -45,27 +45,32 @@ const t = useT(lang);
      own strip: the whole photograph across the width of the screen, uncropped,
      rather than a tall crop of it. Fixed here already; what changed is only
      how much of the picture is shown and how tall the band is. */
+  /* The whole picture, never a crop of it.
+   *
+   * These four rooms were painted for the pages they stand behind — an index
+   * of films, a learning area, a colophon — and a crop of one is a different
+   * room: the dome goes, or the floor does. So the band carries the
+   * photograph's own 1672:941 and the picture fills it exactly; where the
+   * window is too short for that, `contain` keeps the whole of it rather than
+   * taking the difference out of the top and bottom.
+   *
+   * It was min(100svh, 62rem) with `cover` and an object-position of 82%,
+   * which is the hall's own crop — right for the hall, and wrong for these
+   * the moment they stopped being the hall. */
   .roomback {
     position: fixed;
     inset-inline: 0;
     inset-block-start: 0;
     z-index: -1;
-    block-size: min(100svh, 62rem);
+    block-size: min(calc(100vw * 941 / 1672), min(100svh, 62rem));
     overflow: hidden;
     pointer-events: none;
-  }
-  @media (max-width: 48rem) {
-    .roomback { block-size: var(--gr-room-h); }
-    /* the band carries the picture's own ratio, so `cover` shows all of it and
-       there is nothing left for object-position to choose */
-    .roomback img { object-position: 50% 50%; }
   }
   .roomback picture { display: block; block-size: 100%; }
   .roomback img {
     inline-size: 100%; block-size: 100%;
-    object-fit: cover;
-    /* the floor and the colonnade; the dome is the hall's own opening shot */
-    object-position: 50% 82%;
+    object-fit: contain;
+    object-position: 50% 0;
   }
   .roomback::after {
     content: '';

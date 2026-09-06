@@ -17,6 +17,7 @@ import ScrollCue from './ScrollCue.astro';
 import ExtLink from './ExtLink.astro';
 import RoomBack from './RoomBack.astro';
 import PageEmblem from './PageEmblem.astro';
+import StudyDesk from './StudyDesk.astro';
 import { useT, type Lang } from '../i18n/ui';
 import { path, browse } from '../i18n/routing';
 import { lectures, totalSittings } from '../data/catalog';
@@ -148,19 +149,15 @@ const cycle = [
       </ol>
     </section>
 
-    <section class="course__sec" aria-labelledby="tools">
-      <h2 id="tools">{t('learn.toolsTitle')}</h2>
+    {/* The record itself, not a door to it.
+        學習工具 was one card pointing at /study/, and a page of its own is
+        exactly what this should not be: it is the only thing in the museum
+        that keeps anything, and it belongs in the room where the three stages
+        that produce it are set out. See StudyDesk. */}
+    <section class="course__sec" id="record" aria-labelledby="tools">
+      <h2 id="tools">{t('learn.toolProgress')}</h2>
       <p class="course__note">{t('learn.toolsNote')}</p>
-      {/* One tool, not three. The other two were doors into the collection —
-          which is what step 0 above is — and standing them beside the one
-          thing on this site that keeps state made all three look like
-          browsing. */}
-      <div class="tools tools--one">
-        <a class="tool" href={path(lang, 'study')}>
-          <span class="tool__t">{t('learn.toolProgress')} →</span>
-          <span class="tool__d">{t('learn.toolProgressD')}</span>
-        </a>
-      </div>
+      <StudyDesk lang={lang} />
     </section>
 
     <section class="course__sec" aria-labelledby="rd">

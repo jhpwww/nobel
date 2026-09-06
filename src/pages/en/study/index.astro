@@ -1,4 +1,14 @@
 ---
-import StudyPage from "../../../components/StudyPage.astro";
+/**
+ * The record used to live here. It is a section of the learning area now —
+ * see StudyDesk — because a page of its own meant leaving the room that
+ * explains what the record is for. This stays so that anything already
+ * pointing at /study/ still arrives.
+ */
+import { learn } from '../../../i18n/routing';
+const to = `${learn('en')}#record`;
 ---
-<StudyPage lang="en" />
+<meta http-equiv="refresh" content={`0; url=${to}`} />
+<link rel="canonical" href={to} />
+<title>…</title>
+<p><a href={to}>我的學習紀錄 / My learning record</a></p>

@@ -21,6 +21,7 @@ const t = useT(lang);
 <section class="sp" data-study={rec.id} aria-labelledby="sp-h">
   <header class="sp__head">
     <h3 id="sp-h" class="sp__title">{t('study.panelTitle')}</h3>
+    <span class="sp__status" data-status data-done={t('study.noteDone')} data-todo={t('study.noteTodo')}></span>
     <a class="sp__course museum-glass-btn museum-glass-btn--nav" href={path(lang, 'learn')}><span>{t('study.forCourse')} →</span></a>
   </header>
 
@@ -30,83 +31,93 @@ const t = useT(lang);
       have written — was named only by a key in the corner. */}
   <p class="sp__lede">{t('study.panelLede')}</p>
   <p class="sp__manage">
-    <a href={path(lang, 'study')}>{t('study.panelManage')} →</a>
+    <a href={`${path(lang, 'learn')}#record`}>{t('study.panelManage')} →</a>
   </p>
 
   <p class="sp__blocked" data-blocked hidden>{t('study.blocked')}</p>
 
-  <div class="sp__steps">
-    <label class="sp__pick">
-      <input type="checkbox" data-pick />
-      <span class="sp__pick-box" aria-hidden="true"></span>
-      <span class="sp__pick-txt">
-        <b>{t('study.pick')}</b>
-        <em data-pick-count data-tmpl={t('study.pickCount')}></em>
-      </span>
-    </label>
+  {/* Three stages, not three labels.
+      The fields were one list with the stage each belonged to stuck on the
+      front of it, which says what a thing is without changing where it is:
+      the question you write BEFORE the lecture sat between two you write
+      after. They are three blocks now, in the order they happen, and each
+      says what it is for. The three are the learning area's own — see .cycle
+      in LearnPage. */}
+  <ol class="sp__stages" role="list">
+    <li class="sp__stage" data-stage="1">
+      <h4 class="sp__stage-h"><span class="sp__stage-n">1</span>{t('study.stagePrepare')}</h4>
+      <p class="sp__aim">{t('study.aim1')}</p>
 
-    <div class="sp__watch">
-      <label><input type="checkbox" data-watch="tw" /> <span>{t('study.watchedTw')}</span></label>
-      <label><input type="checkbox" data-watch="nobel" /> <span>{t('study.watchedNobel')}</span></label>
-    </div>
-  </div>
+      <label class="sp__pick">
+        <input type="checkbox" data-pick />
+        <span class="sp__pick-box" aria-hidden="true"></span>
+        <span class="sp__pick-txt">
+          <b>{t('study.pick')}</b>
+          <em data-pick-count data-tmpl={t('study.pickCount')}></em>
+        </span>
+      </label>
 
-  {/* 準備. Asked for before the lecture, so it is the first field on the page
-      — it used to sit under the viewing notes, which put the last stage of
-      the cycle above its first. */}
-  <details class="sp__note">
-    <summary>
-      <span><b class="sp__stage" data-stage="prepare">{t('study.stagePrepare')}</b>{t('study.askTitle')}</span>
-    </summary>
-    <p class="sp__hint">{t('study.askHint')}</p>
-    <ul class="sp__crit">
-      <li>{t('study.askC1')}</li>
-      <li>{t('study.askC2')}</li>
-      <li>{t('study.askC3')}</li>
-    </ul>
-    <label class="sp__field">
-      <textarea data-field="askQuestion" rows="4" placeholder={t('study.askPh')}></textarea>
-      <span class="sp__count" data-count="askQuestion" data-tmpl={t('study.chars')}></span>
-    </label>
-    <div class="sp__actions">
-      <button class="museum-glass-btn museum-glass-btn--nav" type="button" data-copy-ask data-label={t('study.copyAsk')} data-ok={t('study.copied')} data-fail={t('study.copyFail')}><span>{t('study.copyAsk')}</span></button>
-    </div>
-  </details>
+      <div class="sp__field">
+        <span class="sp__label">{t('study.askTitle')}</span>
+        <span class="sp__aid">{t('study.askHint')}</span>
+        <ul class="sp__crit">
+          <li>{t('study.askC1')}</li>
+          <li>{t('study.askC2')}</li>
+          <li>{t('study.askC3')}</li>
+        </ul>
+        <textarea data-field="askQuestion" rows="3" placeholder={t('study.askPh')}
+                  aria-label={t('study.askTitle')}></textarea>
+        <span class="sp__count" data-count="askQuestion" data-tmpl={t('study.chars')}></span>
+        <div class="sp__actions">
+          <button class="museum-glass-btn museum-glass-btn--nav" type="button" data-copy-ask data-label={t('study.copyAsk')} data-ok={t('study.copied')} data-fail={t('study.copyFail')}><span>{t('study.copyAsk')}</span></button>
+        </div>
+      </div>
+    </li>
 
-  <details class="sp__note" data-note-details>
-    <summary>
-      <span><b class="sp__stage" data-stage="attend">{t('study.stageAttend')}</b><b class="sp__stage" data-stage="reflect">{t('study.stageReflect')}</b>{t('study.noteTitle')}</span>
-      <span class="sp__status" data-status data-done={t('study.noteDone')} data-todo={t('study.noteTodo')}></span>
-    </summary>
+    <li class="sp__stage" data-stage="2">
+      <h4 class="sp__stage-h"><span class="sp__stage-n">2</span>{t('study.stageAttend')}</h4>
+      <p class="sp__aim">{t('study.aim2')}</p>
 
-    <p class="sp__hint">{t('study.noteHint')}</p>
+      <div class="sp__watch">
+        <label><input type="checkbox" data-watch="tw" /> <span>{t('study.watchedTw')}</span></label>
+        <label><input type="checkbox" data-watch="nobel" /> <span>{t('study.watchedNobel')}</span></label>
+      </div>
 
-    <label class="sp__field">
-      <span class="sp__label"><b class="sp__stage" data-stage="attend">{t('study.stageAttend')}</b>1. {t('study.fSummary')}</span>
-      <span class="sp__aid">{t('study.fSummaryAid')}</span>
-      <textarea data-field="summary" rows="4" placeholder={t('study.fSummaryPh')}></textarea>
-      <span class="sp__count" data-count="summary" data-tmpl={t('study.chars')}></span>
-    </label>
+      <div class="sp__field">
+        <span class="sp__label">{t('study.fSummary')}</span>
+        <span class="sp__aid">{t('study.fSummaryAid')}</span>
+        <textarea data-field="summary" rows="4" placeholder={t('study.fSummaryPh')}
+                  aria-label={t('study.fSummary')}></textarea>
+        <span class="sp__count" data-count="summary" data-tmpl={t('study.chars')}></span>
+      </div>
+    </li>
 
-    <label class="sp__field">
-      <span class="sp__label"><b class="sp__stage" data-stage="reflect">{t('study.stageReflect')}</b>2. {t('study.fReflection')}</span>
-      <span class="sp__aid">{t('study.fReflectionAid')}</span>
-      <textarea data-field="reflection" rows="4" placeholder={t('study.fReflectionPh')}></textarea>
-      <span class="sp__count" data-count="reflection" data-tmpl={t('study.chars')}></span>
-    </label>
+    <li class="sp__stage" data-stage="3">
+      <h4 class="sp__stage-h"><span class="sp__stage-n">3</span>{t('study.stageReflect')}</h4>
+      <p class="sp__aim">{t('study.aim3')}</p>
 
-    <label class="sp__field">
-      <span class="sp__label"><b class="sp__stage" data-stage="reflect">{t('study.stageReflect')}</b>3. {t('study.fQuestion')}</span>
-      <span class="sp__aid">{t('study.fQuestionAid')}</span>
-      <textarea data-field="question" rows="3" placeholder={t('study.fQuestionPh')}></textarea>
-      <span class="sp__count" data-count="question" data-tmpl={t('study.chars')}></span>
-    </label>
+      <div class="sp__field">
+        <span class="sp__label">{t('study.fReflection')}</span>
+        <span class="sp__aid">{t('study.fReflectionAid')}</span>
+        <textarea data-field="reflection" rows="4" placeholder={t('study.fReflectionPh')}
+                  aria-label={t('study.fReflection')}></textarea>
+        <span class="sp__count" data-count="reflection" data-tmpl={t('study.chars')}></span>
+      </div>
 
-    <div class="sp__actions">
-      <button class="museum-glass-btn museum-glass-btn--nav" type="button" data-copy-note data-label={t('study.copyNote')} data-ok={t('study.copied')} data-fail={t('study.copyFail')}><span>{t('study.copyNote')}</span></button>
-      <span class="sp__saved" data-saved data-msg={t('study.saved')} data-fail={t('study.saveFail')}></span>
-    </div>
-  </details>
+      <div class="sp__field">
+        <span class="sp__label">{t('study.fQuestion')}</span>
+        <span class="sp__aid">{t('study.fQuestionAid')}</span>
+        <textarea data-field="question" rows="3" placeholder={t('study.fQuestionPh')}
+                  aria-label={t('study.fQuestion')}></textarea>
+        <span class="sp__count" data-count="question" data-tmpl={t('study.chars')}></span>
+      </div>
+
+      <div class="sp__actions">
+        <button class="museum-glass-btn museum-glass-btn--nav" type="button" data-copy-note data-label={t('study.copyNote')} data-ok={t('study.copied')} data-fail={t('study.copyFail')}><span>{t('study.copyNote')}</span></button>
+        <span class="sp__saved" data-saved data-msg={t('study.saved')} data-fail={t('study.saveFail')}></span>
+      </div>
+    </li>
+  </ol>
 
   <p class="sp__privacy">{t('study.privacy')}</p>
 </section>
@@ -119,7 +130,8 @@ const t = useT(lang);
     padding: 1.1rem 1.2rem 1rem;
     display: grid; gap: .85rem;
   }
-  .sp__head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+  .sp__head { display: flex; align-items: baseline; gap: .8rem; flex-wrap: wrap; }
+  .sp__head .sp__course { margin-inline-start: auto; }
   .sp__title { font-size: var(--step-1); color: var(--cream); }
   .sp__course { font-size: var(--step--1); color: var(--gold); text-decoration: none; }
   .sp__course:hover { color: var(--gold-bright); }
@@ -182,24 +194,39 @@ const t = useT(lang);
   .sp__watch input { accent-color: var(--accent-block); inline-size: 15px; block-size: 15px; }
   .sp__watch input:checked + span { color: var(--text); }
 
-  .sp__note { border-block-start: 1px solid var(--line); padding-block-start: .75rem; }
-  .sp__note summary {
-    cursor: pointer; font-size: var(--step-0); color: var(--cream);
-    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
-    list-style: none;
+  /* ---------- the three stages ---------- */
+  .sp__stages { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.1rem; }
+  .sp__stage {
+    display: grid;
+    gap: .55rem;
+    padding-block-start: .9rem;
+    border-block-start: 1px solid var(--line);
   }
-  .sp__note summary::-webkit-details-marker { display: none; }
-  .sp__note summary::before { content: '▸'; color: var(--accent); margin-inline-end: .5rem; transition: rotate .2s; }
-  .sp__note[open] summary::before { rotate: 90deg; }
-  .sp__note summary > span:first-of-type { flex: 1; }
+  .sp__stage-h {
+    display: flex; align-items: center; gap: .55rem;
+    margin: 0; font-size: var(--step-0); color: var(--cream);
+    font-family: var(--font-han-serif); letter-spacing: .06em;
+  }
+  .sp__stage-n {
+    flex: none;
+    inline-size: 1.45rem; block-size: 1.45rem;
+    display: grid; place-items: center;
+    border-radius: 50%;
+    background: var(--gold-deep);
+    color: var(--bg-0);
+    font-family: var(--font-display);
+    font-size: var(--step--1);
+    line-height: 1;
+  }
+  .sp__aim { margin: 0; font-size: var(--step--1); color: var(--muted); line-height: 1.75; max-inline-size: none; }
   .sp__status { font-size: var(--step--1); color: var(--muted-dim); }
-  .sp__status.is-done { color: #8fd39a; }
+  .sp__status.is-done { color: var(--gold); }
 
   .sp__hint { font-size: var(--step--1); color: var(--muted); margin-block: .7rem .5rem; max-inline-size: none; }
-  .sp__crit { margin: 0 0 .7rem; padding-inline-start: 1.1rem; display: grid; gap: .25rem; }
+  .sp__crit { margin: .1rem 0 .35rem; padding-inline-start: 1.1rem; display: grid; gap: .25rem; }
   .sp__crit li { font-size: var(--step--1); color: var(--muted); }
 
-  .sp__field { display: grid; gap: .2rem; margin-block-end: .8rem; }
+  .sp__field { display: grid; gap: .2rem; }
   .sp__label { font-size: var(--step--1); color: var(--cream); }
   .sp__aid { font-size: 0.68rem; color: var(--muted-dim); line-height: 1.5; }
   .sp textarea {
@@ -249,7 +276,6 @@ const t = useT(lang);
     const saved = $<HTMLElement>('[data-saved]')!;
     const fields = [...root.querySelectorAll<HTMLTextAreaElement>('textarea[data-field]')];
     const watches = [...root.querySelectorAll<HTMLInputElement>('[data-watch]')];
-    const noteDetails = $<HTMLDetailsElement>('[data-note-details]');
     const blocked = $<HTMLElement>('[data-blocked]');
 
     /** stats and toggles only — never the textareas, see hydrate() */
@@ -297,8 +323,6 @@ const t = useT(lang);
 
     pick.addEventListener('change', () => {
       update(id, { picked: pick.checked });
-      // choosing a lecture is the moment the fields become relevant
-      if (pick.checked && noteDetails) noteDetails.open = true;
       paint();
     });
     for (const w of watches) {
@@ -355,9 +379,6 @@ const t = useT(lang);
     // letting the visitor find out after they have written six notes
     if (blocked) blocked.hidden = storageAvailable();
 
-    // a lecture already chosen means the fields are wanted: do not make the
-    // visitor hunt for them behind a closed disclosure
-    if (noteDetails && entry(id).picked) noteDetails.open = true;
     paint();
   }
 </script>

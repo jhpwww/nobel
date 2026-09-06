@@ -524,6 +524,15 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
     object-fit: cover;
     object-position: 50% 74%;
   }
+  /* The introduction room's photograph is its own, painted for this page, and
+     a crop of it is a different room — see the note in RoomBack. The prize
+     rooms keep the hall's crop, because what they show is a view INTO the
+     hall their sculpture stands in. */
+  .gr[data-cat='nobel'] ~ .gr__room,
+  .gr__room:has(~ * .np) {
+    block-size: min(calc(100vw * 941 / 1672), min(100svh, 62rem));
+  }
+  .gr__room:has(~ * .np) img { object-fit: contain; object-position: 50% 0; }
   /* the picture's own edges are a warm grey and the page is white; without
      this it ends on a ruled line */
   .gr__room::after {

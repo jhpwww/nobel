@@ -31,7 +31,7 @@ import {
   lectures, categories, catName, catNameAlt, tagName, totalSittings, sittings,
   intro, INTRO, type CategoryKey, type GalleryKey,
 } from '../data/catalog';
-import { path, gallery, browse, about, learn, study, lecture as lectureUrl } from '../i18n/routing';
+import { path, gallery, browse, about, learn, lecture as lectureUrl } from '../i18n/routing';
 
 interface Props {
   lang: Lang;
@@ -110,7 +110,7 @@ const pages: Row[] = [
   { n: t('nav.learn'), s: t('learn.blurb'), m: '',
     h: learn(lang), g: 'p', k: `${t('nav.learn')} learn study course 學習 課程 走進諾貝爾 libedu1140`.toLowerCase() },
   { n: t('study.pageTitle'), s: t('study.pageBlurb'), m: '',
-    h: study(lang), g: 'p', k: `${t('study.pageTitle')} notes progress 筆記 紀錄 匯出 備份`.toLowerCase() },
+    h: `${learn(lang)}#record`, g: 'p', k: `${t('study.pageTitle')} notes progress 筆記 紀錄 匯出 備份`.toLowerCase() },
   { n: t('about.title'), s: t('site.description'), m: '',
     h: about(lang), g: 'p', k: `${t('about.title')} about copyright privacy 版權 隱私 臺灣橋樑計畫 taiwan bridges`.toLowerCase() },
   { n: t('search.guides'), s: t('learn.toolGuidesD'), m: '',
