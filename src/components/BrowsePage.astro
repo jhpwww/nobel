@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import ScrollCue from './ScrollCue.astro';
 import VideoCard from './VideoCard.astro';
 import { useT, type Lang } from '../i18n/ui';
 import { videoList, videoCounts, categories, tags, generalLinks } from '../data/catalog';
@@ -110,6 +111,8 @@ const bright = process.env.THEME === 'bright';
              title: lang === 'zh' ? l.zh : l.en,
              desc: lang === 'zh' ? l.dzh : l.den,
            }))} />
+
+  {bright && <ScrollCue lang={lang} href="#results" />}
 </Base>
 
 <style>

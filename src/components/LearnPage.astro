@@ -13,11 +13,12 @@
  * have wandered into someone's classroom.
  */
 import Base from '../layouts/Base.astro';
+import ScrollCue from './ScrollCue.astro';
 import ExtLink from './ExtLink.astro';
 import RoomBack from './RoomBack.astro';
 import { useT, type Lang } from '../i18n/ui';
 import { path, browse } from '../i18n/routing';
-import { lectures } from '../data/catalog';
+import { lectures, totalSittings } from '../data/catalog';
 
 /* the museum's own room behind this page too — see RoomBack */
 const bright = process.env.THEME === 'bright';
@@ -107,7 +108,7 @@ const cycle = [
         </a>
         <a class="tool" href={browse(lang)}>
           <span class="tool__t">{t('learn.toolAll')}</span>
-          <span class="tool__d">{t('learn.toolAllD', { n: lectures.length })}</span>
+          <span class="tool__d">{t('learn.toolAllD', { n: totalSittings() })}</span>
         </a>
       </div>
     </section>
@@ -154,6 +155,8 @@ const cycle = [
       </p>
     </aside>
   </div>
+
+  {bright && <ScrollCue lang={lang} href="#cy" />}
 </Base>
 
 <style>

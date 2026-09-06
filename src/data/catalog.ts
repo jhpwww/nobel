@@ -122,7 +122,9 @@ export function categoryList() {
     .map((key) => ({
       key,
       order: categories[key].order,
-      count: lectures.filter((l) => l.prize.category === key).length,
+      /* sittings, not lectures — see 'A lecture, and a sitting' above */
+      count: lectures.filter((l) => l.prize.category === key)
+                     .reduce((n, l) => n + sittings(l), 0),
     }));
 }
 
@@ -136,6 +138,30 @@ export const byCategory = (key: GalleryKey) =>
 
 export const byDateAsc  = () => [...lectures].sort((a, b) => a.event.date.localeCompare(b.event.date));
 export const byDateDesc = () => [...lectures].sort((a, b) => b.event.date.localeCompare(a.event.date));
+
+/* ============================================================
+   A lecture, and a sitting
+   ============================================================
+   Thirty-one laureates gave thirty-one lectures, and one of those lectures was
+   given twice: Südhof spoke at 亞洲大學 on the 5th of January and again on the
+   6th. Two sittings, two recordings, two things a visitor can watch — so
+   anywhere the museum says 場講座 it counts sittings, and that is 32.
+
+   What it is NOT is a second upload of the same sitting. Engle carried one of
+   those in this same array, labelled 'Alternate upload', which is how 32 first
+   looked like it might be 33; it was a short news report rather than a
+   sitting at all and has been removed. If another ever arrives it belongs in
+   `interviews`, not here — `extra_sessions` now means what its name says.
+
+   The laureate count stays 31. Südhof is one person however many times he
+   spoke.
+   ============================================================ */
+
+/** how many times this lecture was actually given */
+export const sittings = (l: Lecture) => 1 + l.video.extra_sessions.length;
+
+/** every sitting in the museum: 32 */
+export const totalSittings = () => lectures.reduce((n, l) => n + sittings(l), 0);
 
 /** Every video this lecture offers, for the "n videos" badge. */
 export function videoCount(l: Lecture) {
@@ -205,6 +231,8 @@ export interface VideoItem {
   sourceEn?: string;
   /** a second upload of the same lecture, shown as a note */
   altOf?: string;
+  /** which sitting this is, where a lecture was given more than once */
+  sessionLabel?: string;
 }
 
 export function videoList(): VideoItem[] {
@@ -220,9 +248,14 @@ export function videoList(): VideoItem[] {
       date: l.event.date,
     };
     if (l.video.guide) out.push({ key: `${l.id}-guide`, yt: l.video.guide, kind: 'guide', ...base });
-    // one 講座 row per lecture: 31. Second-day sessions and alternate uploads
-    // stay on the lecture page rather than doubling up in the list.
+    /* One row per SITTING, which is 32. It was one per lecture, on the
+       reasoning that a second day and a second upload both belong on the
+       laureate's page rather than doubling up in the list — but a second day
+       is a second thing to watch, and the only alternate upload has gone. */
     if (l.video.lecture) out.push({ key: `${l.id}-lecture`, yt: l.video.lecture, kind: 'lecture', ...base });
+    for (const s of l.video.extra_sessions) {
+      out.push({ key: `${l.id}-${s.id}`, yt: s.id, kind: 'lecture', sessionLabel: s.label, ...base });
+    }
     for (const iv of l.interviews) {
       out.push({
         key: `${l.id}-${iv.id}`, yt: iv.id, kind: 'record',

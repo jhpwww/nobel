@@ -972,12 +972,7 @@
         "lecture": "EJVC6_gZc5o",
         "lecture_ntu": null,
         "guide": null,
-        "extra_sessions": [
-          {
-            "id": "_sgZRKOUygM",
-            "label": "Alternate upload"
-          }
-        ]
+        "extra_sessions": []
       },
       "interviews": [
         {

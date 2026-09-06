@@ -9,7 +9,7 @@ import LectureCard from './LectureCard.astro';
 import VideoFacade from './VideoFacade.astro';
 import { useT, type Lang } from '../i18n/ui';
 import { browse, lecture as lectureUrl } from '../i18n/routing';
-import { lectures, byDateDesc, catName, nextUpcoming, recommended, localDate, catPrizeName, videoCounts } from '../data/catalog';
+import { lectures, byDateDesc, catName, nextUpcoming, recommended, localDate, catPrizeName, videoCounts, totalSittings } from '../data/catalog';
 
 interface Props { lang: Lang; style?: 'flat' | 'room' | 'gl' | 'models' }
 const { lang, style = 'flat' } = Astro.props;
@@ -48,7 +48,8 @@ const nHosts = new Set(lectures.map((l) => l.event.host_en)).size;
 const figures = [
   { n: nLaureates,      label: t('hall.stat.laureates') },
   { n: kinds.all,       label: t('hall.stat.videos') },
-  { n: lectures.length, label: t('hall.stat.lectures') },
+  /* sittings, not lectures — see 'A lecture, and a sitting' in catalog.ts */
+  { n: totalSittings(),  label: t('hall.stat.lectures') },
   { n: kinds.guide,     label: t('hall.stat.guide') },
   { n: kinds.record,    label: t('hall.stat.interview') },
   { n: nHosts,          label: t('hall.stat.hosts') },

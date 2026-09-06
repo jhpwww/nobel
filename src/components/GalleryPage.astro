@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import LectureCard from './LectureCard.astro';
 import Sculpture from './Sculpture.astro';
 import Explore from './Explore.astro';
+import ScrollCue from './ScrollCue.astro';
 import ExtLink from './ExtLink.astro';
 import { useT, type Lang } from '../i18n/ui';
 import { home, asset } from '../i18n/routing';
@@ -10,7 +11,7 @@ import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import {
   byCategory, catName, categories, factsAsOf, intro, introParts, INTRO,
-  generalLinks, type GalleryKey, type CategoryKey,
+  generalLinks, sittings, type GalleryKey, type CategoryKey,
 } from '../data/catalog';
 
 interface Props { lang: Lang; cat: GalleryKey }
@@ -22,6 +23,9 @@ const title = catName(cat, lang);
 /** the same prize in the other language, set under the heading */
 const titleAlt = catNameAlt(cat, lang);
 const recs = byCategory(cat);
+/* what the room says it holds: sittings, not lecture records — Südhof's
+   lecture was given twice and both are here. See catalog.ts. */
+const nSittings = recs.reduce((n, l) => n + sittings(l), 0);
 
 /** the introduction room holds the story of the prize, not lectures */
 const isIntro = cat === INTRO;
@@ -123,25 +127,14 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
           </h1>
           {!isIntro && <p class="gr__title-en">{titleAlt}</p>}
           <p class="gr__n">
-            {isIntro ? t('hall.nobelRoom') : recs.length > 0 ? t('hall.count', { n: recs.length }) : t('hall.soon')}
+            {isIntro ? t('hall.nobelRoom') : recs.length > 0 ? t('hall.count', { n: nSittings }) : t('hall.soon')}
           </p>
         </div>
       </div>
 
     </header>
 
-    {/* Pinned to the last line of the screen and over everything, the way the
-        hall's is — see .bh__foot in HallBright. Out of the header, because it
-        no longer belongs to the header's box. */}
-    <div class="gr__foot" data-gr-cue>
-      <a class="bh__cue gr__cue" href="#gr-body" aria-label={t('hall.scroll')}>
-        <span class="bh__cue-rule" aria-hidden="true"><i></i></span>
-        <svg class="bh__cue-chev" viewBox="0 0 26 9" aria-hidden="true" focusable="false">
-          <path d="M1.6 1.6 L13 7.4 L24.4 1.6" />
-        </svg>
-        <span class="bh__cue-txt" aria-hidden="true">{t('hall.scroll')}</span>
-      </a>
-    </div>
+    <ScrollCue lang={lang} href="#gr-body" />
 
     {/* The piece rides up with the page and then stops.
         It is a sticky rail rather than a scripted position: sticky is the
@@ -214,7 +207,7 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
           </h1>
           {!isIntro && <p class="gh__title-en">{titleAlt}</p>}
           <p class="gh__n">
-            {isIntro ? t('hall.nobelRoom') : recs.length > 0 ? t('hall.count', { n: recs.length }) : t('hall.soon')}
+            {isIntro ? t('hall.nobelRoom') : recs.length > 0 ? t('hall.count', { n: nSittings }) : t('hall.soon')}
           </p>
         </div>
       </div>
@@ -575,26 +568,6 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
      the same treatment as the hall's, and for the same two reasons: it belongs
      to the window rather than to the header's box, and the page that rises
      over it was painting on top of it. */
-  /* A full-width strip with the cue centred in it, exactly as the hall does
-     it — see .bh__foot in HallBright.
-     Full width because of the haze: the cue's own ::before reaches 4.8rem past
-     it on each side, and on an element placed at `inset-inline-start: 50%`
-     that reach lands outside the viewport and pushes the document 77px wider
-     at every desktop size. Centred inside a box that already spans the screen,
-     it cannot. */
-  .gr__foot {
-    position: fixed;
-    inset-inline: 0;
-    inset-block-end: clamp(0.7rem, 2vh, 1.5rem);
-    z-index: 45;
-    display: grid;
-    justify-items: center;
-    pointer-events: none;
-    transition: opacity 0.55s var(--ease), visibility 0.55s var(--ease);
-  }
-  .gr__foot > * { pointer-events: auto; }
-  /* nothing left below to point at */
-  .gr__foot[data-gone] { opacity: 0; visibility: hidden; }
   .gr__anchor { display: block; scroll-margin-block-start: 4rem; }
 
   @media (max-width: 40rem) {
@@ -613,7 +586,6 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
     .gr__rail[data-pinned] .gr__piece { scale: var(--piece-back-k); }
     .gr__in { gap: 0.5rem; }
     .gr__title { font-size: var(--step-2); }
-    .gr__cue .bh__cue-txt { display: none; }
   }
 
   /* ---------- header ---------- */
@@ -858,7 +830,6 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
      through. */
   const rail = document.querySelector<HTMLElement>('.gr__rail');
   const art = document.querySelector<HTMLElement>('.gr__piece .bh__art');
-  const cue = document.querySelector<HTMLElement>('[data-gr-cue]');
   const WIDE = matchMedia('(min-width: 48.0625rem)');
 
   /* The fading band, in each element's own coordinates.
@@ -895,10 +866,6 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
             <= (parseFloat(getComputedStyle(rail).insetBlockStart) || 0) + 1;
       rail.toggleAttribute('data-pinned', caught);
     }
-    /* the way on is pinned to the foot of the window now, so it stays for as
-       long as there is page left to go to */
-    cue?.toggleAttribute('data-gone',
-      scrollY + innerHeight >= root.scrollHeight - 40);
   };
   test();
   addEventListener('scroll', () => {

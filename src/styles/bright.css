@@ -416,7 +416,12 @@ html[data-theme='bright'] .topbar--ghost .topbar__nav a.topbar__lang:focus-visib
   html[data-theme='bright'] .topbar--ghost .topbar__nav a {
     padding-inline: 0.6rem;
     padding-block: 0.26rem;
-    font-size: var(--step--2);
+    /* --step--1, stated. This asked for --step--2, which was undeclared until
+       now and therefore inherited: the keys have been at 15.3px all along and
+       were sized and approved at it. The real --step--2 is 10.8px on a phone,
+       which is too small for the only labels on the screen that say where you
+       are going; one step up is the honest reading of what the rule meant. */
+    font-size: var(--step--1);
   }
   html[data-theme='bright'] .topbar--ghost .topbar__nav a.topbar__lang { padding: 0.15rem 0.1rem 0.3rem !important; }
 

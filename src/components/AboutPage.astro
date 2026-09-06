@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import ScrollCue from './ScrollCue.astro';
 import { useT, type Lang } from '../i18n/ui';
 import ExtLink from './ExtLink.astro';
 import RoomBack from './RoomBack.astro';
@@ -57,6 +58,7 @@ const hostList = Object.entries(hosts);
       <p class="visually-hidden">{t('about.medalAlt')}</p>
     </header>
 
+    <span id="about-body" class="gr__anchor"></span>
     {lang === 'zh' ? (
       <div class="prose stack" style="--gap:1.2rem">
         <p class="lede">
@@ -206,6 +208,8 @@ const hostList = Object.entries(hosts);
       {hostList.map(([, h]) => <li>{lang === 'zh' ? h.zh : h.en}</li>)}
     </ul>
   </div>
+
+  {bright && <ScrollCue lang={lang} href="#about-body" />}
 </Base>
 
 <style>

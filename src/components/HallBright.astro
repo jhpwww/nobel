@@ -33,9 +33,10 @@
  */
 import { useT, type Lang } from '../i18n/ui';
 import { gallery, asset } from '../i18n/routing';
-import { lectures, catName, catNameAlt, categoryList } from '../data/catalog';
+import { lectures, catName, catNameAlt, categoryList, sittings } from '../data/catalog';
 import credits from '../../data/model-credits.json';
 import HallRing from './HallRing.astro';
+import ScrollCue from './ScrollCue.astro';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 
@@ -43,8 +44,10 @@ interface Props { lang: Lang }
 const { lang } = Astro.props;
 const t = useT(lang);
 
+/* sittings, not lecture records: Südhof's lecture was given twice and the
+   room says so. See 'A lecture, and a sitting' in catalog.ts. */
 const counts = lectures.reduce<Record<string, number>>((a, l) => {
-  a[l.prize.category] = (a[l.prize.category] ?? 0) + 1;
+  a[l.prize.category] = (a[l.prize.category] ?? 0) + sittings(l);
   return a;
 }, {});
 
@@ -204,27 +207,10 @@ const PLATE = { w: 836, h: 470 };
 
   </div>
 
-  {/* The way on. A mouse with a rolling wheel is the usual drawing and it
-      belongs to a different kind of site; this is the room's own idiom — a
-      gold hairline with a bead of light running down it, under an arch cut
-      from the same stroke as the windows behind it.
-
-      Outside the stage, and that is load-bearing. .bh__stage is fixed with
-      z-index 0, which makes it a stacking context, and a stacking context caps
-      everything inside it: the foot's z-index of 45 was being counted against
-      its siblings on the stage rather than against the page, so .after — one
-      z-index above the stage — painted over the chevron AND took its clicks.
-      Out here the 45 means what it says. */}
-  <div class="bh__foot">
-    <a class="bh__cue" href="#more" aria-label={t('hall.scroll')}>
-      <span class="bh__cue-rule" aria-hidden="true"><i></i></span>
-      <svg class="bh__cue-chev" viewBox="0 0 26 9" aria-hidden="true" focusable="false">
-        <path d="M1.6 1.6 L13 7.4 L24.4 1.6" />
-      </svg>
-      <span class="bh__cue-txt" aria-hidden="true">{t('hall.scroll')}</span>
-    </a>
-  </div>
 </section>
+
+{/* the way on, pinned to the foot of the window — see ScrollCue */}
+<ScrollCue lang={lang} href="#more" />
 
 <style>
   /* ---------- the hall's own measurements ----------
@@ -584,36 +570,6 @@ const PLATE = { w: 836, h: 470 };
   /* the drum carries the name at this size; below, it cannot */
   .bh__cap { display: none; }
 
-  /* ---------- the foot: the way on ----------
-   *
-   * Pinned to the bottom of the window, and over everything.
-   *
-   * It used to hang off the bottom of the stage, and the stage is capped at
-   * 62rem — so on any screen taller than that the invitation to scroll sat a
-   * couple of hundred pixels up the page with white underneath it. And the
-   * strip of figures, which is page content and therefore above the stage,
-   * painted straight over the chevron.
-   *
-   * Fixed to the window fixes both: it is always on the last line of the
-   * screen, and z-index 45 puts it over the page and under the bar. The prize
-   * pages pin their own the same way — see .gr__cue in GalleryPage. */
-  .bh__foot {
-    position: fixed;
-    inset-inline: 0;
-    inset-block-end: clamp(0.7rem, 2vh, 1.5rem);
-    z-index: 45;
-    display: grid;
-    justify-items: center;
-    gap: clamp(0.5rem, 1.4vh, 0.95rem);
-    pointer-events: none;
-    transition: opacity 0.55s var(--ease), visibility 0.55s var(--ease);
-  }
-  .bh__foot > * { pointer-events: auto; }
-  /* A mark that says 'down' at the bottom of the document says nothing. It is
-     the only thing that takes it away now — it used to go when the pieces
-     withdrew, which on a phone is a fifth of a screen and made 'pinned'
-     meaningless. */
-  .bh__foot[data-gone] { opacity: 0; visibility: hidden; }
 
 
 
@@ -729,7 +685,10 @@ const PLATE = { w: 836, h: 470 };
     /* The name is cut into the drum here too — see 'one drum, one label' in
        plinth.css. What stays under the piece is the count alone, which is not
        a name and was never on the marble. */
-    .bh__n { font-size: var(--step--2); line-height: 1.3; min-block-size: 0; text-align: center; }
+    /* --step--1, stated, for the same reason the bar's keys take it: this
+       asked for --step--2 while that token did not exist, so the count has
+       been rendering at 15.3px and the row was tuned around it. */
+    .bh__n { font-size: var(--step--1); line-height: 1.3; min-block-size: 0; text-align: center; }
 
     /* Gone back, on a phone: one line of six rather than the same six further
        off. Six across a 390px screen is 64px each, at which a name cut into a
@@ -755,7 +714,6 @@ const PLATE = { w: 836, h: 470 };
        to be told to leave */
     .bh__plinths[data-state='back'] .bh__face { opacity: 0; transition: opacity 0.5s var(--ease); }
 
-    .bh__foot { gap: 0.3rem; inset-block-end: 0.45rem; }
     .bh__cue-rule { block-size: 0.95rem; }
     .bh__cue { gap: 0.16rem; padding-block-start: 0; }
     .bh__cue-txt { display: none; }
@@ -810,7 +768,6 @@ const PLATE = { w: 836, h: 470 };
   const SHARE = 0.2;          // or a fifth of a phone's screen
 
   const plinths = document.querySelector<HTMLElement>('.bh__plinths');
-  const foot = document.querySelector<HTMLElement>('.bh__foot');
   const lockup = document.querySelector<HTMLElement>('.bh__lockup');
   const ring = document.querySelector<HTMLElement>('[data-hall-ring]');
   const pieces = [...document.querySelectorAll<HTMLElement>('.bh__piece')];
@@ -859,18 +816,8 @@ const PLATE = { w: 836, h: 470 };
     if (before) flip(before);
   }
 
-  /* The way on is pinned to the bottom of the window now, so it no longer goes
-     when the pieces do — it stays for as long as there is page left to go to.
-     The 40px is the slack a phone's rubber-banding and a fractional device
-     pixel ratio need before 'at the end' is true. */
-  function endOfPage() {
-    const doc = document.documentElement;
-    return scrollY + innerHeight >= doc.scrollHeight - 40;
-  }
-
   function step(animate = true) {
     setBack(scrollY >= (ROOM.matches ? WHEEL : innerHeight * SHARE), animate);
-    foot?.toggleAttribute('data-gone', endOfPage());
   }
 
   if (plinths) {

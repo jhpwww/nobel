@@ -81,6 +81,20 @@ a, button, label, summary, input, select, textarea, [role='button'] {
      title in the sans without taking the editorial voice with it. */
   --font-hook: var(--font-han-serif);
 
+  /* One step below --step--1, and it was missing.
+   *
+   * Fourteen rules across the project ask for --step--2 — the university line
+   * over the hall's name, the word under the scroll cue, the captions beneath
+   * the pieces on a phone, the figures' labels, the phone bar's keys — and it
+   * has never been declared. An invalid var() in a font-size is invalid at
+   * computed-value time, which for an inherited property means `inherit`: every
+   * one of them has silently been rendering at whatever its parent was, which
+   * is usually the body's 16px. That is why several lines meant to be small
+   * caps came out the size of body text.
+   *
+   * The ratio is the scale's own — 1.19 between neighbours, the same step that
+   * separates --step--1 from --step-0. */
+  --step--2: clamp(0.67rem, 0.645rem + 0.13vw, 0.74rem);
   --step--1: clamp(0.80rem, 0.77rem + 0.15vw, 0.88rem);
   --step-0:  clamp(0.95rem, 0.90rem + 0.24vw, 1.08rem);
   --step-1:  clamp(1.15rem, 1.05rem + 0.48vw, 1.45rem);
@@ -125,6 +139,10 @@ a:hover { color: var(--gold-bright); text-decoration-color: currentColor; }
   outline-offset: 3px;
   border-radius: 2px;
 }
+
+/* an in-page target that the pinned bar does not land on top of; used by
+   every room's way on */
+.gr__anchor { display: block; scroll-margin-block-start: 4rem; }
 
 ::selection { background: rgba(224, 170, 83, 0.28); color: var(--cream); }
 

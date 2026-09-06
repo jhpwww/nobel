@@ -1,0 +1,90 @@
+---
+/**
+ * ScrollCue.astro — the way on, pinned to the last line of the window.
+ *
+ * A hairline, a bead of light running down it, one chevron and a word. The
+ * bead carries the meaning: a mark that travels downward is read as 'downward'
+ * before it is read as anything else. The hairline is the same gold as the
+ * rule under the museum's name, so the two ends of the screen belong to each
+ * other. The drawing itself lives in plinth.css, which the halls and the prize
+ * rooms already shared; what is here is where it stands and when it goes.
+ *
+ * Pinned rather than placed. It used to hang off the foot of whatever box it
+ * was in — the hall's stage, a prize room's header — and those boxes are
+ * capped at 62rem, so on a tall window the invitation to scroll sat two
+ * hundred pixels up the page with white underneath it. And a page that scrolls
+ * over it took its clicks.
+ *
+ * It carries its own white edge rather than a field of light behind it; see
+ * 'the way on carries its own edge' in bright.css for why a haze cannot lift
+ * three hairlines off anything.
+ *
+ * `href` is the anchor it leads to — the first thing below the room on that
+ * page. Every page that has something below its opening screen gets one.
+ */
+import { useT, type Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+  /** in-page target, e.g. '#more' */
+  href: string;
+}
+const { lang, href } = Astro.props;
+const t = useT(lang);
+---
+
+<div class="cue" data-scroll-cue>
+  <a class="bh__cue" href={href} aria-label={t('hall.scroll')}>
+    <span class="bh__cue-rule" aria-hidden="true"><i></i></span>
+    <svg class="bh__cue-chev" viewBox="0 0 26 9" aria-hidden="true" focusable="false">
+      <path d="M1.6 1.6 L13 7.4 L24.4 1.6" />
+    </svg>
+    <span class="bh__cue-txt" aria-hidden="true">{t('hall.scroll')}</span>
+  </a>
+</div>
+
+<style>
+  /* Full width with the mark centred in it, and that is not a detail: the
+     cue's own white edge reaches past it on both sides, and on an element
+     placed at `inset-inline-start: 50%` that reach lands outside the window
+     and pushes the document 77px wider at every desktop size. Centred inside a
+     box that already spans the screen, it cannot. */
+  .cue {
+    position: fixed;
+    inset-inline: 0;
+    inset-block-end: clamp(0.7rem, 2vh, 1.5rem);
+    /* over the page (1) and under the bar (50) */
+    z-index: 45;
+    display: grid;
+    justify-items: center;
+    pointer-events: none;
+    transition: opacity 0.55s var(--ease), visibility 0.55s var(--ease);
+  }
+  .cue > * { pointer-events: auto; }
+  /* a mark that says 'down' at the foot of the document says nothing */
+  .cue[data-gone] { opacity: 0; visibility: hidden; }
+  @media print { .cue { display: none; } }
+</style>
+
+<script>
+  /* The one thing this has to know is whether there is any page left to go to.
+     The 40px is the slack a phone's rubber-banding and a fractional device
+     pixel ratio need before 'at the end' is true. */
+  const cue = document.querySelector<HTMLElement>('[data-scroll-cue]');
+  if (cue) {
+    const doc = document.documentElement;
+    let queued = false;
+    const sync = () => {
+      queued = false;
+      cue.toggleAttribute('data-gone',
+        scrollY + innerHeight >= doc.scrollHeight - 40);
+    };
+    sync();
+    addEventListener('scroll', () => {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(sync);
+    }, { passive: true });
+    addEventListener('resize', sync, { passive: true });
+  }
+</script>
