@@ -100,7 +100,16 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
         and the whole site is static files that the browser can already load
         faster than any router would. */}
     {bright && <div class="roomfade" data-on aria-hidden="true"></div>}
-    {bright && <script>import '../scripts/roomfade';</script>}
+    {/* Not inside the `bright &&` it belongs to. Astro hoists every <script>
+        in a component and numbers them; a page that renders one of two
+        conditional scripts gets the tag it asked for pointing at the OTHER
+        one's module. That is what happened on /study/, the one page in the
+        bright museum that is not `bare`: it emitted the roomfade tag, was
+        handed the bar's fold script, and so held the white sheet it opens
+        under for ever — a page that read as blank, with the museum's own
+        chrome on top of it. Both are unconditional now and each decides for
+        itself whether it has anything to do. */}
+    <script>import '../scripts/roomfade';</script>
 
     {bare && (
       <header class="topbar topbar--ghost">
@@ -141,10 +150,9 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
         </div>
       </header>
     )}
-    {bare && (
-      <script>
-        {/* The fold is CSS; this is the press, and — on every page but the
-            hall — the point at which the keys open on their own.
+    <script>
+      {/* The fold is CSS; this is the press, and — on every page but the
+          hall — the point at which the keys open on their own.
 
             The hall has its own cue for that: its pieces withdraw, and it sets
             the same attribute when they do (see HallBright.astro), so the two
@@ -163,7 +171,8 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
           btn.setAttribute('aria-expanded', String(open));
         });
 
-        if (!root.hasAttribute('data-home')) {
+        /* only the pages that wear the hall's bar have keys to fold */
+        if (btn && !root.hasAttribute('data-home')) {
           {/* `false`, not `null`: the attribute starts off the element, so
               false already is the state, and the pair are compared rather
               than the attribute re-set on every frame of a scroll. A null
@@ -187,8 +196,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
           }, { passive: true });
           addEventListener('resize', sync, { passive: true });
         }
-      </script>
-    )}
+    </script>
 
     {!bare && (
       <header class="topbar">

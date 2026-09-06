@@ -1,0 +1,123 @@
+---
+/**
+ * PageEmblem.astro — the emblem a page hangs beside its title.
+ *
+ * The about page's medal and the learning area's device do the same thing:
+ * stand on a rail beside the heading, ride up with the page, and then be
+ * caught into a mark beside the museum's own name — which is where the
+ * introduction room's laurel ends up too, by its own arithmetic inside
+ * GalleryPage. All three are the same size when caught; see --emb-h and
+ * --emb-k in bright.css, which is where the numbers live.
+ *
+ * The rail carries no height of its own, so the emblem takes nothing from the
+ * flow: the heading beside it is placed with padding, and the rail is pulled
+ * up to meet it. One pixel rather than zero, because a box of exactly zero
+ * height collapses its own two margins together and lands back where it
+ * started — the same trap documented on .gr__rail.
+ *
+ * Bright museum only. The dark site's pages have no room behind them and no
+ * mark to be caught by.
+ */
+import { asset } from '../i18n/routing';
+
+interface Props {
+  /** path under public/, e.g. 'assets/ui/medal.webp' */
+  src: string;
+  /** and the small one, for a phone, where the big file is wasted */
+  srcSmall?: string;
+  w: number;
+  h: number;
+}
+const { src, srcSmall, w, h } = Astro.props;
+---
+
+<div class="emb" data-emb aria-hidden="true">
+  <div class="emb__piece">
+    <picture class="emb__pic">
+      {srcSmall && <source media="(max-width: 40rem)" srcset={asset(srcSmall)} />}
+      <img src={asset(src)} alt="" width={w} height={h} fetchpriority="high" decoding="async" />
+    </picture>
+  </div>
+</div>
+
+<style>
+  .emb {
+    position: sticky;
+    inset-block-start: var(--gr-stick);
+    z-index: 3;
+    block-size: 1px;
+    margin-block-start: calc(var(--lock-bottom) + 0.15 * var(--emb-h) - 3.4rem);
+    margin-block-end: calc(3.4rem - var(--lock-bottom) - 0.15 * var(--emb-h) - 1px);
+    pointer-events: none;
+  }
+  .emb__piece {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    transform-origin: 0 0;
+    transition: scale 0.45s var(--ease), translate 0.45s var(--ease);
+  }
+  /* Caught: beside the museum's name, at the size every emblem in the museum
+     becomes, and level with it — half the mark's height down from its top
+     edge, less half of what the emblem has become, less the rail's own
+     stick. */
+  .emb[data-pinned] .emb__piece {
+    scale: var(--emb-k);
+    translate:
+      calc(clamp(0.7rem, 2.2vw, 1.6rem) + var(--lock-w, 10.9rem) + 0.55rem
+           - var(--emb-x, 0px))
+      calc(0.62rem + var(--lock-h) / 2 - 0.5 * var(--emb-k) * var(--emb-h)
+           - var(--gr-stick));
+  }
+  :global(html[data-motion='off']) .emb__piece { transition: none; }
+  .emb__pic { display: block; line-height: 0; }
+  .emb__pic img {
+    block-size: var(--emb-h);
+    inline-size: auto;
+    max-inline-size: 100%;
+    /* struck metal: it sits on the page rather than in it */
+    filter: drop-shadow(0 10px 22px rgba(70, 52, 16, 0.28));
+  }
+</style>
+
+<script>
+  /* The emblem is caught at half its own height of scrolling, and the mark it
+     stands beside is a line of type rather than a share of the viewport — so
+     the name's rendered width is measured and handed to the stylesheet. Both
+     are the introduction room's own rules; see the script at the foot of
+     GalleryPage, where the same two things are done for the laurel. */
+  const rails = [...document.querySelectorAll<HTMLElement>('[data-emb]')];
+  const root = document.documentElement;
+
+  if (rails.length) {
+    const lock = document.querySelector<HTMLElement>('.gr__lock');
+
+    function measure() {
+      if (lock) root.style.setProperty('--lock-w', `${Math.round(lock.offsetWidth)}px`);
+      /* the rail sits in the page's own gutter, and the mark it becomes
+         belongs to the window — so where the rail starts has to come off */
+      const r = rails[0].getBoundingClientRect();
+      root.style.setProperty('--emb-x', `${Math.round(r.left)}px`);
+    }
+
+    let ticking = false;
+    const test = () => {
+      ticking = false;
+      for (const rail of rails) {
+        const img = rail.querySelector<HTMLElement>('img');
+        if (!img) continue;
+        rail.toggleAttribute('data-pinned', scrollY >= img.offsetHeight / 2);
+      }
+    };
+
+    measure();
+    test();
+    document.fonts?.ready.then(() => { measure(); test(); });
+    addEventListener('scroll', () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(test);
+    }, { passive: true });
+    addEventListener('resize', () => { measure(); test(); });
+  }
+</script>

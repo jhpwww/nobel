@@ -16,6 +16,7 @@ import Base from '../layouts/Base.astro';
 import ScrollCue from './ScrollCue.astro';
 import ExtLink from './ExtLink.astro';
 import RoomBack from './RoomBack.astro';
+import PageEmblem from './PageEmblem.astro';
 import { useT, type Lang } from '../i18n/ui';
 import { path, browse } from '../i18n/routing';
 import { lectures, totalSittings } from '../data/catalog';
@@ -58,14 +59,32 @@ const marks = [
     enN: 'Due 09:00 Monday of week 17 via Google Form. Late means zero.' },
 ];
 
+/* ---- the 1+3 ----
+ * Three stages, and a step before them. Choosing what to watch was not part
+ * of the cycle and was sitting in the tool rack instead, as two links — which
+ * put the first thing anyone actually does on this page in the wrong section
+ * entirely. It is numbered 0 because it happens once, not once per lecture.
+ */
 const cycle = [
-  { k: '準備', e: 'Prepare',
+  { n: '0', k: '選擇演講', e: 'Choose a lecture',
+    zh: '從導讀影片開始，或直接瀏覽全部影片，依獎項、主題或年份挑一場。',
+    en: 'Start with a guide video, or browse the whole collection and choose by prize, topic or year.',
+    links: [
+      { href: browse(lang) + '?kind=guide', zh: '從導讀影片開始', en: 'Start with a guide video',
+        zhD: '一支約 90 秒，講座內容的概覽。', enD: 'About 90 seconds each: an overview of what the lecture covers.' },
+      { href: browse(lang), zh: '瀏覽所有影片', en: 'Browse every video',
+        zhD: `${totalSittings()} 場演講，含導讀、講座與專訪，可依獎項與主題篩選。`,
+        enD: `${totalSittings()} sittings — guides, lectures and interviews, filtered by prize and topic.` },
+    ] },
+  { n: '1', k: '準備', e: 'Prepare',
     zh: '導讀影片、原版 Nobel Lecture、官方得獎理由，以及一個帶著走的問題。',
     en: 'The guide video, the original Nobel Lecture, the official citation, and a question to carry in.' },
-  { k: '參與', e: 'Attend',
-    zh: '聽講、提問、討論。',
-    en: 'Listen, ask, discuss.' },
-  { k: '反思', e: 'Reflect',
+  { n: '2', k: '參與', e: 'Attend',
+    zh: '', en: '',
+    ways: [
+      { k: 'attendLive' }, { k: 'attendOnline' },
+    ] },
+  { n: '3', k: '反思', e: 'Reflect',
     zh: '論點摘要、個人反思，以及至少一個延伸問題。',
     en: 'A summary of the argument, a personal response, and at least one further question.' },
 ];
@@ -74,8 +93,14 @@ const cycle = [
 <Base lang={lang} title={t('learn.title')} description={t('learn.blurb')} segments={['learn']} bare={bright}>
   {bright && <RoomBack lang={lang} />}
   <div class="wrap course">
-    <header class="course__head">
-      <p class="eyebrow">{t('learn.eyebrow')}</p>
+    {/* The emblem struck for this area, on the same rail the about page's
+        medal hangs from and caught the same way — see PageEmblem, and
+        --emb-h in bright.css, where the size the three of them share lives. */}
+    {bright && <PageEmblem src="assets/ui/learn-emblem.webp" w={710} h={720} />}
+
+    <header class:list={['course__head', bright && 'course__head--emb']}>
+      {/* the eyebrow is gone: it read '諾貝爾講座博物館' over a page inside the
+          諾貝爾講座博物館, which is the museum's name said twice */}
       <h1>{t('learn.title')}</h1>
       <p class="course__blurb">{t('learn.blurb')}</p>
     </header>
@@ -84,11 +109,34 @@ const cycle = [
       <h2 id="cy">{t('learn.cycleTitle')}</h2>
       <p class="course__note">{t('learn.cycleNote')}</p>
       <ol class="cycle" role="list">
-        {cycle.map((c, i) => (
-          <li>
-            <span class="cycle__n">{i + 1}</span>
+        {cycle.map((c) => (
+          <li data-step={c.n}>
+            <span class="cycle__n">{c.n}</span>
             <span class="cycle__k">{zh ? c.k : c.e}</span>
-            <span class="cycle__t">{zh ? c.zh : c.en}</span>
+            {(zh ? c.zh : c.en) && <span class="cycle__t">{zh ? c.zh : c.en}</span>}
+            {c.ways && (
+              <>
+                <span class="cycle__t">{t('learn.attendSplit')}</span>
+                <ul class="ways" role="list">
+                  {c.ways.map((w) => (
+                    <li>
+                      <b>{t(`learn.${w.k}` as any)}</b>
+                      <span>{t(`learn.${w.k}D` as any)}</span>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+            {c.links && (
+              <ul class="cycle__go" role="list">
+                {c.links.map((l) => (
+                  <li>
+                    <a href={l.href}>{zh ? l.zh : l.en}</a>
+                    <span>{zh ? l.zhD : l.enD}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </li>
         ))}
       </ol>
@@ -97,18 +145,14 @@ const cycle = [
     <section class="course__sec" aria-labelledby="tools">
       <h2 id="tools">{t('learn.toolsTitle')}</h2>
       <p class="course__note">{t('learn.toolsNote')}</p>
-      <div class="tools">
+      {/* One tool, not three. The other two were doors into the collection —
+          which is what step 0 above is — and standing them beside the one
+          thing on this site that keeps state made all three look like
+          browsing. */}
+      <div class="tools tools--one">
         <a class="tool" href={path(lang, 'study')}>
-          <span class="tool__t">{t('learn.toolProgress')}</span>
+          <span class="tool__t">{t('learn.toolProgress')} →</span>
           <span class="tool__d">{t('learn.toolProgressD')}</span>
-        </a>
-        <a class="tool" href={browse(lang) + '?kind=guide'}>
-          <span class="tool__t">{t('learn.toolGuides')}</span>
-          <span class="tool__d">{t('learn.toolGuidesD')}</span>
-        </a>
-        <a class="tool" href={browse(lang)}>
-          <span class="tool__t">{t('learn.toolAll')}</span>
-          <span class="tool__d">{t('learn.toolAllD', { n: totalSittings() })}</span>
         </a>
       </div>
     </section>
@@ -163,6 +207,37 @@ const cycle = [
   :global(html[data-theme='bright']) .course { padding-block-start: 3.4rem; }
   .course { padding-block: clamp(2rem, 5vw, 3.5rem); max-inline-size: 62rem; }
   .course__head h1 { font-size: var(--step-3); color: var(--cream); margin-block-start: .3rem; }
+  /* Beside the emblem, and set so the blurb's first line lands on its foot —
+     the same lockup the about page makes with its medal, and the same
+     arithmetic; see .abt__hero there and --emb-h in bright.css. */
+  .course__head--emb {
+    padding-block-start: calc(var(--lock-bottom) + 1.15 * var(--emb-h)
+                              - var(--step-3) * 1.28 - 3.4rem);
+    padding-inline-start: calc(var(--emb-h) + clamp(1.1rem, 3vw, 2.2rem));
+  }
+  @media (max-width: 40rem) {
+    .course__head--emb { padding-inline-start: calc(var(--emb-h) + clamp(0.7rem, 2.6vw, 1.4rem)); }
+  }
+
+  /* ---------- the step before the three ----------
+     Step 0 is a door rather than a stage, so it says so: the two ways into the
+     collection are inside it, listed, and the plate is marked at its head. */
+  .cycle > li[data-step='0'] { border-color: color-mix(in srgb, var(--gold) 40%, var(--line)); }
+  .cycle > li[data-step='0'] .cycle__n { background: var(--gold-orn, #b8862a); }
+  .cycle__go, .ways { list-style: none; margin: .55rem 0 0; padding: 0; display: grid; gap: .5rem; }
+  .cycle__go li, .ways li { display: grid; gap: .1rem; }
+  .cycle__go a {
+    font-size: var(--step--1); color: var(--accent); text-decoration: none;
+    justify-self: start; border-block-end: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  }
+  .cycle__go a:hover { color: var(--gold-bright); border-block-end-color: var(--gold); }
+  .cycle__go span, .ways span { font-size: var(--step--2); color: var(--muted-dim); line-height: 1.6; }
+  .ways b { font-weight: 500; font-size: var(--step--1); color: var(--cream); }
+  .ways li {
+    padding-inline-start: .65rem;
+    border-inline-start: 2px solid color-mix(in srgb, var(--gold) 45%, transparent);
+  }
+  .tools--one { grid-template-columns: minmax(0, 1fr); max-inline-size: 34rem; }
   .course__blurb { font-size: var(--step-1); line-height: 1.9; color: var(--text); margin-block-start: 1rem; max-inline-size: 54ch; }
   .course__facts { display: flex; flex-wrap: wrap; gap: 0 2.4rem; margin-block-start: 1.4rem; }
   .course__facts dt { font-size: .66rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted-dim); }
@@ -177,8 +252,12 @@ const cycle = [
   .course__note { font-size: var(--step--1); color: var(--muted); margin-block-start: .8rem; }
 
   .cycle { display: grid; gap: .8rem; padding: 0; margin-block-start: 1.2rem; }
-  @media (min-width: 52rem) { .cycle { grid-template-columns: repeat(3, 1fr); } }
-  .cycle li {
+  @media (min-width: 52rem) { .cycle { grid-template-columns: repeat(4, 1fr); } }
+  /* > li, not li: the two ways of attending and the two doors into the
+     collection are lists inside a stage, and a bare descendant selector gave
+     every one of them the stage's own plate — four plates inside four
+     plates. */
+  .cycle > li {
     display: grid; gap: .3rem; align-content: start;
     border: 1px solid var(--line); border-radius: var(--radius);
     background: var(--surface); padding: 1rem 1.1rem;

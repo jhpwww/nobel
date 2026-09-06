@@ -224,6 +224,38 @@ html[data-theme='bright'] {
      the photograph finishes where the page's own white begins and there is no
      seam. */
   --gr-room-h: var(--gr-head-h);
+
+  /* ---- the emblem a page hangs beside its title ----
+     The about page's medal, the introduction room's laurel, and the learning
+     area's device. All three do the same thing — stand on a sticky rail
+     beside the heading, then be caught into a mark beside the museum's name
+     — so all three are placed off these two numbers rather than each off its
+     own. --emb-k is what the emblem becomes when it is caught, and the pair
+     are chosen so that the caught mark is the same size on every page and at
+     every width: 0.2 x 0.4374 x --gr-art here, and the phone's own pair
+     below, both landing within a pixel of 29. */
+  --emb-h: calc(var(--gr-art) * 0.4374);
+  --emb-k: 0.2;
+  /* Where the introduction room's laurel hangs inside its frame. The frame's
+     own top is --gr-head-h - --gr-art - --gr-floor and the piece is then
+     lifted half a drum; the laurel wants to begin 15% of its own height below
+     the museum's mark, and this is what is left. On the root rather than on
+     the laurel, because the rule that catches it is on the laurel's PARENT
+     and a custom property only ever reaches downward. On a desktop it is the
+     1.1841 x --gr-art it was, exactly. */
+  --wreath-pad: calc(var(--lock-bottom) + var(--gr-art) + 0.5 * var(--gr-drum)
+                     + 0.15 * var(--emb-h) + var(--gr-floor) - var(--gr-head-h));
+}
+@media (max-width: 40rem) {
+  html[data-theme='bright'] {
+    /* Not a share of --gr-art on a phone: that is the sculpture's own frame,
+       and 0.4374 of it is a 117px disc beside a heading on a 390px screen.
+       A fifth of the width instead, with a floor under it — and not less than
+       about 71px, or the heading it is set beside would need a negative
+       indent and the rule would be thrown away whole. */
+    --emb-h: clamp(4.6rem, 20vw, 6rem);
+    --emb-k: 0.38;
+  }
 }
 @media (max-width: 40rem) {
   html[data-theme='bright'] {

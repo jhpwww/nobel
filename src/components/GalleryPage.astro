@@ -6,7 +6,7 @@ import Explore from './Explore.astro';
 import ScrollCue from './ScrollCue.astro';
 import ExtLink from './ExtLink.astro';
 import { useT, type Lang } from '../i18n/ui';
-import { home, asset } from '../i18n/routing';
+import { home, gallery, asset } from '../i18n/routing';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import {
@@ -57,6 +57,43 @@ const deeper = isIntro ? exploreItems : [
   ...exploreItems,
   { url: NTU_CGE, title: t('lec.ntuCge'), desc: t('lec.ntuCgeNote') },
   { url: CW_HUB,  title: t('lec.cwHub'),  desc: t('lec.cwHubNote') },
+];
+
+/* ---------------------------------------------------------------
+ * The introduction room, which is the one room in the museum with nothing on
+ * show. It carried four link cards and stood 71px taller than a 900px window,
+ * which meant the laurel could never even be caught. What follows is the
+ * prize itself: the will it comes from, the six doors it opens, what it has
+ * added up to, and how one is decided. All of it is either in the catalogue
+ * already or a matter of public record — see the note by --np-stats below.
+ * ------------------------------------------------------------- */
+const six = (Object.keys(categories) as CategoryKey[])
+  .sort((a, b) => categories[a].order - categories[b].order)
+  .map((key) => {
+    const held = byCategory(key).reduce((n, l) => n + sittings(l), 0);
+    return {
+      key,
+      name: catName(key, lang),
+      nameAlt: catNameAlt(key, lang),
+      href: gallery(lang, key),
+      n: held,
+      first: categories[key].stats.find((st) => st.key === 'first_year')?.value ?? 1901,
+    };
+  });
+
+/* Summed from the six categories' own figures, which come from the Nobel
+   Prize API — see scripts/fetch-prize-facts.py and the date printed under
+   them. Counted per award rather than per person: Marie Curie is in physics
+   and in chemistry, and the labels say 人次 / awards for that reason. */
+const totals = (key: string) =>
+  (Object.keys(categories) as CategoryKey[])
+    .reduce((n, k) => n + (categories[k].stats.find((st) => st.key === key)?.value ?? 0), 0);
+const introStats = [
+  { v: '1901', zh: '首次頒發', en: 'First awarded' },
+  { v: String(totals('prizes_awarded')), zh: '已頒發次數', en: 'Prizes awarded' },
+  { v: String(totals('laureates')), zh: '得主人次', en: 'Laureate awards' },
+  { v: String(totals('women_laureates')), zh: '女性得主人次', en: 'Awards to women' },
+  { v: String(totals('years_not_awarded')), zh: '從缺次數', en: 'Times not awarded' },
 ];
 
 /* ---------------------------------------------------------------
@@ -283,8 +320,167 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
   </div>
   )}
 
-  {/* The introduction room has no lectures and no rail: its four cards are the
-      whole page, so they stay a section rather than a sidebar. */}
+  {/* ---------- the introduction room ----------
+      The prize itself, in the order a room about it would be hung: the
+      sentence it comes from, the six doors it opens, what it has added up to,
+      and how one is decided. */}
+  {isIntro && (
+    <div class="wrap np">
+      {lang === 'zh' ? (
+        <p class="np__lede">
+          諾貝爾獎不是一座獎，是六座。它們出自同一份遺囑、同一筆基金，
+          卻由四個互不隸屬的機構分別評選，每年 12 月 10 日同時頒出。
+          這一頁說的是這座獎本身：它從哪裡來，包含哪些領域，一百多年來累積了什麼，
+          以及一座獎是怎麼決定的。
+        </p>
+      ) : (
+        <p class="np__lede">
+          The Nobel Prize is not one prize but six. They come from a single
+          will and a single fund, are decided by four institutions answerable
+          to no common authority, and are handed over on the same day every
+          year. This room is about the prize itself: where it came from, what
+          it covers, what it has added up to, and how one is decided.
+        </p>
+      )}
+
+      {/* the sentence the whole thing rests on */}
+      <figure class="np__will">
+        <blockquote>
+          {lang === 'zh'
+            ? '我全部剩餘可變現的財產，將以下列方式處理：由我的遺囑執行人將資本投資於安全的證券，設立一項基金，其利息每年以獎金的形式，分配給在前一年中為人類帶來最大福祉的人。'
+            : 'The whole of my remaining realizable estate shall be dealt with in the following way: the capital shall be invested by my executors in safe securities and shall constitute a fund, the interest on which shall be annually distributed in the form of prizes to those who, during the preceding year, have conferred the greatest benefit to humankind.'}
+        </blockquote>
+        <figcaption>
+          {lang === 'zh'
+            ? '阿佛烈・諾貝爾的遺囑，1895 年 11 月 27 日簽署於巴黎'
+            : 'From the will of Alfred Nobel, signed in Paris, 27 November 1895'}
+        </figcaption>
+      </figure>
+
+      <section class="np__sec" aria-labelledby="np-man">
+        <h2 id="np-man" class="np__h">{lang === 'zh' ? '諾貝爾其人' : 'Alfred Nobel'}</h2>
+        {lang === 'zh' ? (
+          <div class="np__prose">
+            <p>
+              阿佛烈・諾貝爾（1833–1896）是瑞典化學家與工程師，一生取得 355 項專利，
+              其中最著名的是炸藥。他終身未婚，會五種語言，讀文學也寫劇本，
+              晚年在義大利聖雷莫的實驗室裡度過。
+            </p>
+            <p>
+              1895 年，他在巴黎的瑞典—挪威俱樂部簽下最後一份遺囑，
+              把絕大部分財產交付信託，設立五個獎項：物理、化學、生理學或醫學、文學與和平。
+              遺囑公布後在瑞典引起長達數年的爭訟，直到 1900 年諾貝爾基金會成立，
+              1901 年首度頒獎。經濟學獎則是 1968 年由瑞典中央銀行捐資設立、
+              1969 年首度頒發，正式名稱是「瑞典中央銀行紀念阿佛烈・諾貝爾經濟學獎」。
+            </p>
+            <p>
+              五個獎項在斯德哥爾摩頒發，和平獎在奧斯陸——這也寫在遺囑裡，
+              當時挪威與瑞典仍是同一個聯合王國。頒獎日訂在 12 月 10 日，
+              諾貝爾逝世的那一天。
+            </p>
+          </div>
+        ) : (
+          <div class="np__prose">
+            <p>
+              Alfred Nobel (1833–1896) was a Swedish chemist and engineer who
+              held 355 patents, the best known of them for dynamite. He never
+              married, spoke five languages, read and wrote literature, and
+              spent his last years in a laboratory at San Remo.
+            </p>
+            <p>
+              In 1895, at the Swedish–Norwegian Club in Paris, he signed the
+              last of his wills, leaving almost all of his estate in trust to
+              fund five prizes: physics, chemistry, physiology or medicine,
+              literature and peace. The will was contested in Sweden for years;
+              the Nobel Foundation was established in 1900 and the first prizes
+              were awarded in 1901. The prize in economic sciences came later —
+              endowed by Sweden's central bank in 1968 and first awarded in
+              1969, formally the Sveriges Riksbank Prize in Economic Sciences
+              in Memory of Alfred Nobel.
+            </p>
+            <p>
+              Five prizes are presented in Stockholm and the peace prize in
+              Oslo, which the will also specifies: Norway and Sweden were one
+              kingdom at the time. The date is 10 December, the day Nobel died.
+            </p>
+          </div>
+        )}
+      </section>
+
+      <section class="np__sec" aria-labelledby="np-six">
+        <h2 id="np-six" class="np__h">{lang === 'zh' ? '六個獎項' : 'The six prizes'}</h2>
+        <p class="np__note">
+          {lang === 'zh'
+            ? '每一個都是本館的一座展廳；年份是該獎項首次頒發的年份。'
+            : 'Each one is a room in this museum. The year is when that prize was first awarded.'}
+        </p>
+        <ul class="np__six" role="list">
+          {six.map((c) => (
+            <li>
+              <a href={c.href} data-cat={c.key}>
+                <img src={stamp(`assets/marks/${c.key}.webp`)} alt="" width="192" height="192"
+                     loading="lazy" decoding="async" />
+                <span class="np__six-n">{c.name}</span>
+                <span class="np__six-en">{c.nameAlt}</span>
+                <span class="np__six-m">
+                  {c.first} · {c.n > 0 ? t('hall.count', { n: c.n }) : t('hall.soon')}
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section class="np__sec" aria-labelledby="np-num">
+        <h2 id="np-num" class="np__h">{lang === 'zh' ? '數字裡的諾貝爾獎' : 'The prize in numbers'}</h2>
+        <dl class="np__stats">
+          {introStats.map((st) => (
+            <div>
+              <dt>{lang === 'zh' ? st.zh : st.en}</dt>
+              <dd>{st.v}</dd>
+            </div>
+          ))}
+        </dl>
+        <p class="np__asof">
+          {t('cat.asOf', { date: factsAsOf })}
+          {' '}
+          {lang === 'zh'
+            ? '六個獎項的數字相加，因此同一人若在兩個領域獲獎會計為兩次。'
+            : 'Summed across the six prizes, so a laureate honoured in two fields is counted twice.'}
+        </p>
+      </section>
+
+      <section class="np__sec" aria-labelledby="np-how">
+        <h2 id="np-how" class="np__h">{lang === 'zh' ? '一座獎如何決定' : 'How a prize is decided'}</h2>
+        <ol class="np__steps" role="list">
+          {(lang === 'zh' ? [
+            ['9 月—1 月 31 日', '提名', '委員會寄出數千份邀請，收件人是各領域的教授、歷屆得主與特定機構的成員。自我提名一律無效，提名者的名字與被提名人一同封存。'],
+            ['2 月—8 月', '審議', '諾貝爾委員會篩選名單，向外部專家調閱意見，逐案寫成報告。整個過程不對外說明，也不承認任何「入圍名單」。'],
+            ['10 月初', '選出', '由頒獎機構投票決定：瑞典皇家科學院（物理、化學、經濟）、卡羅林斯卡學院（生理學或醫學）、瑞典學院（文學）、挪威諾貝爾委員會（和平）。決定當日公布，不得申訴。'],
+            ['12 月 10 日', '頒獎', '諾貝爾逝世紀念日。五個獎項在斯德哥爾摩音樂廳，和平獎在奧斯陸市政廳。得主須在六個月內發表一場「諾貝爾講座」。'],
+          ] : [
+            ['September – 31 January', 'Nomination', 'Thousands of invitations go out to professors, former laureates and members of named institutions. Nominating yourself is invalid, and the nominator’s name is sealed along with the nominee’s.'],
+            ['February – August', 'Deliberation', 'The Nobel Committees narrow the field, commission opinions from outside experts and write a report on each case. None of it is explained, and no shortlist is ever acknowledged.'],
+            ['Early October', 'Decision', 'The awarding institution votes: the Royal Swedish Academy of Sciences (physics, chemistry, economics), Karolinska Institutet (physiology or medicine), the Swedish Academy (literature), the Norwegian Nobel Committee (peace). It is announced the same day and cannot be appealed.'],
+            ['10 December', 'Ceremony', 'The anniversary of Nobel’s death: five prizes at the Stockholm Concert Hall, the peace prize at Oslo City Hall. Each laureate must give a Nobel Lecture within six months.'],
+          ]).map(([when, what, how]) => (
+            <li>
+              <span class="np__when">{when}</span>
+              <span class="np__what">{what}</span>
+              <span class="np__how">{how}</span>
+            </li>
+          ))}
+        </ol>
+        <p class="np__note">
+          {lang === 'zh'
+            ? '提名與審議的紀錄封存 50 年，因此每年公開的只有結果。'
+            : 'Nomination and deliberation records are sealed for 50 years, so only the result is ever public.'}
+        </p>
+      </section>
+    </div>
+  )}
+
+  {/* the prize's own pages, at the foot of the room */}
   {isIntro && <Explore lang={lang} items={exploreItems} heading={false} />}
   </div>
 </Base>
@@ -492,8 +688,12 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
     justify-items: center;
     align-items: start;
     container-type: normal;      /* nothing inside is sized against it */
-    padding-block-start: calc(var(--lock-bottom) + 1.1841 * var(--gr-art)
-                              + var(--gr-floor) - var(--gr-head-h));
+    /* --wreath-pad is on the theme root in bright.css, not here: the rule
+       that catches the emblem is on .gr__piece, which is this element's
+       PARENT, and a custom property only ever reaches downward. Declared here
+       it resolved to nothing there and the caught laurel sat a fifth of a
+       header too low — the same trap the about page's medal fell into. */
+    padding-block-start: var(--wreath-pad);
   }
   /* Sized outright rather than as a share of the frame. The frame is portrait
      and the laurel is square, so a percentage of the frame's HEIGHT was never
@@ -503,7 +703,7 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
      number that is actually on screen. 0.4374 is a fifth off what the width
      used to allow: 0.8 x 0.545 x 640/638 of --gr-art. */
   .gr__wreath img {
-    block-size: calc(var(--gr-art) * 0.4374);
+    block-size: var(--emb-h);
     inline-size: auto;
     max-inline-size: 100%;
     filter: drop-shadow(0 14px 26px rgba(70, 52, 16, 0.26));
@@ -512,7 +712,10 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
      foot, which is the one alignment that makes an emblem and a name read as
      one lockup rather than as two things on a page. */
   .gr[data-cat='nobel'] .gr__id {
-    translate: 0 calc(var(--lock-bottom) + 0.2rem + 0.503 * var(--gr-art)
+    /* the wreath's foot is --lock-bottom + 1.15 x its own height, and that is
+       where the second line's foot goes; 1.15 x --emb-h is the 0.503 x
+       --gr-art this was, on a screen where the two agree */
+    translate: 0 calc(var(--lock-bottom) + 0.2rem + 1.15 * var(--emb-h)
                       + var(--gr-floor) - var(--gr-head-h));
   }
   /* and that second line is gold, which is what this museum signs with */
@@ -530,10 +733,9 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
          the laurel becomes, less the rail's own stick — and less a fifth of
          the padding that hangs the laurel inside its frame, because the piece
          scales about its top-left corner and that padding scales with it. */
-      calc(0.62rem + var(--lock-h) / 2 - 0.04374 * var(--gr-art)
+      calc(0.62rem + var(--lock-h) / 2 - 0.5 * var(--emb-k) * var(--emb-h)
            - var(--gr-stick)
-           - 0.2 * (var(--lock-bottom) + 1.1841 * var(--gr-art)
-                    + var(--gr-floor) - var(--gr-head-h)));
+           - var(--emb-k) * var(--wreath-pad));
   }
 
   .gr__piece .bh__art {
@@ -593,8 +795,198 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
        horizontal offset is the desktop's — measured off the name's own
        rendered width — and only the size is a phone's. */
     .gr__rail[data-pinned] .gr__piece { scale: var(--piece-back-k); }
+    /* the laurel is an emblem, not a sculpture: it is caught at the size
+       every emblem in the museum is caught at, so the mark beside the name is
+       one mark whichever door you came through */
+    .gr__rail[data-pinned] .gr__piece:has(.gr__wreath) { scale: var(--emb-k); }
+    /* and the introduction room's title is set in from the emblem rather than
+       from half a sculpture's frame, which is a 134px indent for a 78px
+       object */
+    .gr[data-cat='nobel'] .gr__in {
+      padding-inline-start: calc(var(--emb-h) + clamp(0.7rem, 2.6vw, 1.4rem));
+    }
     .gr__in { gap: 0.5rem; }
     .gr__title { font-size: var(--step-2); }
+  }
+
+  /* ==========================================================
+     THE INTRODUCTION ROOM
+     ==========================================================
+     The one room with nothing on show, and it read like it: four link cards
+     under a title, on a page 71px taller than the window it opened in — so
+     the laurel could not even be caught, because there was nothing to scroll.
+     What it has now is what a room about a prize would hang: the sentence it
+     comes from, the six doors it opens, what it has added up to, and how one
+     is decided.
+
+     Set wider than a page of prose and narrower than the museum's grids: one
+     column of 42 characters or so for the reading, with the plates and the
+     figures allowed the full width. */
+  .np {
+    padding-block: clamp(1.6rem, 4vw, 2.8rem) 0;
+    max-inline-size: 60rem;
+  }
+  .np__lede {
+    font-size: var(--step-1);
+    line-height: 1.95;
+    color: var(--cream);
+    max-inline-size: 46ch;
+    margin: 0;
+  }
+
+  /* The will, set as an inscription rather than as a quotation: a rule down
+     the side, the serif the museum keeps for the one place it speaks rather
+     than labels, and no quotation marks — the attribution says what it is. */
+  .np__will {
+    margin: clamp(2rem, 5vw, 3.2rem) 0 0;
+    padding-inline-start: clamp(1rem, 3vw, 2rem);
+    border-inline-start: 2px solid var(--gold-orn, #b8862a);
+    max-inline-size: 52ch;
+  }
+  .np__will blockquote {
+    margin: 0;
+    font-family: var(--font-hook);
+    font-size: var(--step-1);
+    line-height: 1.9;
+    color: var(--cream);
+    letter-spacing: 0.01em;
+  }
+  .np__will figcaption {
+    margin-block-start: 0.7rem;
+    font-size: var(--step--1);
+    color: var(--gold);
+    letter-spacing: 0.08em;
+  }
+
+  .np__sec { margin-block-start: clamp(2.4rem, 6vw, 4rem); }
+  .np__h {
+    font-family: var(--font-han-serif);
+    font-size: var(--step-2);
+    color: var(--cream);
+    letter-spacing: 0.04em;
+    padding-block-end: 0.7rem;
+    border-block-end: 1px solid var(--line);
+    margin: 0 0 1.2rem;
+  }
+  .np__note { font-size: var(--step--1); color: var(--muted); margin-block: 0 1.1rem; max-inline-size: 56ch; }
+  .np__prose { display: grid; gap: 1.15rem; max-inline-size: 46ch; }
+  .np__prose p { margin: 0; color: var(--text); line-height: 1.95; }
+
+  /* ---------- the six doors ----------
+     The gold marks that are cut into the drums in the hall, at the size a
+     plate on a wall takes. Not cards: no border, no fill, no shadow — a rule
+     under each and the mark above it, which is how a museum labels a bay. */
+  /* Six across, and stated rather than fitted. auto-fit put five on a 1440
+     window and dropped 文學 onto a line of its own, which reads as five
+     prizes and an afterthought — and the afterthought is the one prize this
+     museum has no lecture for. Three and two are the other two shapes; none
+     of them ever leaves one alone on a row. */
+  .np__six {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: clamp(0.4rem, 1.4vw, 1rem);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  @media (min-width: 34rem) { .np__six { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (min-width: 60rem) { .np__six { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+  .np__six li { display: grid; }
+  .np__six a {
+    display: grid;
+    justify-items: center;
+    align-content: start;
+    block-size: 100%;
+    gap: 0.15rem;
+    text-decoration: none;
+    padding: 1rem 0.6rem 0.9rem;
+    border-radius: 0.6rem;
+    border: 1px solid transparent;
+    border-block-end-color: var(--line);
+    transition: background 0.3s var(--ease), border-color 0.3s var(--ease), transform 0.3s var(--ease);
+  }
+  .np__six a:hover {
+    background: rgba(255, 255, 255, 0.5);
+    border-color: var(--line);
+    transform: translateY(-2px);
+  }
+  :global(html[data-motion='off']) .np__six a:hover { transform: none; }
+  .np__six img {
+    inline-size: clamp(2.6rem, 6.5vw, 3.6rem);
+    block-size: auto;
+    margin-block-end: 0.45rem;
+    /* the marks are struck gold on transparency; this sets them on the page */
+    filter: drop-shadow(0 4px 9px rgba(70, 52, 16, 0.22));
+  }
+  .np__six-n { font-family: var(--font-han-serif); font-size: var(--step-0); color: var(--cream); text-align: center; }
+  .np__six-en { font-size: var(--step--1); color: var(--muted); text-align: center; }
+  /* pushed to the foot of its own plate, so the rule under six plates is one
+     rule whatever the English name does — 'Physiology or Medicine' takes two
+     lines and used to drop its own plate a line lower than the other five */
+  .np__six-m { font-size: var(--step--2); color: var(--gold); letter-spacing: 0.06em; margin-block-start: auto; padding-block-start: 0.3rem; }
+
+  /* ---------- the figures ----------
+     The same panes the hall's own strip uses, at the same weight — a museum
+     says a number the same way wherever it says one. */
+  .np__stats {
+    margin: 0;
+    display: grid;
+    gap: 0.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 7.4rem), 1fr));
+  }
+  .np__stats div {
+    display: grid;
+    gap: 0.1rem;
+    padding: 0.75rem 0.85rem 0.7rem;
+    border-radius: 0.6rem;
+    background: rgba(255, 255, 255, 0.55);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.9),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.5),
+      0 1px 1px rgba(28, 42, 66, 0.05);
+  }
+  .np__stats dt { font-size: var(--step--2); color: var(--muted); letter-spacing: 0.04em; order: 2; }
+  .np__stats dd {
+    margin: 0;
+    order: 1;
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    line-height: 1.1;
+    color: var(--gold);
+    font-variant-numeric: lining-nums tabular-nums;
+  }
+  .np__asof { font-size: var(--step--2); color: var(--muted-dim); line-height: 1.7; margin-block-start: 0.8rem; max-inline-size: 62ch; }
+
+  /* ---------- the year ----------
+     A calendar, not a list: the date holds its own column so the four read as
+     one year rather than as four paragraphs. */
+  .np__steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0;
+  }
+  .np__steps li {
+    display: grid;
+    grid-template-columns: minmax(7rem, 11rem) minmax(0, 1fr);
+    gap: 0.2rem clamp(1rem, 3vw, 2.2rem);
+    padding-block: 1rem;
+    border-block-start: 1px solid var(--line);
+  }
+  .np__steps li:last-child { border-block-end: 1px solid var(--line); }
+  .np__when {
+    grid-row: span 2;
+    font-size: var(--step--1);
+    color: var(--gold);
+    letter-spacing: 0.06em;
+    font-variant-numeric: lining-nums;
+  }
+  .np__what { font-family: var(--font-han-serif); font-size: var(--step-1); color: var(--cream); }
+  .np__how { font-size: var(--step--1); color: var(--muted); line-height: 1.85; }
+  @media (max-width: 40rem) {
+    .np__steps li { grid-template-columns: minmax(0, 1fr); }
+    .np__when { grid-row: auto; }
   }
 
   /* ---------- header ---------- */

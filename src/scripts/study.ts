@@ -155,6 +155,47 @@ export function exportAll(titleFor: (id: string) => string): string {
   ].join('\n');
 }
 
+/**
+ * Everything the store holds for one lecture, as its own plain-text block.
+ * The page can hand a single record back without the visitor having to take
+ * the whole set — see 'one record at a time' in StudyPage.
+ */
+export function exportOne(id: string, titleFor: (id: string) => string): string {
+  const e = entry(id);
+  const n = e.note ?? { summary: '', reflection: '', question: '' };
+  const lines = [
+    `── ${titleFor(id)}`,
+    `【核心論點摘要】\n${n.summary.trim() || '（未填）'}`,
+    `【個人反思】\n${n.reflection.trim() || '（未填）'}`,
+    `【延伸問題】\n${n.question.trim() || '（未填）'}`,
+  ];
+  if ((e.askQuestion ?? '').trim()) {
+    lines.push(`【想問講者的問題】\n${e.askQuestion!.trim()}`);
+  }
+  return lines.join('\n\n');
+}
+
+/** Anything at all written or ticked for this lecture. */
+export const hasWork = (e: Entry) =>
+  !!(e.picked || e.watchedTaiwan || e.watchedNobel || (e.askQuestion ?? '').trim() ||
+     (e.note && (e.note.summary.trim() || e.note.reflection.trim() || e.note.question.trim())));
+
+/** How many of the three note fields are written. */
+export const noteParts = (e: Entry) =>
+  [e.note?.summary, e.note?.reflection, e.note?.question].filter((v) => (v ?? '').trim()).length;
+
+/**
+ * One record, gone. Deleting is not the same as un-picking: un-ticking a
+ * lecture leaves its note in the store, which is right — a visitor who
+ * changes their six should not lose what they wrote — but it also means the
+ * only way to actually get rid of something was to clear everything.
+ */
+export function remove(id: string): boolean {
+  const s = read();
+  delete s[id];
+  return write(s);
+}
+
 export function clearAll() {
   try { localStorage.removeItem(KEY); } catch { /* ignore */ }
   dispatchEvent(new CustomEvent('study:changed', { detail: {} }));

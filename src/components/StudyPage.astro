@@ -7,9 +7,16 @@
  * taking the course: they simply see the empty state.
  */
 import Base from '../layouts/Base.astro';
+import RoomBack from './RoomBack.astro';
+import ScrollCue from './ScrollCue.astro';
 import { useT, type Lang } from '../i18n/ui';
 import { path } from '../i18n/routing';
 import { lectures, categories } from '../data/catalog';
+
+/* the museum's own room behind this page too — every other page in the bright
+   museum wears the hall's bar and stands in the hall's room, and this one did
+   not: it opened on a white band with the dark site's brand bar over it */
+const bright = process.env.THEME === 'bright';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
@@ -28,12 +35,19 @@ const index = lectures.map((l) => ({
 }));
 ---
 
-<Base lang={lang} title={t('study.pageTitle')} segments={['study']}>
+<Base lang={lang} title={t('study.pageTitle')} segments={['study']} bare={bright}>
+  {bright && <RoomBack lang={lang} />}
   <div class="wrap study" data-study-page data-index={JSON.stringify(index)}
        data-ok-restore={t('study.restoreOk')} data-bad-restore={t('study.restoreBad')}
        data-confirm-clear={t('study.clearConfirm')}
        data-cat-names={JSON.stringify(catNames)}
-       data-nudge-tmpl={t('study.nudgeTmpl')}>
+       data-nudge-tmpl={t('study.nudgeTmpl')}
+       data-del-confirm={t('study.rowDelConfirm')}
+       data-rec-count-tmpl={t('study.rowCount')}
+       data-tag-picked={t('study.recPicked')} data-tag-tw={t('study.recTw')}
+       data-tag-nobel={t('study.recNobel')} data-tag-note={t('study.recNote')}
+       data-tag-ask={t('study.recAsk')}
+       data-lang={lang}>
     <header class="study__head">
       <p class="eyebrow"><a href={path(lang, 'learn')}>{t('study.forCourse')}</a></p>
       <h1>{t('study.pageTitle')}</h1>
@@ -57,6 +71,43 @@ const index = lectures.map((l) => ({
     </section>
 
     <p class="study__blocked" data-blocked hidden>{t('study.blocked')}</p>
+
+    {/* ---------- one record at a time ----------
+        The page could add and it could edit and it could throw the lot away,
+        and between those there was nothing: no list of what is actually in
+        the store, and no way to get rid of one thing. Un-ticking a lecture
+        does not delete its note — deliberately, because someone who changes
+        their six should not lose what they wrote — which meant the only
+        delete on the site was the one that took everything. */}
+    <section class="study__sec" aria-labelledby="h-rec">
+      <h2 id="h-rec">{t('study.recordsTitle')}</h2>
+      <p class="study__note">{t('study.recordsNote')}</p>
+      <p class="study__empty" data-rec-empty hidden>{t('study.recordsEmpty')}</p>
+      <table class="recs" data-recs hidden>
+        <thead>
+          <tr>
+            <th scope="col">{t('study.colLecture')}</th>
+            <th scope="col">{t('study.colState')}</th>
+            <th scope="col">{t('study.colWhen')}</th>
+            <th scope="col"><span class="visually-hidden">{t('study.rowDel')}</span></th>
+          </tr>
+        </thead>
+        <tbody data-rec-body></tbody>
+      </table>
+      <p class="study__count" data-rec-count hidden></p>
+    </section>
+
+    <template data-rec-template>
+      <tr class="recs__row">
+        <td class="recs__name"><a data-rec-name href="#"></a></td>
+        <td class="recs__tags" data-rec-tags></td>
+        <td class="recs__when" data-rec-when></td>
+        <td class="recs__do">
+          <button class="museum-glass-btn museum-glass-btn--nav" type="button" data-rec-get><span>{t('study.rowGet')}</span></button>
+          <button class="museum-glass-btn museum-glass-btn--nav danger" type="button" data-rec-del><span>{t('study.rowDel')}</span></button>
+        </td>
+      </tr>
+    </template>
 
     <section class="study__sec">
       <h2>{t('study.myPicks')}</h2>
@@ -137,9 +188,12 @@ const index = lectures.map((l) => ({
       </div>
     </section>
   </div>
+
+  {bright && <ScrollCue lang={lang} href="#h-rec" />}
 </Base>
 
 <style>
+  :global(html[data-theme='bright']) .study { padding-block-start: 3.4rem; }
   .study { padding-block: clamp(2rem, 5vw, 3.5rem); max-inline-size: 58rem; }
   .study__head h1 { font-size: var(--step-3); color: var(--cream); margin-block-start: .3rem; }
   .study__head a { text-decoration: none; }
@@ -195,6 +249,57 @@ const index = lectures.map((l) => ({
     border: 1px solid color-mix(in srgb, var(--c-medicine) 55%, transparent);
     border-radius: var(--radius);
     background: color-mix(in srgb, var(--c-medicine) 12%, transparent);
+  }
+
+  /* ---------- the records ----------
+     A table, because that is what this is: one row per lecture, the same
+     columns every time, and two things you can do to a row. Not cards — a
+     card is for browsing and this is for accounting. */
+  .recs {
+    inline-size: 100%;
+    border-collapse: collapse;
+    margin-block-start: 1.1rem;
+    font-size: var(--step--1);
+  }
+  .recs th {
+    text-align: start;
+    font-weight: 400;
+    font-size: var(--step--2);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted-dim);
+    padding: 0 0.6rem 0.5rem;
+    border-block-end: 1px solid var(--line);
+  }
+  .recs td { padding: 0.65rem 0.6rem; border-block-end: 1px solid var(--line); vertical-align: middle; }
+  .recs__name a { color: var(--cream); text-decoration: none; }
+  .recs__name a:hover { color: var(--accent); }
+  .recs__tags { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+  .recs__tag {
+    font-size: var(--step--2);
+    letter-spacing: 0.04em;
+    padding: 0.1rem 0.5rem;
+    border-radius: var(--radius-control);
+    border: 1px solid var(--line);
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .recs__tag[data-kind='done'] { color: var(--gold); border-color: color-mix(in srgb, var(--gold) 45%, transparent); }
+  .recs__tag[data-kind='pick'] { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 40%, transparent); }
+  .recs__when { color: var(--muted-dim); white-space: nowrap; font-variant-numeric: lining-nums tabular-nums; }
+  .recs__do { text-align: end; white-space: nowrap; }
+  .recs__do button { margin-inline-start: 0.35rem; }
+  .study__count { font-size: var(--step--2); color: var(--muted-dim); margin-block-start: 0.7rem; }
+
+  /* A table of four columns does not fit a phone, and a table that scrolls
+     sideways is a table nobody reads the end of. Each row becomes a block. */
+  @media (max-width: 40rem) {
+    .recs, .recs tbody, .recs tr, .recs td { display: block; inline-size: 100%; }
+    .recs thead { display: none; }
+    .recs tr { padding-block: 0.7rem; border-block-end: 1px solid var(--line); }
+    .recs td { border: 0; padding: 0.15rem 0; }
+    .recs__do { text-align: start; margin-block-start: 0.4rem; }
+    .recs__do button:first-child { margin-inline-start: 0; }
   }
 
   .chooser {
@@ -301,8 +406,9 @@ const index = lectures.map((l) => ({
 
 <script>
   import {
-    read, progress, exportNotes, exportAll, clearAll, importJSON, rawJSON,
-    entry, update, updateKept, setNote, storageAvailable, REQUIRED_PICKS,
+    read, progress, exportNotes, exportAll, exportOne, clearAll, importJSON, rawJSON,
+    entry, update, updateKept, setNote, remove, hasWork, noteParts,
+    storageAvailable, REQUIRED_PICKS,
   } from '../scripts/study';
 
   const root = document.querySelector<HTMLElement>('[data-study-page]');
@@ -404,6 +510,77 @@ const index = lectures.map((l) => ({
       }
     }
 
+    /* ── the records ───────────────────────────────────────────────────────
+       Everything in the store, whether or not it is one of the six: a note
+       written on a lecture that was later un-picked is still the visitor's
+       work and still theirs to take away or throw out. */
+    const recTable = $<HTMLTableElement>('[data-recs]');
+    const recBody = $<HTMLElement>('[data-rec-body]');
+    const recTpl = $<HTMLTemplateElement>('[data-rec-template]');
+    const recEmpty = $<HTMLElement>('[data-rec-empty]');
+    const recCount = $<HTMLElement>('[data-rec-count]');
+    const dateFmt = new Intl.DateTimeFormat(root!.dataset.lang === 'zh' ? 'zh-TW' : 'en-GB',
+      { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+    function download(text: string, name: string) {
+      const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = name;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    function paintRecords() {
+      const s = read();
+      const ids = Object.keys(s).filter((id) => hasWork(s[id]));
+      /* newest work first, and anything never edited after it */
+      ids.sort((a, b) => (s[b].note?.updated ?? '').localeCompare(s[a].note?.updated ?? ''));
+      recBody.replaceChildren();
+
+      for (const id of ids) {
+        const e = s[id];
+        const r = byId.get(id);
+        const frag = recTpl.content.cloneNode(true) as DocumentFragment;
+        const name = frag.querySelector<HTMLAnchorElement>('[data-rec-name]')!;
+        name.textContent = r ? r.name : id;
+        name.href = r?.href ?? '#';
+        name.title = r?.title ?? '';
+
+        const tags = frag.querySelector<HTMLElement>('[data-rec-tags]')!;
+        const add = (text: string, kind: string) => {
+          const b = document.createElement('span');
+          b.className = 'recs__tag';
+          b.dataset.kind = kind;
+          b.textContent = text;
+          tags.append(b);
+        };
+        if (e.picked) add(root!.dataset.tagPicked!, 'pick');
+        if (e.watchedTaiwan) add(root!.dataset.tagTw!, 'seen');
+        if (e.watchedNobel) add(root!.dataset.tagNobel!, 'seen');
+        const parts = noteParts(e);
+        if (parts) add(root!.dataset.tagNote!.replace('{n}', String(parts)), parts === 3 ? 'done' : 'part');
+        if ((e.askQuestion ?? '').trim()) add(root!.dataset.tagAsk!, 'ask');
+
+        const when = frag.querySelector<HTMLElement>('[data-rec-when]')!;
+        when.textContent = e.note?.updated ? dateFmt.format(new Date(e.note.updated)) : '—';
+
+        frag.querySelector('[data-rec-get]')!.addEventListener('click', () =>
+          download(exportOne(id, titleFor), `${(r?.name ?? id).replace(/[\\/:*?"<>|]/g, '')}.txt`));
+        frag.querySelector('[data-rec-del]')!.addEventListener('click', () => {
+          if (!confirm(root!.dataset.delConfirm!.replace('{name}', r?.name ?? id))) return;
+          remove(id);
+          paint();
+        });
+        recBody.append(frag);
+      }
+
+      recTable.hidden = ids.length === 0;
+      recEmpty.hidden = ids.length > 0;
+      recCount.hidden = ids.length === 0;
+      recCount.textContent = root!.dataset.recCountTmpl!.replace('{n}', String(ids.length));
+    }
+
     function say(text: string) {
       msg.textContent = text;
       setTimeout(() => (msg.textContent = ''), 2200);
@@ -430,6 +607,7 @@ const index = lectures.map((l) => ({
       $<HTMLElement>('[data-bar]').style.inlineSize =
         `${Math.min(100, (p.notesDone / REQUIRED_PICKS) * 100)}%`;
 
+      paintRecords();
       const picked = Object.entries(s).filter(([, e]) => e.picked);
       empty.hidden = picked.length > 0;
       for (const [id, box] of boxes) box.checked = !!s[id]?.picked;
@@ -465,14 +643,8 @@ const index = lectures.map((l) => ({
 
     $('[data-export-notes]').addEventListener('click', () => { out.value = exportNotes(titleFor); out.select(); });
     $('[data-export-all]').addEventListener('click', () => { out.value = exportAll(titleFor); out.select(); });
-    $('[data-download]').addEventListener('click', () => {
-      const blob = new Blob([exportAll(titleFor)], { type: 'text/plain;charset=utf-8' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = '走進諾貝爾-學習紀錄.txt';
-      a.click();
-      URL.revokeObjectURL(a.href);
-    });
+    $('[data-download]').addEventListener('click', () =>
+      download(exportAll(titleFor), '走進諾貝爾-學習紀錄.txt'));
     $('[data-backup]').addEventListener('click', () => {
       const blob = new Blob([rawJSON()], { type: 'application/json' });
       const a = document.createElement('a');
