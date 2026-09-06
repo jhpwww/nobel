@@ -81,7 +81,7 @@ const { src, srcSmall, w, h, outside = false } = Astro.props;
   .emb[data-pinned] .emb__piece {
     scale: var(--emb-k);
     translate:
-      calc(clamp(0.7rem, 2.2vw, 1.6rem) + var(--lock-w, 10.9rem) + 0.55rem
+      calc(var(--mark-x) + var(--lock-w, 10.9rem) + var(--mark-over, 0px) + 0.55rem
            - var(--emb-x, 0px))
       calc(0.62rem + var(--lock-h) / 2 - 0.5 * var(--emb-k) * var(--emb-h)
            - var(--gr-stick));
@@ -124,6 +124,17 @@ const { src, srcSmall, w, h, outside = false } = Astro.props;
       if (lock) root.style.setProperty('--lock-w', `${Math.round(lock.offsetWidth)}px`);
       const box = (head ?? rails[0]).getBoundingClientRect();
       root.style.setProperty('--emb-x', `${Math.round(box.left)}px`);
+      /* How far the plate hangs past the mark's own box on the right. It is
+         drawn half again as wide as the name and centred on it, so anything
+         standing beside the mark has to clear the ornament rather than the
+         box — which is why the caught emblem was landing on the acanthus. */
+      const name = document.querySelector<HTMLElement>('.gr__lock-name');
+      if (name && lock) {
+        const nb = name.getBoundingClientRect();
+        const pw = parseFloat(getComputedStyle(name, '::before').width) || 0;
+        const over = nb.left + nb.width / 2 + pw / 2 - lock.getBoundingClientRect().right;
+        root.style.setProperty('--mark-over', `${Math.max(0, Math.round(over))}px`);
+      }
     }
 
     let ticking = false;

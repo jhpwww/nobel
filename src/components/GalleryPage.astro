@@ -571,7 +571,7 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
   .gr__lock {
     position: fixed;
     inset-block-start: 0.62rem;
-    inset-inline-start: clamp(0.7rem, 2.2vw, 1.6rem);
+    inset-inline-start: var(--mark-x);
     z-index: 2;
     padding: 0.34rem 0.85rem;
     border-radius: 0.42rem;
@@ -648,7 +648,7 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
   .gr__rail[data-pinned] .gr__piece {
     scale: 0.2;
     translate:
-      calc(clamp(0.7rem, 2.2vw, 1.6rem) + var(--lock-w, 10.9rem) + 0.55rem
+      calc(var(--mark-x) + var(--lock-w, 10.9rem) + var(--mark-over, 0px) + 0.55rem
            - max(1rem, (100vw - 76rem) / 2))
       -0.4rem;
   }
@@ -749,11 +749,18 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
   @media (max-width: 48rem) { .np__will { max-inline-size: none; } }
   .np__will blockquote {
     margin: 0;
-    font-family: var(--font-hook);
+    /* Source Serif for the Latin, the museum's own face for the Han.
+       --font-hook reaches Noto Serif TC for Chinese, and a Ming face at this
+       size is the one place in the building where the Han is set in
+       something the rest of it never uses — it read as a different website
+       rather than as a quotation. The museum sets every Han line in Noto
+       Sans TC, including the ones it calls serif; see --font-han-serif. */
+    font-family: 'Source Serif 4', var(--font-body);
     font-size: var(--step-1);
-    line-height: 1.9;
+    font-weight: 450;
+    line-height: 1.95;
     color: var(--cream);
-    letter-spacing: 0.01em;
+    letter-spacing: 0.02em;
   }
   .np__will figcaption {
     margin-block-start: 0.7rem;
@@ -1112,14 +1119,6 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
      rendered width is measured here and handed to the stylesheet. */
   const lock = document.querySelector<HTMLElement>('.gr__lock');
   const root = document.documentElement;
-  function measureLock() {
-    if (lock) root.style.setProperty('--lock-w', `${Math.round(lock.offsetWidth)}px`);
-  }
-  measureLock();
-  /* the museum's faces are self-hosted and arrive after first paint; the name
-     is a different width in the fallback face */
-  document.fonts?.ready.then(measureLock);
-  addEventListener('resize', measureLock);
 
   /* ---- when the piece is caught ----
      The rail does the pinning — sticky is the compositor's own job, so the
@@ -1140,6 +1139,27 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
   const art = document.querySelector<HTMLElement>('.gr__piece .bh__art');
   const WIDE = matchMedia('(min-width: 48.0625rem)');
 
+  /* ---- the mark's width, and how far its plate hangs past it ----
+     The mark the piece shrinks into stands beside the name, and the name is a
+     line of type, not a share of the viewport: 諾貝爾講座博物館 and 'Nobel
+     Lecture Museum' are different widths, and neither of them tracks 7vw. And
+     the plate under it is drawn half again as wide as the name and centred on
+     it, so what has to be cleared is the ornament rather than the box. Both
+     are measured here and handed to the stylesheet; the museum's faces are
+     self-hosted and arrive after first paint, in which the name is a
+     different width again. */
+  const measureMark = () => {
+    if (!lock) return;
+    root.style.setProperty('--lock-w', `${Math.round(lock.offsetWidth)}px`);
+    const name = lock.querySelector<HTMLElement>('.gr__lock-name');
+    if (!name) return;
+    const nb = name.getBoundingClientRect();
+    const pw = parseFloat(getComputedStyle(name, '::before').width) || 0;
+    const over = nb.left + nb.width / 2 + pw / 2 - lock.getBoundingClientRect().right;
+    root.style.setProperty('--mark-over', `${Math.max(0, Math.round(over))}px`);
+  };
+  measureMark();
+
   let ticking = false;
   const test = () => {
     ticking = false;
@@ -1157,7 +1177,7 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
     ticking = true;
     requestAnimationFrame(test);
   }, { passive: true });
-  addEventListener('resize', test);
+  addEventListener('resize', () => { measureMark(); test(); });
   WIDE.addEventListener('change', test);
-  document.fonts?.ready.then(test);
+  document.fonts?.ready.then(() => { measureMark(); test(); });
 </script>

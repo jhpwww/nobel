@@ -243,6 +243,15 @@ html[data-theme='bright'] {
      are chosen so that the caught mark is the same size on every page and at
      every width: 0.2 x 0.4374 x --gr-art here, and the phone's own pair
      below, both landing within a pixel of 29. */
+  /* Where the museum's mark stands in from the corner.
+     It used to be clamp(0.7rem, 2.2vw, 1.6rem), which was right for a mark
+     that ended where its own box ended. The plate does not: it is drawn half
+     again as wide as the name and centred on it, so a quarter of the name
+     hangs past the box at each side — 41px in English — and at the old inset
+     the left end of the plate was off the screen. On a phone it was 13px off.
+     One number now, used by the mark itself, by the hall's folded name, and
+     by everything that is placed beside them. */
+  --mark-x: clamp(1.9rem, 2.6vw, 2.1rem);
   --emb-h: calc(var(--gr-art) * 0.4374);
   --emb-k: 0.2;
 }
@@ -255,6 +264,9 @@ html[data-theme='bright'] {
        indent and the rule would be thrown away whole. */
     --emb-h: clamp(4.6rem, 20vw, 6rem);
     --emb-k: 0.38;
+    /* and a phone, where the screen has no room for the desktop's gutter and
+       the plate is drawn narrower to suit — see the plate's own rule */
+    --mark-x: 1.5rem;
   }
 }
 @media (max-width: 40rem) {
@@ -324,6 +336,15 @@ html[data-theme='bright'] :is(.bh__lockup[data-small] .bh__title, .gr__lock-name
   aspect-ratio: 2136 / 342;
   background: var(--plate) center / 100% 100% no-repeat;
   pointer-events: none;
+}
+/* A phone has no gutter to spare: at 150% a quarter of the name hangs past
+   the mark's box at each end, which on a 390px screen put the plate's left
+   acanthus off the edge. 136% keeps the panel clear of the name and the
+   ornament on the screen. */
+@media (max-width: 40rem) {
+  html[data-theme='bright'] :is(.bh__lockup[data-small] .bh__title, .gr__lock-name)::before {
+    inline-size: 136%;
+  }
 }
 /* English runs a third longer than the Han name, and the plate is sized off
    it — at the same step the plate came out 90px tall and its crown went off
@@ -1724,7 +1745,7 @@ html[data-theme='bright'] :is(.card__who, .vc__who, .lec__who) { line-height: 1.
 html[data-theme='bright'] .gr__lock {
   position: fixed;
   inset-block-start: 0.62rem;
-  inset-inline-start: clamp(0.7rem, 2.2vw, 1.6rem);
+  inset-inline-start: var(--mark-x);
   z-index: 60;
   padding: 0.34rem 0.85rem;
   text-decoration: none;
