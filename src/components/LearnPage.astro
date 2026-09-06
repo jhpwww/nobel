@@ -91,23 +91,29 @@ const cycle = [
 ---
 
 <Base lang={lang} title={t('learn.title')} description={t('learn.blurb')} segments={['learn']} bare={bright}>
-  {bright && <RoomBack lang={lang} />}
-  <div class="wrap course">
+  {bright && <RoomBack lang={lang} room="learn-hall" />}
+  <div class="wrap course" data-fade>
     {/* The emblem struck for this area, on the same rail the about page's
         medal hangs from and caught the same way — see PageEmblem, and
         --emb-h in bright.css, where the size the three of them share lives. */}
     {bright && <PageEmblem src="assets/ui/learn-emblem.webp" w={710} h={720} />}
 
-    <header class:list={['course__head', bright && 'course__head--emb']}>
+    <header class:list={['course__head', bright && 'hall-head']}>
       {/* the eyebrow is gone: it read '諾貝爾講座博物館' over a page inside the
           諾貝爾講座博物館, which is the museum's name said twice */}
       <h1>{t('learn.title')}</h1>
-      <p class="course__blurb">{t('learn.blurb')}</p>
+      {/* the three stages, said once in gold at the door of the room they
+          belong to — the sub-title the owner asked for */}
+      <p class="course__stages">{t('learn.stages')}</p>
     </header>
+    <p class="course__blurb hall-note"><span>{t('learn.blurb')}</span></p>
 
     <section class="course__sec" aria-labelledby="cy">
       <h2 id="cy">{t('learn.cycleTitle')}</h2>
-      <p class="course__note">{t('learn.cycleNote')}</p>
+      {/* Two thirds of the column, at the owner's word. It is the one long
+          paragraph on the page and at full width it read as body copy for a
+          section that is really four plates. */}
+      <p class="course__note course__note--two-thirds">{t('learn.cycleNote')}</p>
       <ol class="cycle" role="list">
         {cycle.map((c) => (
           <li data-step={c.n}>
@@ -207,16 +213,13 @@ const cycle = [
   :global(html[data-theme='bright']) .course { padding-block-start: 3.4rem; }
   .course { padding-block: clamp(2rem, 5vw, 3.5rem); max-inline-size: 62rem; }
   .course__head h1 { font-size: var(--step-3); color: var(--cream); margin-block-start: .3rem; }
-  /* Beside the emblem, and set so the blurb's first line lands on its foot —
-     the same lockup the about page makes with its medal, and the same
-     arithmetic; see .abt__hero there and --emb-h in bright.css. */
-  .course__head--emb {
-    padding-block-start: calc(var(--lock-bottom) + 1.15 * var(--emb-h)
-                              - var(--step-3) * 1.28 - 3.4rem);
-    padding-inline-start: calc(var(--emb-h) + clamp(1.1rem, 3vw, 2.2rem));
-  }
-  @media (max-width: 40rem) {
-    .course__head--emb { padding-inline-start: calc(var(--emb-h) + clamp(0.7rem, 2.6vw, 1.4rem)); }
+  /* the emblem, the centring and the indent are .hall-head's, in bright.css */
+  .course__stages {
+    margin: 0;
+    font-size: var(--step-0);
+    letter-spacing: 0.16em;
+    text-indent: 0.16em;
+    color: var(--gold);
   }
 
   /* ---------- the step before the three ----------
@@ -255,6 +258,8 @@ const cycle = [
     padding-block-start: 1.4rem; border-block-start: 1px solid var(--line);
   }
   .course__note { font-size: var(--step--1); color: var(--muted); margin-block-start: .8rem; }
+  .course__note--two-thirds { max-inline-size: 66%; }
+  @media (max-width: 48rem) { .course__note--two-thirds { max-inline-size: none; } }
 
   .cycle { display: grid; gap: .8rem; padding: 0; margin-block-start: 1.2rem; }
   @media (min-width: 52rem) { .cycle { grid-template-columns: repeat(4, 1fr); } }

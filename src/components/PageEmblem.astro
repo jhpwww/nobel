@@ -51,6 +51,7 @@ const { src, srcSmall, w, h } = Astro.props;
     pointer-events: none;
   }
   .emb__piece {
+    isolation: isolate;
     position: absolute;
     inset-block-start: 0;
     inset-inline-start: 0;
@@ -70,13 +71,28 @@ const { src, srcSmall, w, h } = Astro.props;
            - var(--gr-stick));
   }
   :global(html[data-motion='off']) .emb__piece { transition: none; }
-  .emb__pic { display: block; line-height: 0; }
+  .emb__pic { position: relative; display: block; line-height: 0; }
+  /* The field of light the emblem stands in — the same one the museum's name
+     has on the hall, re-centred on a disc. It replaces a dark drop-shadow,
+     which over a photograph read as a faint square behind the picture rather
+     than as a shadow under an object. */
+  .emb__pic::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: -34%;
+    pointer-events: none;
+    background: radial-gradient(closest-side,
+      rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.62) 52%,
+      rgba(255, 255, 255, 0.22) 74%, transparent 100%);
+  }
   .emb__pic img {
     block-size: var(--emb-h);
     inline-size: auto;
     max-inline-size: 100%;
-    /* struck metal: it sits on the page rather than in it */
-    filter: drop-shadow(0 10px 22px rgba(70, 52, 16, 0.28));
+    /* struck metal sits ON the page: a shadow tight enough to be an edge
+       rather than a ground */
+    filter: drop-shadow(0 2px 4px rgba(70, 52, 16, 0.22));
   }
 </style>
 

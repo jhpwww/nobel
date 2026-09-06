@@ -245,15 +245,6 @@ html[data-theme='bright'] {
      below, both landing within a pixel of 29. */
   --emb-h: calc(var(--gr-art) * 0.4374);
   --emb-k: 0.2;
-  /* Where the introduction room's laurel hangs inside its frame. The frame's
-     own top is --gr-head-h - --gr-art - --gr-floor and the piece is then
-     lifted half a drum; the laurel wants to begin 15% of its own height below
-     the museum's mark, and this is what is left. On the root rather than on
-     the laurel, because the rule that catches it is on the laurel's PARENT
-     and a custom property only ever reaches downward. On a desktop it is the
-     1.1841 x --gr-art it was, exactly. */
-  --wreath-pad: calc(var(--lock-bottom) + var(--gr-art) + 0.5 * var(--gr-drum)
-                     + 0.15 * var(--emb-h) + var(--gr-floor) - var(--gr-head-h));
 }
 @media (max-width: 40rem) {
   html[data-theme='bright'] {
@@ -286,6 +277,128 @@ html[data-theme='bright'] {
        with the page behind their feet. */
     --gr-room-h: calc(100vw * 941 / 1672);
   }
+}
+
+/* ============================================================
+   THE MUSEUM'S NAME, ON ITS PLATE
+   ============================================================
+   The name folds into a mark in the corner of every room — the hall's own
+   lockup does it on a scroll, and every other page wears the mark from the
+   first frame. Both stand on the same plate: a marble entablature between two
+   Corinthian columns, which is the wall of the room the name is cut into.
+
+   Sized off the NAME rather than off its box. On the hall the lockup is a
+   grid whose two folded lines keep their width at zero height, so a plate
+   sized off it sits visibly off to one side; and on a page the mark's box is
+   the name plus its own padding, which is not the same thing in the two
+   languages.
+
+   The file is trimmed to the plate's own edges first — its canvas carries
+   half its height again in transparent margin, and stretched whole to a box
+   the plate would be drawn at half the size of the thing it is the ground
+   for. Trimmed it is 2132x360, and its marble panel runs from 4.3% to 95.0%
+   across between the two columns and very nearly the full height. So a box
+   1.22 times the name's width leaves the panel wider than the name on each
+   side and the picture's own 5.92:1 decides the height. Stretched to the box
+   with 100% 100% rather than `contain`, which would letterbox the columns and
+   leave the panel off-centre inside it.
+   ============================================================ */
+html[data-theme='bright'] :is(.bh__lockup[data-small] .bh__title, .gr__lock-name) {
+  position: relative;
+  isolation: isolate;
+}
+html[data-theme='bright'] :is(.bh__lockup[data-small] .bh__title, .gr__lock-name)::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset-inline-start: 50%;
+  inset-block-start: 50%;
+  translate: -50% -50%;
+  inline-size: 122%;
+  aspect-ratio: 2132 / 360;
+  background: var(--plate) center / 100% 100% no-repeat;
+  pointer-events: none;
+}
+/* English runs a third longer than the Han name, and the plate is sized off
+   it — at the same step the plate came out 90px tall and its crown went off
+   the top of the window. One step down holds the two languages to the same
+   object. */
+html[lang='en'][data-theme='bright'] :is(.bh__lockup[data-small] .bh__title, .gr__lock-name) {
+  font-size: var(--step--1);
+}
+
+/* And the tablet the mark used to wear is gone with it: a plate is the
+   ground now, so the frosted rectangle behind it was a second ground showing
+   at its corners. */
+html[data-theme='bright'] .gr__lock {
+  background: none;
+  backdrop-filter: none;
+  box-shadow: none;
+  border-radius: 0;
+  /* the plate is taller than the tablet was, so the mark hangs where the
+     hall's own folded name hangs */
+  inset-block-start: 1.5rem;
+  padding: 0.34rem 0.85rem;
+}
+html[data-theme='bright'] .gr__lock:hover { filter: brightness(1.04); }
+
+/* ============================================================
+   THE HEAD OF A ROOM THAT IS NOT A PRIZE ROOM
+   ============================================================
+   The index of films, the learning area, the introduction room, the colophon
+   and the record page all open the same way and were opening it four
+   different ways: the emblem beside the name, the name beside it, and one
+   sentence saying what the room is.
+
+   Three rules, and they are the owner's:
+
+     · the whole title block is centred on the emblem's own height, rather
+       than hanging from its top edge
+     · the sentence under it is set from the title's left edge, not the
+       page's, and is smaller and tighter than the title because it is a
+       caption
+     · and it follows the title immediately — the introduction room had the
+       height of a prize room's header between the two
+
+   The emblem itself is PageEmblem, and its size is --emb-h; the block starts
+   where the emblem starts, which is 15% of its own height below the museum's
+   mark.
+   ============================================================ */
+html[data-theme='bright'] .hall-head {
+  margin-block-start: calc(var(--lock-bottom) + 0.15 * var(--emb-h) - 3.4rem);
+  min-block-size: var(--emb-h);
+  display: grid;
+  align-content: center;
+  justify-items: start;
+  row-gap: 0.24rem;
+  padding-inline-start: var(--hall-indent);
+  margin-block-end: 0;
+}
+html[data-theme='bright'] .hall-note {
+  margin-block: 0.85rem clamp(1.6rem, 4vw, 2.6rem);
+  padding-inline-start: var(--hall-indent);
+  max-inline-size: none;
+  font-size: var(--step-0);
+  line-height: 1.75;
+  color: var(--muted);
+}
+html[data-theme='bright'] .hall-note > span { display: block; max-inline-size: 52ch; }
+html[data-theme='bright'] {
+  --hall-indent: calc(var(--emb-h) + clamp(1.1rem, 3vw, 2.2rem));
+}
+@media (max-width: 40rem) {
+  html[data-theme='bright'] { --hall-indent: calc(var(--emb-h) + clamp(0.7rem, 2.6vw, 1.4rem)); }
+}
+
+/* The band every page dissolves into at the top of the window — see
+   src/scripts/pagefade.ts, which writes the two stops. */
+html[data-theme='bright'] [data-fade] {
+  -webkit-mask-image: linear-gradient(to bottom,
+    transparent var(--fade-a, -9999px), #000 var(--fade-b, -9998px));
+  mask-image: linear-gradient(to bottom,
+    transparent var(--fade-a, -9999px), #000 var(--fade-b, -9998px));
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
 }
 
 /* ---------- ground ---------- */
@@ -348,6 +461,35 @@ html[data-theme='bright'] .topbar--ghost .topbar__nav::before {
     rgba(255, 255, 255, 0.19) 64%,
     rgba(255, 255, 255, 0.06) 84%,
     transparent 100%);
+}
+
+/* ---------- every key in the bar stands on the same plate ----------
+   A cream tablet with a gold rule and notched corners, struck for this bar.
+   The kit's glass is still what shapes and sizes a key — the layout, the
+   type, the hover, the press — but its skin is a nine-slice photograph of
+   glass, and two materials in one bar is one too many. So the skin's two
+   layers come off and the plate goes on as the key's own ground.
+
+   Trimmed to the plate's own edges first, for the same reason as the name
+   plate: the file's canvas is a third taller than the plate, and stretched
+   whole the gold rule landed across the middle of the label rather than
+   round it. Trimmed it is 1197x503 with its cream panel from 7.2% to 95.4%
+   across and 11.9% to 79.3% down, so at 100% 100% a key's own padding lands
+   inside the rule at every width the five labels take in either language. */
+html[data-theme='bright'] .topbar__nav :is(.topbar__key, .topbar__menu, .museum-glass-btn--nav) {
+  background: var(--key-plate) center / 100% 100% no-repeat;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+  color: var(--museum-ink);
+}
+html[data-theme='bright'] .topbar__nav :is(.topbar__key, .topbar__menu, .museum-glass-btn--nav)::before,
+html[data-theme='bright'] .topbar__nav :is(.topbar__key, .topbar__menu, .museum-glass-btn--nav)::after {
+  display: none;
+}
+/* the plate is a picture, so pressing it lifts and brightens the picture */
+html[data-theme='bright'] .topbar__nav :is(.topbar__key, .museum-glass-btn--nav):hover {
+  filter: brightness(1.04);
 }
 
 html[data-theme='bright'] .topbar--ghost .topbar__nav a {
@@ -472,15 +614,18 @@ html[data-theme='bright'] .topbar--ghost .topbar__nav a.topbar__lang:focus-visib
   }
   /* A column of four is as tall as the room behind it. Compacted, it clears
      the pieces when they withdraw onto the hall's floor. */
-  html[data-theme='bright'] .topbar--ghost .topbar__nav a {
+  html[data-theme='bright'] .topbar--ghost .topbar__nav a,
+  html[data-theme='bright'] .topbar--ghost .topbar__nav .ss__key {
     padding-inline: 0.6rem;
     padding-block: 0.26rem;
     /* --step--1, stated. This asked for --step--2, which was undeclared until
        now and therefore inherited: the keys have been at 15.3px all along and
        were sized and approved at it. The real --step--2 is 10.8px on a phone,
        which is too small for the only labels on the screen that say where you
-       are going; one step up is the honest reading of what the rule meant. */
-    font-size: var(--step--1);
+       are going; one step up is the honest reading of what the rule meant.
+       And one more at the owner's word: on a plate rather than on glass the
+       label is the only thing in the key, so it can afford the room. */
+    font-size: var(--step-0);
   }
   html[data-theme='bright'] .topbar--ghost .topbar__nav a.topbar__lang { padding: 0.15rem 0.1rem 0.3rem !important; }
 
@@ -545,7 +690,7 @@ html[data-theme='bright'] .topbar--ghost .topbar__nav a.topbar__lang:focus-visib
       visibility 0.34s var(--ease);
   }
   html[data-theme='bright'][data-nav-open] .topbar--ghost .topbar__nav .topbar__key {
-    block-size: 31.8px;
+    block-size: 36px;
     margin-block-start: 0;
     opacity: 1;
     visibility: visible;
@@ -575,9 +720,14 @@ html[data-theme='bright'] .topbar--ghost .topbar__nav a.topbar__lang:focus-visib
      same height, or the column has a taller key at the top of it — and it
      takes it whether the column is open or shut, so nothing resizes as it
      opens. */
+  /* 31.8px carried a 15.3px label on glass, where the label is the whole
+     key. On the plate it is not: the cream panel is half the picture's
+     height, so a label that filled the key now sits on the gold rule. 36px
+     puts an 18px line inside an 18px panel — and the column of six is still
+     shorter than the room behind it. */
   html[data-theme='bright'] .topbar--ghost .topbar__nav .topbar__menu,
   html[data-theme='bright'][data-nav-open] .topbar--ghost .topbar__nav .topbar__key {
-    min-height: 31.8px;
+    min-height: 36px;
   }
 }
 

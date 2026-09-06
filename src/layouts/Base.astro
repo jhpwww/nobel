@@ -41,7 +41,9 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
      here rather than hard-coded. See scripts/build-glass-frame.py. -->
 <html lang={HTML_LANG[lang]} data-theme={bright ? 'bright' : undefined}
       data-home={segments.length === 0 ? '' : undefined}
-      style={bright ? `--glass-frame: url('${asset('assets/ui/glass-frame.webp')}')` : undefined}>
+      style={bright ? `--glass-frame: url('${asset('assets/ui/glass-frame.webp')}');`
+                    + ` --plate: url('${asset('assets/ui/name-plate.webp')}');`
+                    + ` --key-plate: url('${asset('assets/ui/key-plate.webp')}')` : undefined}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -110,6 +112,12 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
         chrome on top of it. Both are unconditional now and each decides for
         itself whether it has anything to do. */}
     <script>import '../scripts/roomfade';</script>
+    {/* every page in the bright museum dissolves before it reaches the top of
+        the window; the module does nothing where nothing is marked */}
+    <script>
+      import { pageFade } from '../scripts/pagefade';
+      pageFade();
+    </script>
 
     {bare && (
       <header class="topbar topbar--ghost">
@@ -130,16 +138,17 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
                 and there it is named for what pressing it does rather than for
                 where it goes — on a page that is already a room in the museum,
                 '博物館大廳' reads as a place and '回到大廳' as a door. */}
-            {/* The way into everything, first among the keys: a museum with
-                31 laureates in it needs a name to be findable without knowing
-                which prize gave it. It carries the id the fold key points at,
-                because it is now the first thing that folds. See SiteSearch. */}
-            <SiteSearch lang={lang} only="key" />
             {segments.length > 0 && <a class="topbar__key museum-glass-btn museum-glass-btn--nav" href={home(lang)}><span>{t('nav.backHall')}</span></a>}
-            <a class="topbar__key museum-glass-btn museum-glass-btn--nav" href={browse(lang)}><span>{t('nav.all')}</span></a>
+            {/* the id the fold key points at goes on the first key that is on
+                every page: the hall has no '回到大廳' of its own */}
+            <a class="topbar__key museum-glass-btn museum-glass-btn--nav" id="topbar-keys" href={browse(lang)}><span>{t('nav.all')}</span></a>
             <a class="topbar__key museum-glass-btn museum-glass-btn--nav" href={learn(lang)}><span>{t('nav.learn')}</span></a>
             <a class="topbar__key museum-glass-btn museum-glass-btn--nav" href={gallery(lang, INTRO)}><span>{t('nav.prize')}</span></a>
             <a class="topbar__key museum-glass-btn museum-glass-btn--nav" href={about(lang)}><span>{t('nav.about')}</span></a>
+            {/* Last of the keys, at the owner's word: the four doors are what
+                the bar is for, and a search field is what you reach for when
+                none of them is the answer. See SiteSearch. */}
+            <SiteSearch lang={lang} only="key" />
             {/* The flag never folds. It is the one control a reader may want
                 before anything else on the page makes sense to them. */}
             <a class="topbar__lang" href={other.href} lang={other.lang === 'zh' ? 'zh-Hant-TW' : 'en'}
@@ -209,12 +218,12 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
             </span>
           </a>
           <nav class="topbar__nav" aria-label={t('nav.hall')}>
-            <SiteSearch lang={lang} only="key" />
             <a class="museum-glass-btn museum-glass-btn--nav" href={home(lang)}><span>{t('nav.backHall')}</span></a>
             <a class="museum-glass-btn museum-glass-btn--nav" href={browse(lang)}><span>{t('nav.all')}</span></a>
             <a class="museum-glass-btn museum-glass-btn--nav" href={learn(lang)}><span>{t('nav.learn')}</span></a>
             <a class="museum-glass-btn museum-glass-btn--nav" href={gallery(lang, INTRO)}><span>{t('nav.prize')}</span></a>
             <a class="museum-glass-btn museum-glass-btn--nav" href={about(lang)}><span>{t('nav.about')}</span></a>
+            <SiteSearch lang={lang} only="key" />
             <a class="topbar__lang" href={other.href} lang={other.lang === 'zh' ? 'zh-Hant-TW' : 'en'}
                aria-label={LANG_LABEL[other.lang]} title={LANG_LABEL[other.lang]}>
               <LangFlag to={other.lang} />

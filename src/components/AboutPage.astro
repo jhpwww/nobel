@@ -19,8 +19,8 @@ const hostList = Object.entries(hosts);
 ---
 
 <Base lang={lang} title={t('about.title')} segments={['about']} bare={bright}>
-  {bright && <RoomBack lang={lang} />}
-  <div class="wrap-narrow about">
+  {bright && <RoomBack lang={lang} room="about-hall" />}
+  <div class="wrap-narrow about" data-fade>
     {/* The medal the project struck for itself: the bell tower and the palms
         inside a ring of the six prizes, NOBEL LAUREATE LECTURES round the top
         and NATIONAL TAIWAN UNIVERSITY round the foot.
@@ -32,7 +32,7 @@ const hostList = Object.entries(hosts);
         with the learning area; see PageEmblem. */}
     {bright && <PageEmblem src="assets/ui/medal.webp" srcSmall="assets/ui/medal-sm.webp" w={720} h={720} />}
 
-    <header class="abt__hero">
+    <header class="abt__hero hall-head">
       {/* Three lines, and the order is the page's own: what this room is, then
           whose it is, then what it is part of. The university line was leading
           — an eyebrow, in the way a magazine puts a section over an article —
@@ -48,10 +48,10 @@ const hostList = Object.entries(hosts);
     <span id="about-body" class="gr__anchor"></span>
     {lang === 'zh' ? (
       <div class="prose stack" style="--gap:1.2rem">
-        <p class="lede">
+        <p class="lede hall-note"><span>
           本站將近年由臺大參與或主辦的諾貝爾獎得主演講，收攏成為一座線上博物館，
           供大眾或學生瀏覽及自我學習，以擴展國際視野。
-        </p>
+        </span></p>
 
         <h2>諾貝爾獎在臺灣的回響</h2>
         <p>
@@ -107,11 +107,11 @@ const hostList = Object.entries(hosts);
       </div>
     ) : (
       <div class="prose stack" style="--gap:1.2rem">
-        <p class="lede">
+        <p class="lede hall-note"><span>
           This site gathers the Nobel laureate lectures that National Taiwan University
           hosted or took part in over recent years into one online museum, open to the
           public and to students to browse and learn from, and to widen the view.
-        </p>
+        </span></p>
 
         <h2>Taiwan and the Nobel legacy</h2>
         <p>
@@ -242,10 +242,8 @@ const hostList = Object.entries(hosts);
     row-gap: 0.28rem;
     justify-items: start;
     text-align: start;
-    padding-block-start: calc(var(--lock-bottom) + 1.15 * var(--emb-h)
-                              - var(--abt-two-lines) - 3.4rem);
-    padding-inline-start: calc(var(--emb-h) + clamp(1.1rem, 3vw, 2.2rem));
-    margin-block-end: clamp(1.8rem, 4vw, 2.6rem);
+    /* placement, indent and the centring on the emblem are .hall-head's, in
+       bright.css — the four rooms that are not prize rooms share one head */
   }
   .abt__uni {
     margin: 0;
@@ -271,9 +269,7 @@ const hostList = Object.entries(hosts);
      disc, and beside a heading at 390px it left four characters. That is a
      number now, --emb-h, and on a phone it is a fifth of the screen. Nothing
      else here has a phone value at all. */
-  @media (max-width: 40rem) {
-    .abt__hero { padding-inline-start: calc(var(--emb-h) + clamp(0.7rem, 2.6vw, 1.4rem)); }
-  }
+
 
   /* the first heading of the prose no longer needs to clear a bare h1 */
   .about .prose > h2:first-child { margin-block-start: 0; }

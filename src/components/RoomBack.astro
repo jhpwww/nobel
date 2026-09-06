@@ -15,14 +15,23 @@
 import { home, asset } from '../i18n/routing';
 import { useT, type Lang } from '../i18n/ui';
 
-interface Props { lang: Lang }
-const { lang } = Astro.props;
+interface Props {
+  lang: Lang;
+  /**
+   * Which room this page is read in. The hall is the museum's own; the index
+   * of films, the learning area and the colophon each have a room of their
+   * own now — same rotunda, differently dressed — so that walking between
+   * them is walking between rooms rather than reading four documents in one.
+   */
+  room?: string;
+}
+const { lang, room = 'bright-hall' } = Astro.props;
 const t = useT(lang);
 ---
 <div class="roomback" aria-hidden="true">
   <picture>
-    <source srcset={asset('media/bright-hall.webp')} type="image/webp" />
-    <img src={asset('media/bright-hall.jpg')} alt="" width="1672" height="941"
+    <source srcset={asset(`media/${room}.webp`)} type="image/webp" />
+    <img src={asset(`media/${room}.jpg`)} alt="" width="1672" height="941"
          fetchpriority="high" decoding="async" />
   </picture>
 </div>

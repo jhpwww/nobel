@@ -207,7 +207,8 @@ const still = (id: string, yt: string) =>
     .hr {
       --pane-w: 24cqw;
       --radius: 26cqw;
-      inset-block-start: 27%;
+      /* down with the row it turns behind — see --top in HallBright */
+      inset-block-start: calc(27% + 0.9 * 0.237 * var(--piece-h));
       perspective: 62cqw;
     }
     /* Stronger at the near side, not weaker. On a desktop the ring is one

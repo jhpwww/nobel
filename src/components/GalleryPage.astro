@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import LectureCard from './LectureCard.astro';
 import Sculpture from './Sculpture.astro';
 import Explore from './Explore.astro';
+import PageEmblem from './PageEmblem.astro';
 import ScrollCue from './ScrollCue.astro';
 import ExtLink from './ExtLink.astro';
 import { useT, type Lang } from '../i18n/ui';
@@ -135,10 +136,13 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
         page is read in, and it holds still while the page rises over it, which
         is exactly what the hall's own does. Inside the header it could only be
         absolute, and an absolute room scrolls away with its box. */}
+    {/* The introduction room has a room of its own — the same rotunda, dressed
+        for the prize itself rather than for one of its six. Every other prize
+        page stands in the hall, because that is where its sculpture stands. */}
     <div class="gr__room" aria-hidden="true">
       <picture>
-        <source srcset={asset('media/bright-hall.webp')} type="image/webp" />
-        <img src={asset('media/bright-hall.jpg')} alt="" width="1672" height="941"
+        <source srcset={asset(isIntro ? 'media/nobel-hall.webp' : 'media/bright-hall.webp')} type="image/webp" />
+        <img src={asset(isIntro ? 'media/nobel-hall.jpg' : 'media/bright-hall.jpg')} alt="" width="1672" height="941"
              fetchpriority="high" decoding="async" />
       </picture>
     </div>
@@ -156,20 +160,25 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
       <span class="gr__lock-name">{t('site.tagline')}</span>
     </a>
 
-    <header class="gr" data-cat={cat}>
+    {/* A prize room's head is a tall band with a sculpture standing in it.
+        The introduction room has no sculpture — it is about the prize itself,
+        not one of the six — so it takes the head every room that is not a
+        prize room takes: the emblem on a rail, the title block centred on it,
+        and the sentence that says what the room is directly underneath. See
+        .hall-head in bright.css. */}
+    {!isIntro && (
+    <header class="gr" data-cat={cat} data-fade>
       <div class="wrap gr__in">
         <div class="gr__id">
-          <h1 class="gr__title">
-            {isIntro ? <>{introA}<span class="conj">{introConj}</span>{introB}</> : title}
-          </h1>
-          {!isIntro && <p class="gr__title-en">{titleAlt}</p>}
+          <h1 class="gr__title">{title}</h1>
+          <p class="gr__title-en">{titleAlt}</p>
           <p class="gr__n">
-            {isIntro ? t('hall.nobelRoom') : recs.length > 0 ? t('hall.count', { n: nSittings }) : t('hall.soon')}
+            {recs.length > 0 ? t('hall.count', { n: nSittings }) : t('hall.soon')}
           </p>
         </div>
       </div>
-
     </header>
+    )}
 
     <ScrollCue lang={lang} href="#gr-body" />
 
@@ -181,24 +190,6 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
         of its own and is pulled back up over the room by the piece's own
         height, so the piece stands on the floor of the photograph until the
         museum's name catches it. */}
-    {/* The introduction room has no sculpture — it is about the prize itself,
-        not about one of the six — and it stood with an empty floor beside its
-        title while every other room had something on it. The laurel takes that
-        place: the same rail, the same size, the same rest and the same catch
-        into a mark. Its centre is open, so what is inside the wreath is the
-        rotunda seen through it, which is a better thing to put there than
-        anything that could have been drawn in. */}
-    {bright && isIntro && (
-      <div class="gr__rail" aria-hidden="true">
-        <div class="gr__piece">
-          <span class="bh__art gr__wreath">
-            <img src={stamp('assets/ui/wreath.webp')} alt="" width="638" height="640"
-                 fetchpriority="high" decoding="async" />
-          </span>
-        </div>
-      </div>
-    )}
-
     {piece && (
       <div class="gr__rail" aria-hidden="true">
         <div class="gr__piece">
@@ -256,7 +247,7 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
       job — it was on .about, which is only most of the page — so it is one
       ground here instead, and the room is wiped by the page rising over it
       rather than scrolled away with the header. */}
-  <div class="gr__sheet">
+  <div class="gr__sheet" data-fade>
   <span id="gr-body" class="gr__anchor"></span>
 
   {meta && (
@@ -326,21 +317,26 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
       and how one is decided. */}
   {isIntro && (
     <div class="wrap np">
+      <PageEmblem src="assets/ui/wreath.webp" w={638} h={640} />
+      <header class="hall-head" data-cat={cat}>
+        <h1 class="gr__title np__title">{introA}<span class="conj">{introConj}</span>{introB}</h1>
+        <p class="gr__n np__n">{t('hall.nobelRoom')}</p>
+      </header>
       {lang === 'zh' ? (
-        <p class="np__lede">
+        <p class="np__lede hall-note"><span>
           諾貝爾獎不是一座獎，是六座。它們出自同一份遺囑、同一筆基金，
           卻由四個互不隸屬的機構分別評選，每年 12 月 10 日同時頒出。
           這一頁說的是這座獎本身：它從哪裡來，包含哪些領域，一百多年來累積了什麼，
           以及一座獎是怎麼決定的。
-        </p>
+        </span></p>
       ) : (
-        <p class="np__lede">
+        <p class="np__lede hall-note"><span>
           The Nobel Prize is not one prize but six. They come from a single
           will and a single fund, are decided by four institutions answerable
           to no common authority, and are handed over on the same day every
           year. This room is about the prize itself: where it came from, what
           it covers, what it has added up to, and how one is decided.
-        </p>
+        </span></p>
       )}
 
       {/* the sentence the whole thing rests on */}
@@ -542,32 +538,9 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
      fixed room paints over. */
   .gr__sheet { position: relative; background: var(--bg-0); }
 
-  /* ---------- the page dissolves before it reaches the top ----------
-   *
-   * The room is pinned behind the page, and a page that scrolls all the way to
-   * the top edge of the window covers the top of the photograph for good — the
-   * dome, the windows, the whole upper half of the room the visitor came in
-   * through. So the page stops short of it: everything above twice the height
-   * of the museum's mark is gone, and the band between is a gradient.
-   *
-   * A mask, because the page has to become transparent rather than be painted
-   * over: what is behind it is a photograph, and a white bar across the top of
-   * a photograph is exactly the thing being avoided.
-   *
-   * The two stops are in the element's own coordinates and are set by the
-   * script at the foot of this file, because a mask has no `fixed` attachment
-   * the way a background does and the band has to stay put in the WINDOW while
-   * the element slides under it. Off-element by default, so the page is whole
-   * before it has been scrolled and whole with no script at all. */
-  .gr,
-  .gr__sheet {
-    -webkit-mask-image: linear-gradient(to bottom,
-      transparent var(--fade-a, -9999px), #000 var(--fade-b, -9998px));
-    mask-image: linear-gradient(to bottom,
-      transparent var(--fade-a, -9999px), #000 var(--fade-b, -9998px));
-    -webkit-mask-repeat: no-repeat;
-    mask-repeat: no-repeat;
-  }
+  /* The page dissolves before it reaches the top of the window; the band and
+     its two stops are the museum's own now — see src/scripts/pagefade.ts and
+     [data-fade] in bright.css. */
   /* The introduction room has no lectures and no statistics — its four cards
      are the whole page. With the heading gone (see Explore) they need the
      breathing room a section heading would have given them, and the room above
@@ -664,80 +637,6 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
       -0.4rem;
   }
   :global(html[data-motion='off']) .gr__piece { transition: none; }
-  /* The laurel is a flat emblem, not a model in a cage, so it fills the frame
-     rather than being fitted into 0.56 of it — and it is set on the floor of
-     the room the same way the drums are, by its own foot rather than by its
-     box's. */
-  /* ---------- the introduction room's laurel ----------
-   * Hung from the museum's mark rather than centred in the frame the six
-   * sculptures use. The relationship asked for is a plain one — the wreath
-   * begins 15% of its own height below the mark — and the arithmetic that
-   * follows from it is only ugly because the frame it lives in is measured
-   * from the bottom of the header while the mark is measured from the top of
-   * the window.
-   *
-   *   wreath top  = --lock-bottom + 0.15 x wreath height
-   *   wreath height = 0.624 x --gr-art        (a fifth off the 78% it was)
-   *   frame top   = --gr-head-h - --gr-art - --gr-floor - 0.5 x --gr-drum
-   *
-   * Subtract the second from the first and the offset below is what is left.
-   * Checked at 1280x800 and 1440x900: the gap comes out at 28.5 and 31.5px,
-   * which is 15% of 190 and of 210. */
-  .gr__wreath {
-    display: grid;
-    justify-items: center;
-    align-items: start;
-    container-type: normal;      /* nothing inside is sized against it */
-    /* --wreath-pad is on the theme root in bright.css, not here: the rule
-       that catches the emblem is on .gr__piece, which is this element's
-       PARENT, and a custom property only ever reaches downward. Declared here
-       it resolved to nothing there and the caught laurel sat a fifth of a
-       header too low — the same trap the about page's medal fell into. */
-    padding-block-start: var(--wreath-pad);
-  }
-  /* Sized outright rather than as a share of the frame. The frame is portrait
-     and the laurel is square, so a percentage of the frame's HEIGHT was never
-     the picture's height — `object-fit: contain` letterboxed it inside the box
-     and the drawn wreath was whatever the frame's width allowed. Stating the
-     height means the 15% above and the alignment below are arithmetic on a
-     number that is actually on screen. 0.4374 is a fifth off what the width
-     used to allow: 0.8 x 0.545 x 640/638 of --gr-art. */
-  .gr__wreath img {
-    block-size: var(--emb-h);
-    inline-size: auto;
-    max-inline-size: 100%;
-    filter: drop-shadow(0 14px 26px rgba(70, 52, 16, 0.26));
-  }
-  /* The title rises to meet it: the second line's foot sits on the wreath's
-     foot, which is the one alignment that makes an emblem and a name read as
-     one lockup rather than as two things on a page. */
-  .gr[data-cat='nobel'] .gr__id {
-    /* the wreath's foot is --lock-bottom + 1.15 x its own height, and that is
-       where the second line's foot goes; 1.15 x --emb-h is the 0.503 x
-       --gr-art this was, on a screen where the two agree */
-    translate: 0 calc(var(--lock-bottom) + 0.2rem + 1.15 * var(--emb-h)
-                      + var(--gr-floor) - var(--gr-head-h));
-  }
-  /* and that second line is gold, which is what this museum signs with */
-  .gr[data-cat='nobel'] .gr__n { color: var(--gold); }
-  /* Caught, it rises again by a third of what it has become — a mark beside
-     the museum's name sits on the name's own line, not below it. */
-  .gr[data-cat='nobel'] ~ .gr__rail[data-pinned] .gr__piece,
-  .gr__rail[data-pinned] .gr__piece:has(.gr__wreath) {
-    translate:
-      calc(clamp(0.7rem, 2.2vw, 1.6rem) + var(--lock-w, 10.9rem) + 0.55rem
-           - max(1rem, (100vw - 76rem) / 2))
-      /* Level with the museum's mark, not above it.
-         The two are a pair on that line, so their centres are put on the same
-         line: half the mark's height down from its top edge, less half of what
-         the laurel becomes, less the rail's own stick — and less a fifth of
-         the padding that hangs the laurel inside its frame, because the piece
-         scales about its top-left corner and that padding scales with it. */
-      calc(0.62rem + var(--lock-h) / 2 - 0.5 * var(--emb-k) * var(--emb-h)
-           - var(--gr-stick)
-           - var(--emb-k) * var(--wreath-pad));
-  }
-
   .gr__piece .bh__art {
     /* The cage's ratio, which is not the hall's 1:2 — the two rooms frame the
        same model differently on purpose, the hall to fit six in a row and this
@@ -795,16 +694,6 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
        horizontal offset is the desktop's — measured off the name's own
        rendered width — and only the size is a phone's. */
     .gr__rail[data-pinned] .gr__piece { scale: var(--piece-back-k); }
-    /* the laurel is an emblem, not a sculpture: it is caught at the size
-       every emblem in the museum is caught at, so the mark beside the name is
-       one mark whichever door you came through */
-    .gr__rail[data-pinned] .gr__piece:has(.gr__wreath) { scale: var(--emb-k); }
-    /* and the introduction room's title is set in from the emblem rather than
-       from half a sculpture's frame, which is a 134px indent for a 78px
-       object */
-    .gr[data-cat='nobel'] .gr__in {
-      padding-inline-start: calc(var(--emb-h) + clamp(0.7rem, 2.6vw, 1.4rem));
-    }
     .gr__in { gap: 0.5rem; }
     .gr__title { font-size: var(--step-2); }
   }
@@ -822,23 +711,18 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
      Set wider than a page of prose and narrower than the museum's grids: one
      column of 42 characters or so for the reading, with the plates and the
      figures allowed the full width. */
-  .np {
-    padding-block: clamp(1.6rem, 4vw, 2.8rem) 0;
-    max-inline-size: 60rem;
-  }
-  .np__lede {
-    font-size: var(--step-1);
-    line-height: 1.95;
-    color: var(--cream);
-    max-inline-size: 46ch;
-    margin: 0;
-  }
+  /* 3.4rem, which is what every page in the bright museum opens with and what
+     .hall-head measures its own placement against */
+  .np { padding-block: 3.4rem 0; max-inline-size: 60rem; }
+  .np__title { font-size: var(--step-3); }
+  .np__n { margin-block-start: 0; }
+  /* type, colour and measure are .hall-note's, in bright.css */
 
   /* The will, set as an inscription rather than as a quotation: a rule down
      the side, the serif the museum keeps for the one place it speaks rather
      than labels, and no quotation marks — the attribution says what it is. */
   .np__will {
-    margin: clamp(2rem, 5vw, 3.2rem) 0 0;
+    margin: clamp(1rem, 3vw, 2rem) 0 0;
     padding-inline-start: clamp(1rem, 3vw, 2rem);
     border-inline-start: 2px solid var(--gold-orn, #b8862a);
     max-inline-size: 52ch;
@@ -1233,33 +1117,9 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
   const art = document.querySelector<HTMLElement>('.gr__piece .bh__art');
   const WIDE = matchMedia('(min-width: 48.0625rem)');
 
-  /* The fading band, in each element's own coordinates.
-     A mask cannot be attached to the window, so the stops move with the scroll
-     instead — two custom properties per element, written on a rAF, which the
-     compositor turns into one gradient texture rather than a repaint. The
-     offsets are read once and on resize, never per frame. */
-  const faders = [document.querySelector<HTMLElement>('.gr'),
-                  document.querySelector<HTMLElement>('.gr__sheet')].filter(Boolean) as HTMLElement[];
-  let offsets: number[] = [];
-  const measure = () => {
-    offsets = faders.map((el) => el.getBoundingClientRect().top + scrollY);
-  };
-  const paintFade = () => {
-    /* twice the museum's mark, which is the one piece of chrome that stands in
-       that band and therefore the thing the page must clear */
-    const band = (lock?.offsetHeight || 40) * 2;
-    faders.forEach((el, i) => {
-      const a = scrollY - offsets[i];
-      el.style.setProperty('--fade-a', `${a.toFixed(1)}px`);
-      el.style.setProperty('--fade-b', `${(a + band).toFixed(1)}px`);
-    });
-  };
-  measure();
-
   let ticking = false;
   const test = () => {
     ticking = false;
-    paintFade();
     if (rail) {
       const caught = WIDE.matches && art
         ? scrollY >= art.offsetHeight / 2
@@ -1274,9 +1134,7 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
     ticking = true;
     requestAnimationFrame(test);
   }, { passive: true });
-  addEventListener('resize', () => { measure(); test(); });
+  addEventListener('resize', test);
   WIDE.addEventListener('change', test);
-  /* the faces arrive after first paint and the mark is a different width in
-     the fallback face, which moves everything below it */
-  document.fonts?.ready.then(() => { measure(); test(); });
+  document.fonts?.ready.then(test);
 </script>

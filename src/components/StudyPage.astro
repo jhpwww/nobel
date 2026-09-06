@@ -36,8 +36,8 @@ const index = lectures.map((l) => ({
 ---
 
 <Base lang={lang} title={t('study.pageTitle')} segments={['study']} bare={bright}>
-  {bright && <RoomBack lang={lang} />}
-  <div class="wrap study" data-study-page data-index={JSON.stringify(index)}
+  {bright && <RoomBack lang={lang} room="learn-hall" />}
+  <div class="wrap study" data-fade data-study-page data-index={JSON.stringify(index)}
        data-ok-restore={t('study.restoreOk')} data-bad-restore={t('study.restoreBad')}
        data-confirm-clear={t('study.clearConfirm')}
        data-cat-names={JSON.stringify(catNames)}

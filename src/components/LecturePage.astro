@@ -106,7 +106,7 @@ const piece = bright ? {
       </picture>
     </div>
   )}
-  <header class="lec__head">
+  <header class="lec__head" data-fade>
       <div class="wrap lec__head-in">
         <div class="lec__crest" aria-hidden="true">
           {piece ? (
@@ -150,7 +150,7 @@ const piece = bright ? {
 
     {/* the page's own ground, so the fixed room is wiped by the page rising
         over it rather than showing through the words — see .gr__sheet */}
-    <div class="lec__sheet">
+    <div class="lec__sheet" data-fade>
     <span id="lec-body" class="gr__anchor"></span>
     <div class="wrap lec__body">
       <div class="lec__main stack" style="--gap:2.5rem">
