@@ -257,6 +257,20 @@ def sweep(url: str, seconds: float, det, rec, ref_vec, label: str):
     pool = [h for h in alive if h[1][3] >= NEAR * frames[h[0]].shape[0]]
     if len(pool) < len(alive):
         print(f'   {label} — {len(alive) - len(pool)} too distant, {len(pool)} near enough')
+
+    # Two of these recordings never cut closer than the whole stage: Queloz's
+    # and Ciechanover's. A distant face is allowed there, but only when the
+    # same person turns up across the length of the recording — someone
+    # standing at a lectern for an hour does; a portrait projected on a slide,
+    # which is the thing this is all guarding against, is up for two minutes
+    # and gone. Ten minutes of spread is the test.
+    if not pool and alive:
+        times = sorted(h[0] for h in alive)
+        if len(times) >= 3 and times[-1] - times[0] > 600:
+            pool = alive
+            print(f'   {label} — no close shot in the whole recording; taking the '
+                  f'best of {len(alive)} distant ones, spread over '
+                  f'{(times[-1] - times[0]) / 60:.0f} minutes')
     if not pool:
         return []
 
