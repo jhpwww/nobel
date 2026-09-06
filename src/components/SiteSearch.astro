@@ -240,12 +240,34 @@ const groups = { l: t('search.groupLaureate'), r: t('search.groupRoom'), p: t('s
     overflow: visible;
     color: var(--text);
   }
+  /* ---------- two museums, one drawer ----------
+     The plate takes the ground of whichever museum it opened in. Written as
+     three properties rather than as two copies of the panel, because
+     everything else about it — the ink, the rules, the marked row — is
+     already in tokens that both palettes define. The dark museum's own
+     search was white type on a white plate until this was here. */
+  .ss {
+    --ss-bg: color-mix(in srgb, var(--bg-1) 94%, transparent);
+    --ss-line: var(--line);
+    --ss-veil: rgba(12, 9, 6, 0.62);
+    --ss-key: rgba(255, 255, 255, 0.08);
+  }
+  :global(html[data-theme='bright']) .ss {
+    --ss-bg: rgba(255, 255, 255, 0.86);
+    --ss-line: rgba(20, 18, 16, 0.1);
+    --ss-veil: rgba(246, 243, 238, 0.5);
+    --ss-key: rgba(20, 18, 16, 0.06);
+  }
   .ss::backdrop {
     /* the room seen through frosted glass, not blacked out: this is a drawer
        over a museum, and the museum should still be there behind it */
-    background: rgba(246, 243, 238, 0.5);
+    background: var(--ss-veil, rgba(246, 243, 238, 0.5));
     backdrop-filter: blur(9px) saturate(1.25);
   }
+  /* ::backdrop does not inherit from the element it belongs to, so the veil
+     has to be stated for each museum on the pseudo-element itself */
+  :global(html[data-theme='bright']) .ss::backdrop { background: rgba(246, 243, 238, 0.5); }
+  :global(html:not([data-theme='bright'])) .ss::backdrop { background: rgba(12, 9, 6, 0.62); }
   .ss__panel {
     position: absolute;
     inset-inline: 0;
@@ -255,14 +277,13 @@ const groups = { l: t('search.groupLaureate'), r: t('search.groupRoom'), p: t('s
     max-block-size: min(76vh, 40rem);
     display: grid;
     grid-template-rows: auto auto auto minmax(0, 1fr) auto;
-    background: rgba(255, 255, 255, 0.86);
+    background: var(--ss-bg);
     backdrop-filter: blur(14px) saturate(1.5);
     border-radius: 0.9rem;
     box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.95),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.6),
-      0 2px 6px rgba(46, 58, 78, 0.08),
-      0 26px 60px -24px rgba(46, 58, 78, 0.55);
+      inset 0 0 0 1px var(--ss-line),
+      0 2px 6px rgba(20, 16, 10, 0.14),
+      0 26px 60px -24px rgba(20, 16, 10, 0.6);
     overflow: hidden;
   }
   /* it arrives; it does not appear */
@@ -278,7 +299,7 @@ const groups = { l: t('search.groupLaureate'), r: t('search.groupRoom'), p: t('s
     align-items: center;
     gap: 0.7rem;
     padding: 0.9rem 1rem 0.85rem 1.1rem;
-    border-block-end: 1px solid rgba(20, 18, 16, 0.1);
+    border-block-end: 1px solid var(--ss-line);
   }
   .ss__bar-ico { flex: none; color: var(--gold-orn, #b8862a); }
   .ss__in {
@@ -302,12 +323,12 @@ const groups = { l: t('search.groupLaureate'), r: t('search.groupRoom'), p: t('s
     block-size: 2rem;
     border: 0;
     border-radius: 50%;
-    background: rgba(20, 18, 16, 0.05);
+    background: var(--ss-key);
     color: var(--muted);
     cursor: pointer;
     transition: background 0.2s, color 0.2s;
   }
-  .ss__close:hover { background: rgba(20, 18, 16, 0.11); color: var(--cream); }
+  .ss__close:hover { filter: brightness(1.3); color: var(--cream); }
 
   /* ---------- the list ---------- */
   .ss__lede {
@@ -347,7 +368,7 @@ const groups = { l: t('search.groupLaureate'), r: t('search.groupRoom'), p: t('s
   .ss__g {
     align-self: stretch;
     border-radius: 2px;
-    background: rgba(20, 18, 16, 0.12);
+    background: var(--line-hi);
   }
   .ss__row[data-g='l'] .ss__g { background: var(--accent); }
   .ss__row[data-g='r'] .ss__g { background: var(--gold-orn, #b8862a); }
@@ -389,7 +410,7 @@ const groups = { l: t('search.groupLaureate'), r: t('search.groupRoom'), p: t('s
 
   /* the hand-off to the index of films is a different kind of thing from a
      hit, and is ruled off from them */
-  .ss__row--all { margin-block-start: 0.35rem; border-block-start: 1px solid rgba(20, 18, 16, 0.1); padding-block-start: 0.35rem; }
+  .ss__row--all { margin-block-start: 0.35rem; border-block-start: 1px solid var(--ss-line); padding-block-start: 0.35rem; }
   .ss__row--all .ss__n { font-family: inherit; font-size: var(--step--1); color: var(--accent); }
   .ss__row--all .ss__g { background: none; }
 
@@ -399,7 +420,7 @@ const groups = { l: t('search.groupLaureate'), r: t('search.groupRoom'), p: t('s
   .ss__hint {
     margin: 0;
     padding: 0.55rem 1.1rem 0.65rem;
-    border-block-start: 1px solid rgba(20, 18, 16, 0.1);
+    border-block-start: 1px solid var(--ss-line);
     font-size: var(--step--2);
     color: var(--muted-dim);
     display: flex;
@@ -416,8 +437,8 @@ const groups = { l: t('search.groupLaureate'), r: t('search.groupRoom'), p: t('s
     text-align: center;
     padding: 0.05em 0.3em;
     border-radius: 0.28rem;
-    background: rgba(20, 18, 16, 0.06);
-    box-shadow: inset 0 0 0 1px rgba(20, 18, 16, 0.11);
+    background: var(--ss-key);
+    box-shadow: inset 0 0 0 1px var(--ss-line);
     color: var(--muted);
   }
 

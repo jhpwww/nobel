@@ -548,6 +548,9 @@ html[data-theme='bright'] .topbar--ghost .topbar__nav a.topbar__lang:focus-visib
   html[data-theme='bright'][data-nav-open] .topbar--ghost .topbar__nav .topbar__key:nth-child(4) { transition-delay: 0.10s; }
   html[data-theme='bright'][data-nav-open] .topbar--ghost .topbar__nav .topbar__key:nth-child(5) { transition-delay: 0.14s; }
   html[data-theme='bright'][data-nav-open] .topbar--ghost .topbar__nav .topbar__key:nth-child(6) { transition-delay: 0.18s; }
+  /* a seventh: the search key leads the column now, so the last key on a page
+     that also carries 回到大廳 is the seventh child of the bar */
+  html[data-theme='bright'][data-nav-open] .topbar--ghost .topbar__nav .topbar__key:nth-child(7) { transition-delay: 0.22s; }
   /* the three bars turning into a cross is the same gesture and takes the same
      curve; the flag below the column moves with the keys rather than jumping */
   html[data-theme='bright'] .topbar--ghost .topbar__nav .topbar__lang {

@@ -24,6 +24,15 @@ const t = useT(lang);
     <a class="sp__course museum-glass-btn museum-glass-btn--nav" href={path(lang, 'learn')}><span>{t('study.forCourse')} →</span></a>
   </header>
 
+  {/* What this is, and where the rest of it lives. Four fields appeared under
+      a heading with no explanation at all, and the page that gathers them —
+      the one place a visitor can list, download, back up or delete what they
+      have written — was named only by a key in the corner. */}
+  <p class="sp__lede">{t('study.panelLede')}</p>
+  <p class="sp__manage">
+    <a href={path(lang, 'study')}>{t('study.panelManage')} →</a>
+  </p>
+
   <p class="sp__blocked" data-blocked hidden>{t('study.blocked')}</p>
 
   <div class="sp__steps">
@@ -42,43 +51,13 @@ const t = useT(lang);
     </div>
   </div>
 
-  <details class="sp__note" data-note-details>
-    <summary>
-      <span>{t('study.noteTitle')}</span>
-      <span class="sp__status" data-status data-done={t('study.noteDone')} data-todo={t('study.noteTodo')}></span>
-    </summary>
-
-    <p class="sp__hint">{t('study.noteHint')}</p>
-
-    <label class="sp__field">
-      <span class="sp__label">1. {t('study.fSummary')}</span>
-      <span class="sp__aid">{t('study.fSummaryAid')}</span>
-      <textarea data-field="summary" rows="4" placeholder={t('study.fSummaryPh')}></textarea>
-      <span class="sp__count" data-count="summary" data-tmpl={t('study.chars')}></span>
-    </label>
-
-    <label class="sp__field">
-      <span class="sp__label">2. {t('study.fReflection')}</span>
-      <span class="sp__aid">{t('study.fReflectionAid')}</span>
-      <textarea data-field="reflection" rows="4" placeholder={t('study.fReflectionPh')}></textarea>
-      <span class="sp__count" data-count="reflection" data-tmpl={t('study.chars')}></span>
-    </label>
-
-    <label class="sp__field">
-      <span class="sp__label">3. {t('study.fQuestion')}</span>
-      <span class="sp__aid">{t('study.fQuestionAid')}</span>
-      <textarea data-field="question" rows="3" placeholder={t('study.fQuestionPh')}></textarea>
-      <span class="sp__count" data-count="question" data-tmpl={t('study.chars')}></span>
-    </label>
-
-    <div class="sp__actions">
-      <button class="museum-glass-btn museum-glass-btn--nav" type="button" data-copy-note data-label={t('study.copyNote')} data-ok={t('study.copied')} data-fail={t('study.copyFail')}><span>{t('study.copyNote')}</span></button>
-      <span class="sp__saved" data-saved data-msg={t('study.saved')} data-fail={t('study.saveFail')}></span>
-    </div>
-  </details>
-
+  {/* 準備. Asked for before the lecture, so it is the first field on the page
+      — it used to sit under the viewing notes, which put the last stage of
+      the cycle above its first. */}
   <details class="sp__note">
-    <summary><span>{t('study.askTitle')}</span></summary>
+    <summary>
+      <span><b class="sp__stage" data-stage="prepare">{t('study.stagePrepare')}</b>{t('study.askTitle')}</span>
+    </summary>
     <p class="sp__hint">{t('study.askHint')}</p>
     <ul class="sp__crit">
       <li>{t('study.askC1')}</li>
@@ -91,6 +70,41 @@ const t = useT(lang);
     </label>
     <div class="sp__actions">
       <button class="museum-glass-btn museum-glass-btn--nav" type="button" data-copy-ask data-label={t('study.copyAsk')} data-ok={t('study.copied')} data-fail={t('study.copyFail')}><span>{t('study.copyAsk')}</span></button>
+    </div>
+  </details>
+
+  <details class="sp__note" data-note-details>
+    <summary>
+      <span><b class="sp__stage" data-stage="attend">{t('study.stageAttend')}</b><b class="sp__stage" data-stage="reflect">{t('study.stageReflect')}</b>{t('study.noteTitle')}</span>
+      <span class="sp__status" data-status data-done={t('study.noteDone')} data-todo={t('study.noteTodo')}></span>
+    </summary>
+
+    <p class="sp__hint">{t('study.noteHint')}</p>
+
+    <label class="sp__field">
+      <span class="sp__label"><b class="sp__stage" data-stage="attend">{t('study.stageAttend')}</b>1. {t('study.fSummary')}</span>
+      <span class="sp__aid">{t('study.fSummaryAid')}</span>
+      <textarea data-field="summary" rows="4" placeholder={t('study.fSummaryPh')}></textarea>
+      <span class="sp__count" data-count="summary" data-tmpl={t('study.chars')}></span>
+    </label>
+
+    <label class="sp__field">
+      <span class="sp__label"><b class="sp__stage" data-stage="reflect">{t('study.stageReflect')}</b>2. {t('study.fReflection')}</span>
+      <span class="sp__aid">{t('study.fReflectionAid')}</span>
+      <textarea data-field="reflection" rows="4" placeholder={t('study.fReflectionPh')}></textarea>
+      <span class="sp__count" data-count="reflection" data-tmpl={t('study.chars')}></span>
+    </label>
+
+    <label class="sp__field">
+      <span class="sp__label"><b class="sp__stage" data-stage="reflect">{t('study.stageReflect')}</b>3. {t('study.fQuestion')}</span>
+      <span class="sp__aid">{t('study.fQuestionAid')}</span>
+      <textarea data-field="question" rows="3" placeholder={t('study.fQuestionPh')}></textarea>
+      <span class="sp__count" data-count="question" data-tmpl={t('study.chars')}></span>
+    </label>
+
+    <div class="sp__actions">
+      <button class="museum-glass-btn museum-glass-btn--nav" type="button" data-copy-note data-label={t('study.copyNote')} data-ok={t('study.copied')} data-fail={t('study.copyFail')}><span>{t('study.copyNote')}</span></button>
+      <span class="sp__saved" data-saved data-msg={t('study.saved')} data-fail={t('study.saveFail')}></span>
     </div>
   </details>
 
@@ -109,6 +123,32 @@ const t = useT(lang);
   .sp__title { font-size: var(--step-1); color: var(--cream); }
   .sp__course { font-size: var(--step--1); color: var(--gold); text-decoration: none; }
   .sp__course:hover { color: var(--gold-bright); }
+
+  .sp__lede { font-size: var(--step--1); color: var(--muted); line-height: 1.85; margin: 0; max-inline-size: none; }
+  .sp__manage { margin: -.35rem 0 0; }
+  .sp__manage a {
+    font-size: var(--step--1); color: var(--accent); text-decoration: none;
+    border-block-end: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  }
+  .sp__manage a:hover { color: var(--gold-bright); border-block-end-color: var(--gold); }
+
+  /* Which of the three stages a field belongs to, said on the field itself.
+     The stages are the learning area's — see .cycle in LearnPage — and this
+     is the one place a visitor meets them while actually doing the work. */
+  .sp__stage {
+    display: inline-block;
+    font-weight: 400;
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    padding: 0.06rem 0.42rem;
+    margin-inline-end: 0.45rem;
+    border-radius: var(--radius-control);
+    vertical-align: 0.08em;
+    border: 1px solid color-mix(in srgb, var(--gold) 42%, transparent);
+    color: var(--gold);
+  }
+  .sp__stage[data-stage='attend'] { border-color: color-mix(in srgb, var(--accent) 40%, transparent); color: var(--accent); }
+  .sp__stage + .sp__stage { margin-inline-start: -0.25rem; }
 
   .sp__steps { display: grid; gap: .6rem; }
   .sp__pick { display: flex; align-items: flex-start; gap: .6rem; cursor: pointer; }
