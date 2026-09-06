@@ -36,8 +36,15 @@ interface Props {
   heading?: boolean;
   /** wrap the section in the page's own gutter (off where a page supplies it) */
   wrap?: boolean;
+  /**
+   * 'cards' — four tiles across, for a room whose whole page this is.
+   * 'panel' — the rail's own look, for a page that ends on it: one framed
+   *   block, the same border, ground and list the sidebar uses, laid out in
+   *   columns because at the foot of a page there is a page's width to use.
+   */
+  variant?: 'cards' | 'panel';
 }
-const { lang, items, note, heading = true, wrap = true } = Astro.props;
+const { lang, items, note, heading = true, wrap = true, variant = 'cards' } = Astro.props;
 const t = useT(lang);
 const Wrap = wrap ? 'div' : Fragment;
 ---
@@ -48,6 +55,21 @@ const Wrap = wrap ? 'div' : Fragment;
   <Wrap class={wrap ? 'wrap' : undefined}>
     {heading && <h2 id="xp-h" class="xp__h">{t('explore.title')}</h2>}
     {note && <p class="xp__note">{note}</p>}
+    {variant === 'panel' ? (
+      <div class="xp__panel">
+        <ul class="xp__links" role="list">
+          {items.map((l, i) => (
+            <li class:list={[i === 0 && 'xp__key']}>
+              <a href={l.url} target="_blank" rel="noopener noreferrer">{l.title}
+                <span class="xp__ext" aria-hidden="true"> ↗</span>
+                <span class="visually-hidden">{t('a11y.newTab')}</span>
+              </a>
+              {l.desc && <span class="xp__d">{l.desc}</span>}
+            </li>
+          ))}
+        </ul>
+      </div>
+    ) : (
     <ul class="cards" role="list">
       {items.map((l) => (
         <li>
@@ -60,6 +82,7 @@ const Wrap = wrap ? 'div' : Fragment;
         </li>
       ))}
     </ul>
+    )}
   </Wrap>
 </section>
 
@@ -108,4 +131,38 @@ const Wrap = wrap ? 'div' : Fragment;
     color: var(--muted-dim); font-family: var(--font-body);
   }
   .cards a:hover .cards__host { color: var(--accent); }
+
+  /* ---------- the panel: the rail, laid out sideways ----------
+     Same frame, same ground, same list and same highlighted first entry as
+     the sidebar on a prize room and a laureate's page — see .gh__aside in
+     GalleryPage. What differs is only the shape of the space it is in: a
+     sidebar is 17rem and stacks, and the foot of a page is the page's width,
+     so the list runs in columns instead. */
+  .xp__panel {
+    margin-block-start: 1.4rem;
+    border: 1px solid var(--line); border-radius: var(--radius);
+    background: var(--surface);
+    padding: 1.4rem 1.5rem 1.5rem;
+  }
+  .xp__links {
+    display: grid; gap: 1.1rem 1.8rem; padding: 0; margin: 0;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  }
+  .xp__links li { display: grid; gap: 0.15rem; align-content: start; }
+  .xp__links a {
+    font-size: var(--step-0); text-decoration: none;
+    border-block-end: 1px solid var(--line-hi); justify-self: start;
+  }
+  .xp__links a:hover { border-block-end-color: currentColor; }
+  .xp__ext { opacity: 0.6; }
+  .xp__d { font-size: var(--step--1); color: var(--muted-dim); line-height: 1.55; }
+  /* the first entry is the one the room would send you to if it could only
+     send you to one; the sidebar marks it the same way */
+  .xp__key {
+    padding: .7rem .85rem; margin-block-end: .3rem;
+    border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+    border-radius: var(--radius);
+    background: color-mix(in srgb, var(--accent) 9%, transparent);
+  }
+  .xp__key a { color: var(--cream); border-block-end-color: color-mix(in srgb, var(--accent) 60%, transparent); }
 </style>

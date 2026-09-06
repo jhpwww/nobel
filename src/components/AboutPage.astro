@@ -289,7 +289,11 @@ const hostList = Object.entries(hosts);
     translate:
       calc(clamp(0.7rem, 2.2vw, 1.6rem) + var(--lock-w, 10.9rem) + 0.55rem
            - var(--abt-piece-x, 0px))
-      calc(-0.4rem - 0.02916 * var(--gr-art));
+      /* level with the museum's mark — see the laurel's own note in
+         GalleryPage; the medal hangs straight off its rail with no padding
+         between, so the term for that is the only one missing here */
+      calc(0.62rem + var(--lock-h) / 2 - 0.04374 * var(--gr-art)
+           - var(--gr-stick));
   }
   :global(html[data-motion='off']) .abt__piece { transition: none; }
   .abt__medal { display: block; line-height: 0; }

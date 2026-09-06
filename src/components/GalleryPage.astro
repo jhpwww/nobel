@@ -524,7 +524,16 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
     translate:
       calc(clamp(0.7rem, 2.2vw, 1.6rem) + var(--lock-w, 10.9rem) + 0.55rem
            - max(1rem, (100vw - 76rem) / 2))
-      calc(-0.4rem - 0.02916 * var(--gr-art));
+      /* Level with the museum's mark, not above it.
+         The two are a pair on that line, so their centres are put on the same
+         line: half the mark's height down from its top edge, less half of what
+         the laurel becomes, less the rail's own stick — and less a fifth of
+         the padding that hangs the laurel inside its frame, because the piece
+         scales about its top-left corner and that padding scales with it. */
+      calc(0.62rem + var(--lock-h) / 2 - 0.04374 * var(--gr-art)
+           - var(--gr-stick)
+           - 0.2 * (var(--lock-bottom) + 1.1841 * var(--gr-art)
+                    + var(--gr-floor) - var(--gr-head-h)));
   }
 
   .gr__piece .bh__art {

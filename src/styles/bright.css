@@ -1604,6 +1604,25 @@ html[data-theme='bright'] .tool {
 html[data-theme='bright'] .tool:hover { transform: translateY(-1px); }
 
 
+/* ---------- the study panel's two keys ----------
+   These carry `museum-glass-btn--nav` AND a solid fill of their own from the
+   dark site — `background: var(--accent-block)` with white ink — so the kit
+   painted its champagne glass over TED red and what came out was a pale
+   pinkish orange with white type on it: 3.99:1 by the tokens, and far worse
+   than that once the glass had lightened the red underneath. Same fix as
+   .mat__link and the filter chips: the component's paint goes and the kit's
+   material stands on its own. Written with the kit's class in it because the
+   component's own rule is `.sp button` with Astro's scope on both compounds,
+   which weighs exactly the same. */
+html[data-theme='bright'] .sp button.museum-glass-btn {
+  background: none;
+  border: 0;
+  color: var(--museum-ink);
+  filter: none;
+}
+html[data-theme='bright'] .sp button.museum-glass-btn:hover { filter: none; }
+
+
 /* ---------- a tag is not a button ----------
    These describe the lecture; they filter nothing and lead nowhere. In a
    bordered rounded box beside a row of glass keys they read as chips that

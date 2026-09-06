@@ -105,12 +105,23 @@ const bright = process.env.THEME === 'bright';
 
   {/* The index of films ends where the prize pages end: pointing at the prize
       itself. Same four links, same treatment — see Explore.astro. */}
-  <Explore lang={lang} note={t('explore.noteAll')}
-           items={generalLinks.map((l) => ({
-             url: l.url,
-             title: lang === 'zh' ? l.zh : l.en,
-             desc: lang === 'zh' ? l.dzh : l.den,
-           }))} />
+  {/* The index of films ends the way the prize rooms and the laureate pages
+      do — the same panel, the same list, the same first entry marked — except
+      that a foot has a page's width to lay it out in rather than a 17rem rail.
+      It carries the prize's own four, plus the two that are about the series
+      rather than about one laureate. */}
+  <Explore lang={lang} note={t('explore.noteAll')} variant="panel"
+           items={[
+             ...generalLinks.map((l) => ({
+               url: l.url,
+               title: lang === 'zh' ? l.zh : l.en,
+               desc: lang === 'zh' ? l.dzh : l.den,
+             })),
+             { url: 'https://cge.ntu.edu.tw/cl_n_203079.html',
+               title: t('lec.ntuCge'), desc: t('lec.ntuCgeNote') },
+             { url: 'https://event.cw.com.tw/2026taiwanbridge/index.html',
+               title: t('lec.cwHub'), desc: t('lec.cwHubNote') },
+           ]} />
 
   {bright && <ScrollCue lang={lang} href="#results" />}
 </Base>
