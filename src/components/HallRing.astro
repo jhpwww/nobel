@@ -29,6 +29,7 @@
  */
 import { lectures } from '../data/catalog';
 import posters from '../data/posters.json';
+import { cutStill } from '../data/stills';
 import { asset } from '../i18n/routing';
 
 /* the six NTU lectures, oldest first, so the ring reads as the series ran */
@@ -49,7 +50,7 @@ const TILT  = [0.9, -1.6, 1.4, -0.8, 1.7, -1.6];    // degrees about the axis
 
 const frames = posters as Record<string, string>;
 const still = (id: string, yt: string) =>
-  `https://i.ytimg.com/vi/${yt}/${frames[id] ?? 'hqdefault'}.jpg`;
+  cutStill(yt) ?? `https://i.ytimg.com/vi/${yt}/${frames[id] ?? 'hqdefault'}.jpg`;
 ---
 
 <div class="hr" aria-hidden="true" data-hall-ring>

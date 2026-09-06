@@ -10,7 +10,7 @@
  *
  * Nothing is downloaded, re-hosted or proxied; playback is always YouTube's.
  */
-import videoPosters from '../data/video-posters.json';
+import { still } from '../data/stills';
 
 interface Props {
   id: string;                 // YouTube video id
@@ -35,13 +35,13 @@ const { id, title, kind = 'plain', label, note, playHint, eager = false } = Astr
  * recording: each laureate's official portrait is embedded and every face in
  * every frame YouTube samples is compared against it, and a frame is recorded
  * only if the person in it IS the laureate. See scripts/pick-posters.py.
- * Where no frame could be verified — seven recordings, where none of the four
- * frames YouTube offers contains the laureate at all — the entry is absent and
- * the uploader's pick stands, which is the honest fallback.
+ *
+ * Ten sessions cannot be settled that way at all — none of the four frames
+ * YouTube offers holds the laureate. For those the still is cut out of the
+ * recording itself and served from this site; see src/data/stills.ts, which
+ * puts the three sources in order.
  */
-const frame = (videoPosters as Record<string, string>)[id];
-const poster = `https://i.ytimg.com/vi/${id}/${frame ?? 'hqdefault'}.jpg`;
-const posterHi = `https://i.ytimg.com/vi/${id}/${frame === 'maxresdefault' || !frame ? 'maxresdefault' : frame}.jpg`;
+const { src: poster, hi: posterHi } = still(id);
 ---
 
 <figure class="vf" data-kind={kind}>

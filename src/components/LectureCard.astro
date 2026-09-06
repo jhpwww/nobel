@@ -3,6 +3,7 @@ import { useT, type Lang } from '../i18n/ui';
 import { lecture as lectureUrl } from '../i18n/routing';
 import { catName, videoCount, localDate, guideBadgeKey, type Lecture, catPrizeName } from '../data/catalog';
 import posters from '../data/posters.json';
+import { cutStill } from '../data/stills';
 
 interface Props { lang: Lang; rec: Lecture; featured?: boolean }
 const { lang, rec, featured = false } = Astro.props;
@@ -24,7 +25,10 @@ const catPrize = catPrizeName(cat, lang);
  */
 const frame = (posters as Record<string, string>)[rec.id];
 const posterVid = rec.video.lecture ?? rec.video.guide;
-const poster = `https://i.ytimg.com/vi/${posterVid}/${frame ?? 'maxresdefault'}.jpg`;
+/* a frame cut out of the recording wins over any of YouTube's — it exists
+   only where none of theirs held the laureate at all */
+const poster = cutStill(posterVid!)
+  ?? `https://i.ytimg.com/vi/${posterVid}/${frame ?? 'maxresdefault'}.jpg`;
 const date = localDate(rec.event.date, lang);
 const nVideos = videoCount(rec);
 ---
