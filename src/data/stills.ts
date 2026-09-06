@@ -17,6 +17,13 @@
  * for. See scripts/pick-posters.py for the verification and
  * scripts/cut-poster-frames.py for the cutting; both recognise rather than
  * detect, against the laureate's own official portrait.
+ *
+ * The 導讀 are not in either file and are not meant to be. What was asked for
+ * was the lectures and the interviews — the recordings where the picture
+ * standing for the session was the person who introduced it rather than the
+ * laureate. A guide video is the museum's own ninety seconds on a session and
+ * its cover was made for it, so all six fall straight through to (3), which
+ * is the uploader's pick and in their case the right one.
  */
 import videoFrames from './video-posters.json';
 import localStills from './local-posters.json';

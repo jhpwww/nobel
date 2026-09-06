@@ -69,6 +69,16 @@ const strip = (root) => `
   .vf__btn, .card__media { visibility: hidden !important; }
   /* fixed chrome stands over the page rather than under it, and each piece of
      it carries its own frosted tablet — it is not ground for anything */
+  /* And the band the page dissolves into at the top of the window, which is
+     the same case pushed to its limit: a fixed copy of the room laid OVER the
+     page, so that whatever is under it is on its way out of sight. Sampling
+     through it reports the room as the ground of a word that is three-
+     quarters gone — the 講座 badge on a card passing under the band read
+     1.11:1 against the marble, and 7.34:1 against its own gold fill, which is
+     the figure that is actually about whether anyone can read it. What a
+     cover hides is not a contrast question. See 'the band every page
+     dissolves into' in bright.css. */
+  [data-roomtop],
   .topbar, .pn, .bh__lockup, .gr__lock, .bh__cue,
   /* the prize's own piece: it is pinned over the page like the museum's name,
      and a gold statue is not a ground anything is read against */

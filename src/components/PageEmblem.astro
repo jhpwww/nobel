@@ -51,7 +51,11 @@ const { src, srcSmall, w, h, outside = false } = Astro.props;
   .emb {
     position: sticky;
     inset-block-start: var(--gr-stick);
-    z-index: 3;
+    /* Over the band the page dissolves into, which is 10. The emblem is the
+       one thing on these pages that never fades — before it is caught into a
+       mark and after — and the band would otherwise cover it exactly where it
+       comes to rest. Under every other piece of pinned chrome. */
+    z-index: 11;
     block-size: 1px;
     margin-block-start: calc(var(--lock-bottom) + 0.15 * var(--emb-h) - var(--emb-flow, 3.4rem));
     margin-block-end: calc(var(--emb-flow, 3.4rem) - var(--lock-bottom) - 0.15 * var(--emb-h) - 1px);

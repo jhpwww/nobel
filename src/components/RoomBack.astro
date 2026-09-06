@@ -35,6 +35,19 @@ const t = useT(lang);
          fetchpriority="high" decoding="async" />
   </picture>
 </div>
+{/* And again, over the page rather than under it, masked to the band at the
+    top of the window — this is what the page dissolves into, and it is the
+    room itself rather than an approximation of it. Same picture, same box,
+    same veil, so where it is solid it is indistinguishable from what stands
+    behind. See 'the band every page dissolves into' in bright.css. The
+    browser has the file already; this is a second draw of one decode. */}
+<div class="roomback" data-roomtop aria-hidden="true">
+  <picture>
+    <source srcset={asset(`media/${room}.webp`)} type="image/webp" />
+    <img src={asset(`media/${room}.jpg`)} alt="" width="1672" height="941"
+         decoding="async" />
+  </picture>
+</div>
 <a class="gr__lock" href={home(lang)} aria-label={t('nav.backHall')}>
   <span class="gr__lock-name">{t('site.tagline')}</span>
 </a>

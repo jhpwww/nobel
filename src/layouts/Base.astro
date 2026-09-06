@@ -112,12 +112,11 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
         chrome on top of it. Both are unconditional now and each decides for
         itself whether it has anything to do. */}
     <script>import '../scripts/roomfade';</script>
-    {/* every page in the bright museum dissolves before it reaches the top of
-        the window; the module does nothing where nothing is marked */}
-    <script>
-      import { pageFade } from '../scripts/pagefade';
-      pageFade();
-    </script>
+    {/* Every page in the bright museum still dissolves before it reaches the
+        top of the window, and there is no longer a script for it: the band is
+        a fixed copy of the room laid over the page with a static mask, which
+        the compositor keeps in place on its own. See 'the band every page
+        dissolves into' in bright.css. */}
 
     {bare && (
       <header class="topbar topbar--ghost">

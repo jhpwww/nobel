@@ -111,9 +111,16 @@ def main() -> None:
         # Every other recording this laureate appears in, verified the same
         # way. Their own page shows all of them, and until now every one of
         # them wore whatever the uploader had chosen.
+        #
+        # Except the 導讀. The owner asked for the lectures and the interviews
+        # and named neither the guide videos nor anything else; a 導讀 is the
+        # museum's own ninety-second introduction to a session, its cover is
+        # the cover somebody made for it, and a frame of the laureate cut out
+        # of the middle of one is not an improvement on that. It keeps the
+        # uploader's pick, which is what stills.ts falls back to when nothing
+        # is recorded here.
         others = [v for v in (
             lec['video'].get('lecture_ntu'),
-            lec['video'].get('guide'),
             *[s.get('id') for s in lec['video'].get('extra_sessions', [])],
             *[i.get('id') for i in lec.get('interviews', [])],
         ) if v]

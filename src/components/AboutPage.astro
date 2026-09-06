@@ -40,6 +40,13 @@ const hostList = Object.entries(hosts);
           lines under the name are gold, which is what this museum signs
           with. */}
       <h1 class="abt__name">{t('about.title')}</h1>
+      {/* The two gold lines are out of the BRIGHT museum, at the owner's
+          word — hidden rather than removed, because the dark museum is
+          preserved as it stands and its about page has carried them from the
+          start. In the daylight rooms both stand elsewhere on every page: the
+          name in the mark in the corner, the university at the head of this
+          page's own colophon. Same pattern as .browse__kinds, the other way
+          up. */}
       <p class="abt__uni">{t('site.university')}</p>
       <p class="abt__sub">{t('site.tagline')}</p>
       <p class="visually-hidden">{t('about.medalAlt')}</p>
@@ -254,16 +261,17 @@ const hostList = Object.entries(hosts);
     color: var(--gold);
   }
   .abt__sub {
-    /* the two gold lines are one signature: halved again, at the owner's
-       word, on top of the head's own halving */
     margin: -0.06rem 0 0;
     font-family: var(--font-han-serif);
     font-size: var(--step-0);
     letter-spacing: 0.12em;
     text-indent: 0.12em;
-    /* gold, like the line above it — the two together are the signature */
     color: var(--gold);
   }
+  /* and not in daylight — see the note in the markup */
+  :global(html[data-theme='bright']) .abt__uni,
+  :global(html[data-theme='bright']) .abt__sub { display: none; }
+
   /* The phone keeps the desktop's principle, which it did not before: the
      medal used to come back into the flow, sit centred over the heading and
      scroll away, so a phone had neither the lockup nor the catch. What made

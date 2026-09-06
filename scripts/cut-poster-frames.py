@@ -313,9 +313,10 @@ def targets(lectures: list, verified: dict) -> list[tuple[str, str, str, str]]:
     for lec in lectures:
         v, lid = lec['video'], lec['id']
         facts = lec['links'].get('nobel_facts', '')
+        # No 導讀 here either — see the note in pick-posters.py. A guide video
+        # keeps the cover it was made with.
         rows = [('lecture', v.get('lecture')),
-                ('lecture_ntu', v.get('lecture_ntu')),
-                ('guide', v.get('guide'))]
+                ('lecture_ntu', v.get('lecture_ntu'))]
         rows += [(f"extra:{s.get('label', '')}", s.get('id'))
                  for s in v.get('extra_sessions', [])]
         rows += [(f"interview:{i.get('source', '')}", i.get('id'))

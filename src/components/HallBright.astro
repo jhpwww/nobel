@@ -352,14 +352,58 @@ const PLATE = { w: 836, h: 470 };
     padding: 0.7rem 1.5rem 0.9rem 0;
     isolation: isolate;
     border-radius: 0.42rem;
-    transition: inset-block-start 0.55s var(--ease), inset-inline-start 0.55s var(--ease),
-                padding 0.55s var(--ease), background 0.4s var(--ease),
-                box-shadow 0.4s var(--ease);
+    transition: inset-block-start var(--swap) var(--ease),
+                inset-inline-start var(--swap) var(--ease),
+                padding var(--swap) var(--ease),
+                background var(--swap) var(--ease),
+                box-shadow var(--swap) var(--ease);
   }
-  .bh__lockup::before { transition: opacity 0.4s var(--ease); }
+  /* the halo belongs to the inscription and goes out as the plate comes in —
+     the two are a cross-fade, over the same half second the name shrinks in */
+  .bh__lockup::before { transition: opacity var(--swap) var(--ease); }
   .bh__lock-rule, .bh__uni, .bh__title-en, .bh__title {
-    transition: opacity 0.35s var(--ease), block-size 0.5s var(--ease),
-                margin 0.5s var(--ease), font-size 0.5s var(--ease);
+    transition: opacity var(--swap) var(--ease),
+                block-size var(--swap) var(--ease),
+                margin var(--swap) var(--ease),
+                font-size var(--swap) var(--ease),
+                letter-spacing var(--swap) var(--ease),
+                text-indent var(--swap) var(--ease),
+                /* the ink travels with the rest of it: gold-on-marble to
+                   brown-on-plate is a colour that can be interpolated, so it
+                   is, rather than being swapped at some instant */
+                color var(--swap) var(--ease),
+                text-shadow var(--swap) var(--ease);
+  }
+
+  /* ---------- one movement, in both directions ----------
+   *
+   * Two things happen when the hall is left behind: the inscription becomes
+   * small, and it becomes a different object — a name on a plate rather than
+   * four lines cut into a wall. They are one movement, at the owner's word:
+   * it shrinks INTO the mark and grows back OUT of it, and every property
+   * that differs between the two states travels the same half second on the
+   * same curve.
+   *
+   * That means all of it is interpolated and none of it is switched. The
+   * block travels to the corner and closes to one line; the type comes down
+   * from 48px to 17 and tightens its tracking as it goes; the ink walks from
+   * the marble's near-black to the plate's brown; and the halo the
+   * inscription stands in fades out over exactly the crossing where the plate
+   * fades in, so at every frame between the two there is one ground under the
+   * name rather than none or two. The plate is drawn at 150% of the name's
+   * own width, and the name is shrinking, so the plate shrinks with it and is
+   * the right size for whatever the name measures at that instant.
+   *
+   * Nothing here is scripted and nothing waits for anything: the script sets
+   * one attribute and the stylesheet does the rest, in whichever direction
+   * the attribute went.
+   */
+  .bh__lockup { --swap: 0.55s; }
+  /* less motion: the mark is simply there */
+  :global(html[data-motion='off']) .bh__lockup { --swap: 0s; }
+  :global(html[data-motion='off']) .bh__lockup,
+  :global(html[data-motion='off']) .bh__lockup :is(.bh__lock-rule, .bh__uni, .bh__title-en, .bh__title) {
+    transition: none;
   }
 
   /* Condensed, once the hall has been left behind.
@@ -575,8 +619,54 @@ const PLATE = { w: 836, h: 470 };
      * So the translate is left exactly as it is at rest — the step down the
      * floor the row is composed with — and only `transform` changes. The two
      * are separate properties and compose, which is what makes that possible.
+     *
+     * And now a walk up the floor with it, at the owner's word: two and a half
+     * of the piece's own drums, taken as the drum measures once it is far off
+     * rather than as it measures here. That distinction is the whole figure.
+     * A drum at full size is 0.237 of its frame — 92px at 1440 — and two and a
+     * half of those is 232px, which would stand the six in the dome. Two and a
+     * half of the FAR drum is 64px, and 64px is what carries the feet off the
+     * near floor and onto the horizon: the top step at the back of the room,
+     * level with the threshold of the far door. The row lands where it was
+     * always walking to.
+     *
+     * The figure is written inside `transform`, which the `scale: 1.1` of the
+     * step forward is applied to — the individual properties resolve
+     * translate, then rotate, then scale, then transform, so a length here is
+     * multiplied by 1.1 on its way to the screen. Which is exactly what is
+     * wanted: 2.5 x 0.26 x 0.237 x frame, times the 1.1, IS two and a half of
+     * the drum as it will then be seen.
+     *
+     * It is one property with the scale, so the rise and the shrink are one
+     * movement over the same second — the six get smaller as they go back,
+     * which is the only way a thing has ever walked away.
      */
-    transform: scale(0.26);
+    /* And it is held at the horizon, which is the one thing 2.5 drums must
+     * not walk past.
+     *
+     * 2.5 drums is 58.8px of screen at 1440x900 and the feet land on the top
+     * step at the back of the room to within four pixels — which is what
+     * makes it the right figure. But the step down the floor the row takes at
+     * rest is a clamp against the window's HEIGHT (--piece-drop: 43px at
+     * 1440x900, 16px at 1280x800), and the room's own depth shrinks with the
+     * window's width. At 1280 the same 2.5 drums carries the six 26px past the
+     * far step and stands them in the air against the back wall, which is the
+     * one thing the owner has already sent this back for.
+     *
+     * So: two and a half drums, or the distance to the horizon, whichever is
+     * the shorter. They are the same figure at 1440; at 1280 the horizon wins
+     * and the row stops at the door; at 1024 and below the drums win and the
+     * row is still short of it. Whichever binds, the six end up standing on
+     * something.
+     *
+     * The second term is the row's own arithmetic: the feet at rest are
+     * 1.1*0.26 of the way from the horizon back down to the floor, plus the
+     * step down, so that IS how far they have to go. Both terms are divided
+     * by the 1.1 the step forward applies to everything inside `transform`. */
+    --walk-drums: calc(2.5 * 0.26 * 0.237 * var(--frame-h));
+    --walk-door: calc((0.286 * (var(--floor) - var(--horizon)) + var(--piece-drop)) / 1.1);
+    --walk: min(var(--walk-drums), var(--walk-door));
+    transform: translateY(calc(-1 * var(--walk))) scale(0.26);
   }
 
   .bh__n {
@@ -810,13 +900,29 @@ const PLATE = { w: 836, h: 470 };
    * back where it started, then let go. The browser animates the rest.
    */
   const ROOM = matchMedia('(min-width: 48rem)');
-  /* One notch, not two. At 200px the page had already moved a screenful of
-     its own before the six withdrew, and what that reads as is the room
-     lagging behind the page rather than answering it. A wheel notch is 100px
-     nearly everywhere; 60 fires inside the first one and is still far enough
-     that a nudge does not trigger it. */
-  const WHEEL = 60;
-  const SHARE = 0.2;          // or a fifth of a phone's screen
+  /* ---------- when ----------
+   *
+   * Not a wheel notch and not a share of the screen. The cue is a thing that
+   * happens in the room: the reading comes up the page until it reaches the
+   * feet of the six, and that is the moment they step back — the owner's rule,
+   * and the only one of the three that has ever been about what is on the
+   * screen rather than about how far a mouse has been rolled.
+   *
+   * Both halves of it are constants, which is why no arithmetic runs on
+   * scroll. The pieces are on a fixed layer, so where their feet fall on the
+   * screen does not depend on how far the page has moved; the reading is in
+   * the flow, so where it begins down the document does not either. The
+   * distance between the two is the cue, once.
+   *
+   * A piece's foot is 95.7% of the way down its frame — the same figure the
+   * row is placed by, and the line the drums stand on. The frame's last 4% is
+   * the air a model is framed in, and the sculpture does not end there.
+   *
+   * The floor of 60px is not a second rule, it is a guard: on a phone the
+   * strip of figures already stands a finger's width under the second row of
+   * drums, so the measured cue there is 30-odd pixels and a nudge would fire
+   * it. One wheel notch is the least scroll anyone performs on purpose. */
+  const FLOOR = 60;
 
   const plinths = document.querySelector<HTMLElement>('.bh__plinths');
   const lockup = document.querySelector<HTMLElement>('.bh__lockup');
@@ -824,6 +930,42 @@ const PLATE = { w: 836, h: 470 };
   const pieces = [...document.querySelectorAll<HTMLElement>('.bh__piece')];
 
   let back: boolean | null = null;
+
+  /* the two constants, and the distance between them */
+  let feet = 0;               // the drums' feet, on the screen, at rest
+  let reading = 0;            // the top of the page's text, down the document
+  let ringCue = 0;            // and where the ring of stills goes out
+
+  function gauge() {
+    /* only while they are standing where they stand — once they have gone
+       back the measurement is of the far row, which is not what the rule is
+       about. The far state cannot be entered before the near one is measured,
+       so there is always a figure to hold. */
+    if (back !== true && pieces.length) {
+      feet = Math.max(...pieces.map((p) => {
+        const r = (p.querySelector('.bh__art') ?? p).getBoundingClientRect();
+        return r.top + 0.957 * r.height;
+      }));
+    }
+    const text = document.getElementById('more');
+    if (text) reading = text.getBoundingClientRect().top + scrollY;
+    /* The ring has a cue of its own, and it is a later one: the six withdraw
+       when the reading reaches their feet, but the ring turns in the air above
+       them and there is no reason for it to leave at the same moment. It goes
+       when the reading has climbed to the middle of the photograph — the
+       owner's rule — which is 360px at 1440x900 against the row's 97, so the
+       stills are still turning behind the first thing anybody reads.
+
+       The photograph, not the window: the plate is the picture's own frame and
+       carries its 1672:941, so half of it is a place in the room rather than a
+       share of a screen. */
+    const plate = document.querySelector('.bh__plate');
+    if (plate && reading) {
+      ringCue = Math.max(0, reading - 0.5 * plate.getBoundingClientRect().height);
+    }
+  }
+
+  const cue = () => (feet && reading ? Math.max(FLOOR, reading - feet) : FLOOR);
 
   /** carry each piece from where it was to where it now is */
   function flip(before: DOMRect[]) {
@@ -854,11 +996,10 @@ const PLATE = { w: 836, h: 470 };
     const before = animate && !wide ? pieces.map((p) => p.getBoundingClientRect()) : null;
     back = v;
     plinths.dataset.state = v ? 'back' : 'in';
+    /* one attribute, and the stylesheet crosses between the inscription and
+       the mark in whichever direction it went — see 'one movement, in both
+       directions' */
     lockup?.toggleAttribute('data-small', v);
-    /* the ring of stills belongs to the hall's first screen and goes with the
-       pieces — the room is fixed for the whole document, so left alone it
-       would turn behind the reading all the way down */
-    ring?.toggleAttribute('data-gone', v);
     /* the bar's keys are folded behind one while the pieces are at full size
        and open with them — the attribute is the only thing the two share, and
        the button in the bar sets the same one when it is pressed */
@@ -867,12 +1008,24 @@ const PLATE = { w: 836, h: 470 };
     if (before) flip(before);
   }
 
+  /* the ring is not the row and is decided separately — see gauge(). The room
+     is fixed for the whole document, so left alone it would turn behind the
+     reading all the way down. */
+  let ringGone: boolean | null = null;
+  function setRingGone(v: boolean) {
+    if (v === ringGone) return;
+    ringGone = v;
+    ring?.toggleAttribute('data-gone', v);
+  }
+
   function step(animate = true) {
-    setBack(scrollY >= (ROOM.matches ? WHEEL : innerHeight * SHARE), animate);
+    setBack(scrollY >= cue(), animate);
+    setRingGone(scrollY >= ringCue);
   }
 
   if (plinths) {
     /* whatever the page was restored at, the first state is simply the state */
+    gauge();
     step(false);
     let ticking = false;
     addEventListener('scroll', () => {
@@ -883,11 +1036,12 @@ const PLATE = { w: 836, h: 470 };
     /* crossing the width changes both the cue and the shape of the far state,
        so the row is put back and re-decided from scratch */
     /* the document's height changes with the window, and so does whether the
-       way on has anywhere left to point */
-    addEventListener('resize', () => step(false), { passive: true });
+       way on has anywhere left to point — and so do both ends of the cue */
+    addEventListener('resize', () => { gauge(); step(false); }, { passive: true });
     ROOM.addEventListener('change', () => {
       for (const p of pieces) { p.style.transition = 'none'; p.style.transform = ''; }
       back = null;
+      gauge();
       step(false);
       requestAnimationFrame(() => { for (const p of pieces) p.style.transition = ''; });
     });

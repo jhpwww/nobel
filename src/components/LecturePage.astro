@@ -106,6 +106,17 @@ const piece = bright ? {
       </picture>
     </div>
   )}
+  {/* the same room again, over the page and masked to the band at the top of
+      the window — see 'the band every page dissolves into' in bright.css */}
+  {bright && (
+    <div class="lec__room" data-roomtop aria-hidden="true">
+      <picture>
+        <source srcset={asset('media/bright-hall.webp')} type="image/webp" />
+        <img src={asset('media/bright-hall.jpg')} alt="" width="1672" height="941"
+             decoding="async" />
+      </picture>
+    </div>
+  )}
   <header class="lec__head" data-fade>
       <div class="wrap lec__head-in">
         <div class="lec__crest" aria-hidden="true">

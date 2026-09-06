@@ -146,6 +146,17 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
              fetchpriority="high" decoding="async" />
       </picture>
     </div>
+    {/* the same room again, over the page and masked to the band at the top of
+        the window — see 'the band every page dissolves into' in bright.css.
+        Immediately after the first, so every selector that reaches the room
+        through its siblings reaches this one the same way. */}
+    <div class="gr__room" data-roomtop aria-hidden="true">
+      <picture>
+        <source srcset={asset(isIntro ? 'media/nobel-hall.webp' : 'media/bright-hall.webp')} type="image/webp" />
+        <img src={asset(isIntro ? 'media/nobel-hall.jpg' : 'media/bright-hall.jpg')} alt="" width="1672" height="941"
+             decoding="async" />
+      </picture>
+    </div>
 
     {/* the museum's name, in the mark it folds into on the hall — and it is
         the way back, which is why the 'return to the hall' line under the
@@ -323,6 +334,10 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
     <div class="wrap np">
       <header class="hall-head" data-cat={cat}>
         <h1 class="gr__title np__title">{introA}<span class="conj">{introConj}</span>{introB}</h1>
+        {/* Out of the bright museum at the owner's word, and hidden rather
+            than removed: the dark museum is preserved as it stands. It said
+            what the room was in three words over a paragraph that says it in
+            forty, and in daylight the title is the door plate on its own. */}
         <p class="gr__n np__n">{t('hall.nobelRoom')}</p>
       </header>
       {lang === 'zh' ? (
@@ -730,9 +745,10 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
   /* 3.4rem, which is what every page in the bright museum opens with and what
      .hall-head measures its own placement against */
   .np { padding-block: 3.4rem 0; max-inline-size: 60rem; }
+  .np__n { margin-block-start: 0; color: var(--gold); letter-spacing: 0.16em; text-indent: 0.16em; }
+  :global(html[data-theme='bright']) .np__n { display: none; }
   .np__title { font-size: var(--step-3); }
   /* gold, like every other room's sub-line: the four doors sign the same way */
-  .np__n { margin-block-start: 0; color: var(--gold); letter-spacing: 0.16em; text-indent: 0.16em; }
   /* type, colour and measure are .hall-note's, in bright.css */
 
   /* The will, set as an inscription rather than as a quotation: a rule down

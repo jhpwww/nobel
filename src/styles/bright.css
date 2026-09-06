@@ -321,17 +321,30 @@ html[data-theme='bright'] {
    100% 100% rather than `contain`, which would letterbox the ornaments and
    leave the panel off-centre inside it.
    ============================================================ */
-html[data-theme='bright'] :is(.bh__lockup[data-small] .bh__title, .gr__lock-name) {
+/* In the hall the plate is cut for the name at every size and simply carried
+   at zero opacity until the mark is what the name is. It has to be there all
+   along: the plate is sized off the name, the name shrinks continuously into
+   the mark, and a ground that only appears at the end would be a ground
+   arriving at one size rather than growing into it. See 'one movement, in
+   both directions' in HallBright. */
+html[data-theme='bright'] :is(.bh__lockup .bh__title, .gr__lock-name) {
   position: relative;
   isolation: isolate;
 }
-html[data-theme='bright'] :is(.bh__lockup[data-small] .bh__title, .gr__lock-name)::before {
+html[data-theme='bright'] :is(.bh__lockup .bh__title, .gr__lock-name)::before {
   content: '';
   position: absolute;
   z-index: -1;
   inset-inline-start: 50%;
   inset-block-start: 50%;
-  translate: -50% -50%;
+  /* Up 4.3% of its own height, which is the name coming down inside it.
+     Centring the plate on the name's BOX is not centring it on the name: an
+     inline box is the font's ascent and descent, and a Han face spends more
+     of its descent on space than the glyphs use — measured on the rendered
+     mark, the ink sits 1.5px above the middle of a 35px plate, and every
+     figure in that ratio is a property of the face rather than of the size,
+     so a per cent of the plate holds at every step and in both languages. */
+  translate: -50% -54.3%;
   inline-size: 150%;
   aspect-ratio: 2136 / 342;
   background: var(--plate) center / 100% 100% no-repeat;
@@ -342,10 +355,20 @@ html[data-theme='bright'] :is(.bh__lockup[data-small] .bh__title, .gr__lock-name
    acanthus off the edge. 136% keeps the panel clear of the name and the
    ornament on the screen. */
 @media (max-width: 40rem) {
-  html[data-theme='bright'] :is(.bh__lockup[data-small] .bh__title, .gr__lock-name)::before {
+  html[data-theme='bright'] :is(.bh__lockup .bh__title, .gr__lock-name)::before {
     inline-size: 136%;
   }
 }
+/* The hall's plate: cut for the name at every size, and crossed in as the
+   inscription's own halo goes out — see 'one movement, in both directions' in
+   HallBright. It is drawn at 150% of the name's width, and the name is
+   shrinking under it the whole way, so it is the right size for whatever the
+   name measures at each frame. */
+html[data-theme='bright'] .bh__lockup .bh__title::before {
+  opacity: 0;
+  transition: opacity var(--swap, 0s) var(--ease);
+}
+html[data-theme='bright'] .bh__lockup[data-small] .bh__title::before { opacity: 1; }
 /* English runs a third longer than the Han name, and the plate is sized off
    it — at the same step the plate came out 90px tall and its crown went off
    the top of the window. One step down holds the two languages to the same
@@ -391,31 +414,60 @@ html[data-theme='bright'] .gr__lock:hover { filter: brightness(1.04); }
    where the emblem starts, which is 15% of its own height below the museum's
    mark.
    ============================================================ */
+/* The reserve the title block is centred inside, and it is not the emblem's
+   whole height any more.
+
+   The rule stays exactly what the owner set: the block is centred on the
+   emblem. What changed is how much empty room the block reserves under
+   itself. A grid centring its content inside --emb-h leaves the same slack
+   above and below — 35px at 1440 — and the slack BELOW is what the eye reads
+   as the gap between the title and the sentence under it. Halving that gap
+   by halving a margin does nothing: the margin was 6.7px of the 34.
+ 
+   So the reserve shrinks and the block moves down by half of what came off,
+   which leaves the centre exactly where it was: centre = top + reserve/2, and
+   top gains (emb-h - reserve)/2 as the reserve loses (emb-h - reserve). At
+   0.82 of the emblem the slack below is 17px rather than 34, which is the
+   owner's halving of the gap, measured on the two rooms that still carry a
+   sub-title; and the centring holds exactly for any head shorter than the
+   reserve, which is every one of the four in both languages. */
+html[data-theme='bright'] { --head-min: calc(var(--emb-h) * 0.82); }
 html[data-theme='bright'] .hall-head {
-  margin-block-start: calc(var(--lock-bottom) + 0.15 * var(--emb-h) - 3.4rem);
-  min-block-size: var(--emb-h);
+  margin-block-start: calc(var(--lock-bottom) + 0.15 * var(--emb-h) - 3.4rem
+                           + (var(--emb-h) - var(--head-min)) / 2);
+  min-block-size: var(--head-min);
   display: grid;
   align-content: center;
   justify-items: start;
-  /* halved: the sub-line belongs to the name above it, not beside it */
-  row-gap: 0.12rem;
+  /* halved, and then two thirds of that at the owner's word: the sub-line
+     belongs to the name above it, not beside it */
+  row-gap: 0.08rem;
   padding-inline-start: var(--hall-indent);
   margin-block-end: 0;
 }
 html[data-theme='bright'] .hall-note {
-  /* half the gap it had: the sentence explains the title and belongs under it */
-  margin-block: 0.42rem clamp(1.6rem, 4vw, 2.6rem);
+  /* half the gap it had, and half again — though the figure that governs this
+     distance is the head's own reserve above, not this margin */
+  margin-block: 0.21rem clamp(1.6rem, 4vw, 2.6rem);
   padding-inline-start: var(--hall-indent);
   max-inline-size: none;
   font-size: var(--step-0);
   line-height: 1.75;
   color: var(--muted);
-  /* the same field of light the museum's own labels carry over a photograph:
-     these rooms are read against marble, gold and window */
+  /* The same field of light the museum's own labels carry over a photograph:
+     these rooms are read against marble, gold and window.
+
+     Four layers, not three, and the first is opaque and tight. A field of
+     light lifts a line off a busy ground but it does not give it an edge, and
+     where this sentence crosses a column shaft or the dark mouth of a video
+     panel it was the ground that won. The tight layer is the same double
+     stroke the way on carries — see 'the way on carries its own edge' — and
+     the three wider ones behind it are the haze the owner asked for. */
   text-shadow:
-    0 0 3px rgba(255, 255, 255, 0.95),
-    0 0 9px rgba(255, 255, 255, 0.85),
-    0 0 18px rgba(255, 255, 255, 0.6);
+    0 0 2px rgba(255, 255, 255, 1),
+    0 0 4px rgba(255, 255, 255, 0.98),
+    0 0 10px rgba(255, 255, 255, 0.88),
+    0 0 20px rgba(255, 255, 255, 0.66);
 }
 /* Two thirds of the COLUMN, not of what is left of it after the indent — the
    note is set in from the title, so its own 100% is the column less that. */
@@ -433,16 +485,63 @@ html[data-theme='bright'] {
   html[data-theme='bright'] { --hall-indent: calc(var(--emb-h) + clamp(0.7rem, 2.6vw, 1.4rem)); }
 }
 
-/* The band every page dissolves into at the top of the window — see
-   src/scripts/pagefade.ts, which writes the two stops. */
-html[data-theme='bright'] [data-fade] {
+/* ============================================================
+   THE BAND EVERY PAGE DISSOLVES INTO
+   ============================================================
+   The page has to stop short of the top of the window: the room is pinned
+   behind it for the whole document, and a page that scrolls to the edge
+   covers the dome, the windows and the whole upper half of the photograph
+   the visitor came in through. So it is gone by one mark's height and has
+   been going since two and a half.
+
+   It was a mask on the page, with the two stops written from a scroll
+   handler because a mask has no `fixed` attachment. That is a race no script
+   can win. The compositor moves the page on its own thread; the handler runs
+   on the main one; and the mask is on an element several thousand pixels
+   tall, so every stop it is given repaints that whole layer. What the eye
+   saw was the top line rising at full strength and only then, at the end of
+   the movement, going faint — the page answering the scroll and the band
+   catching up afterwards.
+
+   So nothing is masked and nothing is computed. A copy of the room is laid
+   OVER the page instead — the same picture, the same box, the same veil,
+   pinned to the same place — and it is that copy which carries the ramp:
+   solid down to one mark, gone by two and a half. It is a fixed layer with a
+   static mask, which the compositor draws once and then simply keeps in
+   place. There is no scroll handler left to lag, and no page-sized repaint
+   to drop.
+
+   And it is the same picture: for a page pixel C over room pixel R, a mask
+   of alpha a gives a*C + (1-a)*R, and a cover of alpha 1-a gives exactly
+   that. The two are the same composite, arrived at from opposite sides.
+
+   Everything pinned stands above it — the bar at 50, the marks at 60, the
+   way on at 45, the page nav at 35, the room change at 30, and the emblem a
+   room hangs beside its title, which is lifted to 11 for this. The page
+   itself is 1. */
+html[data-theme='bright'] [data-roomtop] {
+  z-index: 10;
+  /* the ground behind the room's own picture, for the window too short to
+     hold the whole of it: `contain` letterboxes at the sides there, and what
+     shows through those gaps below is the page's own white */
+  background: var(--bg-0);
   -webkit-mask-image: linear-gradient(to bottom,
-    transparent var(--fade-a, -9999px), #000 var(--fade-b, -9998px));
+    #000 var(--fade-gone), transparent var(--fade-start));
   mask-image: linear-gradient(to bottom,
-    transparent var(--fade-a, -9999px), #000 var(--fade-b, -9998px));
+    #000 var(--fade-gone), transparent var(--fade-start));
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
 }
+html[data-theme='bright'] {
+  /* one mark's height, and two and a half of it — the owner's two figures */
+  --fade-gone: var(--lock-h);
+  --fade-start: calc(2.5 * var(--lock-h));
+}
+/* A mask made a stacking context of every page it was on, and a few things
+   inside a page — a tooltip, a lifted card — are positioned against it. The
+   mask is gone; the context it made is kept, so nothing inside a page
+   escapes into the chrome's own ordering. */
+html[data-theme='bright'] [data-fade] { isolation: isolate; }
 
 /* ---------- ground ---------- */
 html[data-theme='bright'] body {
@@ -553,10 +652,13 @@ html[data-theme='bright'] .topbar--ghost .topbar__nav a {
    width is its content. */
 /* A tenth larger than they were, at the owner's word: the plate is a picture
    with a rule drawn round the inside of it, and at 32.3px the label was
-   sitting on that rule rather than within it. */
+   sitting on that rule rather than within it. And a twentieth larger again —
+   37.3 x 0.66rem, the same 1.05 taken off both dimensions so the plate keeps
+   its own six-and-a-quarter-to-one and the label keeps its place inside the
+   rule. */
 html[data-theme='bright'] .topbar__nav :is(.topbar__key, .museum-glass-btn--nav) {
-  min-height: 35.5px;
-  padding-inline: 0.63rem;
+  min-height: 37.3px;
+  padding-inline: 0.66rem;
 }
 html[data-theme='bright'] .topbar--ghost .topbar__nav a:hover,
 html[data-theme='bright'] .topbar--ghost .topbar__nav a:focus-visible {
@@ -637,8 +739,11 @@ html[data-theme='bright'] .topbar--ghost .topbar__nav a.topbar__lang:focus-visib
     flex-direction: column;
     align-items: flex-end;
     /* two fifths of that again: the keys carry their own plate now, and the
-       space between them no longer has to do any separating */
-    row-gap: 0.035rem;
+       space between them no longer has to do any separating. And half of that
+       again at the owner's word — 0.28px between one plate and the next, which
+       is a hairline: what separates two keys here is the gold rule drawn round
+       each of them, not the air between. */
+    row-gap: 0.0175rem;
     column-gap: 0;
   }
   /* Half the gutter, for this bar only. .wrap holds every page's content
@@ -723,7 +828,7 @@ html[data-theme='bright'] .topbar--ghost .topbar__nav a.topbar__lang:focus-visib
     min-height: 0;
     block-size: 0;
     padding-block: 0;
-    margin-block-start: -0.035rem;
+    margin-block-start: -0.0175rem;
     opacity: 0;
     visibility: hidden;
     translate: 0 -0.5rem;
@@ -738,7 +843,7 @@ html[data-theme='bright'] .topbar--ghost .topbar__nav a.topbar__lang:focus-visib
       visibility 0.34s var(--ease);
   }
   html[data-theme='bright'][data-nav-open] .topbar--ghost .topbar__nav .topbar__key {
-    block-size: 39.6px;
+    block-size: 41.6px;
     margin-block-start: 0;
     opacity: 1;
     visibility: visible;
@@ -772,10 +877,12 @@ html[data-theme='bright'] .topbar--ghost .topbar__nav a.topbar__lang:focus-visib
      key. On the plate it is not: the cream panel is half the picture's
      height, so a label that filled the key now sits on the gold rule. 36px
      puts an 18px line inside an 18px panel — and the column of six is still
-     shorter than the room behind it. */
+     shorter than the room behind it. 41.6 now: the same twentieth the desktop
+     key takes, and with the gap between them down to a hairline the column of
+     six is no taller than it was at 39.6 with the old one. */
   html[data-theme='bright'] .topbar--ghost .topbar__nav .topbar__menu,
   html[data-theme='bright'][data-nav-open] .topbar--ghost .topbar__nav .topbar__key {
-    min-height: 39.6px;
+    min-height: 41.6px;
   }
 }
 

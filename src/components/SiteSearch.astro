@@ -240,6 +240,19 @@ const groups = { l: t('search.groupLaureate'), r: t('search.groupRoom'), p: t('s
     position: relative;
     isolation: isolate;
     background: none;
+    /* And nothing of the tablet left under it. `background: none` took the
+       kit's fill and the bar takes its nine-slice skin, but a glass button is
+       three things: the fill, the skin, and the blur-and-shadow that make it
+       glass. Those last two are properties of the BUTTON, not of a
+       pseudo-element, so they survived both — a 7px-rounded rectangle of
+       blurred room with a soft drop shadow, standing behind a capsule. That
+       is the rounded rectangle still showing. */
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: none;
+    /* and if anything of the kit's is ever drawn on the box again, it is
+       drawn as a capsule */
+    border-radius: 999px;
   }
   /* Drawn on ::after, and inset to match.
      ::before is the button kit's glass skin and the bar hides it — hides it
