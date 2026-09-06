@@ -294,13 +294,19 @@ html[data-theme='bright'] {
    languages.
 
    The file is trimmed to the plate's own edges first — its canvas carries
-   half its height again in transparent margin, and stretched whole to a box
-   the plate would be drawn at half the size of the thing it is the ground
-   for. Trimmed it is 2132x360, and its marble panel runs from 4.3% to 95.0%
-   across between the two columns and very nearly the full height. So a box
-   1.22 times the name's width leaves the panel wider than the name on each
-   side and the picture's own 5.92:1 decides the height. Stretched to the box
-   with 100% 100% rather than `contain`, which would letterbox the columns and
+   more than its own height again in transparent margin, and stretched whole
+   to a box the plate would be drawn at a third the size of the thing it is
+   the ground for. Trimmed it is 2136x342, six and a quarter to one, with an
+   acanthus at each end; its marble panel runs from 9.0% to 90.9% across and
+   14.1% to 84.9% down, both centred to within half a per cent — measured off
+   the file's own gold rule rather than guessed.
+
+   The panel is therefore 81.9% of the width and 70.8% of the height, which
+   makes it a shade wider per unit of height than a line of Han is. A box one
+   and a half times the name's width is what balances the two: the panel comes
+   out 180 x 25 for a 147 x 22 name, so the margin is a sixth of the name each
+   side and a third of the line above and below it. Stretched to the box with
+   100% 100% rather than `contain`, which would letterbox the ornaments and
    leave the panel off-centre inside it.
    ============================================================ */
 html[data-theme='bright'] :is(.bh__lockup[data-small] .bh__title, .gr__lock-name) {
@@ -314,8 +320,8 @@ html[data-theme='bright'] :is(.bh__lockup[data-small] .bh__title, .gr__lock-name
   inset-inline-start: 50%;
   inset-block-start: 50%;
   translate: -50% -50%;
-  inline-size: 122%;
-  aspect-ratio: 2132 / 360;
+  inline-size: 150%;
+  aspect-ratio: 2136 / 342;
   background: var(--plate) center / 100% 100% no-repeat;
   pointer-events: none;
 }
