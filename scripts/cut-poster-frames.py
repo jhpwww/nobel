@@ -44,7 +44,7 @@ import sys
 
 import cv2
 
-from facecheck import ALIVE, iou, matches, models, moved, reference, sharpness
+from facecheck import ALIVE, CUT, iou, matches, models, moved, reference, sharpness
 
 HERE = pathlib.Path(__file__).resolve().parent.parent
 LECTURES = HERE / 'src/data/lectures.json'
@@ -71,9 +71,30 @@ FLAGGED = {
 
 #: Where in the recording to look. Not the opening, which is the host and the
 #: introduction, and not the end, which is applause and an empty stage.
-FIRST, LAST, COARSE = 0.10, 0.92, 26
-#: and then either side of whatever the coarse pass liked best
-FINE_SPAN, FINE_STEP = 12.0, 2.0
+FIRST, LAST, COARSE = 0.08, 0.94, 40
+#: and then either side of whatever the coarse pass liked best. Around the
+#: best THREE shots rather than the single best one: a lecture that stays on a
+#: wide stage shot for an hour and cuts to the speaker three times gives one
+#: good moment in each of those three, and refining only around the highest
+#: score meant refining around whichever of them the sampling happened to
+#: catch first.
+FINE_SPAN, FINE_STEP, FINE_SHOTS = 14.0, 2.0, 3
+#: How much of the frame's height the laureate's face must fill for the frame
+#: to be a picture OF them rather than of the room they are in.
+#:
+#: Required, not preferred. Four of these lectures never cut closer than a
+#: wide shot of the whole stage, and in every one of them the face that
+#: recognition found was the laureate's own portrait — projected on the slide
+#: behind him, or printed on the poster beside him. Those pass the motion test
+#: because a projector flickers and a camera drifts, and they pass the
+#: same-box test because the slide is only up for two minutes. They do not
+#: pass this: a printed face in a wide auditorium shot is 4 to 6% of the frame
+#: and a speaker the camera is actually pointed at is 15 to 30%.
+#:
+#: A recording with nothing above this line gets no still and keeps whichever
+#: thumbnail it had, which is the honest answer — better than a picture of a
+#: slide with a photograph on it.
+NEAR = 0.08
 
 #: 16:9, the shape every poster slot on the site is cut to
 OUT_W, OUT_H = 1280, 720
@@ -180,9 +201,15 @@ def sweep(url: str, seconds: float, det, rec, ref_vec, label: str):
     if not live:
         return []
 
-    around = max(live, key=lambda h: h[2])[0]
-    for d in range(-int(FINE_SPAN / FINE_STEP), int(FINE_SPAN / FINE_STEP) + 1):
-        probe(around + d * FINE_STEP)
+    shots: list[float] = []
+    for t, box, sc, sim in sorted(live, key=lambda h: -h[2]):
+        if len(shots) >= FINE_SHOTS:
+            break
+        if all(abs(t - u) > 60 for u in shots):
+            shots.append(t)
+    for around in shots:
+        for d in range(-int(FINE_SPAN / FINE_STEP), int(FINE_SPAN / FINE_STEP) + 1):
+            probe(around + d * FINE_STEP)
     fixed = printed(seen)
     live = [h for h in seen if not any(iou(h[1], f) > 0.72 for f in fixed)]
     if not live:
@@ -204,20 +231,39 @@ def sweep(url: str, seconds: float, det, rec, ref_vec, label: str):
         if len(alive) >= 5 or checked >= 34:
             break
         checked += 1
-        nxt = frame_at(url, t + 0.5)
-        d = 99.0 if nxt is None else moved(frames[t], nxt, box)
-        state = 'printed' if d < ALIVE else ''
+        # Half a second, and a fifth if that lands past a cut. A whole change
+        # of shot moves every pixel in the box and says nothing about whether
+        # the face in it was a person — McDonald's lecture was decided by one
+        # such frame, and what it chose was the slide behind the stage with
+        # his own portrait on it.
+        d = None
+        for gap in (0.5, 0.2):
+            nxt = frame_at(url, t + gap)
+            if nxt is None:
+                continue
+            d = moved(frames[t], nxt, box)
+            if d <= CUT:
+                break
+        state = ('lost' if d is None or d > CUT else
+                 'printed' if d < ALIVE else '')
         print(f'   {label} {t / 60:5.1f}m  score {sc:.2f}  match {sim:.2f}  '
-              f'moved {d:5.2f} {state}')
-        if d >= ALIVE:
+              f'moved {-1 if d is None else d:5.2f} {state}')
+        if not state:
             alive.append((t, box, sc, sim))
     if not alive:
+        return []
+
+    # A picture of the laureate, not a picture of the room they are in.
+    pool = [h for h in alive if h[1][3] >= NEAR * frames[h[0]].shape[0]]
+    if len(pool) < len(alive):
+        print(f'   {label} — {len(alive) - len(pool)} too distant, {len(pool)} near enough')
+    if not pool:
         return []
 
     # A frame cut mid-pan is the right person, blurred. Sharpness is a tie
     # breaker rather than a term in the score: it separates two frames of the
     # same shot, and says nothing useful across different ones.
-    top = sorted(alive, key=lambda h: -h[2])[:6]
+    top = sorted(pool, key=lambda h: -h[2])[:6]
     top.sort(key=lambda h: -(h[2] + 0.06 * min(1.0, sharpness(frames[h[0]]) / 400.0)))
     return [(sc, sim, t, frames[t]) for t, box, sc, sim in top]
 

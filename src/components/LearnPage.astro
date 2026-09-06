@@ -223,7 +223,12 @@ const cycle = [
      Step 0 is a door rather than a stage, so it says so: the two ways into the
      collection are inside it, listed, and the plate is marked at its head. */
   .cycle > li[data-step='0'] { border-color: color-mix(in srgb, var(--gold) 40%, var(--line)); }
-  .cycle > li[data-step='0'] .cycle__n { background: var(--gold-orn, #b8862a); }
+  /* --gold-deep, not --gold-orn. The ornament gold is a rule and a mark
+     colour, not a fill: white on it measures 3.24:1, which is where this
+     museum's own contrast sweep found the worst ground in the building. The
+     deep gold takes white at better than 7:1 and still reads as a different
+     mark from the three steps after it. */
+  .cycle > li[data-step='0'] .cycle__n { background: var(--gold-deep); }
   .cycle__go, .ways { list-style: none; margin: .55rem 0 0; padding: 0; display: grid; gap: .5rem; }
   .cycle__go li, .ways li { display: grid; gap: .1rem; }
   .cycle__go a {

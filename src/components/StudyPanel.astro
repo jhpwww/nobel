@@ -124,6 +124,16 @@ const t = useT(lang);
   .sp__course { font-size: var(--step--1); color: var(--gold); text-decoration: none; }
   .sp__course:hover { color: var(--gold-bright); }
 
+  /* A ground of its own in the bright museum, rather than a tint over
+     whatever the page is over. The panel is a 6% red wash on a half-
+     transparent sheet on a photograph of a hall, and where the hall is warm
+     the smallest print in this box measured 4.40:1 — just under AA. Half a
+     sheet of white under the wash puts everything in the panel back on paper,
+     and it is a 40rem box rather than the page's ground, so nothing about the
+     room being visible through the page changes. */
+  :global(html[data-theme='bright']) .sp {
+    background: color-mix(in srgb, var(--accent) 5%, rgba(255, 255, 255, 0.62));
+  }
   .sp__lede { font-size: var(--step--1); color: var(--muted); line-height: 1.85; margin: 0; max-inline-size: none; }
   .sp__manage { margin: -.35rem 0 0; }
   .sp__manage a {

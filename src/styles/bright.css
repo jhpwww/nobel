@@ -55,8 +55,17 @@ html[data-theme='bright'] {
   /* --cream is the dark theme's brightest text; on paper that is the darkest */
   --cream: #1a1614;
   --text:  #2b2523;
-  --muted: #5c554e;
-  --muted-dim: #6e665e;
+  /* #5c554e until now — 6.9:1 on white, 4.40 over the warmest ground the hall
+     offers, which is the gold of a sculpture behind 60% glass. Two points
+     darker clears AA there. Same reasoning as --muted-dim below. */
+  --muted: #5a534c;
+  /* #6e665e until now, which is 5.9:1 on the page's own white and fine there.
+     It is not read on white: the pages in this museum are half-transparent
+     over a photograph of a hall, and the palest ink on the palest ground the
+     room offers measured 4.16:1 — the smallest print in the building, just
+     under AA. Four per cent darker clears it at 4.7 and is not a colour
+     anyone can tell from the old one. Measured by scripts/check-glass.mjs. */
+  --muted-dim: #665e56;
 
   /*
    * One colour for every hall. Six near-relatives of red carried no meaning —
@@ -1215,6 +1224,37 @@ html[data-theme='bright'] .after .feature__grid .feature__text {
   box-shadow: none;
 }
 html[data-theme='bright'] .after .feature__grid > .vf::after { display: none; }
+/* The pull-quote inside that pane, one shade deeper.
+   The pane is 60% white with saturate(1.6) behind it, and what is behind it
+   on the home page is the gold of a sculpture — so the ground under this one
+   paragraph comes out a warm cream at L 0.60, and the museum's red on it
+   measures 3.55:1. The type is 18.7px at weight 500, which is not WCAG's
+   'large' (that wants 18.66px BOLD), so it is held to 4.5. --red-deep on the
+   same ground is 5.0. Measured by scripts/check-glass.mjs, which walks the
+   rendered page rather than the tokens — no token describes a room. */
+/* ---------- red ink over the hall's own glass ----------
+   Everything in this strip stands on 55–60% white over the photograph, and
+   what is behind it there is gold: a sculpture, a lamp, the dome. The ground
+   under a word comes out a warm cream at L 0.60, and the museum's red on that
+   measures 3.5 to 4.1 — under AA for anything that is not large-scale type.
+   The same red on the page's own white is 5.94 and fine, which is why no
+   token comparison could ever have found this; scripts/check-glass.mjs walks
+   the rendered page instead, and these are its readings.
+
+   One line rather than a list of the elements: the token is redefined for the
+   strip, so everything that takes --accent as INK goes a shade deeper here
+   and nothing that takes --accent-block as a FILL changes at all. */
+/* [data-cat] as well as the strip itself: every card and every pane in here
+   carries the prize it belongs to, and global.css sets --accent from that on
+   the element — which is nearer to the type than the strip is, so a
+   declaration on .after alone reached nothing. In the bright museum all six
+   category colours are the same red anyway. */
+html[data-theme='bright'] .after,
+html[data-theme='bright'] .after [data-cat] { --accent: var(--red-deep); }
+/* And the same for the course's percentages, for the same reason: 23.7px at
+   weight 600 is not WCAG's 'large' (that wants 24px, or 18.66px at 700), so
+   they are held to 4.5 and the museum's red over the room measures 3.66. */
+html[data-theme='bright'] .marks__pct { color: var(--red-deep); }
 html[data-theme='bright'] .after .feature__grid .vf__btn {
   border-radius: 0.6rem;
   border-color: rgba(255, 255, 255, 0.85);

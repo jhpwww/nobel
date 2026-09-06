@@ -185,3 +185,9 @@ def moved(a: np.ndarray, b: np.ndarray, box: tuple) -> float:
 #: Below this, the face did not change between two frames half a second
 #: apart, which no living face manages.
 ALIVE = 2.6
+#: And above this the whole shot changed, so the comparison is between two
+#: different pictures and says nothing about the face in the first of them.
+#: A frame that cannot be judged is not used: the alternative is what happened
+#: on McDonald's lecture, where the one frame that 'moved' was a cut and the
+#: face it had recognised was a portrait on the slide behind the stage.
+CUT = 40.0

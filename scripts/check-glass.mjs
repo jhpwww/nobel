@@ -43,6 +43,7 @@ const PAGES = [
   { path: '/lectures/',         root: '.browse' },
   { path: '/learn/',            root: '.course' },
   { path: '/about/',            root: '.about' },
+  { path: '/study/',            root: '.study' },
   { path: '/en/gallery/physics/', root: '.gr__sheet' },
   { path: '/en/lecture/geim/',  root: '.lec__sheet' },
 ];
@@ -57,6 +58,13 @@ const PAGES = [
    type goes everywhere and only the measuring is scoped. */
 const strip = (root) => `
   *, .bh__intro * { color: transparent !important; }
+  /* and the ink a pseudo-element gives itself. \`*\` cannot reach it: a
+     ::before inherits colour and so goes transparent with its owner, but one
+     that DECLARES a colour keeps it, !important or not. The disclosure
+     triangle on the note panel's summary is such a one — red, drawn inside
+     the box of the paragraph under it, and reported as that paragraph's
+     ground. A marker is decoration, like a rule or a border. */
+  *::before, *::after { color: transparent !important; }
   img, picture, video, iframe, svg,
   .vf__btn, .card__media { visibility: hidden !important; }
   /* fixed chrome stands over the page rather than under it, and each piece of
@@ -70,6 +78,15 @@ const strip = (root) => `
   ${root} .section-h::after, ${root} .sec-h::after, ${root} .xp__h::after {
     display: none !important;
   }
+  /* A link underlined with a border draws that border INSIDE its own box, so
+     the sampler finds it and calls the link's own rule the link's ground.
+     This museum underlines with borders in a dozen places; the rule is
+     general rather than a list of them. */
+  ${root} a { border-color: transparent !important; }
+  /* And a heading's own mark: 延伸探索 and 2 個版本 carry a filled red square
+     before them, which is inside the heading's box and is the darkest thing
+     in it. A mark is a rule by another shape. */
+  ${root} :is(h1, h2, h3)::before { display: none !important; }
   astro-dev-toolbar { display: none !important; }`;
 
 const lum = (r, g, b) => {
@@ -84,8 +101,12 @@ const VIEWS = [
   { name: 'phone x3', viewport: { width: 390, height: 844 },  dsf: 3, mobile: true },
 ];
 
+/* WCAG 1.4.3: 4.5:1 for text, 3:1 for large-scale text */
+const AA = 4.5;
+const AA_LARGE = 3;
+
 const browser = await chromium.launch();
-let worst = { r: Infinity };
+let worst = { r: Infinity, margin: Infinity, need: 4.5 };
 
 for (const v of VIEWS) {
  for (const pg of PAGES) {
@@ -108,7 +129,15 @@ for (const v of VIEWS) {
   await page.evaluate((r) => {
     window.__root = r;
     for (const el of document.querySelectorAll(`${r} :is(h1,h2,h3,p,a,span,dt,dd,li)`)) {
-      el.dataset.ckInk = getComputedStyle(el).color;
+      const c = getComputedStyle(el);
+      el.dataset.ckInk = c.color;
+      /* WCAG's own definition of large-scale text, which carries a 3:1
+         threshold rather than 4.5: 18pt, or 14pt bold. In CSS pixels at the
+         default 96dpi that is 24px, or 18.66px at weight 700. Recorded here
+         with the ink, before the strip blanks either. */
+      el.dataset.ckBig = String(
+        parseFloat(c.fontSize) >= 24 ||
+        (parseFloat(c.fontSize) >= 18.66 && parseInt(c.fontWeight, 10) >= 700));
     }
   }, pg.root);
   await page.addStyleTag({ content: strip(pg.root) });
@@ -138,6 +167,7 @@ for (const v of VIEWS) {
         if (b.width < 8 || b.height < 8 || b.bottom < 0 || b.top > innerHeight) continue;
         out.push({ x: b.left, y: b.top, w: b.width, h: b.height,
                    ink: el.dataset.ckInk || '', tag: el.tagName,
+                   big: el.dataset.ckBig === 'true',
                    text: (el.textContent || '').trim().slice(0, 16) });
       }
       return out;
@@ -166,7 +196,14 @@ for (const v of VIEWS) {
       const m = /rgba?\((\d+),\s*(\d+),\s*(\d+)/.exec(b.ink || '');
       const tl = m ? lum(+m[1], +m[2], +m[3]) : fallback;
       const r = ratio(tl, darkL);
-      if (r < worst.r) worst = { r, dark, view: v.name, y, text: b.text, tag: b.tag, path: pg.path };
+      /* How far short of what this particular box needs, rather than how low
+         the ratio is: large-scale text is held to 3:1 and body to 4.5, so a
+         heading at 3.4 is fine while a caption at 3.6 is not, and ranking on
+         the raw ratio reported the wrong one as the worst. */
+      const need = b.big ? AA_LARGE : AA;
+      const margin = r - need;
+      if (margin < worst.margin)
+        worst = { r, need, margin, dark, view: v.name, y, text: b.text, tag: b.tag, path: pg.path };
     }
   }
   await page.close();
@@ -175,9 +212,8 @@ for (const v of VIEWS) {
 
 await browser.close();
 
-const AA = 4.5;
 console.log(`worst ground anywhere in the museum:`);
 console.log(`  ${worst.path}  ${worst.view}  at scroll ${worst.y}  <${worst.tag}> "${worst.text}"`);
 console.log(`  rgb(${worst.dark.join(',')})  ${worst.r.toFixed(2)}:1  ` +
-            `${worst.r >= AA ? 'ok' : 'FAILS AA (needs ' + AA + ':1)'}`);
-process.exit(worst.r >= AA && !process.exitCode ? 0 : 1);
+            `${worst.margin >= 0 ? 'ok' : 'FAILS AA'} (needs ${worst.need}:1)`);
+process.exit(worst.margin >= 0 && !process.exitCode ? 0 : 1);
