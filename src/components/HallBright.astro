@@ -560,18 +560,23 @@ const PLATE = { w: 836, h: 470 };
      the row lands just clear of it, so the walk away is seen finishing rather
      than being wiped halfway through. */
   .bh__plinths[data-state='back'] {
-    transform: scale(0.26);
-    /* Feet on the threshold, not above it.
+    /* Scale, and nothing else.
      *
-     * Scaling about the vanishing point leaves them at horizon + k(floor -
-     * horizon) — the last 7% of the plate between the near floor and the far
-     * step — and this takes exactly that step, so the row lands ON the
-     * horizon rather than over it. It used to lift 7% of the whole plate,
-     * which was four times too far and left the six hanging 40px above the
-     * floor of the room they had walked into. The figure is not a taste: it
-     * is the scale times the distance between the two lines, both of which
-     * are measured in 'the hall's own measurements' above. */
-    translate: 0 calc(-0.26 * (0.7645 - 0.692) * var(--room-plate));
+     * Every version of this until now moved the row as well as shrank it, and
+     * that movement is what reads as the pieces travelling up the page with
+     * the scroll before they withdraw — the row leaves where it is standing,
+     * arrives somewhere else, and only then is small. It should stay where it
+     * stands and go back from there, which is what a scale about the room's
+     * own vanishing point already does: the feet climb toward the horizon and
+     * the row converges on the centre, both because that is what distance
+     * looks like in a one-point perspective, and neither because anything was
+     * translated.
+     *
+     * So the translate is left exactly as it is at rest — the step down the
+     * floor the row is composed with — and only `transform` changes. The two
+     * are separate properties and compose, which is what makes that possible.
+     */
+    transform: scale(0.26);
   }
 
   .bh__n {
@@ -615,12 +620,13 @@ const PLATE = { w: 836, h: 470 };
          that now turns on a phone too — see the media query in HallRing. The
          pieces do not get smaller for it: what binds their size here is the
          width of a third of the row, not the height left over, so the row
-         simply stands further forward in the picture.
-         And nine tenths of a drum further again, at the owner's word. The
-         drum is 23.7% of a piece's frame — the same reading the label on its
-         face is placed against — and --piece-h is the frame, which is set
-         from the width three across allows and so does not depend on this. */
+         simply stands further forward in the picture. */
       --top: calc(var(--band) * 0.36 + 0.9 * 0.237 * var(--piece-h));
+      /* The drum, as a length: 23.7% of a piece's frame — the same reading
+         the label on its face is placed against. --piece-h is that frame, and
+         it is set from the width three across allows, so nothing here depends
+         on anything that depends on it. */
+      --drum-h: calc(0.237 * var(--piece-h));
       /* Narrow enough that the overrun below has somewhere to go. The row is
          centred, so each end piece hangs 0.15 of a column past the row's edge;
          at the full width that hung 24px off the screen and cut 生理學或醫學
@@ -701,7 +707,10 @@ const PLATE = { w: 836, h: 470 };
        so the top of a frame holding a short piece — the dove, the quill — is
        empty; this takes that emptiness out from under the first row's captions
        and opens the space between the bottom drums and the figures below. */
-    .bh__piece:nth-child(n + 4) { margin-block-start: -3.4rem; }
+    /* And the second row of three comes down nine tenths of a drum, at the
+       owner's word — the first row stays where it is, so this is the
+       overlap giving way rather than the whole row moving. */
+    .bh__piece:nth-child(n + 4) { margin-block-start: calc(-3.4rem + 0.9 * var(--drum-h)); }
 
     /* The name is cut into the drum here too — see 'one drum, one label' in
        plinth.css. What stays under the piece is the count alone, which is not
