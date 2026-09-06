@@ -370,19 +370,35 @@ html[data-theme='bright'] .hall-head {
   display: grid;
   align-content: center;
   justify-items: start;
-  row-gap: 0.24rem;
+  /* halved: the sub-line belongs to the name above it, not beside it */
+  row-gap: 0.12rem;
   padding-inline-start: var(--hall-indent);
   margin-block-end: 0;
 }
 html[data-theme='bright'] .hall-note {
-  margin-block: 0.85rem clamp(1.6rem, 4vw, 2.6rem);
+  /* half the gap it had: the sentence explains the title and belongs under it */
+  margin-block: 0.42rem clamp(1.6rem, 4vw, 2.6rem);
   padding-inline-start: var(--hall-indent);
   max-inline-size: none;
   font-size: var(--step-0);
   line-height: 1.75;
   color: var(--muted);
+  /* the same field of light the museum's own labels carry over a photograph:
+     these rooms are read against marble, gold and window */
+  text-shadow:
+    0 0 3px rgba(255, 255, 255, 0.95),
+    0 0 9px rgba(255, 255, 255, 0.85),
+    0 0 18px rgba(255, 255, 255, 0.6);
 }
-html[data-theme='bright'] .hall-note > span { display: block; max-inline-size: 52ch; }
+/* Two thirds of the COLUMN, not of what is left of it after the indent — the
+   note is set in from the title, so its own 100% is the column less that. */
+html[data-theme='bright'] .hall-note > span {
+  display: block;
+  max-inline-size: calc((100% + var(--hall-indent)) * 2 / 3);
+}
+@media (max-width: 48rem) {
+  html[data-theme='bright'] .hall-note > span { max-inline-size: none; }
+}
 html[data-theme='bright'] {
   --hall-indent: calc(var(--emb-h) + clamp(1.1rem, 3vw, 2.2rem));
 }
@@ -508,9 +524,12 @@ html[data-theme='bright'] .topbar--ghost .topbar__nav a {
    becomes 77.6. The English labels are longer, so the same padding takes 11%
    off them rather than 15 — a per cent of a box cannot be set on a box whose
    width is its content. */
+/* A tenth larger than they were, at the owner's word: the plate is a picture
+   with a rule drawn round the inside of it, and at 32.3px the label was
+   sitting on that rule rather than within it. */
 html[data-theme='bright'] .topbar__nav :is(.topbar__key, .museum-glass-btn--nav) {
-  min-height: 32.3px;
-  padding-inline: 0.57rem;
+  min-height: 35.5px;
+  padding-inline: 0.63rem;
 }
 html[data-theme='bright'] .topbar--ghost .topbar__nav a:hover,
 html[data-theme='bright'] .topbar--ghost .topbar__nav a:focus-visible {
@@ -590,7 +609,9 @@ html[data-theme='bright'] .topbar--ghost .topbar__nav a.topbar__lang:focus-visib
   html[data-theme='bright'] .topbar--ghost .topbar__nav {
     flex-direction: column;
     align-items: flex-end;
-    row-gap: 0.26rem;
+    /* a third of what it was: the keys carry their own plate now, and the
+       space between them no longer has to do any separating */
+    row-gap: 0.087rem;
     column-gap: 0;
   }
   /* Half the gutter, for this bar only. .wrap holds every page's content
@@ -675,7 +696,7 @@ html[data-theme='bright'] .topbar--ghost .topbar__nav a.topbar__lang:focus-visib
     min-height: 0;
     block-size: 0;
     padding-block: 0;
-    margin-block-start: -0.26rem;
+    margin-block-start: -0.087rem;
     opacity: 0;
     visibility: hidden;
     translate: 0 -0.5rem;
@@ -690,7 +711,7 @@ html[data-theme='bright'] .topbar--ghost .topbar__nav a.topbar__lang:focus-visib
       visibility 0.34s var(--ease);
   }
   html[data-theme='bright'][data-nav-open] .topbar--ghost .topbar__nav .topbar__key {
-    block-size: 36px;
+    block-size: 39.6px;
     margin-block-start: 0;
     opacity: 1;
     visibility: visible;
@@ -727,7 +748,7 @@ html[data-theme='bright'] .topbar--ghost .topbar__nav a.topbar__lang:focus-visib
      shorter than the room behind it. */
   html[data-theme='bright'] .topbar--ghost .topbar__nav .topbar__menu,
   html[data-theme='bright'][data-nav-open] .topbar--ghost .topbar__nav .topbar__key {
-    min-height: 36px;
+    min-height: 39.6px;
   }
 }
 
@@ -1489,11 +1510,10 @@ html[data-theme='bright'] .after .stats div {
    Gold rather than white once it folds into a mark: at that size it is the
    museum's signature and not a piece of chrome, and gold is what this hall
    signs with. */
-html[data-theme='bright'] .bh__lockup[data-small] {
-  background: var(--glass-g-bg);
-  border-radius: 0.42rem;
-  box-shadow: var(--glass-g-edge);
-}
+/* No tablet. The name stands on the plate struck for it — see 'the museum's
+   name, on its plate' above — and this rule was putting the frosted rectangle
+   back underneath it from further down the file, where source order beats an
+   earlier rule of the same weight. */
 html[data-theme='bright'] .bh__lockup[data-small] .bh__title {
   color: #2b2008;
   text-shadow: 0 1px 0 rgba(255, 246, 222, 0.5);
@@ -1698,11 +1718,7 @@ html[data-theme='bright'] .gr__lock {
   inset-inline-start: clamp(0.7rem, 2.2vw, 1.6rem);
   z-index: 60;
   padding: 0.34rem 0.85rem;
-  border-radius: 0.42rem;
   text-decoration: none;
-  background: var(--glass-g-bg);
-  backdrop-filter: blur(6px) saturate(1.5);
-  box-shadow: var(--glass-g-edge);
   transition: filter 0.28s var(--ease), transform 0.28s var(--ease);
 }
 html[data-theme='bright'] .gr__lock:hover { filter: brightness(1.05); transform: translateY(-1px); }

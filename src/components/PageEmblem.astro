@@ -27,11 +27,13 @@ interface Props {
   srcSmall?: string;
   w: number;
   h: number;
+  /** true when the rail stands before the page's own padded container */
+  outside?: boolean;
 }
-const { src, srcSmall, w, h } = Astro.props;
+const { src, srcSmall, w, h, outside = false } = Astro.props;
 ---
 
-<div class="emb" data-emb aria-hidden="true">
+<div class="emb" data-emb data-outside={outside ? '' : undefined} aria-hidden="true">
   <div class="emb__piece">
     <picture class="emb__pic">
       {srcSmall && <source media="(max-width: 40rem)" srcset={asset(srcSmall)} />}
@@ -41,15 +43,21 @@ const { src, srcSmall, w, h } = Astro.props;
 </div>
 
 <style>
+  /* --emb-flow is where the rail's own flow position sits: 3.4rem when it is
+     inside the page's padded container, and nothing when it stands before it.
+     It stands before it wherever the page fades, because a mask applies to
+     everything inside the element it is on and the emblem is the one thing on
+     these pages that must not fade. */
   .emb {
     position: sticky;
     inset-block-start: var(--gr-stick);
     z-index: 3;
     block-size: 1px;
-    margin-block-start: calc(var(--lock-bottom) + 0.15 * var(--emb-h) - 3.4rem);
-    margin-block-end: calc(3.4rem - var(--lock-bottom) - 0.15 * var(--emb-h) - 1px);
+    margin-block-start: calc(var(--lock-bottom) + 0.15 * var(--emb-h) - var(--emb-flow, 3.4rem));
+    margin-block-end: calc(var(--emb-flow, 3.4rem) - var(--lock-bottom) - 0.15 * var(--emb-h) - 1px);
     pointer-events: none;
   }
+  .emb[data-outside] { --emb-flow: 0px; }
   .emb__piece {
     isolation: isolate;
     position: absolute;
@@ -72,27 +80,20 @@ const { src, srcSmall, w, h } = Astro.props;
   }
   :global(html[data-motion='off']) .emb__piece { transition: none; }
   .emb__pic { position: relative; display: block; line-height: 0; }
-  /* The field of light the emblem stands in — the same one the museum's name
-     has on the hall, re-centred on a disc. It replaces a dark drop-shadow,
-     which over a photograph read as a faint square behind the picture rather
-     than as a shadow under an object. */
-  .emb__pic::before {
-    content: '';
-    position: absolute;
-    z-index: -1;
-    inset: -34%;
-    pointer-events: none;
-    background: radial-gradient(closest-side,
-      rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.62) 52%,
-      rgba(255, 255, 255, 0.22) 74%, transparent 100%);
-  }
   .emb__pic img {
     block-size: var(--emb-h);
     inline-size: auto;
     max-inline-size: 100%;
-    /* struck metal sits ON the page: a shadow tight enough to be an edge
-       rather than a ground */
-    filter: drop-shadow(0 2px 4px rgba(70, 52, 16, 0.22));
+    /* The way on carries its own edge rather than a panel behind it — three
+       white shadows tight to the shape, so the object is separated from
+       whatever is behind it without a ground of its own. See .bh__cue. A haze
+       stood here first and read as a faint square behind the picture, which
+       is the one thing the emblem must not have; this follows the alpha. */
+    filter:
+      drop-shadow(0 0 1px rgba(255, 255, 255, 0.98))
+      drop-shadow(0 0 4px rgba(255, 255, 255, 0.95))
+      drop-shadow(0 0 10px rgba(255, 255, 255, 0.78))
+      drop-shadow(0 2px 4px rgba(70, 52, 16, 0.2));
   }
 </style>
 

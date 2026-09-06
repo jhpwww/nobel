@@ -93,11 +93,11 @@ const cycle = [
 
 <Base lang={lang} title={t('learn.title')} description={t('learn.blurb')} segments={['learn']} bare={bright}>
   {bright && <RoomBack lang={lang} room="learn-hall" />}
+  {bright && <PageEmblem src="assets/ui/learn-emblem.webp" w={710} h={720} outside />}
   <div class="wrap course" data-fade>
     {/* The emblem struck for this area, on the same rail the about page's
         medal hangs from and caught the same way — see PageEmblem, and
         --emb-h in bright.css, where the size the three of them share lives. */}
-    {bright && <PageEmblem src="assets/ui/learn-emblem.webp" w={710} h={720} />}
 
     <header class:list={['course__head', bright && 'hall-head']}>
       {/* the eyebrow is gone: it read '諾貝爾講座博物館' over a page inside the

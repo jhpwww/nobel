@@ -20,6 +20,7 @@ const hostList = Object.entries(hosts);
 
 <Base lang={lang} title={t('about.title')} segments={['about']} bare={bright}>
   {bright && <RoomBack lang={lang} room="about-hall" />}
+  {bright && <PageEmblem src="assets/ui/medal.webp" srcSmall="assets/ui/medal-sm.webp" w={720} h={720} outside />}
   <div class="wrap-narrow about" data-fade>
     {/* The medal the project struck for itself: the bell tower and the palms
         inside a ring of the six prizes, NOBEL LAUREATE LECTURES round the top
@@ -30,7 +31,6 @@ const hostList = Object.entries(hosts);
         caught into a mark beside the museum's name once the visitor has gone
         half its height. That rail and that catch are one component now, shared
         with the learning area; see PageEmblem. */}
-    {bright && <PageEmblem src="assets/ui/medal.webp" srcSmall="assets/ui/medal-sm.webp" w={720} h={720} />}
 
     <header class="abt__hero hall-head">
       {/* Three lines, and the order is the page's own: what this room is, then
@@ -254,7 +254,9 @@ const hostList = Object.entries(hosts);
     color: var(--gold);
   }
   .abt__sub {
-    margin: 0;
+    /* the two gold lines are one signature: halved again, at the owner's
+       word, on top of the head's own halving */
+    margin: -0.06rem 0 0;
     font-family: var(--font-han-serif);
     font-size: var(--step-0);
     letter-spacing: 0.12em;

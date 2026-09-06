@@ -182,6 +182,10 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
 
     <ScrollCue lang={lang} href="#gr-body" />
 
+    {/* before the sheet, and outside it: the sheet fades at the top of the
+        window and the emblem is the one thing on the page that must not */}
+    {isIntro && <PageEmblem src="assets/ui/wreath.webp" w={638} h={640} outside />}
+
     {/* The piece rides up with the page and then stops.
         It is a sticky rail rather than a scripted position: sticky is the
         compositor's own job, so the piece cannot lag a frame behind the page
@@ -317,7 +321,6 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
       and how one is decided. */}
   {isIntro && (
     <div class="wrap np">
-      <PageEmblem src="assets/ui/wreath.webp" w={638} h={640} />
       <header class="hall-head" data-cat={cat}>
         <h1 class="gr__title np__title">{introA}<span class="conj">{introConj}</span>{introB}</h1>
         <p class="gr__n np__n">{t('hall.nobelRoom')}</p>
@@ -554,7 +557,11 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
      are the whole page. With the heading gone (see Explore) they need the
      breathing room a section heading would have given them, and the room above
      needs to end on something rather than on an empty band. */
-  .gr__sheet:has(.xp[data-bare]) { padding-block-start: clamp(1.6rem, 4vw, 2.6rem); }
+  /* :not(:has(.np)) — the introduction room opens with the head every room
+     that is not a prize room opens with, and that head places itself; the
+     padding was put here when the four cards were the whole page and it now
+     lands between the museum's mark and the laurel. */
+  .gr__sheet:has(.xp[data-bare]):not(:has(.np)) { padding-block-start: clamp(1.6rem, 4vw, 2.6rem); }
 
   /* the mark the hall's name folds into, in the same gold glass — see
      'the name, condensed' in bright.css, which this borrows outright */
@@ -724,7 +731,8 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
      .hall-head measures its own placement against */
   .np { padding-block: 3.4rem 0; max-inline-size: 60rem; }
   .np__title { font-size: var(--step-3); }
-  .np__n { margin-block-start: 0; }
+  /* gold, like every other room's sub-line: the four doors sign the same way */
+  .np__n { margin-block-start: 0; color: var(--gold); letter-spacing: 0.16em; text-indent: 0.16em; }
   /* type, colour and measure are .hall-note's, in bright.css */
 
   /* The will, set as an inscription rather than as a quotation: a rule down
@@ -734,8 +742,11 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
     margin: clamp(1rem, 3vw, 2rem) 0 0;
     padding-inline-start: clamp(1rem, 3vw, 2rem);
     border-inline-start: 2px solid var(--gold-orn, #b8862a);
-    max-inline-size: 52ch;
+    /* three quarters of the column, at the owner's word — a measure, not a
+       character count, so it holds its share of the page at every width */
+    max-inline-size: 75%;
   }
+  @media (max-width: 48rem) { .np__will { max-inline-size: none; } }
   .np__will blockquote {
     margin: 0;
     font-family: var(--font-hook);
@@ -762,7 +773,8 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
     margin: 0 0 1.2rem;
   }
   .np__note { font-size: var(--step--1); color: var(--muted); margin-block: 0 1.1rem; max-inline-size: 56ch; }
-  .np__prose { display: grid; gap: 1.15rem; max-inline-size: 46ch; }
+  .np__prose { display: grid; gap: 1.15rem; max-inline-size: 75%; }
+  @media (max-width: 48rem) { .np__prose { max-inline-size: none; } }
   .np__prose p { margin: 0; color: var(--text); line-height: 1.95; }
 
   /* ---------- the six doors ----------

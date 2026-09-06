@@ -32,10 +32,10 @@ const bright = process.env.THEME === 'bright';
 
 <Base lang={lang} title={t('browse.title')} segments={['lectures']} bare={bright}>
   {bright && <RoomBack lang={lang} room="video-hall" />}
+  {bright && <PageEmblem src="assets/ui/video-emblem.webp" w={720} h={576} outside />}
   <div class="wrap browse" data-fade>
     {/* the emblem struck for this room, on the rail every room that is not a
         prize room hangs one from — see PageEmblem and .hall-head */}
-    {bright && <PageEmblem src="assets/ui/video-emblem.webp" w={720} h={576} />}
     <header class:list={['browse__id', bright && 'hall-head']}>
       <h1 class="browse__h">{t('browse.title')}</h1>
       <p class="browse__kinds">{t('browse.kinds')}</p>

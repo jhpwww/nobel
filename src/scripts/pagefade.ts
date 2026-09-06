@@ -5,8 +5,9 @@
  * scrolls all the way to the top edge covers the top of the photograph for
  * good — the dome, the windows, the whole upper half of the room the visitor
  * came in through. So the page stops short of it: it is gone by the time it
- * reaches one and a half times the height of the museum's own mark, and it
- * has been fading since four times that height. Between the two is a band.
+ * reaches half the height of the museum's own mark, and it has been fading
+ * since twice that height. Between the two is a band one and a half marks
+ * deep, which is where the bar's own chrome stands.
  *
  * A mask, because the page has to become TRANSPARENT rather than be painted
  * over: what is behind it is a photograph, and a white bar across the top of
@@ -18,8 +19,8 @@
  * the element by default, so the page is whole before it has been scrolled
  * and whole with no script at all.
  */
-const START = 4;      // where the fade begins, in marks
-const GONE = 1.5;     // and where nothing is left
+const START = 2;      // where the fade begins, in marks from the top edge
+const GONE = 0.5;     // and where nothing is left
 
 export function pageFade() {
   const els = [...document.querySelectorAll<HTMLElement>('[data-fade]')];
