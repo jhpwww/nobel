@@ -47,6 +47,13 @@ const t = useT(lang);
     <li class="sp__stage" data-stage="1">
       <h4 class="sp__stage-h"><span class="sp__stage-n">1</span>{t('study.stagePrepare')}</h4>
       <p class="sp__aim">{t('study.aim1')}</p>
+      {/* 已看原版 belongs here, not in 參與: the original Nobel Lecture is what
+          you watch BEFORE this one, and the course asks for the pair. */}
+      <p class="sp__aim sp__look">{t('study.lookUp')}</p>
+
+      <div class="sp__watch">
+        <label><input type="checkbox" data-watch="nobel" /> <span>{t('study.watchedNobel')}</span></label>
+      </div>
 
       <label class="sp__pick">
         <input type="checkbox" data-pick />
@@ -80,7 +87,6 @@ const t = useT(lang);
 
       <div class="sp__watch">
         <label><input type="checkbox" data-watch="tw" /> <span>{t('study.watchedTw')}</span></label>
-        <label><input type="checkbox" data-watch="nobel" /> <span>{t('study.watchedNobel')}</span></label>
       </div>
 
       <div class="sp__field">
@@ -189,7 +195,11 @@ const t = useT(lang);
   .sp__pick-txt b { font-weight: 500; color: var(--cream); font-size: var(--step-0); }
   .sp__pick-txt em { font-style: normal; font-size: var(--step--1); color: var(--muted); }
 
-  .sp__watch { display: flex; flex-wrap: wrap; gap: .5rem 1.3rem; padding-inline-start: 1.8rem; }
+  .sp__watch { display: flex; flex-wrap: wrap; gap: .5rem 1.3rem; }
+  .sp__look {
+    padding-inline-start: .7rem;
+    border-inline-start: 2px solid color-mix(in srgb, var(--gold) 45%, transparent);
+  }
   .sp__watch label { display: inline-flex; align-items: center; gap: .45rem; font-size: var(--step--1); color: var(--muted); cursor: pointer; }
   .sp__watch input { accent-color: var(--accent-block); inline-size: 15px; block-size: 15px; }
   .sp__watch input:checked + span { color: var(--text); }

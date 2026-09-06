@@ -216,6 +216,13 @@ const groups = { l: t('search.groupLaureate'), r: t('search.groupRoom'), p: t('s
     cursor: pointer;
     pointer-events: auto;
     font: inherit;
+    /* The size, the leading and the padding the four doors are set at. The
+       bar's own rules are written for anchors and this is a button, so it was
+       inheriting the body's line-height and the kit's own padding — 42px
+       against their 36. */
+    font-size: var(--step--1);
+    line-height: 1.2;
+    padding-block: 0.4rem;
     letter-spacing: 0.06em;
     color: var(--muted);
     border: 0;
@@ -224,6 +231,42 @@ const groups = { l: t('search.groupLaureate'), r: t('search.groupRoom'), p: t('s
   .ss__key:hover { color: var(--gold-bright); }
   :global(html[data-theme='bright']) .ss__key,
   :global(html[data-theme='bright']) .ss__key:hover { color: var(--museum-ink); }
+  /* A capsule, not a plate. The four doors stand on the plate struck for the
+     bar; this one opens a drawer rather than a room, and a different shape is
+     how a bar says so without a second colour or a second weight. Same cream,
+     same gold rule, drawn rather than photographed because a nine-slice of a
+     rectangle cannot be made round. */
+  :global(html[data-theme='bright']) .ss__key {
+    position: relative;
+    isolation: isolate;
+    background: none;
+  }
+  /* Drawn on ::after, and inset to match.
+     ::before is the button kit's glass skin and the bar hides it — hides it
+     for this key too, which is why a capsule drawn there was invisible. And
+     the inset: the plate beside it is a picture whose cream panel runs from
+     11.9% to 79.3% of its height, so a capsule filling the whole key stood a
+     third taller than the four doors next to it. */
+  :global(html[data-theme='bright']) .ss__key::after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: 12% 0 21%;
+    /* the kit draws a nine-slice here and blends it; neither applies */
+    border: 0;
+    border-image: none;
+    mix-blend-mode: normal;
+    opacity: 1;
+    border-radius: 999px;
+    background: rgba(251, 246, 235, 0.96);
+    /* the plate's own double rule, at the plate's own weight: a gold line,
+       then the cream inside it */
+    box-shadow:
+      inset 0 0 0 1.6px rgba(186, 148, 74, 0.95),
+      inset 0 0 0 3px rgba(255, 253, 247, 0.95),
+      0 1px 2px rgba(70, 52, 16, 0.14);
+  }
+  :global(html[data-theme='bright']) .ss__key:hover::after { filter: brightness(1.03); }
   .ss__ico { flex: none; opacity: 0.78; }
 
   /* ---------- the plate ----------

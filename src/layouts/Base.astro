@@ -321,7 +321,10 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
            them no longer has to do the separating, and at the old width five
            of them read as five separate things rather than as one bar. The
            mobile column sets its own gaps; see bright.css. */
-        row-gap: 0.15rem; column-gap: clamp(0.225rem, 0.625vw, 0.475rem);
+        /* Halved again, at the owner's word: the keys are plates now and a
+           plate has its own edge, so the space between them was doing nothing
+           but pushing the bar wider. */
+        row-gap: 0.15rem; column-gap: clamp(0.113rem, 0.313vw, 0.238rem);
         justify-content: flex-end;
       }
       .topbar__nav a {

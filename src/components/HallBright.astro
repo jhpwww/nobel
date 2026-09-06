@@ -699,6 +699,17 @@ const PLATE = { w: 836, h: 470 };
       max-inline-size: none;
       pointer-events: none;          /* the anchor under it takes the tap */
     }
+    /* And the viewer inside it, which sets its own. The frame overruns its
+       column and, now that the second row stands half a pane higher, it also
+       overruns the first row's captions — mostly with the empty air above a
+       short piece. Nothing of it is visible there, but every one of those
+       taps was landing on the wrong lecture. */
+    .bh__mv, .bh__poster { pointer-events: none; }
+    /* The first row on top, in that overlap. What lies in the band between
+       the two rows is the first row's own caption and the empty air above the
+       second row's pieces, so the tap belongs to the row above — and the
+       second row's sculpture proper begins below it either way. */
+    .bh__piece:nth-child(-n + 3) { position: relative; z-index: 1; }
     .bh__piece { padding: 0.25rem var(--pad) 0.35rem; }
     /* The second row comes up; the first stays exactly where it is.
        A negative row-gap would have been the obvious way and grid clamps it to
@@ -710,7 +721,12 @@ const PLATE = { w: 836, h: 470 };
     /* And the second row of three comes down nine tenths of a drum, at the
        owner's word — the first row stays where it is, so this is the
        overlap giving way rather than the whole row moving. */
-    .bh__piece:nth-child(n + 4) { margin-block-start: calc(-3.4rem + 0.9 * var(--drum-h)); }
+    /* ...less half the height of a figure's own pane, at the owner's word:
+       the second row and the strip below it come up together, so the space
+       between them is unchanged and what closes is the space above. */
+    .bh__piece:nth-child(n + 4) {
+      margin-block-start: calc(-3.4rem + 0.9 * var(--drum-h) - 0.5 * var(--strip-h));
+    }
 
     /* The name is cut into the drum here too — see 'one drum, one label' in
        plinth.css. What stays under the piece is the count alone, which is not

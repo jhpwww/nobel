@@ -498,7 +498,7 @@ html[data-theme='bright'] .topbar--ghost .topbar__nav::before {
    round it. Trimmed it is 1197x503 with its cream panel from 7.2% to 95.4%
    across and 11.9% to 79.3% down, so at 100% 100% a key's own padding lands
    inside the rule at every width the five labels take in either language. */
-html[data-theme='bright'] .topbar__nav :is(.topbar__key, .topbar__menu, .museum-glass-btn--nav) {
+html[data-theme='bright'] .topbar__nav :is(.topbar__key, .topbar__menu, .museum-glass-btn--nav):not(.ss__key) {
   background: var(--key-plate) center / 100% 100% no-repeat;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
@@ -506,7 +506,7 @@ html[data-theme='bright'] .topbar__nav :is(.topbar__key, .topbar__menu, .museum-
   color: var(--museum-ink);
 }
 html[data-theme='bright'] .topbar__nav :is(.topbar__key, .topbar__menu, .museum-glass-btn--nav)::before,
-html[data-theme='bright'] .topbar__nav :is(.topbar__key, .topbar__menu, .museum-glass-btn--nav)::after {
+html[data-theme='bright'] .topbar__nav :is(.topbar__key, .topbar__menu, .museum-glass-btn--nav):not(.ss__key)::after {
   display: none;
 }
 /* the plate is a picture, so pressing it lifts and brightens the picture */
@@ -615,9 +615,9 @@ html[data-theme='bright'] .topbar--ghost .topbar__nav a.topbar__lang:focus-visib
   html[data-theme='bright'] .topbar--ghost .topbar__nav {
     flex-direction: column;
     align-items: flex-end;
-    /* a third of what it was: the keys carry their own plate now, and the
+    /* two fifths of that again: the keys carry their own plate now, and the
        space between them no longer has to do any separating */
-    row-gap: 0.087rem;
+    row-gap: 0.035rem;
     column-gap: 0;
   }
   /* Half the gutter, for this bar only. .wrap holds every page's content
@@ -702,7 +702,7 @@ html[data-theme='bright'] .topbar--ghost .topbar__nav a.topbar__lang:focus-visib
     min-height: 0;
     block-size: 0;
     padding-block: 0;
-    margin-block-start: -0.087rem;
+    margin-block-start: -0.035rem;
     opacity: 0;
     visibility: hidden;
     translate: 0 -0.5rem;
@@ -1661,7 +1661,10 @@ html[data-theme='bright'] .bh__title { line-height: 1.12; }
    * on's 31px, the strip's own 52 to 60, and ten pixels of daylight between
    * them. Everything above is unchanged: the drums are further off on a tall
    * phone than on a short one, and the strip sits under them either way. */
-  html[data-theme='bright'] .after { margin-block-start: -6.5rem; }
+  /* ...less half a figure's own pane, at the owner's word: the strip and the
+     second row of sculptures come up together, so the distance between them
+     is unchanged and what closes is the space above the row. */
+  html[data-theme='bright'] .after { margin-block-start: calc(-6.5rem - 0.5 * var(--strip-h)); }
 }
 
 /* At 320px the English labels hyphenate hard — "institutions" over three

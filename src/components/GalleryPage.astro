@@ -773,8 +773,10 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
     margin: 0 0 1.2rem;
   }
   .np__note { font-size: var(--step--1); color: var(--muted); margin-block: 0 1.1rem; max-inline-size: 56ch; }
-  .np__prose { display: grid; gap: 1.15rem; max-inline-size: 75%; }
-  @media (max-width: 48rem) { .np__prose { max-inline-size: none; } }
+  /* the whole column, at the owner's word: the will beside it is a quotation
+     and keeps its three quarters, but this is the room's own prose */
+  .np__prose { display: grid; gap: 1.15rem; max-inline-size: none; }
+  .np__prose p { max-inline-size: none; }
   .np__prose p { margin: 0; color: var(--text); line-height: 1.95; }
 
   /* ---------- the six doors ----------

@@ -5,9 +5,9 @@
  * scrolls all the way to the top edge covers the top of the photograph for
  * good — the dome, the windows, the whole upper half of the room the visitor
  * came in through. So the page stops short of it: it is gone by the time it
- * reaches half the height of the museum's own mark, and it has been fading
- * since twice that height. Between the two is a band one and a half marks
- * deep, which is where the bar's own chrome stands.
+ * reaches one mark's height, and it has been fading since two and a half.
+ * Between the two is a band one and a half marks deep, which is where the
+ * bar's own chrome stands.
  *
  * A mask, because the page has to become TRANSPARENT rather than be painted
  * over: what is behind it is a photograph, and a white bar across the top of
@@ -19,8 +19,8 @@
  * the element by default, so the page is whole before it has been scrolled
  * and whole with no script at all.
  */
-const START = 2;      // where the fade begins, in marks from the top edge
-const GONE = 0.5;     // and where nothing is left
+const START = 2.5;    // where the fade begins, in marks from the top edge
+const GONE = 1;       // and where nothing is left
 
 export function pageFade() {
   const els = [...document.querySelectorAll<HTMLElement>('[data-fade]')];
@@ -43,16 +43,18 @@ export function pageFade() {
     });
   };
 
-  let queued = false;
-  const tick = () => {
-    if (queued) return;
-    queued = true;
-    requestAnimationFrame(() => { queued = false; paint(); });
-  };
-
+  /* Written in the scroll handler itself, not in a rAF after it.
+   *
+   * A requestAnimationFrame defers the write to the NEXT frame, and the frame
+   * in between is painted with the page already moved and the band still
+   * where it was — so every notch of the wheel showed the top line at full
+   * strength for one frame and then dimmed it. That is the flicker. A scroll
+   * listener runs before the frame it belongs to is painted, so writing the
+   * two stops here means they are never a frame behind. It is four custom
+   * property writes, which the compositor turns into one gradient texture. */
   measure();
   paint();
-  addEventListener('scroll', tick, { passive: true });
+  addEventListener('scroll', paint, { passive: true });
   addEventListener('resize', () => { measure(); paint(); });
   /* the faces arrive after first paint and the mark is a different width in
      the fallback face, which moves everything below it */

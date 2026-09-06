@@ -58,11 +58,19 @@ const { src, srcSmall, w, h, outside = false } = Astro.props;
     pointer-events: none;
   }
   .emb[data-outside] { --emb-flow: 0px; }
+  /* At the left edge of the page's own column, not of the window.
+     The rail stands before the page's container now — it has to, or the mask
+     that fades the page would fade it too — and every one of these pages
+     centres a column of its own width inside the window: 76rem for the index
+     of films, 62 for the learning area, 60 for the introduction room, and the
+     narrow measure for the colophon. So the offset is measured off the head
+     the emblem belongs beside, and the caught position subtracts the same
+     number, which is what keeps the two in step. */
   .emb__piece {
     isolation: isolate;
     position: absolute;
     inset-block-start: 0;
-    inset-inline-start: 0;
+    inset-inline-start: var(--emb-x, 0px);
     transform-origin: 0 0;
     transition: scale 0.45s var(--ease), translate 0.45s var(--ease);
   }
@@ -109,12 +117,13 @@ const { src, srcSmall, w, h, outside = false } = Astro.props;
   if (rails.length) {
     const lock = document.querySelector<HTMLElement>('.gr__lock');
 
+    /* the head this emblem stands beside — its own column's left edge */
+    const head = document.querySelector<HTMLElement>('.hall-head');
+
     function measure() {
       if (lock) root.style.setProperty('--lock-w', `${Math.round(lock.offsetWidth)}px`);
-      /* the rail sits in the page's own gutter, and the mark it becomes
-         belongs to the window — so where the rail starts has to come off */
-      const r = rails[0].getBoundingClientRect();
-      root.style.setProperty('--emb-x', `${Math.round(r.left)}px`);
+      const box = (head ?? rails[0]).getBoundingClientRect();
+      root.style.setProperty('--emb-x', `${Math.round(box.left)}px`);
     }
 
     let ticking = false;

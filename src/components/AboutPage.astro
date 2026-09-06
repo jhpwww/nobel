@@ -279,7 +279,9 @@ const hostList = Object.entries(hosts);
     font-size: var(--step-1); color: var(--cream);
     margin-block: 2.5rem 0.9rem; padding-block-start: 1.5rem; border-block-start: 1px solid var(--line);
   }
-  .prose p { color: var(--text); line-height: 1.9; }
+  /* the whole column: the global rule caps a paragraph at 62 characters,
+     which on this page left a third of the measure empty */
+  .prose p { color: var(--text); line-height: 1.9; max-inline-size: none; }
   .lede { font-size: var(--step-1); color: var(--cream); }
   code { font-size: 0.88em; background: var(--surface-hi); padding: 0.1em 0.4em; border-radius: 2px; }
 
