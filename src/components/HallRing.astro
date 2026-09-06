@@ -45,7 +45,10 @@ const six = lectures
  * composition; the numbers are in cqw of the plate and in degrees, and they
  * sum to nothing so the ring stays centred on the room's axis.
  */
-const DRIFT = [0, -3.4, 2.6, -1.4, 3.2, -1.0];      // cqw, up is negative
+/* Halved, at the owner's word: at the first spread the ring read as six
+ * panels at six different heights rather than as one ring with a little air
+ * in it, and the highest of them reached the pieces' own heads. */
+const DRIFT = [0, -1.7, 1.3, -0.7, 1.6, -0.5];      // cqw, up is negative
 const TILT  = [0.9, -1.6, 1.4, -0.8, 1.7, -1.6];    // degrees about the axis
 
 const frames = posters as Record<string, string>;
@@ -76,7 +79,11 @@ const still = (id: string, yt: string) =>
   .hr {
     --n: 6;                    /* panels */
     --pane-w: 15cqw;
-    --radius: 27cqw;
+    /* A fifth in from where it was. The ring is behind the sculptures and it
+       was passing outside them at the sides, which put a lit pane beside a
+       gold figure instead of behind it; drawn in, the whole turn happens
+       within the room's own colonnade. */
+    --radius: 21.6cqw;
     --dur: 96s;
     position: absolute;
     inset-inline-start: 50%;
@@ -183,10 +190,34 @@ const still = (id: string, yt: string) =>
   /* Someone who has asked for less motion gets the ring standing still. */
   :global(html[data-motion='off']) .hr__ring { animation: none; }
 
-  /* Not on a phone. The plate is a 220px band there and the pieces already
-     fill it; six more objects in the same band is a busy picture, not a
-     deeper one. */
+  /* ---------- the phone ----------
+     It used to be out here: the plate is a 220px band and the pieces already
+     filled it, so six more objects in the same band was a busy picture rather
+     than a deeper one. What makes it fit is height. The ring goes up into the
+     top third of the picture, where the room is dome and window and has
+     nothing of its own, and the row of pieces comes down the floor to meet it
+     — see --top in HallBright. The museum's name crosses the ring's left
+     edge and is meant to: the name is the one thing in this room that is
+     never obscured, and a pane passing behind it reads as depth.
+
+     Bigger in the frame than on a desktop, and on a shorter radius. Six panes
+     15cqw wide on a 220px band are 58px each — a stamp, not a picture — and a
+     phone is looked at from a third of the distance. */
   @media (max-width: 48rem) {
-    .hr { display: none; }
+    .hr {
+      --pane-w: 24cqw;
+      --radius: 26cqw;
+      inset-block-start: 27%;
+      perspective: 62cqw;
+    }
+    /* Stronger at the near side, not weaker. On a desktop the ring is one
+       thing among several in a wide room and 0.32 at the back reads as air;
+       on a 220px band the same figure reads as nothing at all — the far half
+       simply was not there. The near pane is what a phone sees. */
+    @keyframes hr-depth {
+      0%   { opacity: 0.9; }
+      50%  { opacity: 0.3; }
+      100% { opacity: 0.9; }
+    }
   }
 </style>

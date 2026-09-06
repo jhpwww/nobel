@@ -38,12 +38,13 @@ from __future__ import annotations
 
 import json
 import pathlib
+import shutil
 import subprocess
 import sys
 
 import cv2
 
-from facecheck import best_face, models, reference, sharpness
+from facecheck import ALIVE, iou, matches, models, moved, reference, sharpness
 
 HERE = pathlib.Path(__file__).resolve().parent.parent
 LECTURES = HERE / 'src/data/lectures.json'
@@ -51,6 +52,11 @@ VIDEO_POSTERS = HERE / 'src/data/video-posters.json'
 OUT_DIR = HERE / 'public/assets/posters'
 OUT_MAP = HERE / 'src/data/local-posters.json'
 SHOTS = HERE / 'assets-src/posters'
+
+# the runner has both on PATH; the working machine keeps a static ffmpeg in
+# .tools and yt-dlp wherever pip put it
+FF = str(HERE / '.tools/ffmpeg') if (HERE / '.tools/ffmpeg').exists() else (shutil.which('ffmpeg') or 'ffmpeg')
+YTDLP = shutil.which('yt-dlp') or 'yt-dlp'
 
 #: Recordings the owner named as showing the wrong person, which the picker
 #: nevertheless found a frame for. A frame cut from inside the recording is a
@@ -89,7 +95,7 @@ def stream(vid: str) -> tuple[str, float] | None:
     url = f'https://www.youtube.com/watch?v={vid}'
     fmt = ('bv*[height<=720][vcodec^=avc1]/bv*[height<=720]/'
            'b[height<=720][vcodec^=avc1]/b[height<=720]/b')
-    r = run(['yt-dlp', '-f', fmt, '--print', '%(duration)s', '--print', 'urls',
+    r = run([YTDLP, '-f', fmt, '--print', '%(duration)s', '--print', 'urls',
              '--no-warnings', url], timeout=240)
     if r.returncode != 0:
         print(f'   yt-dlp failed: {r.stderr.decode()[:200].strip()}')
@@ -107,7 +113,7 @@ def stream(vid: str) -> tuple[str, float] | None:
 def frame_at(url: str, t: float):
     """One frame, decoded, or None. `-ss` before `-i` is the fast seek: ffmpeg
     range-requests its way to the keyframe instead of reading the file."""
-    r = run(['ffmpeg', '-nostdin', '-loglevel', 'error', '-ss', f'{t:.2f}',
+    r = run([FF, '-nostdin', '-loglevel', 'error', '-ss', f'{t:.2f}',
              '-i', url, '-frames:v', '1', '-f', 'image2', '-vcodec', 'mjpeg',
              '-q:v', '2', '-'], timeout=120)
     if r.returncode != 0 or not r.stdout:
@@ -116,53 +122,104 @@ def frame_at(url: str, t: float):
     return cv2.imdecode(np.frombuffer(r.stdout, np.uint8), cv2.IMREAD_COLOR)
 
 
-def sweep(url: str, seconds: float, det, rec, ref_vec, label: str):
-    """Every sampled frame the laureate is in, best first.
+def printed(hits: list) -> list[tuple]:
+    """The faces in this recording that are not a person but a picture of one.
 
-    Two passes. A coarse one across the whole recording finds where they are
-    on camera at all; a fine one either side of the best hit finds the frame
-    where they are looking up rather than mid-blink. The second pass is what
-    makes the difference between a usable portrait and a smear — a lecture
-    cuts between speaker and slide every few seconds.
+    Every one of these lectures is given in front of a printed banner carrying
+    the laureate's own portrait, and half of them cut to a title slide that
+    carries it too. Recognition says yes to those, correctly and uselessly:
+    the first still this cut for Kobilka was an empty stage with his poster on
+    the back wall.
+
+    What separates the two is that a printed face does not move. So the boxes
+    are compared across the whole sweep, and any that lands in the same place
+    to within a fifth of its own area at three or more widely separated times
+    is a fixture in the room rather than someone standing in it.
     """
-    hits: list[tuple[float, float, float, object]] = []
-    span = seconds * (LAST - FIRST)
-    times = [seconds * FIRST + span * i / (COARSE - 1) for i in range(COARSE)]
-    for t in times:
+    fixtures = []
+    for i, (t, box, _sc, _sim) in enumerate(hits):
+        agree = [u for u, b2, _s, _m in hits
+                 if abs(u - t) > 45 and iou(box, b2) > 0.72]
+        if len(agree) >= 2 and (max(agree) - min(agree)) > 240:
+            fixtures.append(box)
+    return fixtures
+
+
+def sweep(url: str, seconds: float, det, rec, ref_vec, label: str):
+    """Every sampled frame the laureate is really in, best first.
+
+    Two passes and a filter. A coarse pass across the whole recording finds
+    where they are on camera at all; the filter throws away the faces that are
+    printed on the room rather than in it — see printed(); and a fine pass
+    either side of the best survivor finds the frame where they are looking up
+    rather than mid-blink. That last pass is what makes the difference between
+    a usable portrait and a smear: a lecture cuts between speaker and slide
+    every few seconds.
+    """
+    seen: list[tuple[float, tuple, float, float]] = []   # t, box, score, sim
+    frames: dict[float, object] = {}
+
+    def probe(t: float) -> None:
+        if t in frames or t <= 0 or t >= seconds:
+            return
         img = frame_at(url, t)
         if img is None:
-            continue
-        best = best_face(det, rec, ref_vec, img)
-        if best is None:
-            continue
-        hits.append((best[0], best[1], t, img))
-        print(f'   {label} {t / 60:5.1f}m  score {best[0]:.2f}  match {best[1]:.2f}')
-    if not hits:
+            return
+        frames[t] = img
+        for sc, sim, box in matches(det, rec, ref_vec, img):
+            seen.append((t, box, sc, sim))
+
+    span = seconds * (LAST - FIRST)
+    for i in range(COARSE):
+        probe(seconds * FIRST + span * i / (COARSE - 1))
+
+    fixed = printed(seen)
+    live = [h for h in seen if not any(iou(h[1], f) > 0.72 for f in fixed)]
+    if fixed:
+        print(f'   {label} — {len(fixed)} face(s) printed on the room, set aside')
+    if not live:
         return []
 
-    hits.sort(key=lambda h: -h[0])
-    around = hits[0][2]
-    fine = [around + d for d in
-            [x * FINE_STEP for x in range(-int(FINE_SPAN / FINE_STEP),
-                                          int(FINE_SPAN / FINE_STEP) + 1)]
-            if 0 < around + d < seconds]
-    for t in fine:
-        if any(abs(t - h[2]) < 0.5 for h in hits):
-            continue
-        img = frame_at(url, t)
-        if img is None:
-            continue
-        best = best_face(det, rec, ref_vec, img)
-        if best is None:
-            continue
-        hits.append((best[0], best[1], t, img))
+    around = max(live, key=lambda h: h[2])[0]
+    for d in range(-int(FINE_SPAN / FINE_STEP), int(FINE_SPAN / FINE_STEP) + 1):
+        probe(around + d * FINE_STEP)
+    fixed = printed(seen)
+    live = [h for h in seen if not any(iou(h[1], f) > 0.72 for f in fixed)]
+    if not live:
+        return []
+
+    # ---- and the last of the printed ones ----
+    # The test above catches a face the camera never reframes. A lecture that
+    # cuts between a wide shot and a close one shows the same banner at two
+    # different sizes, and that one gets through — so the best few are asked
+    # the question a picture cannot answer: did this face change at all in
+    # half a second?
+    #
+    # Worked down the whole list, not just the best few. On Kobilka's lecture
+    # every one of the top eight was the banner at a different zoom, and
+    # stopping there answered 'not recognised' for a recording he is in.
+    alive: list[tuple] = []
+    checked = 0
+    for t, box, sc, sim in sorted(live, key=lambda h: -h[2]):
+        if len(alive) >= 5 or checked >= 34:
+            break
+        checked += 1
+        nxt = frame_at(url, t + 0.5)
+        d = 99.0 if nxt is None else moved(frames[t], nxt, box)
+        state = 'printed' if d < ALIVE else ''
+        print(f'   {label} {t / 60:5.1f}m  score {sc:.2f}  match {sim:.2f}  '
+              f'moved {d:5.2f} {state}')
+        if d >= ALIVE:
+            alive.append((t, box, sc, sim))
+    if not alive:
+        return []
 
     # A frame cut mid-pan is the right person, blurred. Sharpness is a tie
     # breaker rather than a term in the score: it separates two frames of the
     # same shot, and says nothing useful across different ones.
-    top = sorted(hits, key=lambda h: -h[0])[:6]
-    top.sort(key=lambda h: -(h[0] + 0.06 * min(1.0, sharpness(h[3]) / 400.0)))
-    return top
+    top = sorted(alive, key=lambda h: -h[2])[:6]
+    top.sort(key=lambda h: -(h[2] + 0.06 * min(1.0, sharpness(frames[h[0]]) / 400.0)))
+    return [(sc, sim, t, frames[t]) for t, box, sc, sim in top]
 
 
 def write_still(img, vid: str) -> str:
@@ -254,6 +311,12 @@ def main() -> None:
         if not top:
             print('   laureate not recognised anywhere in the recording')
             failed.append(f'{lid} {what}: not recognised in {COARSE} sampled frames')
+            # never leave an earlier, worse still standing for a target that
+            # has just been re-cut and failed
+            old = have.pop(vid, None)
+            if old:
+                (HERE / 'public' / old).unlink(missing_ok=True)
+                print(f'   removed {old}')
             continue
         score, sim, t, img = top[0]
         if report:

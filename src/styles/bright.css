@@ -160,12 +160,30 @@ html[data-theme='bright'] {
      stop standing on the floor of the photograph and start floating over it.
      Beyond that the screen simply cannot hold six pieces, their captions, the
      figures and the way on, and it is the way on that goes over the figures —
-     it is pinned, it is topmost, and it carries its own field of light. */
+     it is pinned, it is topmost, and it carries its own field of light.
+
+     Another 5% of the photograph, at the owner's word, so the row's heads
+     drop below the ring of stills turning behind them rather than through it.
+     On a 1440x900 window the sculptures ran from 27% to 88% of the plate and
+     the ring from 31% to 59%: the tallest of them came up through it. Five
+     per cent puts their heads on the ring's own top edge.
+
+     It is added to BOTH the middle term and the ceiling, because on every
+     desktop measured it is the middle term that binds — the composition the
+     owner approved fills the screen exactly, with the figures 8px under the
+     captions and their foot on the line the pinned way on leaves. So the five
+     per cent has to come from somewhere, and what gives is the same thing
+     that gives on a short screen: the way on floats over the strip of
+     figures. It is pinned, it is topmost, and it carries its own field of
+     light, so it reads as chrome over the page rather than as two things
+     fighting. The one guarantee kept whole is the floor under everything —
+     the strip may never rise onto the pieces' own captions; see .after. */
   --piece-drop: clamp(
     calc(var(--room-plate) * -0.06),
     calc(100svh - var(--cue-clear) - 0.6rem - var(--strip-h) - 0.5rem
-         - var(--piece-below-drum) - 0.77175 * var(--room-plate)),
-    calc(var(--room-plate) * 0.155)
+         - var(--piece-below-drum) - 0.77175 * var(--room-plate)
+         + 0.05 * var(--room-plate)),
+    calc(var(--room-plate) * 0.205)
   );
   /* Where the drums' feet land, in the viewport.
      0.77175 is not a guess: the row is anchored so its feet sit on the near

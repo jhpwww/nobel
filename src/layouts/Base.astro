@@ -13,6 +13,7 @@ const bright = process.env.THEME === 'bright';
 /** this museum's faces: names, hashed URLs, and its own stylesheet */
 const face: Record<string, string> = bright ? fontsBright : fonts;
 import PageNav from '../components/PageNav.astro';
+import SiteSearch from '../components/SiteSearch.astro';
 import LangFlag from '../components/LangFlag.astro';
 import { useT, HTML_LANG, LANG_LABEL, type Lang } from '../i18n/ui';
 import { home, browse, about, learn, gallery, asset, otherLang } from '../i18n/routing';
@@ -120,8 +121,13 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
                 and there it is named for what pressing it does rather than for
                 where it goes — on a page that is already a room in the museum,
                 '博物館大廳' reads as a place and '回到大廳' as a door. */}
+            {/* The way into everything, first among the keys: a museum with
+                31 laureates in it needs a name to be findable without knowing
+                which prize gave it. It carries the id the fold key points at,
+                because it is now the first thing that folds. See SiteSearch. */}
+            <SiteSearch lang={lang} only="key" />
             {segments.length > 0 && <a class="topbar__key museum-glass-btn museum-glass-btn--nav" href={home(lang)}><span>{t('nav.backHall')}</span></a>}
-            <a class="topbar__key museum-glass-btn museum-glass-btn--nav" id="topbar-keys" href={browse(lang)}><span>{t('nav.all')}</span></a>
+            <a class="topbar__key museum-glass-btn museum-glass-btn--nav" href={browse(lang)}><span>{t('nav.all')}</span></a>
             <a class="topbar__key museum-glass-btn museum-glass-btn--nav" href={learn(lang)}><span>{t('nav.learn')}</span></a>
             <a class="topbar__key museum-glass-btn museum-glass-btn--nav" href={gallery(lang, INTRO)}><span>{t('nav.prize')}</span></a>
             <a class="topbar__key museum-glass-btn museum-glass-btn--nav" href={about(lang)}><span>{t('nav.about')}</span></a>
@@ -195,6 +201,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
             </span>
           </a>
           <nav class="topbar__nav" aria-label={t('nav.hall')}>
+            <SiteSearch lang={lang} only="key" />
             <a class="museum-glass-btn museum-glass-btn--nav" href={home(lang)}><span>{t('nav.backHall')}</span></a>
             <a class="museum-glass-btn museum-glass-btn--nav" href={browse(lang)}><span>{t('nav.all')}</span></a>
             <a class="museum-glass-btn museum-glass-btn--nav" href={learn(lang)}><span>{t('nav.learn')}</span></a>
@@ -223,6 +230,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
       </div>
     </footer>
 
+    <SiteSearch lang={lang} only="panel" />
     <PageNav lang={lang} />
 
     <style>

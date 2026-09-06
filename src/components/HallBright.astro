@@ -149,7 +149,7 @@ const PLATE = { w: 836, h: 470 };
   {/* The name stands over the page, not behind it — a museum's name is the one
       thing that is never obscured by what is on show. Everything else on the
       stage stands behind. */}
-  <header class="bh__lockup">
+  <header class="bh__lockup" style={`--plate: url('${asset('assets/ui/name-plate.webp')}')`}>
     <span class="bh__lock-rule" aria-hidden="true"></span>
     <span class="bh__uni">{t('site.university')}</span>
     <h1 id="hall-title" class="bh__title">{t('site.tagline')}</h1>
@@ -372,18 +372,55 @@ const PLATE = { w: 836, h: 470 };
    * the same frosted tablet the bar's keys wear, level with them. Coming back
    * up the page opens it out again. */
   .bh__lockup[data-small] {
-    inset-block-start: 0.62rem;
+    /* Down from 0.62rem, which put the name level with the bar's keys. What
+       hangs here now is a plate rather than a key, and a plate is a taller
+       object: at the old inset its top ornament was cut off by the edge of
+       the window. Its top edge lands on the keys' instead, which is the line
+       the eye reads across a corner anyway. */
+    inset-block-start: 1.5rem;
     inset-inline-start: clamp(0.7rem, 2.2vw, 1.6rem);
     padding: 0.34rem 0.85rem;
-    background: rgba(255, 255, 255, 0.42);
-    backdrop-filter: blur(6px) saturate(1.5);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.95),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.55),
-      0 1px 2px rgba(46, 58, 78, 0.06),
-      0 8px 20px -14px rgba(46, 58, 78, 0.5);
   }
   .bh__lockup[data-small]::before { opacity: 0; }
+  /* ---------- and the name lands on a plate ----------
+   *
+   * The frosted tablet that used to be here was the bar's own key material,
+   * borrowed — correct while the name was one control among five, and wrong
+   * once there was a plate struck for it.
+   *
+   * On the name itself, not on the lockup: the lockup is a grid, and the two
+   * lines that fold away keep their width even at zero height, so its box is
+   * 88px wider than the name and a plate sized off it would sit visibly off
+   * to one side. The name's own box is the name.
+   *
+   * The picture is 2172x724 and its marble field runs from 11.9% to 88.1%
+   * across and 24.5% to 75.8% down — measured off the file's own alpha and
+   * colour, not guessed — so the field is 76.2% of the width and is centred
+   * to within a fifth of a per cent. A box 1.4 times the name's width leaves
+   * the field wider than the name in both languages, and the picture's own
+   * ratio then decides the height. Stretched to the box with 100% 100% rather
+   * than `contain`, which would letterbox the ornament and leave the field
+   * off-centre inside it. */
+  .bh__lockup[data-small] .bh__title { position: relative; }
+  .bh__lockup[data-small] .bh__title::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset-inline-start: 50%;
+    inset-block-start: 50%;
+    translate: -50% -50%;
+    inline-size: 140%;
+    aspect-ratio: 2172 / 724;
+    background: var(--plate) center / 100% 100% no-repeat;
+    /* struck metal on a photograph: it sits on the page rather than in it */
+    filter: drop-shadow(0 4px 11px rgba(70, 52, 16, 0.24));
+    pointer-events: none;
+  }
+  /* English runs a third longer than the Han name, and the plate is sized off
+     it — at the same step the plate came out 90px tall and its crown went off
+     the top of the window. One step down holds the two languages to the same
+     object. */
+  :global(html[lang='en']) .bh__lockup[data-small] .bh__title { font-size: var(--step--1); }
   .bh__lockup[data-small] :is(.bh__lock-rule, .bh__uni, .bh__title-en) {
     block-size: 0; opacity: 0; margin-block: 0; overflow: hidden;
   }
@@ -599,7 +636,12 @@ const PLATE = { w: 836, h: 470 };
          bigger, and reads as six pieces standing in the foreground of the
          hall rather than in a list beneath a photograph of one. */
       --pad: 0.15rem;          /* nearly all of the column is the piece here */
-      --top: calc(var(--band) * 0.27);
+      /* Down the floor, to make room over their heads for the ring of stills
+         that now turns on a phone too — see the media query in HallRing. The
+         pieces do not get smaller for it: what binds their size here is the
+         width of a third of the row, not the height left over, so the row
+         simply stands further forward in the picture. */
+      --top: calc(var(--band) * 0.36);
       /* Narrow enough that the overrun below has somewhere to go. The row is
          centred, so each end piece hangs 0.15 of a column past the row's edge;
          at the full width that hung 24px off the screen and cut 生理學或醫學
