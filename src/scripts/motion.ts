@@ -24,7 +24,7 @@ export function readPref(): MotionPref {
   return 'auto';
 }
 
-export function systemReduces(): boolean {
+function systemReduces(): boolean {
   return matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 

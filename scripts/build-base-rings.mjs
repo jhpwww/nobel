@@ -75,13 +75,11 @@ const HEIGHTS = [MIDDLE - STEP, MIDDLE, MIDDLE + STEP];
 /** where the camera stands, in degrees round the axis — see the note above */
 const FRONT = 35;
 /** the clearing there, in degrees each side of it */
-/* 26, and it was 21. The clearing is where the label is cut into the marble,
-   and a chord subtends sin(θ) of the drum's width — so 21° gave the device and
-   the name 35.8% of the face to sit in and 26° gives them 43.8%, a fifth more.
-   Asked for once the label was placed off the model rather than off its frame
-   and the two rooms finally agreed about where on the drum it sits. Beyond
-   about 30° the bands stop reading as rings round a drum and start reading as
-   two brackets, so this is most of the room there is. */
+/* 26°: the clearing is where the label is cut into the marble, and a chord
+   subtends sin(θ) of the drum's width, so 26° gives the device and the name
+   43.8% of the face to sit in. Beyond about 30° the bands stop reading as
+   rings round a drum and start reading as two brackets, so this is most of
+   the room there is. */
 const GAP = 26;
 const SEGMENTS = 160;     // round enough that the silhouette has no facets
 

@@ -25,10 +25,8 @@ const t = useT(lang);
     <a class="sp__course museum-glass-btn museum-glass-btn--nav" href={path(lang, 'learn')}><span>{t('study.forCourse')} →</span></a>
   </header>
 
-  {/* What this is, and where the rest of it lives. Four fields appeared under
-      a heading with no explanation at all, and the page that gathers them —
-      the one place a visitor can list, download, back up or delete what they
-      have written — was named only by a key in the corner. */}
+  {/* What this is, and where the rest of it lives — the one place a visitor
+      can list, download, back up or delete what they have written. */}
   <p class="sp__lede">{t('study.panelLede')}</p>
   <p class="sp__manage">
     <a href={`${path(lang, 'learn')}#record`}>{t('study.panelManage')} →</a>
@@ -36,13 +34,8 @@ const t = useT(lang);
 
   <p class="sp__blocked" data-blocked hidden>{t('study.blocked')}</p>
 
-  {/* Three stages, not three labels.
-      The fields were one list with the stage each belonged to stuck on the
-      front of it, which says what a thing is without changing where it is:
-      the question you write BEFORE the lecture sat between two you write
-      after. They are three blocks now, in the order they happen, and each
-      says what it is for. The three are the learning area's own — see .cycle
-      in LearnPage. */}
+  {/* Three stages, in the order they happen, each saying what it is for. The
+      three are the learning area's own — see .cycle in LearnPage. */}
   <ol class="sp__stages" role="list">
     <li class="sp__stage" data-stage="1">
       <h4 class="sp__stage-h"><span class="sp__stage-n">1</span>{t('study.stagePrepare')}</h4>
@@ -178,7 +171,6 @@ const t = useT(lang);
   .sp__stage[data-stage='attend'] { border-color: color-mix(in srgb, var(--accent) 40%, transparent); color: var(--accent); }
   .sp__stage + .sp__stage { margin-inline-start: -0.25rem; }
 
-  .sp__steps { display: grid; gap: .6rem; }
   .sp__pick { display: flex; align-items: flex-start; gap: .6rem; cursor: pointer; }
   .sp__pick input { position: absolute; opacity: 0; inline-size: 0; }
   .sp__pick-box {
@@ -232,7 +224,6 @@ const t = useT(lang);
   .sp__status { font-size: var(--step--1); color: var(--muted-dim); }
   .sp__status.is-done { color: var(--gold); }
 
-  .sp__hint { font-size: var(--step--1); color: var(--muted); margin-block: .7rem .5rem; max-inline-size: none; }
   .sp__crit { margin: .1rem 0 .35rem; padding-inline-start: 1.1rem; display: grid; gap: .25rem; }
   .sp__crit li { font-size: var(--step--1); color: var(--muted); }
 

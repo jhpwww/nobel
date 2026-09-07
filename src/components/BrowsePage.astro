@@ -111,8 +111,6 @@ const bright = process.env.THEME === 'bright';
     </ul>
   </div>
 
-  {/* The index of films ends where the prize pages end: pointing at the prize
-      itself. Same four links, same treatment — see Explore.astro. */}
   {/* The index of films ends the way the prize rooms and the laureate pages
       do — the same panel, the same list, the same first entry marked — except
       that a foot has a page's width to lay it out in rather than a 17rem rail.
@@ -168,12 +166,10 @@ const bright = process.env.THEME === 'bright';
   .chips { display: flex; flex-wrap: wrap; gap: 0.45rem; }
   .chip { position: relative; }
   .chip input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
-  /* The chip is a museum button now and the button kit paints it — see
-     src/styles/liquid-glass-buttons.css. What was here was a whole second
-     appearance: a border, a fill, a hover, a chosen state and three
-     category colours, all of which beat the kit on specificity because
-     Astro stamps its scope attribute on every compound. Removing them is
-     what makes one button system true rather than nearly true.
+  /* The chip is painted by the button kit — see
+     src/styles/liquid-glass-buttons.css — and nothing here may restyle it:
+     Astro stamps its scope attribute on every compound, so a scoped rule
+     beats the kit on specificity.
 
      The count keeps its lighter weight, and focus keeps its ring: the focus
      is on the radio, which the kit's :focus-visible cannot see. */

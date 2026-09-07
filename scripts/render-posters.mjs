@@ -21,9 +21,9 @@ import path from 'node:path';
 const CATS = ['physics', 'chemistry', 'medicine', 'peace', 'economics', 'literature'];
 const ROOT = 'public';
 /**
- * Both casts get a poster. The bright museum shows the gold models, and it used
- * to borrow these posters from the dark one — so until its GLB decoded, and for
- * anyone without WebGL at all, its hall stood in the other museum's palette.
+ * Both casts get a poster: the bright museum shows the gold models, and the
+ * poster is what stands until its GLB decodes — and for good for anyone
+ * without WebGL.
  */
 const SETS = [
   { dir: 'public/assets/models', src: '/assets/models' },

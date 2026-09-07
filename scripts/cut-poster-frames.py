@@ -29,7 +29,7 @@ WHAT IT WRITES
   · src/data/local-posters.json               youtube id → its path
 
 A local still wins over a YouTube frame wherever both exist; see
-VideoFacade.astro and LectureCard.astro, which read the two in that order.
+src/data/stills.ts, which puts the three sources in order.
 One frame identifying a session is what the About page's rights note
 describes, in both languages.
 
@@ -316,8 +316,7 @@ def targets(lectures: list, verified: dict) -> list[tuple[str, str, str, str]]:
         facts = lec['links'].get('nobel_facts', '')
         # No 導讀 here either — see the note in pick-posters.py. A guide video
         # keeps the cover it was made with.
-        rows = [('lecture', v.get('lecture')),
-                ('lecture_ntu', v.get('lecture_ntu'))]
+        rows = [('lecture', v.get('lecture'))]
         rows += [(f"extra:{s.get('label', '')}", s.get('id'))
                  for s in v.get('extra_sessions', [])]
         rows += [(f"interview:{i.get('source', '')}", i.get('id'))

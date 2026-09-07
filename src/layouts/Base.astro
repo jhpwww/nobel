@@ -8,7 +8,7 @@ import '../styles/buttons.css';
 import fonts from '../data/font-manifest.json';
 import fontsBright from '../data/font-manifest-bright.json';
 
-/** set at build time — see BRIGHT in astro.config.mjs */
+/** set at build time — see the bright-museum note in astro.config.mjs */
 const bright = process.env.THEME === 'bright';
 /** this museum's faces: names, hashed URLs, and its own stylesheet */
 const face: Record<string, string> = bright ? fontsBright : fonts;
@@ -105,18 +105,13 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     {/* Not inside the `bright &&` it belongs to. Astro hoists every <script>
         in a component and numbers them; a page that renders one of two
         conditional scripts gets the tag it asked for pointing at the OTHER
-        one's module. That is what happened on /study/, the one page in the
-        bright museum that is not `bare`: it emitted the roomfade tag, was
-        handed the bar's fold script, and so held the white sheet it opens
-        under for ever — a page that read as blank, with the museum's own
-        chrome on top of it. Both are unconditional now and each decides for
-        itself whether it has anything to do. */}
+        one's module — a page that asks for the fade and is handed the bar's
+        fold script holds its white sheet for ever. So both scripts are
+        unconditional, and each decides for itself whether it has anything
+        to do. */}
     <script>import '../scripts/roomfade';</script>
-    {/* Every page in the bright museum still dissolves before it reaches the
-        top of the window, and there is no longer a script for it: the band is
-        a fixed copy of the room laid over the page with a static mask, which
-        the compositor keeps in place on its own. See 'the band every page
-        dissolves into' in bright.css. */}
+    {/* the bright museum's page-top dissolve is CSS alone — see 'the band
+        every page dissolves into' in bright.css */}
 
     {bare && (
       <header class="topbar topbar--ghost">
@@ -316,13 +311,9 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 
       .topbar__nav {
         display: flex; align-items: center; flex-wrap: wrap;
-        /* Halved again. The keys carry their own glass, so the space between
-           them no longer has to do the separating, and at the old width five
-           of them read as five separate things rather than as one bar. The
-           mobile column sets its own gaps; see bright.css. */
-        /* Halved again, at the owner's word: the keys are plates now and a
-           plate has its own edge, so the space between them was doing nothing
-           but pushing the bar wider. */
+        /* Tight, at the owner's word: the keys are plates with their own edge,
+           so the space between them only separates them. The mobile column sets
+           its own gaps; see bright.css. */
         row-gap: 0.15rem; column-gap: clamp(0.113rem, 0.313vw, 0.238rem);
         justify-content: flex-end;
       }
@@ -396,7 +387,6 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
         font-size: 1.22em;
         letter-spacing: 0.04em;
       }
-      /* tiny screens need the extra gutter back to keep it on one line */
       /* the crest takes width the line needs, so both shrink together here */
       @media (max-width: 26rem) {
         .foot .wrap { width: min(100% - 0.75rem, 76rem); }

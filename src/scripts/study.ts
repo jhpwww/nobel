@@ -158,7 +158,7 @@ export function exportAll(titleFor: (id: string) => string): string {
 /**
  * Everything the store holds for one lecture, as its own plain-text block.
  * The page can hand a single record back without the visitor having to take
- * the whole set — see 'one record at a time' in StudyPage.
+ * the whole set — see 'one record at a time' in StudyDesk.
  */
 export function exportOne(id: string, titleFor: (id: string) => string): string {
   const e = entry(id);

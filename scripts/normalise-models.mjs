@@ -1,15 +1,11 @@
 /**
- * normalise-models.mjs — make six models from six authors sit alike.
+ * normalise-models.mjs — make six models sit alike.
  *
- * The sources arrive at wildly different scales (the flask is 19 units tall,
- * the coin 0.03 across, the dove 96) and with their pivots anywhere. Dropped
- * into identical <model-viewer> frames they would each need hand-tuned camera
- * settings, and any later swap would need them again.
- *
- * So each model is rewritten once, here: pruned, re-centred on its own
- * bounding box, and scaled so its longest axis is exactly 1 unit. After this
- * every icon takes the same camera and the same framing, and swapping a model
- * is a one-line change to PICKS in fetch-models.py.
+ * Each model is rewritten once, here: pruned, re-centred, set on the drum, and
+ * scaled so every assembly takes the same camera and the same framing. All six
+ * awards are the owner's own and arrive upright in the drum's own units; the
+ * pruning, orientation, smoothing and perch paths below are what a borrowed
+ * stand-in would need, and are kept for that.
  *
  * ORIENT holds the only per-model judgement — a rotation where the source's
  * idea of "up" or "front" is not ours. Values were set by looking at the
@@ -29,7 +25,7 @@ const OUT = 'public/assets/models';
  * Every piece stands on the same base.
  *
  * A white marble drum with a gold inlay ring round its top, from the project
- * owner, and the thing that turns six borrowed objects into one set of awards.
+ * owner, and the thing that turns six objects into one set of awards.
  * It is merged into each model rather than drawn as a second <model-viewer>:
  * one element, one draw, and the piece's own shadow falls on its own plinth.
  *
@@ -184,13 +180,8 @@ const SMOOTH_PARTS = {
 const PERCH_H = 0.525;
 const PERCH_W = 0.302 * 1.25;
 
-/** radians about X, Y, Z, applied before centring */
 /**
- * Each model arrives in its author's own palette — candy pastels on the DNA, a
- * dollar sign on the coin, black-and-chrome on the telescope. Six of those in
- * a row read as clip art borrowed from six places, which is what they are.
- *
- * So every material is re-cast in the hall's own accent, the same colour that
+ * Every material is re-cast in the hall's own accent, the same colour that
  * hall already uses for its heading and its plinth: the pieces become a set,
  * and the form does the identifying while the colour does the placing. Where a
  * hue is too saturated to hold a large fill, the site's own softened block
@@ -214,8 +205,7 @@ const linear = (hex) =>
 
 const ORIENT = {
   /* The award sculptures arrive upright, in the drum's own units and already
-     facing forward; the earlier atom needed a quarter turn about X and 75°
-     about Y to get there. */
+     facing forward, so nothing is turned here. */
   physics: [0, 0, 0],
   chemistry: [0, 0, 0],
   medicine: [0, 0, 0],

@@ -53,23 +53,14 @@ const t = useT(lang);
 </a>
 
 <style>
-  /* The same band the prize and laureate pages stand in, and the same
-     measurement — see --gr-room-h in bright.css. On a phone that is the hall's
-     own strip: the whole photograph across the width of the screen, uncropped,
-     rather than a tall crop of it. Fixed here already; what changed is only
-     how much of the picture is shown and how tall the band is. */
-  /* The whole picture, never a crop of it.
-   *
-   * These four rooms were painted for the pages they stand behind — an index
-   * of films, a learning area, a colophon — and a crop of one is a different
-   * room: the dome goes, or the floor does. So the band carries the
-   * photograph's own 1672:941 and the picture fills it exactly; where the
-   * window is too short for that, `contain` keeps the whole of it rather than
-   * taking the difference out of the top and bottom.
-   *
-   * It was min(100svh, 62rem) with `cover` and an object-position of 82%,
-   * which is the hall's own crop — right for the hall, and wrong for these
-   * the moment they stopped being the hall. */
+  /* The same band the prize and laureate pages stand in — see --gr-room-h in
+     bright.css. The whole picture, never a crop of it: these rooms were
+     painted for the pages they stand behind — an index of films, a learning
+     area, a colophon — and a crop of one is a different room: the dome goes,
+     or the floor does. So the band carries the photograph's own 1672:941 and
+     the picture fills it exactly; where the window is too short for that,
+     `contain` keeps the whole of it rather than taking the difference out of
+     the top and bottom. */
   .roomback {
     position: fixed;
     inset-inline: 0;
@@ -85,19 +76,12 @@ const t = useT(lang);
     object-fit: contain;
     object-position: 50% 0;
   }
-  /* The photograph, undimmed.
-   *
-   * It carried a white wash from its top edge down — 0.66 at the crown, 0.9
-   * by the middle, the page's own white at the foot — which is what made a
-   * paragraph readable over it and also what made these four rooms look like
-   * a photocopy of themselves. Out, at the owner's word. What is left is the
-   * join alone: nothing at all for the top three fifths, then the picture
-   * giving way to the page's white by its foot, because the photograph's own
-   * bottom edge is a warm grey and the page is not, and without this it ends
-   * on a ruled line.
-   *
-   * The type that stands over it carries its own light instead — the title's
-   * halo and the sentence's white edge, see .hall-note in bright.css. */
+  /* The join alone, at the owner's word — no wash over the photograph.
+     Nothing at all for the top three fifths, then the picture giving way to
+     the page's white by its foot, because the photograph's own bottom edge is
+     a warm grey and the page is not, and without this it ends on a ruled
+     line. The type that stands over it carries its own light instead — the
+     title's halo and the sentence's white edge, see .hall-note in bright.css. */
   .roomback::after {
     content: '';
     position: absolute; inset: 0;

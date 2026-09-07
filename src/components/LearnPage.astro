@@ -19,7 +19,7 @@ import RoomBack from './RoomBack.astro';
 import PageEmblem from './PageEmblem.astro';
 import StudyDesk from './StudyDesk.astro';
 import { useT, type Lang } from '../i18n/ui';
-import { path, browse } from '../i18n/routing';
+import { browse } from '../i18n/routing';
 import { lectures, totalSittings } from '../data/catalog';
 
 /* the museum's own room behind this page too — see RoomBack */
@@ -61,10 +61,8 @@ const marks = [
 ];
 
 /* ---- the 1+3 ----
- * Three stages, and a step before them. Choosing what to watch was not part
- * of the cycle and was sitting in the tool rack instead, as two links — which
- * put the first thing anyone actually does on this page in the wrong section
- * entirely. It is numbered 0 because it happens once, not once per lecture.
+ * Three stages, and a step before them: choosing what to watch is numbered 0
+ * because it happens once, not once per lecture.
  */
 const cycle = [
   { n: '0', k: '選擇演講', e: 'Choose a lecture',
@@ -100,8 +98,8 @@ const cycle = [
         --emb-h in bright.css, where the size the three of them share lives. */}
 
     <header class:list={['course__head', bright && 'hall-head']}>
-      {/* the eyebrow is gone: it read '諾貝爾講座博物館' over a page inside the
-          諾貝爾講座博物館, which is the museum's name said twice */}
+      {/* no eyebrow: the museum's name over a page inside the museum is the
+          name said twice */}
       <h1>{t('learn.title')}</h1>
       {/* the three stages, said once in gold at the door of the room they
           belong to — the sub-title the owner asked for */}
@@ -149,9 +147,7 @@ const cycle = [
       </ol>
     </section>
 
-    {/* The record itself, not a door to it.
-        學習工具 was one card pointing at /study/, and a page of its own is
-        exactly what this should not be: it is the only thing in the museum
+    {/* The record itself, not a door to it: it is the only thing in the museum
         that keeps anything, and it belongs in the room where the three stages
         that produce it are set out. See StudyDesk. */}
     <section class="course__sec" id="record" aria-labelledby="tools">
@@ -242,7 +238,6 @@ const cycle = [
     padding-inline-start: .65rem;
     border-inline-start: 2px solid color-mix(in srgb, var(--gold) 45%, transparent);
   }
-  .tools--one { grid-template-columns: minmax(0, 1fr); max-inline-size: 34rem; }
   .course__blurb { font-size: var(--step-1); line-height: 1.9; color: var(--text); margin-block-start: 1rem; max-inline-size: 54ch; }
   .course__facts { display: flex; flex-wrap: wrap; gap: 0 2.4rem; margin-block-start: 1.4rem; }
   .course__facts dt { font-size: .66rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted-dim); }
@@ -276,18 +271,6 @@ const cycle = [
   }
   .cycle__k { font-family: var(--font-han-serif); font-size: var(--step-1); color: var(--cream); }
   .cycle__t { font-size: var(--step--1); color: var(--muted); line-height: 1.7; }
-
-  .tools { display: grid; gap: .9rem; margin-block-start: 1.2rem;
-           grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr)); }
-  .tool {
-    display: grid; gap: .25rem; text-decoration: none; block-size: 100%;
-    border: 1px solid var(--line); border-radius: var(--radius);
-    background: var(--surface); padding: 1rem 1.15rem;
-    transition: border-color .3s, background .3s, transform .3s;
-  }
-  .tool:hover { border-color: var(--line-hi); background: var(--surface-hi); transform: translateY(-2px); }
-  .tool__t { font-family: var(--font-han-serif); font-size: var(--step-1); color: var(--cream); }
-  .tool__d { font-size: var(--step--1); color: var(--muted); line-height: 1.6; }
 
   .marks { display: grid; gap: .7rem; padding: 0; margin-block-start: 1.2rem; }
   .marks li { display: flex; gap: 1rem; align-items: baseline; }

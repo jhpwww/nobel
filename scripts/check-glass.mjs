@@ -4,8 +4,8 @@
  *
  * The home page has no ground. The hall is fixed for the whole document and
  * the page is read in front of it, so what is behind any given word is a
- * photograph of a rotunda — white marble at one end of its range and a wall of
- * thirty-six dark screens at the other. Nothing in check-contrast.mjs can
+ * photograph of a rotunda — white marble at one end of its range and the
+ * shadow under the colonnade at the other. Nothing in check-contrast.mjs can
  * speak to that: those tools compare tokens, and no token describes a room.
  *
  * So this measures the page as rendered. It hides the type and the pictures,

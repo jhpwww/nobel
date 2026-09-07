@@ -106,8 +106,7 @@ NTU_UPLOAD = {"geim":"1KdZldwfnT4","maskin":"hv8g3oRq7Ms","strickland":"51o9waNO
               "meldal":"XhOCuaxqSHY","mbmoser":"cRu-6W0kQKs","frank":"pfNkuYxhgfM"}
 
 # Extra same-event sessions
-EXTRA_SESSIONS = {"sudhof":[("6sh75WDdREs","Day 2 · 2026-01-06")],
-                  "engle":[("_sgZRKOUygM","Alternate upload")]}
+EXTRA_SESSIONS = {"sudhof":[("6sh75WDdREs","Day 2 · 2026-01-06")]}
 
 INTERVIEWS = {
  "roth":[("cw","lhgrxypspsU"),("storm","6E5szZDmbI4")],

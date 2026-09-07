@@ -21,9 +21,9 @@ A frame only wins if the person in it *is* the laureate.
 
 Candidates are the three automatic frames YouTube samples from inside the
 recording. `maxresdefault` is deliberately last: it is whatever the uploader
-chose, which for this series is usually a title card. The full recording
-cannot be reached from this network to cut a frame at an arbitrary time — see
-the backdrop clip pipeline for why — so three frames is the pool.
+chose, which for this series is usually a title card. Where none of the three
+holds the laureate, scripts/cut-poster-frames.py cuts a frame out of the
+recording itself.
 
 Writes two files.
 
@@ -31,11 +31,6 @@ Writes two files.
   · src/data/video-posters.json — YOUTUBE id → frame suffix, for every facade
     on a laureate's page: the Taiwan lecture, NTU's own recording of it, the
     導讀, the extra sittings and each interview.
-
-The second is why this was extended. The cards had been verified for a year
-while every facade on every lecture page still showed `hqdefault` — the
-uploader's pick — so the same recording carried a laureate's face in the grid
-and an opening speaker's on its own page.
 
 Anything unmatched is omitted, and the reader falls back to the recording's
 default thumbnail.
@@ -109,8 +104,7 @@ def main() -> None:
             continue
 
         # Every other recording this laureate appears in, verified the same
-        # way. Their own page shows all of them, and until now every one of
-        # them wore whatever the uploader had chosen.
+        # way. Their own page shows all of them.
         #
         # Except the 導讀. The owner asked for the lectures and the interviews
         # and named neither the guide videos nor anything else; a 導讀 is the

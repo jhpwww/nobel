@@ -510,7 +510,6 @@ export function createRotunda(opts: RotundaOptions) {
   let lastDraw = 0, sampled = 0, costSum = 0, tier = 0;
   let usePost = true;
 
-  // eslint-disable-next-line @typescript-eslint/no-use-before-define
   function degrade() {
     if (tier === 0) {
       tier = 1; usePost = false;                 // bloom is the expensive pass

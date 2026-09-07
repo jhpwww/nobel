@@ -3,10 +3,11 @@
 """
 crop-hall.py — cut the bright museum's plate from its source render.
 
-The hall is a photograph, and the video wall is placed in per cent of it, so
-the crop is not a matter of taste: change it and the wall drifts off the
-architecture. This records the crop rather than leaving it in an image editor,
-and prints the landmarks HallBright.astro needs after any change.
+The hall is a photograph, and the ring of stills and the row of pieces are
+placed in per cent of it, so the crop is not a matter of taste: change it and
+they drift off the architecture. This records the crop rather than leaving it
+in an image editor, and prints the landmarks HallBright.astro needs after any
+change.
 
 Where the horizon is, and how it was found
 ------------------------------------------
@@ -43,8 +44,7 @@ HERE = pathlib.Path(__file__).resolve().parent.parent
 SRC = HERE / 'assets-src/hall/bright-hall-source.png'
 OUT = HERE / 'public/media'
 
-#: No crop at all, now that the plate is shown whole rather than covering the
-#: hero. Two reasons it earns none:
+#: No crop at all: the plate is shown whole rather than covering the hero.
 #:
 #: The picture is already framed — dome to floor with nothing dead at either
 #: end — and the page's own join dissolves its last twelve per cent anyway.
@@ -52,8 +52,8 @@ OUT = HERE / 'public/media'
 #: And a crop would cost more than it saves. A contained plate is letterboxed
 #: against a hero that is squarer than it is, so the taller the plate the more
 #: of the hero it fills: at 1440x900 the render's own 1.78 leaves a 90px band
-#: below it where the previous 1.92 crop left 150. Cropping the picture makes
-#: the picture smaller.
+#: below it where a 1.92 crop leaves 150. Cropping the picture makes the
+#: picture smaller.
 CROP_TOP = 0
 CROP_BOTTOM = 0
 

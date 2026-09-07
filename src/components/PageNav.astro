@@ -57,9 +57,8 @@ const t = useT(lang);
 
   /* These are nav keys from the button kit; what is left here is the state
      machine — they are hidden until the page has been scrolled, and that is
-     the one thing the kit knows nothing about. The pill shape, the fill, the
-     blur and the border all came from the kit's --nav and were removed from
-     here, where a scoped rule would have beaten it. */
+     the one thing the kit knows nothing about. No look-and-feel here: a
+     scoped rule would beat the kit. */
   .pn__b {
     font-size: var(--step--1);
     letter-spacing: 0.06em;

@@ -30,13 +30,11 @@ PICKS = {
     'peace':      '2jmH3trzPFf',  # Dove
     'literature': '9RjoPxajS8Z',  # Quill and parchment
 }
-# physics and economics are not here: Poly Pizza has no balance worth using and
-# nothing that reads as an atom, so scripts/build-models.mjs makes those two.
 
 RAW = pathlib.Path('assets-src/models')
 RAW.mkdir(parents=True, exist_ok=True)
 
-# merge, never overwrite: build-models.mjs owns two of the six entries and
+# merge, never overwrite: build-models.mjs writes into the same file, and
 # running either script alone must still leave a complete set
 CREDITS = pathlib.Path('data/model-credits.json')
 out = json.loads(CREDITS.read_text(encoding='utf-8')) if CREDITS.exists() else {}

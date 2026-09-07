@@ -190,7 +190,7 @@ recording. 導讀 films are left with whatever frame YouTube gives them.
 face against the laureate's official portrait with SFace at the model's own threshold — face
 detection alone finds the banner behind the stage, a portrait in a slide, someone in the third
 row. Where none of the four holds the laureate, `scripts/cut-poster-frames.py` goes into the
-recording itself and writes a single still under `public/assets/posters/` (20 today).
+recording itself and writes a single still under `public/assets/posters/` (17 today).
 `src/data/stills.ts` resolves the three sources in order.
 
 ## The learning area

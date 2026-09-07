@@ -3,10 +3,10 @@
 """
 make-backdrop-clips.py — the short loops that play behind the halls.
 
-The backdrop used to be a live youtube-nocookie embed. Measured on the live
-site it streamed 0.27–0.30 MB/s and never stopped: ten seconds of looking cost
-7 MB, a minute cost 21 MB. For decoration behind a hall, at 38–50% opacity
-under a grading layer, that is indefensible.
+Never a live youtube-nocookie embed: measured on the live site, one streamed
+0.27–0.30 MB/s and never stopped — ten seconds of looking cost 7 MB, a minute
+21 MB. For decoration behind a hall, at 38–50% opacity under a grading layer,
+that is indefensible.
 
 These are ten-second cuts, encoded small, that loop. A visitor downloads a few
 hundred KB once and the traffic then goes to nothing however long they stay.

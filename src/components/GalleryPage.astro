@@ -11,15 +11,14 @@ import { home, gallery, asset } from '../i18n/routing';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import {
-  byCategory, catName, categories, factsAsOf, intro, introParts, INTRO,
-  generalLinks, sittings, type GalleryKey, type CategoryKey,
+  byCategory, catName, categories, factsAsOf, introParts, INTRO,
+  generalLinks, sittings, catNameAlt, type GalleryKey, type CategoryKey,
 } from '../data/catalog';
 
 interface Props { lang: Lang; cat: GalleryKey }
 const { lang, cat } = Astro.props;
 const t = useT(lang);
 
-import { catNameAlt } from '../data/catalog';
 const title = catName(cat, lang);
 /** the same prize in the other language, set under the heading */
 const titleAlt = catNameAlt(cat, lang);
@@ -62,11 +61,10 @@ const deeper = isIntro ? exploreItems : [
 
 /* ---------------------------------------------------------------
  * The introduction room, which is the one room in the museum with nothing on
- * show. It carried four link cards and stood 71px taller than a 900px window,
- * which meant the laurel could never even be caught. What follows is the
- * prize itself: the will it comes from, the six doors it opens, what it has
- * added up to, and how one is decided. All of it is either in the catalogue
- * already or a matter of public record — see the note by --np-stats below.
+ * show. What follows is the prize itself: the will it comes from, the six
+ * doors it opens, what it has added up to, and how one is decided. All of it
+ * is either in the catalogue already or a matter of public record — see the
+ * note by `totals` below.
  * ------------------------------------------------------------- */
 const six = (Object.keys(categories) as CategoryKey[])
   .sort((a, b) => categories[a].order - categories[b].order)
@@ -158,15 +156,11 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
       </picture>
     </div>
 
-    {/* the museum's name, in the mark it folds into on the hall — and it is
-        the way back, which is why the 'return to the hall' line under the
-        title has gone: two doors out of one room, side by side, is one too
-        many.
-        Outside the header for the same reason it is outside the laureate
-        page's: .gr used to isolate, and an isolated ancestor caps every
-        z-index under it — the mark's 60 was counted inside the header rather
-        than against the page, and the piece beside it painted over the name.
-        See the note at the head of LecturePage. */}
+    {/* The museum's name, in the mark it folds into on the hall — and it is
+        the way back: two doors out of one room, side by side, is one too
+        many. Outside the header, as on the laureate page: an isolated ancestor
+        caps every z-index under it, and the mark's 60 has to count against the
+        page. See the note at the head of LecturePage. */}
     <a class="gr__lock" href={home(lang)} aria-label={t('nav.backHall')}>
       <span class="gr__lock-name">{t('site.tagline')}</span>
     </a>
@@ -256,12 +250,9 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
       </div>
     </header>
   )}
-  {/* Everything below the room, on its own sheet.
-      The room is fixed now, so anything transparent over it shows a rotunda
-      sliding under the words. The page's own white was already carrying that
-      job — it was on .about, which is only most of the page — so it is one
-      ground here instead, and the room is wiped by the page rising over it
-      rather than scrolled away with the header. */}
+  {/* Everything below the room, on its own sheet. The room is fixed, so
+      anything transparent over it shows a rotunda sliding under the words:
+      one ground here, and the room is wiped by the page rising over it. */}
   <div class="gr__sheet" data-fade>
   <span id="gr-body" class="gr__anchor"></span>
 
@@ -308,10 +299,9 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
       {/* 延伸探索, in the rail down the right — the same place and the same
           shape a laureate's page keeps it, so walking from a prize room into a
           laureate's room does not move the thing you were reading. It carries
-          the prize's own official pages, which used to be a strip of keys
-          wedged under the statistics halfway up this page, plus the two links
-          at the foot of every laureate's list that are about the series rather
-          than about one person. */}
+          the prize's own official pages, plus the two links at the foot of
+          every laureate's list that are about the series rather than about
+          one person. */}
       <aside class="lec__aside gh__aside" aria-labelledby="h-deep">
         <h3 id="h-deep" class="lec__h">{t('explore.title')}</h3>
         <ul class="links" role="list">
@@ -509,17 +499,15 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
    * the foot. And it holds still, as the hall's does — the page is read in
    * front of the room rather than under a picture of one.
    *
-   * On a desktop the photograph is cropped, as it was: the hall is the room,
+   * On a desktop the photograph is cropped: the hall is the room, this is a
    * this is a view into it, and a view can be framed. Cropped from the top,
    * keeping the floor and the colonnade, because the floor is what the piece
    * has to stand on. On a phone it is the hall's own band — the whole picture
    * across the width of the screen, uncropped, at the size the hall shows it,
    * with the piece standing in front of the bottom of it.
    *
-   * The header is shorter than it was by the height of the marble drum, which
-   * carries the title, the piece and the whole page that much higher up the
-   * screen. The room takes the same height, so the veil at its foot finishes
-   * exactly where the page's own white starts.
+   * The room takes the same height as the header, so the veil at its foot
+   * finishes exactly where the page's own white starts.
    */
   .gr {
     position: relative;
@@ -570,22 +558,11 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
   }
 
   /* The page's own ground, and the reason the fixed room does not show
-     through it. .about carried this before and .about is only most of the
-     page; the lectures below it had nothing but the body's white, which a
-     fixed room paints over. */
+     through it: everything below the header stands on this one sheet. */
   .gr__sheet { position: relative; background: var(--bg-0); }
 
-  /* The page dissolves before it reaches the top of the window; the band and
-     its two stops are the museum's own now — see src/scripts/pagefade.ts and
-     [data-fade] in bright.css. */
-  /* The introduction room has no lectures and no statistics — its four cards
-     are the whole page. With the heading gone (see Explore) they need the
-     breathing room a section heading would have given them, and the room above
-     needs to end on something rather than on an empty band. */
-  /* :not(:has(.np)) — the introduction room opens with the head every room
-     that is not a prize room opens with, and that head places itself; the
-     padding was put here when the four cards were the whole page and it now
-     lands between the museum's mark and the laurel. */
+  /* a headingless four-card foot without the introduction room's own head
+     above it */
   .gr__sheet:has(.xp[data-bare]):not(:has(.np)) { padding-block-start: clamp(1.6rem, 4vw, 2.6rem); }
 
   /* the mark the hall's name folds into, in the same gold glass — see
@@ -669,13 +646,11 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
      page, so once the visitor has gone half the piece's own height the piece
      becomes a mark of itself and takes its place beside the museum's name.
      *
-     * Beside it, and measured — this was a clamp against the viewport width,
-     * and the museum's name is not a share of the viewport. Below about
-     * 1400px the two collided and the mark sat in the middle of the name,
-     * which is what was reported off the deployed site. --lock-w is the name's
-     * own rendered width, set by the script at the foot of this file, so the
-     * mark clears it in both languages at every width. The fallback is the
-     * Han name's measurement, for the frame before the script runs. */
+     * Beside it, and measured: the museum's name is a line of type, not a
+     * share of the viewport, so --lock-w is its own rendered width, set by the
+     * script at the foot of this file, and the mark clears it in both
+     * languages at every width. The fallback is the Han name's measurement,
+     * for the frame before the script runs. */
   .gr__rail[data-pinned] .gr__piece {
     scale: 0.2;
     translate:
@@ -687,20 +662,16 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
   .gr__piece .bh__art {
     /* The cage's ratio, which is not the hall's 1:2 — the two rooms frame the
        same model differently on purpose, the hall to fit six in a row and this
-       to fill one. What used to follow from that was a label at two different
-       heights on the drum; it does not any more, because the label is placed
-       off the model rather than off the frame. See .bh__face in plinth.css. */
+       to fill one. The label is placed off the model rather than off the
+       frame, so the ratio does not move it. See .bh__face in plinth.css. */
     inline-size: calc(var(--gr-art) * 0.545);
     block-size: var(--gr-art);
     aspect-ratio: auto;
     max-inline-size: none;
   }
   /* --gr-art, --gr-floor, --gr-stick and --gr-room-h are declared once, on the
-     theme root in bright.css. They were on `.gr, .gr__rail` here — on both,
-     because the rail is the header's sibling and a var set on .gr alone does
-     not reach it. The room is a third sibling now and would have needed the
-     same line again, which is one repetition too many for a number three
-     things have to agree on. */
+     theme root in bright.css: the header, the rail and the room are siblings,
+     and a var set on .gr alone reaches neither of the other two. */
   .gr__id { padding-block-end: 0.2rem; }
   .gr__title {
     font-family: var(--font-han-serif);
@@ -729,17 +700,13 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
 
   @media (max-width: 40rem) {
     /* --gr-art and --gr-head-h take their phone values on the theme root in
-       bright.css. They were declared here, on the header and on the rail
-       both — the rail is a sibling and every one of its numbers is built from
-       --gr-art: its rest position is a negative margin of exactly the piece's
-       height, so a stale value there does not merely draw the piece at the
-       wrong size, it pulls the whole page up under the room and swallows the
-       first paragraph. One declaration cannot go stale in one place. */
-    /* Beside the museum's name, not under it. It rode underneath because the
-       bar's keys used to stack down the right and there was no room on the
-       line; the keys fold behind one key now, so the line is empty. The
-       horizontal offset is the desktop's — measured off the name's own
-       rendered width — and only the size is a phone's. */
+       bright.css, never here: the rail's rest position is a negative margin of
+       exactly the piece's height, so a stale copy of --gr-art does not merely
+       draw the piece at the wrong size, it pulls the whole page up under the
+       room and swallows the first paragraph. */
+    /* Beside the museum's name, not under it: the horizontal offset is the
+       desktop's — measured off the name's own rendered width — and only the
+       size is a phone's. */
     .gr__rail[data-pinned] .gr__piece { scale: var(--piece-back-k); }
     .gr__in { gap: 0.5rem; }
     .gr__title { font-size: var(--step-2); }
@@ -748,12 +715,9 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
   /* ==========================================================
      THE INTRODUCTION ROOM
      ==========================================================
-     The one room with nothing on show, and it read like it: four link cards
-     under a title, on a page 71px taller than the window it opened in — so
-     the laurel could not even be caught, because there was nothing to scroll.
-     What it has now is what a room about a prize would hang: the sentence it
-     comes from, the six doors it opens, what it has added up to, and how one
-     is decided.
+     The one room with nothing on show, so it hangs what a room about a prize
+     would hang: the sentence it comes from, the six doors it opens, what it
+     has added up to, and how one is decided.
 
      Set wider than a page of prose and narrower than the museum's grids: one
      column of 42 characters or so for the reading, with the plates and the
@@ -764,7 +728,6 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
   .np__n { margin-block-start: 0; color: var(--gold); letter-spacing: 0.16em; text-indent: 0.16em; }
   :global(html[data-theme='bright']) .np__n { display: none; }
   .np__title { font-size: var(--step-3); }
-  /* gold, like every other room's sub-line: the four doors sign the same way */
   /* type, colour and measure are .hall-note's, in bright.css */
 
   /* The will, set as an inscription rather than as a quotation: a rule down
@@ -989,76 +952,6 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
     font-variant-numeric: lining-nums tabular-nums;
   }
 
-  /* ---------- materials strip: titles only, detail on hover/focus ---------- */
-  .mats {
-    display: flex; flex-wrap: wrap;
-    padding-block: clamp(1.2rem, 3vw, 1.7rem) clamp(1.5rem, 4vw, 2.4rem);
-    border-block-start: 1px solid var(--line);
-  }
-  /* the popup anchors to this list, so it always spans the strip and can
-     never overflow the viewport, whichever button is pointed at */
-  .mats__list {
-    position: relative; inline-size: 100%;
-    display: flex; flex-wrap: wrap; gap: 0.65rem; padding: 0; margin: 0;
-  }
-
-  /* The bright museum makes these museum-glass-btn--nav; what stays here is the
-     dark site's own treatment, and the layout the button does not set. */
-  .mat__link {
-    display: inline-flex; align-items: center; gap: 0.5rem;
-    font-size: var(--step-0); font-weight: 500; line-height: 1.3;
-    color: var(--on-accent); text-decoration: none;
-    background: linear-gradient(158deg,
-      color-mix(in srgb, var(--accent-block) 95%, #fffaf0),
-      color-mix(in srgb, var(--accent-block) 84%, #8a6535));
-    border: 1px solid color-mix(in srgb, var(--accent-block) 88%, #fffaf0);
-    border-radius: var(--radius-control);
-    padding: 0.62rem 1.4rem;
-    box-shadow: 0 2px 14px -5px color-mix(in srgb, var(--accent-block) 50%, transparent);
-    transition: filter 0.25s var(--ease), transform 0.25s var(--ease), box-shadow 0.25s var(--ease);
-  }
-  .mat__link:hover, .mat__link:focus-visible {
-    filter: brightness(1.1) saturate(1.05);
-    transform: translateY(-2px);
-    box-shadow: 0 10px 28px -8px color-mix(in srgb, var(--accent-block) 78%, transparent);
-  }
-  .mat__link:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: 3px; }
-  .mat__ext { font-size: 0.9em; opacity: 0.65; }
-
-  .mat__tip {
-    position: absolute;
-    inset-inline: 0;
-    inset-block-start: calc(100% + 0.6rem);
-    z-index: 20;
-    display: grid; gap: 0.3rem;
-    padding: 0.85rem 1.05rem;
-    background: var(--bg-2);
-    border: 1px solid color-mix(in srgb, var(--accent) 42%, var(--line));
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-lift);
-    opacity: 0; visibility: hidden; translate: 0 -0.35rem;
-    transition: opacity 0.22s var(--ease), translate 0.22s var(--ease), visibility 0.22s;
-    pointer-events: none;
-  }
-  .mat__tip-d { font-size: var(--step--1); color: var(--text); line-height: 1.65; }
-  .mat__tip-h { font-size: 0.66rem; letter-spacing: 0.08em; color: var(--accent); }
-
-  .mat:hover .mat__tip,
-  .mat__link:focus-visible + .mat__tip {
-    opacity: 1; visibility: visible; translate: 0 0;
-  }
-
-  /* no hover on touch — show the detail inline instead of hiding it entirely */
-  @media (hover: none) {
-    .mat__tip {
-      position: static; opacity: 1; visibility: visible; translate: 0;
-      box-shadow: none; background: transparent; border: 0;
-      padding: 0.15rem 0 0.5rem 0.2rem;
-    }
-    .mats__list { flex-direction: column; align-items: stretch; gap: 0.9rem; }
-    .mat { display: grid; justify-items: start; gap: 0.3rem; }
-  }
-
   .asof { margin: 0; font-size: 0.66rem; color: var(--muted-dim); line-height: 1.6; }
 
   /* ---------- body ---------- */
@@ -1111,30 +1004,6 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
   .empty__t { font-family: var(--font-han-serif); font-size: var(--step-1); color: var(--cream); }
   .empty__b { color: var(--muted); line-height: 1.85; }
 
-  /* ---------- materials ---------- */
-  .materials__note { font-size: var(--step--1); color: var(--muted); margin-block-start: 0.9rem; }
-  .cards {
-    display: grid; gap: 0.9rem; padding: 0; margin-block-start: 1.4rem;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
-  }
-  .cards a {
-    display: grid; gap: 0.3rem; block-size: 100%; text-decoration: none;
-    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
-    padding: 1.1rem 1.25rem 0.95rem;
-    transition: border-color 0.3s var(--ease), background 0.3s var(--ease), transform 0.3s var(--ease);
-  }
-  .cards a:hover, .cards a:focus-visible {
-    border-color: color-mix(in srgb, var(--accent) 55%, transparent);
-    background: var(--surface-hi); transform: translateY(-2px);
-  }
-  .cards__t { font-family: var(--font-han-serif); font-size: var(--step-1); color: var(--cream); line-height: 1.35; }
-  .cards__d { font-size: var(--step--1); color: var(--muted); line-height: 1.65; }
-  .cards__host {
-    margin-block-start: 0.45rem; font-size: 0.66rem; letter-spacing: 0.08em;
-    color: var(--muted-dim); font-family: var(--font-body);
-  }
-  .cards a:hover .cards__host { color: var(--accent); }
-
 </style>
 
 <script>
@@ -1144,11 +1013,6 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
      same name bent onto the same cylinder */
   dressPlinths();
 
-  /* ---- where the museum's name ends ----
-     The mark the piece shrinks into stands beside the name, and the name is a
-     line of type, not a share of the viewport: 諾貝爾講座博物館 and 'Nobel
-     Lecture Museum' are different widths, and neither of them tracks 7vw. Its
-     rendered width is measured here and handed to the stylesheet. */
   const lock = document.querySelector<HTMLElement>('.gr__lock');
   const root = document.documentElement;
 
@@ -1157,9 +1021,9 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
      piece never lags a frame behind the page. What is decided here is only
      when it becomes a mark.
 
-     On a desktop that is half the piece's own height of scrolling, which is
-     what was asked for and is no longer the same moment as the pin: the page
-     now arrives a drum's height higher, so the rail reaches the top of the
+     On a desktop that is half the piece's own height of scrolling — the
+     owner's figure, and not the same moment as the pin: the page arrives a
+     drum's height higher, so the rail reaches the top of the
      window after about 60px. Between the two the piece stands still at full
      size, and the museum's name is drawn over it rather than under — see the
      mark's z-index of 60 in bright.css.

@@ -37,17 +37,16 @@ const six = lectures
   .filter((l) => l.video.lecture_ntu)
   .sort((a, b) => a.event.date.localeCompare(b.event.date));
 
-/* ---- round 5: a cloud, not a carousel ----
+/* ---- a cloud, not a carousel ----
  * Six panels at one height on one circle is a fairground ride. What makes the
  * reference read as things floating is that no two are at the same height or
  * quite square to the axis. These are fixed per panel rather than random, so
  * the arrangement is the same on every visit and can be judged as a
  * composition; the numbers are in cqw of the plate and in degrees, and they
- * sum to nothing so the ring stays centred on the room's axis.
+ * sum to nothing so the ring stays centred on the room's axis. Kept small, at
+ * the owner's word: spread wider, the ring reads as six panels at six heights
+ * and the highest reaches the pieces' own heads.
  */
-/* Halved, at the owner's word: at the first spread the ring read as six
- * panels at six different heights rather than as one ring with a little air
- * in it, and the highest of them reached the pieces' own heads. */
 const DRIFT = [0, -1.7, 1.3, -0.7, 1.6, -0.5];      // cqw, up is negative
 const TILT  = [0.9, -1.6, 1.4, -0.8, 1.7, -1.6];    // degrees about the axis
 
@@ -79,10 +78,9 @@ const still = (id: string, yt: string) =>
   .hr {
     --n: 6;                    /* panels */
     --pane-w: 15cqw;
-    /* A fifth in from where it was. The ring is behind the sculptures and it
-       was passing outside them at the sides, which put a lit pane beside a
-       gold figure instead of behind it; drawn in, the whole turn happens
-       within the room's own colonnade. */
+    /* Drawn in so the whole turn happens within the room's own colonnade: any
+       wider and the ring passes outside the sculptures at the sides, putting a
+       lit pane beside a gold figure instead of behind it. */
     --radius: 21.6cqw;
     --dur: 96s;
     /* A pane's own height, which two of the owner's figures are taken from:
@@ -145,27 +143,21 @@ const still = (id: string, yt: string) =>
   /* the aperture, measured off the frame's own alpha channel:
      left 11.43%, right 11.61%, top 14.11%, bottom 13.39% of 1619x971 — an
      opening of 1.770:1, which is 16:9 to within half a per cent */
-  /* ---------- round 2: the panel had to become an object ----------
-     The first build put a bare still in the air and the frame vanished
-     entirely: the neon is drawn to be added to a dark ground, and `screen` on
-     white marble is a no-op. Composited normally the glow reads, and what was
-     a photograph pasted on the room becomes a pane hanging in it.
-
+  /* ---------- the panel is an object ----------
      Three things make it hang. A shadow, so the room knows it is there. A
-     little of the room through it, because glass is what the reference is made
-     of and an opaque rectangle is a poster. And less contrast than the gold in
-     front of it — aerial perspective is the one cue a flat ring cannot fake
-     any other way. */
-  /* ---------- round 3: distance ----------
+     little of the room through it, because glass is what the reference is
+     made of and an opaque rectangle is a poster. And less contrast than the
+     gold in front of it — aerial perspective is the one cue a flat ring
+     cannot fake any other way. */
+  /* ---------- distance ----------
      Perspective sizes the far panels and the browser sorts them, and that is
      all the depth a flat ring gets for free — every panel arrives at the same
-     strength whether it is two metres away or ten, which is what made the ring
-     read as six stickers on one plane.
-     Air is what is missing. Each panel dims on the way round and brightens
-     coming back, once per revolution, phase-shifted by its own place in the
-     six — so the animation needs no clock of its own and cannot drift from the
-     turn, because both run on the same duration. A negative delay of (i/6 - 1)
-     revolutions puts panel i at its brightest exactly when it is nearest. */
+     strength whether it is two metres away or ten. Air is what is missing.
+     Each panel dims on the way round and brightens coming back, once per
+     revolution, phase-shifted by its own place in the six — so the animation
+     needs no clock of its own and cannot drift from the turn, because both
+     run on the same duration. A negative delay of (i/6 - 1) revolutions puts
+     panel i at its brightest exactly when it is nearest. */
   .hr__pane {
     filter: drop-shadow(0 1.2cqw 2.2cqw rgba(40, 52, 72, 0.24));
     animation: hr-depth var(--dur) linear infinite;
@@ -181,8 +173,8 @@ const still = (id: string, yt: string) =>
   /* ---------- and it withdraws with the pieces ----------
      The room is fixed for the whole document, so without this the ring goes on
      turning behind the lectures, the cards and the reading for the length of
-     the page. It belongs to the hall's first screen, as the way on used to,
-     and it leaves when the six do. */
+     the page. It belongs to the hall's first screen, and it leaves when the
+     six do. */
   :global(.bh__plinths[data-state='back']) ~ * .hr,
   .hr { transition: opacity 0.7s var(--ease), visibility 0.7s var(--ease); }
   .hr[data-gone] { opacity: 0; visibility: hidden; }
@@ -208,13 +200,11 @@ const still = (id: string, yt: string) =>
   :global(html[data-motion='off']) .hr__ring { animation: none; }
 
   /* ---------- the phone ----------
-     It used to be out here: the plate is a 220px band and the pieces already
-     filled it, so six more objects in the same band was a busy picture rather
-     than a deeper one. What makes it fit is height. The ring goes up into the
-     top third of the picture, where the room is dome and window and has
-     nothing of its own, and the row of pieces comes down the floor to meet it
-     — see --top in HallBright. The museum's name crosses the ring's left
-     edge and is meant to: the name is the one thing in this room that is
+     The plate is a 220px band and the pieces already fill it, so the ring goes
+     up into the top third of the picture, where the room is dome and window
+     and has nothing of its own, and the row of pieces comes down the floor to
+     meet it — see --top in HallBright. The museum's name crosses the ring's
+     left edge and is meant to: the name is the one thing in this room that is
      never obscured, and a pane passing behind it reads as depth.
 
      Bigger in the frame than on a desktop, and on a shorter radius. Six panes

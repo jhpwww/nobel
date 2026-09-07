@@ -2,9 +2,9 @@
 /**
  * AmbientVideo.astro — the drifting light-and-ember loop behind the hall.
  *
- * 12 seconds, seamless (every motion period divides the clip length), 106 KB
- * as VP9. It is pure decoration: muted, inert, and replaced by its own poster
- * frame under reduced-motion or Save-Data, where the video never downloads.
+ * 12 seconds, seamless (every motion period divides the clip length). It is
+ * pure decoration: muted, inert, and replaced by its own poster frame under
+ * reduced-motion or Save-Data, where the video never downloads.
  */
 import { asset } from '../i18n/routing';
 interface Props { opacity?: number }
@@ -42,7 +42,7 @@ const { opacity = 0.55 } = Astro.props;
   function enable() {
     if (!v || saveData || v.dataset.wired) return;
     v.dataset.wired = '1';
-    // sources are inert until we opt in, so the poster alone costs 6 KB
+    // sources are inert until we opt in, so the poster alone is all that loads
     v.querySelectorAll('source').forEach((s) => {
       const u = s.getAttribute('data-src');
       if (u) s.setAttribute('src', u);

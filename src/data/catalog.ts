@@ -82,7 +82,7 @@ export const catalog = raw as unknown as Catalog;
 
 export const lectures = catalog.lectures;
 export const specialEvents = catalog.special_events;
-export const standaloneRecords = catalog.standalone_records ?? [];
+const standaloneRecords = catalog.standalone_records ?? [];
 export const hosts = catalog.hosts;
 export const tags = catalog.tags;
 export const categories = catalog.categories;
@@ -136,7 +136,7 @@ export const byCategory = (key: GalleryKey) =>
   lectures.filter((l) => l.prize.category === key)
           .sort((a, b) => a.event.date.localeCompare(b.event.date));
 
-export const byDateAsc  = () => [...lectures].sort((a, b) => a.event.date.localeCompare(b.event.date));
+const byDateAsc  = () => [...lectures].sort((a, b) => a.event.date.localeCompare(b.event.date));
 export const byDateDesc = () => [...lectures].sort((a, b) => b.event.date.localeCompare(a.event.date));
 
 /* ============================================================
@@ -147,11 +147,9 @@ export const byDateDesc = () => [...lectures].sort((a, b) => b.event.date.locale
    6th. Two sittings, two recordings, two things a visitor can watch — so
    anywhere the museum says 場講座 it counts sittings, and that is 32.
 
-   What it is NOT is a second upload of the same sitting. Engle carried one of
-   those in this same array, labelled 'Alternate upload', which is how 32 first
-   looked like it might be 33; it was a short news report rather than a
-   sitting at all and has been removed. If another ever arrives it belongs in
-   `interviews`, not here — `extra_sessions` now means what its name says.
+   What it is NOT is a second upload of the same sitting. If one ever arrives
+   it belongs in `interviews`, not here — `extra_sessions` means what its name
+   says.
 
    The laureate count stays 31. Südhof is one person however many times he
    spoke.
@@ -168,9 +166,6 @@ export function videoCount(l: Lecture) {
   return (l.video.lecture ? 1 : 0) + (l.video.guide ? 1 : 0) +
          (l.video.lecture_ntu ? 1 : 0) + l.interviews.length + l.video.extra_sessions.length;
 }
-
-export const totalVideos = () =>
-  lectures.reduce((n, l) => n + videoCount(l), 0) + specialEvents.length;
 
 /** Onward viewing: same prize category first, then shared topics. */
 export function relatedTo(l: Lecture, n = 3) {
@@ -192,22 +187,14 @@ export function nextUpcoming(today: string): Lecture | null {
   return byDateAsc().find((l) => l.event.date > today) ?? null;
 }
 
-/** Every lecture still to come, earliest first. */
-export const allUpcoming = (today: string) => byDateAsc().filter((l) => l.event.date > today);
-
 /**
- * What stands in 本館推薦 when nothing is upcoming.
+ * What stands in 本館推薦 when nothing is upcoming: a named lecture, named in
+ * one place, because a recommendation is a choice somebody makes rather than
+ * whatever the catalogue happens to make richest. The home page shows this
+ * lecture's 導讀 if it has one — see the facade in HomePage — so naming the
+ * lecture names the film.
  *
- * It was a ranking — guide video preferred, then most videos — and a ranking
- * returns whatever the catalogue happens to make richest rather than what the
- * museum would put in its window. That is the wrong kind of answer for a slot
- * headed 本館推薦: a recommendation is a choice somebody makes.
- *
- * So it is named, and named in one place. The home page shows this lecture's
- * 導讀 if it has one — see the facade in HomePage — so naming the lecture
- * names the film.
- *
- * The old ranking stays as the fallback, for the day this id is retired or
+ * The ranking below is the fallback, for the day this id is retired or
  * mistyped: the slot is on the museum's front page and must never be empty.
  */
 const RECOMMENDED = 'strickland';
@@ -264,10 +251,8 @@ export function videoList(): VideoItem[] {
       date: l.event.date,
     };
     if (l.video.guide) out.push({ key: `${l.id}-guide`, yt: l.video.guide, kind: 'guide', ...base });
-    /* One row per SITTING, which is 32. It was one per lecture, on the
-       reasoning that a second day and a second upload both belong on the
-       laureate's page rather than doubling up in the list — but a second day
-       is a second thing to watch, and the only alternate upload has gone. */
+    /* One row per SITTING, which is 32: a second day is a second thing to
+       watch — see 'A lecture, and a sitting' above. */
     if (l.video.lecture) out.push({ key: `${l.id}-lecture`, yt: l.video.lecture, kind: 'lecture', ...base });
     for (const s of l.video.extra_sessions) {
       out.push({ key: `${l.id}-${s.id}`, yt: s.id, kind: 'lecture', sessionLabel: s.label, ...base });
@@ -311,21 +296,16 @@ export const localDate = (iso: string, lang: Lang, long = false) =>
 /* ============================================================
    What a mark on a picture is allowed to say
    ============================================================
-   A still frame with a label over it is one of two quite different things,
-   and until now the museum used one word for both.
+   A still frame with a label over it is one of two quite different things:
 
      · The picture PLAYS. Pressing it starts the video. The mark names what
        will play: 導讀影片.
      · The picture GOES somewhere. Pressing it opens a page. The mark names
        what is waiting on that page: 有導讀影片.
 
-   A card in a grid is the second kind, and it was wearing the first kind's
-   word — it promised a guide video to anyone who pressed it and delivered a
-   laureate's page instead.
-
-   This is written as a function rather than fixed at each call site so that
-   the next picture anyone adds has to say which kind it is, and gets the
-   right word for free.
+   Written as a function rather than fixed at each call site so that the
+   next picture anyone adds has to say which kind it is, and gets the right
+   word for free.
    ============================================================ */
 export type BadgeAction = 'plays' | 'goes';
 
@@ -337,10 +317,8 @@ export const guideBadgeKey = (action: BadgeAction) =>
 /* ============================================================
    The prize itself, for any room that wants to point at it
    ============================================================
-   These four were written inside GalleryPage, where only the introduction
-   room could reach them. The video index closes with the same four now, so
-   they live here — one list, in one place, for every room that ends by
-   pointing outward.
+   One list, in one place, for every room that ends by pointing outward: the
+   introduction room and the index of films both read it.
    ============================================================ */
 export const generalLinks = [
   { url: 'https://www.nobelprize.org/alfred-nobel/',

@@ -10,7 +10,6 @@ html { -webkit-text-size-adjust: 100%; }
 body { min-height: 100dvh; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
 img, svg, video { display: block; max-width: 100%; }
 button, input, select { font: inherit; color: inherit; }
-a { color: inherit; }
 /* Browsers may hold a click back to see whether a double-tap-zoom follows.
    Everything tappable here is a control, not text to zoom into. */
 a, button, label, summary, input, select, textarea, [role='button'] {
@@ -81,19 +80,10 @@ a, button, label, summary, input, select, textarea, [role='button'] {
      title in the sans without taking the editorial voice with it. */
   --font-hook: var(--font-han-serif);
 
-  /* One step below --step--1, and it was missing.
-   *
-   * Fourteen rules across the project ask for --step--2 — the university line
-   * over the hall's name, the word under the scroll cue, the captions beneath
-   * the pieces on a phone, the figures' labels, the phone bar's keys — and it
-   * has never been declared. An invalid var() in a font-size is invalid at
-   * computed-value time, which for an inherited property means `inherit`: every
-   * one of them has silently been rendering at whatever its parent was, which
-   * is usually the body's 16px. That is why several lines meant to be small
-   * caps came out the size of body text.
-   *
-   * The ratio is the scale's own — 1.19 between neighbours, the same step that
-   * separates --step--1 from --step-0. */
+  /* One step below --step--1, at the scale's own 1.19 ratio. Keep it declared:
+     an invalid var() in a font-size is invalid at computed-value time, which
+     for an inherited property means `inherit`, so a rule that asks for a
+     missing step silently renders at its parent's size. */
   --step--2: clamp(0.67rem, 0.645rem + 0.13vw, 0.74rem);
   --step--1: clamp(0.80rem, 0.77rem + 0.15vw, 0.88rem);
   --step-0:  clamp(0.95rem, 0.90rem + 0.24vw, 1.08rem);
@@ -183,14 +173,12 @@ a:hover { color: var(--gold-bright); text-decoration-color: currentColor; }
 /* The second language under a hall's category name. "Physiology or Medicine"
    wraps to two lines where the others take one, which pushed that whole column
    up; reserving two lines everywhere keeps the row level. */
-.bh__name-en, .case__name-en, .plinth__name-en, .tile__name-en {
+.case__name-en, .plinth__name-en, .tile__name-en {
   min-block-size: 2lh;
 }
 
 /* a Chinese gloss set smaller under an English original */
 .gloss { font-size: 0.78em; color: var(--muted); font-family: var(--font-body); letter-spacing: 0.02em; line-height: 1.6; }
-
-.rule { border: 0; border-block-start: 1px solid var(--line); }
 
 /* ---------- category accent ---------- */
 [data-cat='physics']    { --accent: var(--c-physics);    --accent-block: var(--c-physics); }

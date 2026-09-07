@@ -5,18 +5,15 @@
  * This is the "video museum" cue: not an abstract loop, but the lectures
  * themselves, muted and dimmed, behind the sculptures.
  *
- * It used to be a live youtube-nocookie embed. Measured on the deployed site,
- * that streamed 0.27–0.30 MB/s and never stopped: ten seconds of looking cost
- * 7 MB, a minute cost 21 MB, and it went on for as long as the tab was open.
- * For decoration at 38–50% opacity under a grading layer, that is indefensible.
- * It also could not work on a phone at all — iOS will not autoplay a
- * cross-origin iframe without a gesture, so the player mounted, sat paused,
- * and put a pause glyph over the hall.
+ * Never a live youtube-nocookie embed: measured on the deployed site, one
+ * streamed 0.27–0.30 MB/s for as long as the tab was open — 21 MB a minute for
+ * decoration at 38–50% opacity under a grading layer — and iOS will not
+ * autoplay a cross-origin iframe without a gesture, so on a phone it sat
+ * paused with a pause glyph over the hall.
  *
- * So the footage is now short self-hosted cuts that loop. A visitor downloads
- * a few hundred KB once and the traffic goes to nothing however long they
- * stay, and a muted playsinline <video> autoplays on iOS where the iframe
- * never could — desktop and phone finally show the same thing.
+ * So the footage is short self-hosted cuts that loop: a few hundred KB once,
+ * and a muted playsinline <video> autoplays on iOS where the iframe never
+ * could — desktop and phone show the same thing.
  *
  * Until the cuts exist, src/data/backdrop.json is empty and this falls back to
  * cross-fading the lecture stills: the same frames, moving, at almost no cost.

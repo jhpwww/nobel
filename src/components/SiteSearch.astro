@@ -3,9 +3,8 @@
  * SiteSearch.astro — one field that reaches every room in the museum.
  *
  * The museum has 31 laureates, seven rooms, 63 recordings and half a dozen
- * pages, and until now the only way to find a name was to know which prize
- * gave it. The index of films has a filter, but that is a filter over films:
- * it cannot take you to a room, to the learning area or to the medal on the
+ * pages. The index of films has a filter, but that is a filter over films: it
+ * cannot take you to a room, to the learning area or to the medal on the
  * about page.
  *
  * WHAT IT IS
@@ -80,8 +79,8 @@ for (const l of lectures) {
 
 /* ---- the rooms -------------------------------------------------------- */
 /* The introduction room is not a prize category and is not in `categories`,
-   which is why it was missing from this list altogether — it is the room the
-   bar calls 關於諾獎, and it is one of the seven doors off the hall. */
+   so it is added by hand — it is the room the bar calls 關於諾獎, one of the
+   seven doors off the hall. */
 const rooms: GalleryKey[] = [...(Object.keys(categories) as CategoryKey[]), INTRO];
 for (const key of rooms) {
   const isIntro = key === INTRO;
@@ -310,8 +309,7 @@ const groups = { l: t('search.groupLaureate'), r: t('search.groupRoom'), p: t('s
      The plate takes the ground of whichever museum it opened in. Written as
      three properties rather than as two copies of the panel, because
      everything else about it — the ink, the rules, the marked row — is
-     already in tokens that both palettes define. The dark museum's own
-     search was white type on a white plate until this was here. */
+     already in tokens that both palettes define. */
   .ss {
     --ss-bg: color-mix(in srgb, var(--bg-1) 94%, transparent);
     --ss-line: var(--line);

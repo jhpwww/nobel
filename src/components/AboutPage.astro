@@ -6,7 +6,6 @@ import ExtLink from './ExtLink.astro';
 import PageEmblem from './PageEmblem.astro';
 import RoomBack from './RoomBack.astro';
 import { specialEvents, hosts } from '../data/catalog';
-import { asset } from '../i18n/routing';
 
 /* the museum's own room behind this page too — see RoomBack */
 const bright = process.env.THEME === 'bright';
@@ -24,21 +23,15 @@ const hostList = Object.entries(hosts);
   <div class="wrap-narrow about" data-fade>
     {/* The medal the project struck for itself: the bell tower and the palms
         inside a ring of the six prizes, NOBEL LAUREATE LECTURES round the top
-        and NATIONAL TAIWAN UNIVERSITY round the foot.
-        This page had a bare heading and eleven hundred words under it, which
-        is the one page in the museum with nothing to look at. The medal is
-        what the page is about, so it opens with it — set beside the title, and
+        and NATIONAL TAIWAN UNIVERSITY round the foot. Set beside the title, and
         caught into a mark beside the museum's name once the visitor has gone
-        half its height. That rail and that catch are one component now, shared
-        with the learning area; see PageEmblem. */}
+        half its height; that rail and that catch are one component, shared
+        with the learning area — see PageEmblem. */}
 
     <header class="abt__hero hall-head">
-      {/* Three lines, and the order is the page's own: what this room is, then
-          whose it is, then what it is part of. The university line was leading
-          — an eyebrow, in the way a magazine puts a section over an article —
-          and this is not an article, it is the room's own door plate. Both the
-          lines under the name are gold, which is what this museum signs
-          with. */}
+      {/* Three lines, in the page's own order: what this room is, then whose
+          it is, then what it is part of. Both lines under the name are gold,
+          which is what this museum signs with. */}
       <h1 class="abt__name">{t('about.title')}</h1>
       {/* The two gold lines are out of the BRIGHT museum, at the owner's
           word — hidden rather than removed, because the dark museum is
@@ -211,18 +204,15 @@ const hostList = Object.entries(hosts);
 
 <style>
   :global(html[data-theme='bright']) .about { padding-block-start: 3.4rem; }
-  /* On the page, not on the hero: the rail is the hero's SIBLING and every
-     number in it is built from these two. A var declared on the hero reaches
-     nothing above it, which is how the medal came to sit nineteen pixels high
-     with the margin that should have placed it resolving to nothing at all. */
-  .about {
-    /* --emb-h and --emb-k are the museum's own, on the theme root in
-       bright.css: the medal, the introduction room's laurel and the learning
-       area's device are the same object at three doors, and a phone needs all
-       three to be a fifth of its width rather than a share of a sculpture's
-       frame. */
-    --abt-two-lines: calc(var(--step-3) * 1.28 + 0.28rem + 1.86rem);
-  }
+  /* Any length the rail needs must be declared on the page or the theme
+     root, never on .abt__hero: the rail is the hero's SIBLING, and a custom
+     property declared on the hero reaches nothing beside or above it — the
+     margin reading it resolves to nothing, and the medal sits high. */
+  /* --emb-h and --emb-k are the museum's own, on the theme root in
+     bright.css: the medal, the introduction room's laurel and the learning
+     area's device are the same object at three doors, and a phone needs all
+     three to be a fifth of its width rather than a share of a sculpture's
+     frame. */
   .about { padding-block: clamp(2rem, 5vw, 3.5rem) 0; }
   .about h1 { font-size: var(--step-3); color: var(--cream); }
 
@@ -243,11 +233,8 @@ const hostList = Object.entries(hosts);
    * starts a fifth of itself below the mark and ends a whole one further down.
    */
   .abt__hero {
-    /* NOTE --step--2 is used all over this project and is not declared
-       anywhere in global.css, so every rule that asks for it silently inherits
-       the body size instead. That is why the gold line measures 29.7px and not
-       the 16 the name suggests, and it is why this term is a rem rather than a
-       step: 1.86rem IS the line as it renders. */
+    /* 1.86rem is the university line as it rendered when this was measured,
+       stated as a length rather than a step */
     display: grid;
     row-gap: 0.28rem;
     justify-items: start;
@@ -275,16 +262,9 @@ const hostList = Object.entries(hosts);
   :global(html[data-theme='bright']) .abt__uni,
   :global(html[data-theme='bright']) .abt__sub { display: none; }
 
-  /* The phone keeps the desktop's principle, which it did not before: the
-     medal used to come back into the flow, sit centred over the heading and
-     scroll away, so a phone had neither the lockup nor the catch. What made
-     that necessary was the size — 0.4374 of a sculpture's frame is a 117px
-     disc, and beside a heading at 390px it left four characters. That is a
-     number now, --emb-h, and on a phone it is a fifth of the screen. Nothing
-     else here has a phone value at all. */
 
 
-  /* the first heading of the prose no longer needs to clear a bare h1 */
+  /* the first heading of the prose sits flush under the hero */
   .about .prose > h2:first-child { margin-block-start: 0; }
   .about h2 {
     font-size: var(--step-1); color: var(--cream);

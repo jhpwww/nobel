@@ -53,9 +53,6 @@ export function dressPlinths() {
  * The line contracts by that much — 6% at this width, which is what a label
  * wrapped round a drum actually does — and it is continuous.
  *
- * The radius is measured off the model: at the label's height the drum draws
- * 144px across a 190px frame.
- *
  * How much of that depth reads as height is NOT a separate figure, and
  * treating it as one is what bent 生理學或醫學 the wrong amount. It was a
  * guessed 8° of camera tilt, which lifted the outer characters 2.2px while
@@ -100,15 +97,11 @@ function split(line: HTMLElement) {
 }
 
 /**
- * Bend the label onto the drum.
- *
- * The three gold bands used to be drawn here too, as SVG arcs over the model,
- * with their depth worked out from two constants measured off the drum's own
- * ellipses. They are cut into the drum itself now — see
- * scripts/build-base-rings.mjs — which is why the exaggeration that used to be
- * on this number is gone with them. There is a real ring next to the type now,
- * lit by the same light and turned by the same camera, so the type has to
- * agree with that and not with a flattering version of it.
+ * The depth of the drum's ellipse at the label's height, from two constants
+ * measured off the drum's own rings — which are cut into the model by
+ * scripts/build-base-rings.mjs. The type has to agree with a real ring lit by
+ * the same light and turned by the same camera, not with a flattering version
+ * of it.
  */
 const EYE = 0.646;           // of the frame's height, where the drum is edge-on
 const ELLIPSE = 0.1168;      // how fast the ellipse opens below that
@@ -145,17 +138,7 @@ function curve() {
       const r = Math.max(R, reach / MAX_TURN);
 
       /* How steeply this line's own circle opens, in the ring's own terms:
-         b at this height, over the radius it is worked on.
-         BOW is on top of it, and it is an exaggeration, deliberately.
-         The measured bow is right and reads as wrong: the label spans 63% of
-         the drum, so the true rise at its ends is two pixels, while the gold
-         rings beside it span the whole drum and rise five. Side by side the
-         eye compares total bow, not bow per unit of width, and concludes the
-         type is flat on a curved drum. So the vertical is opened out until
-         the two arcs look like they belong to one surface. The horizontal
-         stays exact — the turn, the foreshortening and the arc-to-chord
-         slide are all still measured, so the line stays closed and the
-         characters still turn by the angle they actually subtend. */
+         b at this height, over the radius it is worked on. */
       const b = depthAt(mid.top + mid.height / 2 - fr.top, fr.height);
       const rise = b / r;
 

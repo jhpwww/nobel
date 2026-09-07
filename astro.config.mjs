@@ -18,7 +18,6 @@ const BASE = process.env.BASE_PATH || '/taiwan-nobel-museum';
  * changes: the theme is one attribute on <html>, and every bright rule in
  * src/styles/bright.css is scoped to it.
  */
-export const BRIGHT = process.env.THEME === 'bright';
 
 export default defineConfig({
   site: SITE,

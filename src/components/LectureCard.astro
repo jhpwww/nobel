@@ -1,7 +1,7 @@
 ---
 import { useT, type Lang } from '../i18n/ui';
 import { lecture as lectureUrl } from '../i18n/routing';
-import { catName, videoCount, localDate, guideBadgeKey, type Lecture, catPrizeName } from '../data/catalog';
+import { videoCount, localDate, guideBadgeKey, type Lecture, catPrizeName } from '../data/catalog';
 import posters from '../data/posters.json';
 import { cutStill } from '../data/stills';
 
@@ -10,7 +10,6 @@ const { lang, rec, featured = false } = Astro.props;
 const t = useT(lang);
 
 const cat = rec.prize.category;
-const catLabel = catName(cat, lang);
 const catPrize = catPrizeName(cat, lang);
 /*
  * The card always shows the Taiwan lecture, never the 導讀, and the frame is

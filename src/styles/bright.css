@@ -3,7 +3,7 @@
 
    Everything here is a token override scoped to html[data-theme='bright'],
    so the dark site is untouched: the two builds share one stylesheet and
-   differ only by an attribute on <html>. See BRIGHT_THEME in astro.config.mjs.
+   differ only by an attribute on <html>. See the bright-museum note in astro.config.mjs.
 
    White ground, warm near-black type, TED's red doing the carrying, gold for
    ornament only. Every hall shares the one red — six near-relatives of it
@@ -55,16 +55,14 @@ html[data-theme='bright'] {
   /* --cream is the dark theme's brightest text; on paper that is the darkest */
   --cream: #1a1614;
   --text:  #2b2523;
-  /* #5c554e until now — 6.9:1 on white, 4.40 over the warmest ground the hall
-     offers, which is the gold of a sculpture behind 60% glass. Two points
-     darker clears AA there. Same reasoning as --muted-dim below. */
+  /* Not lighter: over the warmest ground the hall offers — the gold of a
+     sculpture behind 60% glass — #5c554e measured 4.40, and this clears AA
+     there. Same reasoning as --muted-dim below. */
   --muted: #5a534c;
-  /* #6e665e until now, which is 5.9:1 on the page's own white and fine there.
-     It is not read on white: the pages in this museum are half-transparent
-     over a photograph of a hall, and the palest ink on the palest ground the
-     room offers measured 4.16:1 — the smallest print in the building, just
-     under AA. Four per cent darker clears it at 4.7 and is not a colour
-     anyone can tell from the old one. Measured by scripts/check-glass.mjs. */
+  /* Not read on white: the pages in this museum are half-transparent over a
+     photograph of a hall, and on the palest ground the room offers this is
+     the smallest print in the building — #6e665e measured 4.16:1 there, just
+     under AA; this clears it at 4.7. Measured by scripts/check-glass.mjs. */
   --muted-dim: #665e56;
 
   /*
@@ -139,11 +137,10 @@ html[data-theme='bright'] {
   /* the six figures, measured: a pane of one number and one label, plus the
      half-rem the strip keeps under it */
   --strip-h: 4.2rem;
-  /* What the way on takes at the foot of the screen, now that it is pinned
-     there: its own height — a rule that grows with the viewport, a chevron and
-     a word — plus the gap it keeps from the bottom edge. Both are read off
-     .bh__cue in plinth.css and .bh__foot in HallBright; if either changes,
-     this is the line that has to follow. */
+  /* What the way on takes at the foot of the screen: its own height — a rule
+     that grows with the viewport, a chevron and a word — plus the gap it keeps
+     from the bottom edge. Both are read off .bh__cue in plinth.css and .cue in
+     ScrollCue.astro; if either changes, this is the line that has to follow. */
   --cue-clear: calc(3.1rem + clamp(1.5rem, 3.4vh, 2.3rem) + clamp(0.7rem, 2vh, 1.5rem));
 
   /* The hall's own frame, repeated: the figures below have to know how tall a
@@ -212,9 +209,8 @@ html[data-theme='bright'] {
   --strip-gap: clamp(0.5rem, 4.5vh, calc(2 * var(--strip-h)));
 
   /* ---- and the prize page's own room, which shows one of the six ----
-     These lived on .gr and .gr__rail inside GalleryPage. They are here now
-     because a third thing has to agree with them: the room itself, which is
-     no longer inside the header and so cannot inherit anything from it. */
+     Here rather than on .gr: the header, the rail and the room are siblings in
+     GalleryPage, and a var set on one of them reaches neither of the others. */
   --gr-art: clamp(13rem, 38svh, 21rem);
   --gr-floor: clamp(1.2rem, 3.4vh, 2.2rem);
   --gr-stick: 0.45rem;
@@ -226,8 +222,8 @@ html[data-theme='bright'] {
      silhouette runs from 72% to 95.7% of it — the same two readings the label
      on its face is placed against, see .bh__face in plinth.css. */
   --gr-drum: calc(var(--gr-art) * 0.237);
-  /* The header the title stands in, shorter than it was by the drum's height:
-     the title, the piece and the whole page below arrive that much higher. */
+  /* The header the title stands in, less the drum's height: the title, the
+     piece and the whole page below arrive that much higher. */
   --gr-head-h: calc(clamp(21rem, 60svh, 32rem) - var(--gr-drum));
   /* On a desktop the room is exactly the header, so the veil at the foot of
      the photograph finishes where the page's own white begins and there is no
@@ -243,14 +239,12 @@ html[data-theme='bright'] {
      are chosen so that the caught mark is the same size on every page and at
      every width: 0.2 x 0.4374 x --gr-art here, and the phone's own pair
      below, both landing within a pixel of 29. */
-  /* Where the museum's mark stands in from the corner.
-     It used to be clamp(0.7rem, 2.2vw, 1.6rem), which was right for a mark
-     that ended where its own box ended. The plate does not: it is drawn half
-     again as wide as the name and centred on it, so a quarter of the name
-     hangs past the box at each side — 41px in English — and at the old inset
-     the left end of the plate was off the screen. On a phone it was 13px off.
-     One number now, used by the mark itself, by the hall's folded name, and
-     by everything that is placed beside them. */
+  /* Where the museum's mark stands in from the corner — wide enough for the
+     plate, not just the name: the plate is drawn half again as wide as the
+     name and centred on it, so a quarter of the name's width hangs past the
+     box at each side (41px in English), and a smaller inset puts the left end
+     of the plate off the screen. One number, used by the mark itself, by the
+     hall's folded name, and by everything that is placed beside them. */
   --mark-x: clamp(1.9rem, 2.6vw, 2.1rem);
   --emb-h: calc(var(--gr-art) * 0.4374);
   --emb-k: 0.2;
@@ -283,10 +277,10 @@ html[data-theme='bright'] {
 @media (max-width: 48rem) {
   html[data-theme='bright'] {
     /* The room, at the hall's own size: the whole photograph across the width
-       of the phone, uncropped — the same band the hall shows, and no longer a
-       crop of it. The header is taller than the band, exactly as the hall's
-       first screen is: the drums stand in front of the bottom of the picture
-       with the page behind their feet. */
+       of the phone, uncropped — the same band the hall shows. The header is
+       taller than the band, exactly as the hall's first screen is: the drums
+       stand in front of the bottom of the picture with the page behind their
+       feet. */
     --gr-room-h: calc(100vw * 941 / 1672);
   }
 }
@@ -377,28 +371,21 @@ html[lang='en'][data-theme='bright'] :is(.bh__lockup[data-small] .bh__title, .gr
   font-size: var(--step--1);
 }
 
-/* And the tablet the mark used to wear is gone with it: a plate is the
-   ground now, so the frosted rectangle behind it was a second ground showing
-   at its corners. */
+/* No tablet under the mark: the plate is the ground, and a frosted rectangle
+   behind it is a second ground showing at its corners. */
 html[data-theme='bright'] .gr__lock {
   background: none;
   backdrop-filter: none;
   box-shadow: none;
   border-radius: 0;
-  /* the plate is taller than the tablet was, so the mark hangs where the
-     hall's own folded name hangs */
-  inset-block-start: 1.5rem;
-  padding: 0.34rem 0.85rem;
 }
-html[data-theme='bright'] .gr__lock:hover { filter: brightness(1.04); }
 
 /* ============================================================
    THE HEAD OF A ROOM THAT IS NOT A PRIZE ROOM
    ============================================================
-   The index of films, the learning area, the introduction room, the colophon
-   and the record page all open the same way and were opening it four
-   different ways: the emblem beside the name, the name beside it, and one
-   sentence saying what the room is.
+   The index of films, the learning area, the introduction room and the
+   colophon all open the same way: the emblem beside the name, the name beside
+   it, and one sentence saying what the room is.
 
    Three rules, and they are the owner's:
 
@@ -415,33 +402,16 @@ html[data-theme='bright'] .gr__lock:hover { filter: brightness(1.04); }
    mark.
    ============================================================ */
 /* The reserve the title block is centred inside, and it is not the emblem's
-   whole height any more.
-
-   The rule stays exactly what the owner set: the block is centred on the
-   emblem. What changed is how much empty room the block reserves under
-   itself. A grid centring its content inside --emb-h leaves the same slack
-   above and below — 35px at 1440 — and the slack BELOW is what the eye reads
-   as the gap between the title and the sentence under it. Halving that gap
-   by halving a margin does nothing: the margin was 6.7px of the 34.
- 
-   So the reserve shrinks and the block moves down by half of what came off,
-   which leaves the centre exactly where it was: centre = top + reserve/2, and
-   top gains (emb-h - reserve)/2 as the reserve loses (emb-h - reserve). At
-   0.82 of the emblem the slack below is 17px rather than 34, which is the
-   owner's halving of the gap, measured on the two rooms that still carry a
-   sub-title; and the centring holds exactly for any head shorter than the
-   reserve, which is every one of the four in both languages. */
-/* 0.595, down from 0.82. The gap the owner measures is between the INK of the
-   sub-line and the ink of the sentence under it, and three quarters of that
-   distance was never a margin at all: it was the empty half of the head's own
-   reserve (19px at 1440x900) plus the leading two 1.72 line-boxes put between
-   their words. The leading is dealt with above; this is the reserve. At 0.595
-   the slack below the block is 2.5px rather than 19, and the reserve is still
-   longer than the block it holds — 87.5 against 82.6 in Han and 78.7 in
-   English — so the centring on the emblem is untouched.
-   The phone keeps 0.82: its reserve is 64px against a 58px block, so there
-   are only 3px of slack there to take, and taking them would put the head
-   below the emblem's middle for nothing. */
+   whole height. The block is centred on the emblem — the owner's rule — but a
+   grid centring its content inside --emb-h leaves the same slack above and
+   below, and the slack BELOW is what the eye reads as the gap between the
+   title and the sentence under it. So the reserve is shorter and the block
+   moves down by half of what came off, which leaves the centre exactly where
+   it was: centre = top + reserve/2. At 0.595 the slack below is 2.5px at
+   1440x900, and the reserve is still longer than the block it holds — 87.5
+   against 82.6 in Han and 78.7 in English — so the centring on the emblem is
+   untouched. The phone keeps 0.82: its reserve is 64px against a 58px block,
+   so there is nothing to take. */
 html[data-theme='bright'] { --head-min: calc(var(--emb-h) * 0.595); }
 @media (max-width: 40rem) {
   html[data-theme='bright'] { --head-min: calc(var(--emb-h) * 0.82); }
@@ -453,11 +423,10 @@ html[data-theme='bright'] .hall-head {
   display: grid;
   align-content: center;
   justify-items: start;
-  /* Halved, then two thirds of that, and now struck between the ink rather
-     than between the boxes: the owner is measuring from the bottom of the
-     title's glyphs to the top of the sub-line's, which is this gap plus the
-     leading of two line-boxes. Most of the closing is the sub-line's own
-     1.72 coming down to 1.15 — see above; this is the remainder. */
+  /* Struck between the ink rather than between the boxes: the owner measures
+     from the bottom of the title's glyphs to the top of the sub-line's, which
+     is this gap plus the leading of two line-boxes. Most of the closing is the
+     sub-line's own line-height — see below; this is the remainder. */
   row-gap: 0.055rem;
   padding-inline-start: var(--hall-indent);
   margin-block-end: 0;
@@ -499,10 +468,9 @@ html[data-theme='bright'] :is(.browse__kinds, .course__stages, .hall-stages) {
     0 0 10px rgba(255, 255, 255, 0.85),
     0 0 20px rgba(255, 255, 255, 0.6);
 }
-/* The title's own, and the same one on all four — two of them had a halo and
-   two had nothing, which was survivable while the room was washed white and
-   is not now. Wider and softer than the two lines under it, because it is
-   48px of Han and a tight edge at that size reads as an outline. */
+/* The title's own, the same on all four. Wider and softer than the two lines
+   under it, because it is 48px of Han and a tight edge at that size reads as
+   an outline. */
 html[data-theme='bright'] .hall-head h1 {
   text-shadow:
     0 0 3px rgba(255, 255, 255, 1),
@@ -512,8 +480,8 @@ html[data-theme='bright'] .hall-head h1 {
 }
 
 html[data-theme='bright'] .hall-note {
-  /* half the gap it had, and half again — though the figure that governs this
-     distance is the head's own reserve above, not this margin */
+  /* the figure that governs this distance is the head's own reserve above,
+     not this margin */
   margin-block: 0.21rem clamp(1.6rem, 4vw, 2.6rem);
   padding-inline-start: var(--hall-indent);
   max-inline-size: none;
@@ -603,10 +571,9 @@ html[data-theme='bright'] {
   --fade-gone: var(--lock-h);
   --fade-start: calc(2.5 * var(--lock-h));
 }
-/* A mask made a stacking context of every page it was on, and a few things
-   inside a page — a tooltip, a lifted card — are positioned against it. The
-   mask is gone; the context it made is kept, so nothing inside a page
-   escapes into the chrome's own ordering. */
+/* [data-fade] keeps a stacking context of its own: a few things inside a page
+   — a tooltip, a lifted card — are positioned against it, and without it they
+   escape into the chrome's own ordering. */
 html[data-theme='bright'] [data-fade] { isolation: isolate; }
 
 /* ---------- ground ---------- */
@@ -629,12 +596,10 @@ html[data-theme='bright'] .topbar--ghost {
   border-block-end: 0;
 }
 
-/* The bar's keys are museum-glass-btn--nav now — see
-   src/styles/liquid-glass-buttons.css. What
-   is left here is only what the bar itself has to stop doing: the dark
-   theme's underline-on-hover, and a text colour the button sets for itself.
-   The tablet that used to be described here had a 1px rim on every side; the
-   whole system is borderless now, defined by light instead. */
+/* The bar's keys are museum-glass-btn--nav — see
+   src/styles/liquid-glass-buttons.css. What is left here is only what the bar
+   itself has to stop doing: the dark theme's underline-on-hover, and a text
+   colour the button sets for itself. */
 /* The haze the keys stand in.
    The same one the hall's name has — see .bh__lockup::before in
    HallBright.astro, whose gradient this is, re-centred on a row instead of a
@@ -700,48 +665,33 @@ html[data-theme='bright'] .topbar__nav :is(.topbar__key, .museum-glass-btn--nav)
   filter: brightness(1.04);
 }
 
-html[data-theme='bright'] .topbar--ghost .topbar__nav a {
-  border-block-end: 0;
-  color: var(--museum-ink);
-}
 /* ---------- the size of a key ----------
-   15% off the height, on every screen: the kit's --nav is 38px on a desktop
-   and 44 on a phone, and a bar of five over a photograph reads better thin.
-   32.3 and 37.4 are those two figures less a seventh; both are well past the
-   24px WCAG 2.5.8 asks of a target, and every key is 75px or more across.
-
-   And 15% off the width on a desktop, which is 15% off the *key*, not off the
-   type — so it is the padding that gives, from 1rem a side to 0.57rem. Solved
-   against the Han labels, which are the ones the museum leads with: 91.4px
-   becomes 77.6. The English labels are longer, so the same padding takes 11%
-   off them rather than 15 — a per cent of a box cannot be set on a box whose
-   width is its content. */
-/* A tenth larger than they were, at the owner's word: the plate is a picture
-   with a rule drawn round the inside of it, and at 32.3px the label was
-   sitting on that rule rather than within it. And a twentieth larger again —
-   37.3 x 0.66rem, the same 1.05 taken off both dimensions so the plate keeps
-   its own six-and-a-quarter-to-one and the label keeps its place inside the
-   rule. */
+   37.3px tall and 0.66rem of padding a side, at the owner's word: the plate
+   is a picture with a rule drawn round the inside of it, and a shorter key
+   sets the label on that rule rather than within it. Both dimensions carry
+   the same factor, so the plate keeps its own six-and-a-quarter-to-one and
+   the label keeps its place inside the rule. Well past the 24px WCAG 2.5.8
+   asks of a target, and every key is 75px or more across. It is the padding,
+   not the type, that sets the width — a per cent of a box cannot be set on a
+   box whose width is its content. */
 html[data-theme='bright'] .topbar__nav :is(.topbar__key, .museum-glass-btn--nav) {
   min-height: 37.3px;
   padding-inline: 0.66rem;
 }
 /* ---------- the space between two plates ----------
-   Half again, and in the bright museum only — the dark bar keeps the gap it
-   has always had. 3.8px becomes 1.9: what separates one key from the next is
-   the gold rule drawn round each of them, and the air between was only ever
-   pushing the bar wider.
+   A hairline, in the bright museum only — the dark bar keeps its own gap.
+   What separates one key from the next is the gold rule drawn round each of
+   them, and air between them only pushes the bar wider.
 
    Except beside the search. That one is a capsule rather than a plate — a
    different shape saying it opens a drawer rather than a room — and a
-   different shape needs the air a repeated one does not. It keeps the 3.8 it
-   had, which is this gap given back on each of its sides. */
+   different shape needs the air a repeated one does not: it gets this gap
+   back on each of its sides. */
 html[data-theme='bright'] .topbar__nav {
   --key-gap: clamp(0.0565rem, 0.1565vw, 0.119rem);
   column-gap: var(--key-gap);
 }
 html[data-theme='bright'] .topbar__nav .ss__key { margin-inline: var(--key-gap); }
-html[data-theme='bright'] .topbar--ghost .topbar__nav a:hover,
 html[data-theme='bright'] .topbar--ghost .topbar__nav a:focus-visible {
   border-block-end-color: transparent;
   color: var(--museum-ink);
@@ -821,22 +771,15 @@ html[data-theme='bright'] .topbar--ghost .topbar__nav a.topbar__lang:focus-visib
     align-items: flex-end;
     /* ---------- the space between two plates, actually ----------
      *
-     * Zero, and then the keys are pulled INTO each other. Every halving of
-     * this figure since it was 0.35rem has been moving a number the eye
-     * cannot see, and the owner has now said so three times running: the gap
-     * between two keys down this column is not the gap between two boxes, it
-     * is the gap between two pictures, and the picture is smaller than its
-     * box. key-plate.webp is 700x294 with its artwork from row 33 to row 243
-     * — 11.2% of transparent margin above it and 17.3% below. Between one key
-     * and the next that is 28.5% of a key's height of nothing at all: 11.9px
-     * at 41.6, against a row-gap of 0.14. Halving 0.14 to 0.07 was arithmetic
-     * on the wrong number.
-     *
-     * So the boxes overlap by half the margin they carry, which halves what
-     * is actually between the plates — 11.9px to 5.9 — and cannot make them
-     * touch, because they only meet at the full 28.5%. The figure is written
-     * as a share of the key's own height so it stays true if the key is ever
-     * resized again, which it has been twice. */
+     * Zero, and then the keys are pulled INTO each other: the gap between two
+     * keys down this column is not the gap between two boxes, it is the gap
+     * between two pictures, and the picture is smaller than its box.
+     * key-plate.webp is 700x294 with its artwork from row 33 to row 243 —
+     * 11.2% of transparent margin above it and 17.3% below, so between one
+     * key and the next there is 28.5% of a key's height of nothing at all.
+     * The boxes overlap by half that margin, which halves what is actually
+     * between the plates and cannot make them touch. Written as a share of
+     * the key's own height so it stays true if the key is resized. */
     --key-h: 41.6px;
     --key-lap: calc(var(--key-h) * -0.1425);
     row-gap: 0;
@@ -887,14 +830,13 @@ html[data-theme='bright'] .topbar--ghost .topbar__nav a.topbar__lang:focus-visib
      hall counts that as its pieces withdrawing, everywhere else it is half a
      screen of scrolling. See the scripts in HallBright and in Base.
 
-     It was the hall alone until now. But a prize page opens with a piece
-     standing beside its title in exactly the way the hall does, and the column
-     of keys was landing on it. */
+     On every page, not the hall alone: a prize page opens with a piece
+     standing beside its title exactly the way the hall does, and a column of
+     keys would land on it. */
   /* Written through .topbar--ghost .topbar__nav rather than as a bare class:
-     the rule that hides this key everywhere else is further down this file and
-     weighs exactly the same, so at equal specificity source order was deciding
-     it — and deciding against. It used to carry [data-home], which is what had
-     been winning that argument all along. */
+     the rule that hides this key everywhere else is further down this file
+     and weighs exactly the same, so at equal specificity source order would
+     decide — and decide against. */
   html[data-theme='bright'] .topbar--ghost .topbar__nav .topbar__menu {
     display: inline-flex;
   }
@@ -965,22 +907,15 @@ html[data-theme='bright'] .topbar--ghost .topbar__nav a.topbar__lang:focus-visib
     transition: translate 0.34s var(--ease);
   }
 
-  /* A phone's keys are shorter again.
-     Five keys at the kit's 44px touch minimum plus their gaps is a column 240px
-     tall — a third of a short phone's screen, standing over the room. 44 less
-     a seventh is 37.4, and less a seventh again is 31.8, which is where the
-     two rounds of this land. Still past the 24px WCAG 2.5.8 asks of a target,
-     and each key is 83px or more across. The one that folds them takes the
-     same height, or the column has a taller key at the top of it — and it
-     takes it whether the column is open or shut, so nothing resizes as it
-     opens. */
-  /* 31.8px carried a 15.3px label on glass, where the label is the whole
-     key. On the plate it is not: the cream panel is half the picture's
-     height, so a label that filled the key now sits on the gold rule. 36px
-     puts an 18px line inside an 18px panel — and the column of six is still
-     shorter than the room behind it. 41.6 now: the same twentieth the desktop
-     key takes, and with the gap between them down to a hairline the column of
-     six is no taller than it was at 39.6 with the old one. */
+  /* A phone's keys: 41.6px, the same twentieth over 39.6 the desktop key
+     takes. Five keys at the kit's 44px touch minimum plus their gaps is a
+     column 240px tall — a third of a short phone's screen, standing over the
+     room — but the plate's cream panel is half the picture's height, so a key
+     much shorter sets its label on the gold rule; 41.6 puts the line inside
+     the panel, and with the gap between them down to a hairline the column of
+     six is still shorter than the room behind it. Past the 24px WCAG 2.5.8
+     asks of a target, and each key is 83px or more across. The one that folds
+     them takes the same height, open or shut, so nothing resizes as it opens. */
   html[data-theme='bright'] .topbar--ghost .topbar__nav .topbar__menu,
   html[data-theme='bright'][data-nav-open] .topbar--ghost .topbar__nav .topbar__key {
     min-height: var(--key-h);
@@ -1006,21 +941,9 @@ html[data-theme='bright'] .foot__uni { color: var(--cream); }
 html[data-theme='bright'] a:hover { color: var(--red-deep); }
 html[data-theme='bright'] .skip-link { background: #fff; color: var(--cream); }
 
-html[data-theme='bright'] .sw,
-html[data-theme='bright'] .mt {
-  background: rgba(255, 255, 255, 0.9);
-  border-color: var(--line-hi);
-  color: var(--text);
-}
-html[data-theme='bright'] .sw__opt { color: var(--muted); }
-html[data-theme='bright'] .sw__opt:hover { color: var(--cream); background: var(--surface-hi); }
-html[data-theme='bright'] .sw__opt.is-on { background: var(--red); color: #fff; }
-html[data-theme='bright'] .mt { color: var(--cream); }
-
 /* ---------- media ---------- */
 /* Posters carry their own darkness; on paper they want a light mount rather
    than a scrim that pretends the page behind them is black. */
-html[data-theme='bright'] .vf__btn { background: var(--bg-2); }
 html[data-theme='bright'] .vf__scrim {
   background: linear-gradient(to top, rgba(20, 18, 16, 0.5), transparent 55%);
 }
@@ -1068,9 +991,7 @@ html[data-theme='bright'] .card:hover {
 /* A finger has no hover, so the words must be readable at rest there. */
 @media (hover: none) {
   html[data-theme='bright'] .card .card__body,
-  html[data-theme='bright'] .vc .vc__body,
-  html[data-theme='bright'] .xp .cards a,
-  html[data-theme='bright'] .xp__panel {
+  html[data-theme='bright'] .vc .vc__body {
     background: rgba(255, 255, 255, 0.9);
   }
 }
@@ -1080,7 +1001,7 @@ html[data-theme='bright'] .card:hover {
    anything folds. The three bars are drawn rather than typed: a glyph would
    be set in the museum's serif and read as a character. Open, the middle bar
    goes and the other two cross. */
-html[data-theme='bright'] .topbar__menu { display: none; padding-inline: 0.62rem; }
+html[data-theme='bright'] .topbar__menu { display: none; }
 html[data-theme='bright'] .topbar__bars {
   position: relative;
   display: block;
@@ -1171,16 +1092,10 @@ html[data-theme='bright'] .bh__cue-rule {
 
 
 /* ---------- and every room's title stands in the hall's own light ----------
-   The museum's name on the hall has carried a field of light since the room
-   went behind the page — see .bh__lockup::before in HallBright, whose gradient
-   this is. Every other room's title stood on the bare photograph: a prize
-   name, a laureate's name, the index's heading, all of them large type over a
-   colonnade. Large type survives that better than a hairline does, which is
-   why it took longer to notice; it is still the same problem. */
-/* The introduction room was the one head this never reached: it is a bare
-   .hall-head, added after this list was written, and it had no light of its
-   own at all. That was survivable while the photographs were washed white and
-   is not now. */
+   The same gradient as .bh__lockup::before in HallBright: a prize name, a
+   laureate's name, the index's heading, the introduction room's head — all
+   large type over a colonnade, and large type over a photograph needs the
+   same field of light a hairline does. */
 html[data-theme='bright'] :is(.gr__id, .lec__id, .browse__h, .abt__hero, .course__head, .np .hall-head) {
   position: relative;
   isolation: isolate;
@@ -1219,22 +1134,13 @@ html[data-theme='bright'] {
 }
 html[data-theme='bright'] [data-cat] { --accent-block: var(--red); }
 
-/* marks that keep a gold fill of their own in the dark theme. The study
-   page's buttons were here too, until they became museum buttons and the
-   kit took over painting them. */
-html[data-theme='bright'] .picks .tag[data-on] {
-  background: var(--red);
-  border-color: var(--red);
-}
-
 /* a percentage is a figure, not a mark: it wants ink, not a fill */
-html[data-theme='bright'] .marks__pct { color: var(--red-ink); background: none; }
+html[data-theme='bright'] .marks__pct { background: none; }
 
 /* Gold as a link sits on tinted panels as often as on paper, and a tint drops
    it below AA. The deepest step clears both. */
 html[data-theme='bright'] a { --gold: var(--gold-deep); }
-html[data-theme='bright'] .links__key,
-html[data-theme='bright'] .deeper__panel {
+html[data-theme='bright'] .links__key {
   background: color-mix(in srgb, var(--red) 4%, #fff);
 }
 
@@ -1265,29 +1171,12 @@ html[data-theme='bright'] :lang(zh) :is(h1, h2, h3) {
   letter-spacing: 0.012em;
 }
 
-/*
- * Source Serif is a text face and needs none of the rescue Cormorant did, but
- * a display line still wants a little more presence on paper than on a dark
- * ground, where it was carrying its own glow.
- */
-html[data-theme='bright'] :is(
-  .lec__who, .feature__who, .card__who, .vc__who,
-  .marks__pct, .gh__title, .bh__title, .topbar__series
-) {
-  font-weight: 600;
-}
 
 /* ---------- eyebrows and small caps ---------- */
 /* 0.22em is a dark-room measure; on paper it reads as a gap, not a rhythm */
-html[data-theme='bright'] .eyebrow,
-html[data-theme='bright'] .bh__eyebrow,
-html[data-theme='bright'] .intro__eyebrow {
+html[data-theme='bright'] .eyebrow {
   letter-spacing: 0.13em;
   font-weight: 500;
-}
-html[data-theme='bright'] :lang(zh) .eyebrow,
-html[data-theme='bright'] :lang(zh) .bh__eyebrow {
-  letter-spacing: 0.08em;
 }
 
 /*
@@ -1297,17 +1186,11 @@ html[data-theme='bright'] :lang(zh) .bh__eyebrow {
  * places a Latin small-caps measure was applied to Chinese text.
  */
 html[data-theme='bright'] .lec__prize a { letter-spacing: 0.05em; }
-html[data-theme='bright'] :is(.hint, .hall__hint, .bh__hint, .mh__hint) { letter-spacing: 0.07em; }
-html[data-theme='bright'] .gh__n { letter-spacing: 0.05em; }
 
-/* set at 400 in the component, which on white is the thinnest line on the page */
-html[data-theme='bright'] .lec__title { font-weight: 500; }
 
 /* the second language, set under the first: lowercase Latin wants none of the
    tracking the tracked-out labels above it want */
-html[data-theme='bright'] :is(
-  .bh__name-en, .case__name-en, .plinth__name-en, .tile__name-en, .gh__title-en
-) {
+html[data-theme='bright'] .bh__name-en {
   letter-spacing: 0.012em;
   font-weight: 400;
 }
@@ -1319,11 +1202,11 @@ html[data-theme='bright'] :is(.about__lede, .about__hist, .lec__lede, .forcourse
 }
 /* the serif pull-quotes carry a whole thought at reading size; at 400 on white
    they are the thinnest thing on the page */
-html[data-theme='bright'] :is(.lec__hook, .feature__hook, .card__hook, .vc__hook) {
+html[data-theme='bright'] :is(.lec__hook, .feature__hook, .card__hook) {
   font-weight: 500;
 }
 /* small muted labels lose the most to a light ground */
-html[data-theme='bright'] :is(.card__meta, .vc__meta, .lec__meta dt, .cmp__when) {
+html[data-theme='bright'] :is(.card__meta, .vc__meta, .cmp__when) {
   font-weight: 450;
 }
 
@@ -1331,16 +1214,13 @@ html[data-theme='bright'] :is(.card__meta, .vc__meta, .lec__meta dt, .cmp__when)
    Family comes from the tokens above. What is left here is weight: Source Sans
    carries less colour than the serif did at the same number, and a title has
    to hold the top of a page on its own. */
-/* Source Sans carries less weight than the serif did at the same number, and a
-   title has to hold the top of a page on its own. */
 html[data-theme='bright'] :is(
-  .bh__title, .mh__title, .hall__title, .gh__title, .section-h, .lec__h,
-  .bh__intro-title, .intro__title, .topbar__series,
+  .bh__title, .section-h, .lec__h,
   .lec__who, .feature__who, .card__who, .vc__who, .marks__pct
 ) {
   font-weight: 600;
 }
-html[data-theme='bright'] :is(.bh__name, .case__name, .plinth__name, .tile__name, .lec__title) {
+html[data-theme='bright'] :is(.bh__name, .lec__title) {
   font-weight: 500;
 }
 
@@ -1364,15 +1244,13 @@ html[data-theme='bright'] :is(.bh__name, .case__name, .plinth__name, .tile__name
  *      part of refraction that is actually visible at this size.
  *
  * The picture lies on the pane, inside the material, with its own small radius
- * and a shadow. The margin of glass round it is the effect; the first version
- * had no margin at all and read as a lit border.
+ * and a shadow.
  */
 html[data-theme='bright'] .vf {
-  /* A tenth of what it was. The mat was the effect when the pane was a mat;
-     asked for a frame rather than a mount, it becomes an edge — which is
-     what liquid glass is on a card anyway. The picture in build-glass-frame.py
-     is drawn for a 30px rim and scales off border-width, so the whole optical
-     profile shrinks with it and keeps its proportions. */
+  /* A thin edge rather than a mat, at the owner's word — which is what liquid
+     glass is on a card anyway. The picture in build-glass-frame.py is drawn
+     for a 30px rim and scales off border-width, so the whole optical profile
+     shrinks with it and keeps its proportions. */
   --rim: clamp(2px, 0.24vw, 3px);
   position: relative;
   padding: 0;
@@ -1403,7 +1281,6 @@ html[data-theme='bright'] .vf {
     0 1px 1px rgba(28, 42, 66, 0.10),
     0 10px 26px -12px rgba(28, 42, 66, 0.38),
     0 26px 54px -32px rgba(28, 42, 66, 0.45);
-  transition: box-shadow 0.4s var(--ease), transform 0.4s var(--ease);
 }
 
 /* The light's direction, which the frame deliberately leaves out: a stretched
@@ -1480,8 +1357,8 @@ html[data-theme='bright'] .vf :is(iframe) {
  * No ground. The hall is fixed for the whole document and the page is read in
  * front of it, so what carries the reading is the blocks themselves — the
  * strip, the cards, the glass panes — and the room is what is seen between
- * them. A sheet of frosted glass used to sit here and it made the hall a
- * rumour; taking it away is the point.
+ * them. Nothing may stand here: a sheet of frosted glass makes the hall a
+ * rumour.
  *
  * What that costs is measured rather than assumed: scripts/check-glass.mjs
  * reads the real ground under the type at three viewports.
@@ -1497,14 +1374,7 @@ html[data-theme='bright'] .after { background: none; }
    and it is what the reading is actually measured against: with the glyph
    colour removed the halo still draws, so scripts/check-glass.mjs sees the
    same ground the eye does. */
-/* The onward link at the head of a section is a control, so it gets the
-   controls' material rather than a halo — which is also the only thing that
-   carried it over the gold pieces on a phone: haloed, 所有講座 measured
-   4.37:1, and a tablet takes it clear. */
-html[data-theme='bright'] .after .section-head .more { text-shadow: none; }
-html[data-theme='bright'] .after .section-head .more:hover { color: var(--museum-ink); }
-
-html[data-theme='bright'] .after :is(.section-h, .more, .feature__date-d, .feature__date-m) {
+html[data-theme='bright'] .after :is(.section-h, .feature__date-d, .feature__date-m) {
   text-shadow:
     0 0 3px rgba(255, 255, 255, 1),
     0 0 9px rgba(255, 255, 255, 0.98),
@@ -1515,11 +1385,10 @@ html[data-theme='bright'] .after :is(.section-h, .more, .feature__date-d, .featu
 
 /* One exception, and it is not a preference. The running text beside the
    featured video is the only long paragraph on this page with nothing under
-   it, and what is behind it there is the hall's video wall — thirty-six dark
-   screens. Read over those it is not hard to read, it is impossible. So it
-   gets a pane of the same glass as the video beside it, tinted far enough to
-   carry a paragraph. Everything else on the page already brings its own
-   ground: the strip, the cards, the panes. */
+   it, read straight over the photograph. So it gets a pane of the same glass
+   as the video beside it, tinted far enough to carry a paragraph. Everything
+   else on the page already brings its own ground: the strip, the cards, the
+   panes. */
 html[data-theme='bright'] .after .feature__text {
   --rim: clamp(14px, 1.9vw, 22px);
   padding: 0;
@@ -1535,25 +1404,6 @@ html[data-theme='bright'] .after .feature__text {
     0 10px 26px -14px rgba(28, 42, 66, 0.32);
 }
 
-/* The introduction is the hall's own furniture and stands on the picture, so
-   it stays glass — the same material as the video panes, at a smaller scale. */
-html[data-theme='bright'] .bh__intro {
-  background: rgba(255, 255, 255, 0.5);
-  border-color: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(4px) saturate(1.6);
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.7),
-    inset 0 1.5px 0 -0.5px rgba(255, 255, 255, 1),
-    inset 0 -1.5px 0 -0.5px rgba(184, 220, 255, 0.85),
-    inset 0 0 16px 8px rgba(198, 227, 255, 0.16),
-    0 1px 1px rgba(28, 42, 66, 0.08),
-    0 12px 30px -16px rgba(28, 42, 66, 0.42);
-}
-html[data-theme='bright'] .bh__intro:hover {
-  background: rgba(255, 255, 255, 0.72);
-  border-color: rgba(255, 255, 255, 0.9);
-}
-
 
 /* ============================================================
    CONTROLS
@@ -1562,11 +1412,6 @@ html[data-theme='bright'] .bh__intro:hover {
    modifier classes on the markup, no borders, pale champagne. What is left
    here is only what that system cannot reach: the ink and the two marks
    that are not buttons in the ordinary sense.
-
-   The old block that stood here — white glass at rest, gold glass when
-   pressed, both with a 1px rim — was the second button system on the site.
-   It is gone rather than layered over, because two systems that disagree
-   about what a pressed control looks like is worse than either.
 
    Champagne takes dark ink. A pale gold at these opacities composites to
    about rgb(240,228,200) over white, on which the warm near-black is 12:1
@@ -1587,30 +1432,12 @@ html[data-theme='bright'] {
 }
 
 
-/* Marks that carried a gold fill of their own. Solid colour on a page whose
-   every other control is glass reads as a different site. */
-html[data-theme='bright'] :is(
-  .picks .tag[data-on],
-  .sw__opt.is-on
-) {
-  border: 0;
-  color: var(--museum-ink);
-  background: linear-gradient(180deg,
-    rgba(255, 255, 255, 0.72),
-    rgba(233, 199, 118, 0.42));
-  box-shadow:
-    inset 0 10px 16px -16px rgba(255, 255, 255, 1),
-    inset 0 -10px 16px -16px rgba(160, 112, 18, 0.32),
-    0 7px 16px -16px rgba(48, 43, 34, 0.4);
-}
-
 
 /* ---------- 本館推薦: one pane, one laureate ----------
-   The video and the words beside it were two panes of glass with a gap down
-   the middle, which said two things where there is one: one person, one
-   lecture. They are inside a single pane now, and the pane's own material is
-   the only frame — the video keeps a radius so the picture reads as lying on
-   the glass rather than being a hole through it. */
+   The video and the words beside it are inside a single pane, and the pane's
+   own material is the only frame — one person, one lecture. The video keeps a
+   radius so the picture reads as lying on the glass rather than being a hole
+   through it. */
 html[data-theme='bright'] .after .feature__grid {
   --rim: clamp(2px, 0.24vw, 3px);
   padding: clamp(0.85rem, 2vw, 1.5rem);
@@ -1684,21 +1511,17 @@ html[data-theme='bright'] .after .strip { background: none; border: 0; }
    count. The hall is fixed, so pulling the page up slides them over the
    marble below the plinths without moving the room at all. */
 /* Two strip-heights under the drums' feet, or as low as the way on allows —
-   whichever is higher.
+ * whichever is higher. Arithmetic in the room's own measurements, never a
+ * tuned length: the pieces are placed off the plate, which is sized from the
+ * viewport and capped at 62rem, so a fixed pull drifts apart from them as the
+ * screen changes.
  *
- * This was three hand-tuned lengths measured on a sweep, and a tuned length
- * cannot hold: the pull is fixed while the pieces are placed off the plate,
- * which is sized from the viewport and capped at 62rem, so the two drift apart
- * as the screen changes. On four of the seven desktop sizes swept the strip
- * landed on the way on, and it was the strip that painted over it.
- *
- * So it is arithmetic now, in the room's own measurements. The inner min()
- * picks between where the figures belong — two of their own heights below the
- * pieces — and as low as the pinned way on leaves room for. The outer max() is
- * the floor under both: the strip may never rise above the pieces' captions,
- * which is what it did when this measured to the drum's foot rather than to
- * the foot of the piece, hiding '7 場講座' and '2 場講座' outright and taking
- * the clicks off the bottom of all six sculptures.
+ * The inner min() picks between where the figures belong — two of their own
+ * heights below the pieces — and as low as the pinned way on leaves room for.
+ * The outer max() is the floor under both: the strip may never rise above the
+ * pieces' captions. Measured to the drum's foot rather than to the foot of
+ * the piece, it hides '7 場講座' outright and takes the clicks off the bottom
+ * of all six sculptures.
  *
  * On a tall screen the gap is exactly the two asked for. On a short wide one
  * the pieces come up as far as they may and the strip still clears them, and
@@ -1716,13 +1539,10 @@ html[data-theme='bright'] .after {
   );
 }
 html[data-theme='bright'] .after .strip { padding-block-start: 0; }
-/* Narrow. At the page's full width the six panes were 153px each and the row
-   carried more of the screen than the pieces above it — a caption cannot be
-   wider than the thing it captions. Held to the width of the six drums. */
+/* Narrow: a caption cannot be wider than the thing it captions, so the row is
+   held to less than the width of the six drums. */
 html[data-theme='bright'] .after .stats {
   padding-block: 0 0.5rem;
-  /* Two thirds of what it was. Six panes at a sixth of 38rem still carried
-     more of the screen than the drums above them. */
   max-inline-size: 25.3rem;
   gap: 0.4rem;
   /* Six across, always. The component's auto-fit has a 6.6rem minimum, and
@@ -1748,13 +1568,11 @@ html[data-theme='bright'] .after .stats div {
 
 
 /* ---------- the name, condensed ----------
-   Gold rather than white once it folds into a mark: at that size it is the
-   museum's signature and not a piece of chrome, and gold is what this hall
-   signs with. */
-/* No tablet. The name stands on the plate struck for it — see 'the museum's
-   name, on its plate' above — and this rule was putting the frosted rectangle
-   back underneath it from further down the file, where source order beats an
-   earlier rule of the same weight. */
+   The plate's brown ink once it folds into a mark. No tablet here: the name
+   stands on the plate struck for it — see 'the museum's name, on its plate'
+   above — and a background written here would put the frosted rectangle
+   back, from further down the file where source order beats an earlier rule
+   of the same weight. */
 html[data-theme='bright'] .bh__lockup[data-small] .bh__title {
   color: #2b2008;
   text-shadow: 0 1px 0 rgba(255, 246, 222, 0.5);
@@ -1804,7 +1622,7 @@ html[data-motion='off'] .roomfade { display: none; }
 
 /* Han labels: enough to letterspace, not enough to break the word */
 html[data-theme='bright'] :lang(zh) :is(
-  .eyebrow, .bh__eyebrow, .intro__eyebrow, .bh__uni, .bh__cue-txt,
+  .eyebrow, .bh__uni, .bh__cue-txt,
   .stats dd, .gr__n, .lec__prize a
 ) {
   letter-spacing: 0.1em;
@@ -1883,35 +1701,27 @@ html[data-theme='bright'] .bh__title { line-height: 1.12; }
     hyphens: auto;
     overflow-wrap: anywhere;
   }
-  /* Up, off the way on.
-   *
-   * At four rem the strip finished four pixels from the bottom of the screen
-   * and the way on is drawn in the last thirty of them — so the figures were
-   * painting straight over the chevron, which is what was reported.
-   *
-   * Six and a half now, and it is the one measurement on this page that can be
-   * a constant: the way on is pinned to the bottom of the screen and the strip
-   * is pulled up from the bottom of the hall, which is the same edge. So the
-   * two keep their distance whatever the phone's height — 6.5rem is the way
-   * on's 31px, the strip's own 52 to 60, and ten pixels of daylight between
-   * them. Everything above is unchanged: the drums are further off on a tall
-   * phone than on a short one, and the strip sits under them either way. */
-  /* ...less half a figure's own pane, at the owner's word: the strip and the
-     second row of sculptures come up together, so the distance between them
-     is unchanged and what closes is the space above the row. */
+  /* Up, off the way on. 6.5rem is the one measurement on this page that can
+   * be a constant: the way on is pinned to the bottom of the screen and the
+   * strip is pulled up from the bottom of the hall, which is the same edge,
+   * so the two keep their distance whatever the phone's height — the way on's
+   * 31px, the strip's own 52 to 60, and ten pixels of daylight between them.
+   * Less half a figure's own pane, at the owner's word: the strip and the
+   * second row of sculptures come up together, so the distance between them
+   * is unchanged and what closes is the space above the row. */
   html[data-theme='bright'] .after { margin-block-start: calc(-6.5rem - 0.5 * var(--strip-h)); }
 }
 
 /* At 320px the English labels hyphenate hard — "institutions" over three
-   lines — and a three-column fallback was tried instead. It reads better and
-   it does not fit: three by two is 126px tall and would have to start above
-   the plinths to clear the fold. The row was asked to be visible without
-   scrolling, so the row is what is kept, and the narrowest English phone pays
-   for it in hyphens. Everything from 360px up takes two lines at most. */
+   lines. Not three columns: three by two is 126px tall and would have to
+   start above the plinths to clear the fold, and the row was asked to be
+   visible without scrolling, so the row is what is kept and the narrowest
+   English phone pays for it in hyphens. Everything from 360px up takes two
+   lines at most. */
 
 
 /* Figures are Latin inside Han sentences, so they get lining tabular digits
-   and a little tracking of their own; without it 31 and 74 sit at different
+   and a little tracking of their own; without it 31 and 63 sit at different
    apparent weights. */
 html[data-theme='bright'] .stats dt {
   font-variant-numeric: lining-nums tabular-nums;
@@ -1977,15 +1787,11 @@ html[data-theme='bright'] .gr__lock-name {
 
 
 /* ---------- the browse page's controls ----------
-   The filter chips are painted by the button kit and by nothing else now.
-   What stood here was a theme-level answer to the component's own chip
-   styling, written at five class-level compounds to clear it — Astro stamps
-   its scope attribute on EVERY compound of a selector, so a component's rule
-   out-specifies a theme's by roughly the number of elements in it, and these
-   filters stayed a solid red block through two attempts to make them glass.
-   The component's rules are gone, so the answer to them can go too.
-
-   Count the compounds, not the classes, if this is ever needed again. */
+   The filter chips are painted by the button kit and by nothing else, and
+   nothing here may answer them: Astro stamps its scope attribute on EVERY
+   compound of a selector, so a component's rule out-specifies a theme's by
+   roughly the number of elements in it. Count the compounds, not the
+   classes, if this is ever needed again. */
 /* the search field is a control too, and it sits on the room */
 html[data-theme='bright'] .browse .search {
   background: linear-gradient(180deg,
@@ -1999,7 +1805,7 @@ html[data-theme='bright'] .browse .search {
     inset 0 -10px 18px -18px rgba(166, 119, 27, 0.28),
     0 8px 20px -17px rgba(46, 43, 38, 0.4);
 }
-html[data-theme='bright'] .browse :is(legend, .browse__n) {
+html[data-theme='bright'] .browse legend {
   text-shadow: 0 0 3px rgba(255, 255, 255, 1), 0 0 10px rgba(255, 255, 255, 0.95);
 }
 html[data-theme='bright'] .browse__h {
@@ -2007,31 +1813,6 @@ html[data-theme='bright'] .browse__h {
                0 0 40px rgba(255, 255, 255, 0.7);
 }
 
-
-/* ---------- what the button system has to switch off ----------
-   These four carry a fill of their own from the dark site, and a solid block
-   of prize colour under a pane of glass is the pane's own worst background.
-   The button class supplies everything else. */
-html[data-theme='bright'] .mat__link {
-  background: none;
-  border: 0;
-  color: var(--museum-ink);
-  box-shadow: none;
-  filter: none;
-}
-html[data-theme='bright'] .mat__link:hover,
-html[data-theme='bright'] .mat__link:focus-visible {
-  background: linear-gradient(180deg,
-    rgba(255, 255, 255, 0.76),
-    rgba(238, 214, 158, 0.4));
-  box-shadow:
-    inset 0 12px 18px -18px rgba(255, 255, 255, 1),
-    inset 0 -10px 18px -18px rgba(166, 119, 27, 0.36),
-    0 10px 22px -16px rgba(46, 43, 38, 0.5);
-  transform: translateY(-1px);
-  filter: none;
-}
-html[data-theme='bright'] .mat__ext { opacity: 0.6; }
 
 
 /* ---------- the introduction room's four cards ----------
@@ -2078,11 +1859,10 @@ html[data-theme='bright'] .xp .cards a:hover {
 }
 
 /* ---------- 延伸探索 ----------
-   The section every room ends on, and until now the one place in the bright
-   museum with no ground of its own: .xp__panel took --surface, which is 3.5%
-   BLACK — a tint meant for a dark page, and over a photograph no ground at
-   all. On the index of films the four links, their descriptions and their
-   hosts were being read against a colonnade and a film reel.
+   The section every room ends on. --surface is 3.5% BLACK — a tint meant for
+   a dark page, and over a photograph no ground at all — so the panel takes
+   the same 62% white and 9px blur the cards take, for the same reason and by
+   the same instruction.
 
    The same 62% white and 9px blur the cards take, for the same reason and by
    the same instruction. And the heading and the line under it carry the white
@@ -2108,19 +1888,15 @@ html[data-theme='bright'] .xp__note {
     0 0 10px rgba(255, 255, 255, 0.85),
     0 0 20px rgba(255, 255, 255, 0.6);
 }
-/* The v4 button kit's :root no longer declares --museum-gold-text — it was
-   never a button colour, only this one line of ink on a lecture card, and it
-   was reaching across from the kit by accident. Same value, kept where its
-   only reader is, so the next kit swap cannot silently blank it. */
 /* ---------- the page's ground, half-way ----------
    The room is fixed behind every subpage and the sheet is what rises over it.
-   Opaque, that sheet wiped the photograph out entirely a screenful in; at half
-   alpha the room stays in the building — colonnade and marble showing through
-   the page the way they do on the hall. .about carried a white of its own
-   inside the sheet and had to give it up, or the two stacked back to opaque.
+   Half alpha, so the room stays in the building — colonnade and marble
+   showing through the page the way they do on the hall. Nothing inside the
+   sheet may carry a white of its own (see .about below), or the two stack
+   back to opaque.
 
-   What this costs is measured, not assumed: scripts/check-glass.mjs now walks
-   the prize and laureate pages as well as the hall. */
+   What this costs is measured, not assumed: scripts/check-glass.mjs walks the
+   prize and laureate pages as well as the hall. */
 html[data-theme='bright'] :is(.gr__sheet, .lec__sheet) {
   background: rgba(255, 255, 255, 0.5);
   /* And the secondary ink goes darker inside them, because half a sheet of
@@ -2134,34 +1910,17 @@ html[data-theme='bright'] :is(.gr__sheet, .lec__sheet) {
   --muted-dim: #443e38;
 }
 html[data-theme='bright'] .about { background: none; }
-/* And the introduction room, for the same reason and now by the same rule.
-   關於諾獎 is one of the four rooms the bar opens, but it is built out of a
-   prize page, so it was inheriting the prize pages' half-sheet: 2452px of 50%
-   white laid over the whole document, from the top. That is the wash the
-   owner is seeing on four fifths of its photograph — not the picture's own
-   treatment, a second layer above it. The other three rooms have nothing of
-   the kind, so neither has this one; what the four have now is one treatment
-   between them, which is the point of taking it off. The prize and laureate
-   pages keep their sheet: their photograph is a band at the head, not the
-   room the whole page is read in. */
+/* And the introduction room has none: it is built out of a prize page but is
+   one of the four rooms the bar opens, and the other three carry no sheet —
+   one treatment between the four. The prize and laureate pages keep theirs:
+   their photograph is a band at the head, not the room the whole page is read
+   in. */
 html[data-theme='bright'] .gr__sheet:has(.np) { background: none; }
 
+/* the lecture cards' host line — not a kit colour, declared where its only
+   reader is */
 html[data-theme='bright'] { --museum-gold-text: #6f5111; }
 html[data-theme='bright'] .xp .cards__host { color: var(--museum-gold-text); }
-
-/* the learning area's three cards, for the same reason */
-html[data-theme='bright'] .tool {
-  border: 0;
-  border-radius: 9px;
-  background: linear-gradient(180deg,
-    rgba(255, 255, 255, 0.72),
-    rgba(242, 226, 190, 0.24));
-  box-shadow:
-    inset 0 14px 22px -22px rgba(255, 255, 255, 0.98),
-    inset 0 -12px 22px -22px rgba(166, 119, 27, 0.3),
-    0 10px 24px -20px rgba(46, 43, 38, 0.44);
-}
-html[data-theme='bright'] .tool:hover { transform: translateY(-1px); }
 
 
 /* ---------- the study panel's two keys ----------
@@ -2170,7 +1929,7 @@ html[data-theme='bright'] .tool:hover { transform: translateY(-1px); }
    painted its champagne glass over TED red and what came out was a pale
    pinkish orange with white type on it: 3.99:1 by the tokens, and far worse
    than that once the glass had lightened the red underneath. Same fix as
-   .mat__link and the filter chips: the component's paint goes and the kit's
+   the filter chips: the component's paint goes and the kit's
    material stands on its own. Written with the kit's class in it because the
    component's own rule is `.sp button` with Astro's scope on both compounds,
    which weighs exactly the same. */

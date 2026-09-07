@@ -8,7 +8,7 @@
  */
 import { useT, type Lang } from '../i18n/ui';
 import { lecture as lectureUrl } from '../i18n/routing';
-import { catName, localDate, type VideoItem, catPrizeName } from '../data/catalog';
+import { localDate, type VideoItem, catPrizeName } from '../data/catalog';
 import { still } from '../data/stills';
 
 interface Props { lang: Lang; v: VideoItem }
@@ -24,16 +24,12 @@ const KIND_LABEL = {
 /* The picture that stands for this recording, in the museum's own order: a
    frame cut out of it where one was needed, then the best of the four
    YouTube samples where the laureate was recognised in one, then the
-   uploader's. This card asked YouTube for `hqdefault` outright — the
-   uploader's pick — so the index of films was the one place in the museum
-   still showing the host at a lectern while the same recording carried a
-   verified portrait everywhere else. See src/data/stills.ts. */
+   uploader's. See src/data/stills.ts. */
 const { src: poster } = still(v.yt);
 const href = v.lecture
   ? lectureUrl(lang, v.lecture.id)
   : `https://www.youtube.com/watch?v=${v.yt}`;
 const external = !v.lecture;
-const person = lang === 'zh' ? v.personZh : v.personEn;
 const source = lang === 'zh' ? v.sourceZh : v.sourceEn;
 const sub = v.lecture
   ? (v.lecture.title[lang === 'zh' ? 'zh' : 'en'] ?? v.lecture.title.en)

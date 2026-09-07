@@ -39,10 +39,8 @@
 }
 .bh__poster { inline-size: 100%; block-size: 100%; object-fit: contain; }
 
-/* No CSS pedestal any more: every piece now carries its own, a marble drum
-   merged into the model itself. Drawing a second one under it made two. */
-/* the other language, set under the first — the halls name a prize the
-   same way a lecture page names its laureate */
+/* No CSS pedestal: every piece carries its own, a marble drum merged into the
+   model itself, and drawing a second one under it makes two. */
 /* The label on the drum's face.
  *
  * Its box is measured off the model rather than guessed: at the hall's own
@@ -57,24 +55,16 @@
 .bh__face {
   position: absolute;
   inset-inline: 17%;
-  /* Measured on the page, at the hall's own camera: the drum's gold line
-     crosses the frame at 75.7% and its foot at 95.7%, so the label has that
-     near-quarter of the frame to sit in and hangs from just under the line.
-
-     Worth measuring more than once. Two readings caught the gold cap's rim
-     and then the statue itself — both gold, both wider than the inlay — and
-     put the line at 54% and at 45%; the inlay is the thin wide run, one
-     pixel tall and seventy-six across, and nothing else fits that. And an
-     eyeballed foot at 92% was three and a half points shy of the silhouette.
+  /* The drum's gold line crosses the frame at 75.7% and its foot at 95.7% at
+     the hall's own camera, so the label has that near-quarter of the frame to
+     sit in and hangs from just under the line. Worth measuring more than
+     once: the gold cap's rim and the statue itself are both gold and both
+     wider than the inlay — the inlay is the thin wide run, one pixel tall and
+     seventy-six across, and nothing else fits that.
 
      Hung from its top rather than centred, because two of the English names
      take two lines and a centred block grows upward as well as down —
-     'Physiology or Medicine' put its mark back on the gold line.
-
-     The plate is close to full. Taking a fifth off the drum took ten pixels
-     out of this band, and at that point the two-line English labels wanted
-     two more than were left: the mark and the second line give those back,
-     so they are a shade under the fifth larger the rest are. */
+     'Physiology or Medicine' puts its mark back on the gold line. */
   /* Measured off the MODEL, not off the frame.
    *
    * 75.9% of the frame was right in exactly one room. model-viewer fits the
@@ -129,18 +119,17 @@
    rather than by width, or the tall caduceus and the wide book would carry
    quite different weight in the row. See scripts/build-marks.py. */
 .bh__mark {
-  /* The floor is 0.95rem, and it was 1.4. A floor exists so the device stays
-     legible on a narrow desktop; at 1.4rem it also bound on a phone, where the
-     frame is 95 to 146px, and the whole label block grew past the foot of the
-     drum it is cut into. Now it binds only below a 96px frame, which is a
-     320px phone and nothing else. */
+  /* The floor exists so the device stays legible on a narrow desktop; at
+     0.95rem it binds only below a 96px frame, which is a 320px phone and
+     nothing else. Any higher and it binds on every phone — the frame is 95 to
+     146px there — and the label block grows past the foot of the drum. */
   inline-size: clamp(0.95rem, 15.85cqw, 2.62rem);
   block-size: auto;
   margin-block-end: 0.1em;
 }
 .bh__name {
   font-family: var(--font-display);
-  /* floors lowered with the mark's, and for the same reason */
+  /* the floor binds only on a 320px phone — see .bh__mark */
   font-size: clamp(0.62rem, 9.6cqw, 1.5rem);
   line-height: 1.0;
   letter-spacing: 0.04em;
@@ -167,11 +156,6 @@ html[lang='en'] .bh__name {
   font-size: clamp(0.54rem, 8.35cqw, 1.3rem);
 }
 .bh__piece:hover .bh__name { color: var(--accent); }
-/* Two lines' worth whether it needs them or not. The pieces are bottom
-   aligned, so one column whose count wraps — 'No lectures in this category
-   yet' does, in English — lifts its whole column out of line with the other
-   five. Same reason .bh__name-en holds two lines. */
-
 /* ============================================================
    the way on
    ============================================================
@@ -240,16 +224,10 @@ html[data-motion='off'] .bh__cue-rule i { animation: none; inset-block-start: 40
 
 
 /* ---------- one drum, one label, at every size ----------
-   The name used to come off the marble on a phone and be set underneath, with
-   the device doubled to fill the space it left. That was written when a phone
-   drew each piece at 95px across and the type's own floor made the label half
-   again too big for the drum it was cut into.
-
-   The pieces are 146px across now — 70% of the hall's own 209 — so the floors
-   barely bind and the label sits on the marble at the size the drum expects.
-   One treatment, and the same object in every room, which is what the phone
-   customisation cost.
-*/
+   The label sits on the marble at the size the drum expects on a phone too:
+   the pieces are 146px across there — 70% of the hall's own 209 — so the
+   type's floors barely bind. One treatment, and the same object in every
+   room. */
 
 
 /* ---------- one piece, one size, on a phone ----------

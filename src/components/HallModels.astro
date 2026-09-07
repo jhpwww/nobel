@@ -9,11 +9,10 @@
  * WebGLRenderer for every element on the page, which is what makes six of them
  * affordable.
  *
- * The models are other people's work, normalised by scripts/normalise-models.mjs
+ * The models are the owner's own, normalised by scripts/normalise-models.mjs
  * and re-cast in each hall's own accent colour. Provenance for every one is in
  * data/model-credits.json, rendered both as the comments beside each element
- * and as the attribution block at the foot of this hall — the licences are
- * mostly CC-BY, and credit that lives only in a commit message is not credit.
+ * and as the attribution block at the foot of this hall.
  *
  * Nothing here imitates a Nobel medal. The pieces stand for what each prize is
  * about, not for the prize's own artwork.
@@ -77,22 +76,14 @@ const cats = categoryList()
   }));
 
 /** kept in step with scripts/render-posters.mjs, or the poster would jump */
-/* Level with the piece, not looking down on it.
- *
- * 70° put the eye twenty degrees above the horizontal, so every drum showed its
- * top face like something on a table — while the hall behind is photographed
- * from the height of its own top step, near enough level. The two perspectives
- * did not belong to the same room.
- *
- * 98° now: eight degrees *below* the horizontal, looking a little up at the
- * piece. Worth knowing what the angle is measured from — model-viewer swings
- * the camera about camera-target, which is pinned to the origin, and the
- * origin is the middle of the assembly's box. So level means level with the
- * piece's waist, not with the drum it stands on; at 88° the drum was still
- * seen slightly from above, which is why it kept showing the top of its cap.
- *
- * And 2.6m rather than 2.2: at eye level the assembly is at its tallest on
- * screen, and anything nearer cuts the foot of the drum off. */
+/* Level with the piece, not looking down on it: 98° is eight degrees below
+   the horizontal, looking a little up at the piece — the hall behind is
+   photographed from the height of its own top step, near enough level. Worth
+   knowing what the angle is measured from: model-viewer swings the camera
+   about camera-target, which is pinned to the origin, and the origin is the
+   middle of the assembly's box. So level means level with the piece's waist,
+   not with the drum it stands on; any higher and the drum shows the top of
+   its cap. */
 const CAMERA = '35deg 98deg 1.55m';
 /* The camera is pinned to the origin rather than framing each model's own box,
    so every drum sits on the same line. And the radius is pinned at both ends,
@@ -102,16 +93,15 @@ const CAMERA = '35deg 98deg 1.55m';
 const CAMERA_TARGET = '0m 0m 0m';
 const CAMERA_LIMIT = 'auto auto 1.55m';
 
+/* Counted, not claimed: the credit line is built from the data, never written
+   by hand. */
+const borrowedCount = cats.filter((c) => c.credit.source !== 'original').length;
+
 /**
  * A real HTML comment, not a JSX one — `{/* … *\/}` is stripped at build and
  * would leave the credit in the source only. Anyone reading the page source to
  * find out where a model came from should find the answer next to it.
  */
-/* Counted, not claimed. The note used to say four were borrowed and two built,
-   and went on saying it after the owner's own awards replaced the flask and the
-   DNA — crediting Poly Pizza for pieces that were no longer on the page. */
-const borrowedCount = cats.filter((c) => c.credit.source !== 'original').length;
-
 const creditComment = (c: Credit) =>
   `<!-- model: ${[c.title, c.author, c.licence, c.page || 'original work']
     .map((v) => String(v).replace(/[<>]/g, '').replace(/--+/g, '-'))
@@ -190,10 +180,8 @@ const creditComment = (c: Credit) =>
 
   <aside class="mh__credit">
     <h2>{t('models.creditTitle')}</h2>
-    {/* Nothing is borrowed any more — the owner has drawn all six — and a
-        sentence that begins "0 of the six" is a sentence about a thing that
-        is not there. The other line stays, because a model can be pulled for
-        revision and a borrowed one stood in before. */}
+    {/* All six are the owner's own; the line about borrowed pieces stays only
+        for the day one is pulled for revision and a borrowed one stands in. */}
     <p>{borrowedCount === 0
       ? t('models.creditNoteOwn')
       : t('models.creditNote', { borrowed: borrowedCount, own: cats.length - borrowedCount })}</p>
@@ -313,7 +301,7 @@ const creditComment = (c: Credit) =>
   }
   .case__poster { inline-size: 100%; block-size: 100%; object-fit: contain; }
 
-  /* No CSS shelf any more: the piece brings its own plinth in the model. */
+  /* no CSS shelf: the piece brings its own plinth in the model */
 
   /* the other language, set under the first — the halls name a prize the
 

@@ -18,7 +18,6 @@ const { lang, rec } = Astro.props;
 const t = useT(lang);
 
 const cat: CategoryKey = rec.prize.category;
-const catLabel = catName(cat, lang);
 const catPrize = catPrizeName(cat, lang);
 const date = localDate(rec.event.date, lang, true);
 const host = lang === 'zh' ? rec.event.host_zh : rec.event.host_en;
@@ -40,16 +39,7 @@ const stampAsset = (rel: string) => {
     .digest('hex').slice(0, 8);
   return `${asset(rel)}?v=${hash}`;
 };
-/* ---- 延伸探索 ----
- * These seven were a list of bare links in a 17rem rail down the right of the
- * page: a column narrow enough that one long label pushed the whole page 47px
- * sideways once, and narrow enough that each link's line of description had to
- * be set at 12px under it.
- *
- * They are the same seven, in the same order, as the cards every other room in
- * the museum ends on — see Explore.astro. A laureate's page is the innermost
- * room of the three and it now leaves the same way the other two do.
- */
+/* ---- 延伸探索 ---- the rail's list; see the aside below. */
 const deeper = [
   { url: rec.links.nobel_lecture, title: t('lec.nobelLecture'), desc: t('lec.nobelLectureNote') },
   { url: rec.links.nobel_facts,   title: t('lec.nobelFacts'),   desc: t('lec.nobelFactsNote') },
@@ -224,11 +214,8 @@ const piece = bright ? {
         <StudyPanel lang={lang} rec={rec} />
       </div>
 
-      {/* 5. go deeper — back in the rail down the right, where it was and
-          where it belongs: it is a sidebar to this laureate's page, not a
-          conclusion to it. What it is built from moved to the frontmatter
-          when it was briefly a section at the foot, and stays there, because
-          the prize pages now carry the same list. */}
+      {/* 5. go deeper — a sidebar to this laureate's page, not a conclusion
+          to it */}
       <aside class="lec__aside" aria-labelledby="h-deep">
         <h3 id="h-deep" class="lec__h">{t('lec.deeper')}</h3>
         <ul class="links" role="list">
@@ -304,7 +291,7 @@ const piece = bright ? {
     padding-block: calc(clamp(2rem, 6vw, 3.5rem) + 2.4rem) clamp(2rem, 6vw, 3.5rem);
   }
   .lec__lock { inset-block-start: 0.62rem; }
-  /* the prize's own piece, at the size the line drawing used to be */
+  /* the prize's own piece, in the bright museum */
   .lec__crest .bh__art {
     inline-size: 7.5rem;
     block-size: 13.7rem;      /* the cage's ratio — see the note in HallBright */

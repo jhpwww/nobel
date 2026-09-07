@@ -3,7 +3,7 @@
  * HallBright.astro — the bright museum's entrance.
  *
  * A domed neoclassical rotunda — white marble, a glazed dome, a ring of arched
- * windows, two red banners — with six gold pieces set out on the floor of it.
+ * windows — with six gold pieces set out on the floor of it.
  *
  * The hall is a photograph, and what stands in it is placed in per cent of a
  * plate that carries the picture's own aspect ratio, so a crop moves the
@@ -21,11 +21,10 @@
  * 69.2% of the plate, on the foot of the colonnade and level with the door's
  * threshold. See scripts/crop-hall.py.
  *
- * A curved wall of thirty-six video panels stood in the apse, on that same
- * measured horizon, until 2026-09-04. It is out at the owner's request, for a
- * different treatment; the pipeline that fed it is left standing for whatever
- * replaces it — scripts/make-backdrop-clips.py, src/data/backdrop.json and
- * the backdrop-clips workflow.
+ * No video wall in the apse — out at the owner's request, for a different
+ * treatment. The pipeline that fed it is left standing for whatever replaces
+ * it: scripts/make-backdrop-clips.py, src/data/backdrop.json and the
+ * backdrop-clips workflow.
  *
  * No drifting embers, and no dust either. Embers belonged to a dark vault and
  * read as dirt on marble; motes are invisible against a hall this bright. The
@@ -78,9 +77,8 @@ const cats = categoryList()
     n: counts[key] ?? 0,
     href: gallery(lang, key),
     model: stamp(`assets/models/gold/${key}.glb`),
-    /* the gold poster, not the other museum's. This hall showed the dark
-       museum's palette until its GLB decoded, and showed it for good to anyone
-       without WebGL. */
+    /* the gold poster, not the other museum's: the poster is what shows until
+       the GLB decodes, and for good without WebGL */
     poster: stamp(`assets/models/gold/${key}.webp`),
     mark: stamp(`assets/marks/${key}.webp`),
     /* Built here rather than in the attribute: an object literal inside a
@@ -91,22 +89,14 @@ const cats = categoryList()
     credit: credited[key],
   }));
 
-/* Level with the piece, not looking down on it.
- *
- * 70° put the eye twenty degrees above the horizontal, so every drum showed its
- * top face like something on a table — while the hall behind is photographed
- * from the height of its own top step, near enough level. The two perspectives
- * did not belong to the same room.
- *
- * 98° now: eight degrees *below* the horizontal, looking a little up at the
- * piece. Worth knowing what the angle is measured from — model-viewer swings
- * the camera about camera-target, which is pinned to the origin, and the
- * origin is the middle of the assembly's box. So level means level with the
- * piece's waist, not with the drum it stands on; at 88° the drum was still
- * seen slightly from above, which is why it kept showing the top of its cap.
- *
- * And 2.6m rather than 2.2: at eye level the assembly is at its tallest on
- * screen, and anything nearer cuts the foot of the drum off. */
+/* Level with the piece, not looking down on it: 98° is eight degrees below
+   the horizontal, looking a little up at the piece — the hall behind is
+   photographed from the height of its own top step, near enough level. Worth
+   knowing what the angle is measured from: model-viewer swings the camera
+   about camera-target, which is pinned to the origin, and the origin is the
+   middle of the assembly's box. So level means level with the piece's waist,
+   not with the drum it stands on; any higher and the drum shows the top of
+   its cap. */
 const CAMERA = '35deg 98deg 1.55m';
 /* The camera is pinned to the origin rather than framing each model's own box,
    so every drum sits on the same line. And the radius is pinned at both ends,
@@ -347,7 +337,7 @@ const PLATE = { w: 836, h: 470 };
     justify-items: start;
     /* Tight. The university above and the English below belong to the name,
        not beside it — an inscription sets its lines close and lets the space
-       fall outside the block. Halved from where they started. */
+       fall outside the block. */
     gap: 0.08rem;
     padding: 0.7rem 1.5rem 0.9rem 0;
     isolation: isolate;
@@ -416,11 +406,10 @@ const PLATE = { w: 836, h: 470 };
    * the same frosted tablet the bar's keys wear, level with them. Coming back
    * up the page opens it out again. */
   .bh__lockup[data-small] {
-    /* Down from 0.62rem, which put the name level with the bar's keys. What
-       hangs here now is a plate rather than a key, and a plate is a taller
-       object: at the old inset its top ornament was cut off by the edge of
-       the window. Its top edge lands on the keys' instead, which is the line
-       the eye reads across a corner anyway. */
+    /* 1.5rem, not the keys' 0.62rem: a plate is a taller object than a key,
+       and any nearer the top its ornament is cut off by the edge of the
+       window. Its top edge lands on the keys' instead, which is the line the
+       eye reads across a corner anyway. */
     inset-block-start: 1.5rem;
     inset-inline-start: var(--mark-x);
     padding: 0.34rem 0.85rem;
@@ -475,9 +464,9 @@ const PLATE = { w: 836, h: 470 };
     letter-spacing: 0.24em;
     text-indent: 0.24em;
     color: var(--muted);
-    /* Halved. The English line belongs to the name above it, and the leading
-       between the two was reading as a paragraph break rather than as the
-       second line of one inscription. */
+    /* tight: the English line belongs to the name above it, and more leading
+       reads as a paragraph break rather than the second line of one
+       inscription */
     margin-block-start: 0.07rem;
     line-height: 1.15;
   }
@@ -669,6 +658,10 @@ const PLATE = { w: 836, h: 470 };
     transform: translateY(calc(-1 * var(--walk))) scale(0.26);
   }
 
+  /* Two lines' worth whether it needs them or not. The pieces are bottom
+     aligned, so one column whose count wraps — 'No lectures in this category
+     yet' does, in English — lifts its whole column out of line with the other
+     five. */
   .bh__n {
     font-size: var(--step--1); color: var(--muted);
     min-block-size: 2lh;
@@ -830,10 +823,9 @@ const PLATE = { w: 836, h: 470 };
        off. Six across a 390px screen is 64px each, at which a name cut into a
        drum is a smudge — so the labels and the rings go with the distance,
        which is what distance does to lettering anyway. */
-    /* Standing on the room's floor, not under it. They used to land a hundred
-       pixels below the picture's bottom edge — six gold objects on a white
-       page with a photograph of a hall above them. The same 76.45% line the
-       desktop row stands on puts them in the room. */
+    /* Standing on the room's floor, not under it: the same 76.45% line the
+       desktop row stands on puts them in the room rather than on the white
+       page below the photograph. */
     .bh__plinths[data-state='back'] {
       transform: none;
       grid-template-columns: repeat(6, minmax(0, 1fr));
@@ -885,12 +877,6 @@ const PLATE = { w: 836, h: 470 };
    * point, so nothing here has to measure anything, and nothing has to run
    * again when the window changes. What is left for a script is the cue: at
    * what point on the page the six withdraw.
-   *
-   * A desktop's is two notches of a wheel. A wheel notch is 100px nearly
-   * everywhere, so it is 200px — far enough that a nudge does not fire it, and
-   * near enough that it happens while the hall is still the thing being looked
-   * at. A phone has no wheel and a much shorter screen, so it is a fifth of the
-   * window instead.
    *
    * And what they withdraw *to* differs. On a desktop the six stay a row of
    * six and simply go further off. On a phone they are three abreast and two
@@ -1054,8 +1040,6 @@ const PLATE = { w: 836, h: 470 };
       ticking = true;
       requestAnimationFrame(() => { step(); ticking = false; });
     }, { passive: true });
-    /* crossing the width changes both the cue and the shape of the far state,
-       so the row is put back and re-decided from scratch */
     /* the document's height changes with the window, and so does whether the
        way on has anywhere left to point — and so do both ends of the cue */
     addEventListener('resize', () => { gauge(); step(false); }, { passive: true });
@@ -1086,6 +1070,8 @@ const PLATE = { w: 836, h: 470 };
     if (frame && 'ResizeObserver' in window) {
       new ResizeObserver(remeasure).observe(frame);
     }
+    /* crossing the width changes both the cue and the shape of the far state,
+       so the row is put back and re-decided from scratch */
     ROOM.addEventListener('change', () => {
       for (const p of pieces) { p.style.transition = 'none'; p.style.transform = ''; }
       back = null;

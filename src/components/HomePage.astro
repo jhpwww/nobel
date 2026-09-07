@@ -9,11 +9,11 @@ import LectureCard from './LectureCard.astro';
 import VideoFacade from './VideoFacade.astro';
 import { useT, type Lang } from '../i18n/ui';
 import { browse, lecture as lectureUrl } from '../i18n/routing';
-import { lectures, byDateDesc, catName, nextUpcoming, recommended, localDate, catPrizeName, videoCounts, totalSittings } from '../data/catalog';
+import { lectures, byDateDesc, nextUpcoming, recommended, localDate, catPrizeName, videoCounts, totalSittings } from '../data/catalog';
 
 interface Props { lang: Lang; style?: 'flat' | 'room' | 'gl' | 'models' }
 const { lang, style = 'flat' } = Astro.props;
-/** the bright build has one hall of its own — see BRIGHT in astro.config.mjs */
+/** the bright build has one hall of its own — see the bright-museum note in astro.config.mjs */
 const bright = process.env.THEME === 'bright';
 const t = useT(lang);
 
@@ -26,22 +26,18 @@ const today = new Date().toISOString().slice(0, 10);
 const upcoming = nextUpcoming(today);
 const featured = upcoming ?? recommended();
 const latest = byDate.filter((l) => l.id !== featured.id).slice(0, 6);
-const featuredCat = catName(featured.prize.category, lang);
 const featuredPrize = catPrizeName(featured.prize.category, lang);
 const featuredDate = localDate(featured.event.date, lang, true);
 const featuredHost = lang === 'zh' ? featured.event.host_zh : featured.event.host_en;
 
-/* The number of films this museum shows, which is the number the index of
-   films lists — 導讀 + 講座 + 專訪, the three figures standing next to it in
-   this very row. It was totalVideos(), which counts something else: every
-   file on the site, including the second upload of six lectures, two extra
-   sittings and five opening-ceremony clips, none of which is a row in the
-   index. 74 beside a page that says 62 is not a richer count, it is a
-   contradiction. */
-/* Six figures rather than three, and each one counted rather than repeated:
-   the first pair used to be the same number under two labels. Laureates are
-   distinct people — a laureate who came twice is one laureate — and the three
-   kinds of film are what the browse page already filters by. */
+/* The number of films is the number the index of films lists — 導讀 + 講座 +
+   專訪, the three figures standing next to it in this very row — never a
+   grand total that also counts second uploads and opening-ceremony clips,
+   which are not rows in the index: a total here that disagrees with the index
+   is a contradiction, not a richer count. Six figures, each counted rather
+   than repeated: laureates are distinct people — a laureate who came twice is
+   one laureate — and the three kinds of film are what the browse page
+   filters by. */
 const kinds = videoCounts();
 const nLaureates = new Set(lectures.map((l) => l.laureate.en)).size;
 const nHosts = new Set(lectures.map((l) => l.event.host_en)).size;
@@ -124,9 +120,7 @@ const figures = [
       {/* The home page's one primary. Everything else on it is a destination
           the reader can reach from the hall or the bar; this is the single
           action the page is asking for, which is what the v2 kit reserves
-          --primary for. The `more` class is gone with it: it painted the
-          link gold and hung a white halo behind it, both of which were for
-          bare text lying on the hall, not for a button. */}
+          --primary for. */}
       <a class="museum-glass-btn museum-glass-btn--primary" href={browse(lang)}>
         <span>{t('nav.all')}</span><span aria-hidden="true">→</span>
       </a>
@@ -204,8 +198,6 @@ const figures = [
     font-size: var(--step--1); letter-spacing: 0.2em; color: var(--muted);
     font-variant-numeric: lining-nums tabular-nums;
   }
-  .more { font-size: var(--step--1); letter-spacing: 0.1em; text-decoration: none; color: var(--gold); }
-  .more:hover { color: var(--gold-bright); }
 
   .latest { margin-block-start: clamp(3rem, 8vw, 5.5rem); }
   .grid {

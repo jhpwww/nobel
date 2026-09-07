@@ -1,21 +1,15 @@
 /**
- * build-models.mjs — the balance, which this museum made itself.
+ * build-models.mjs — a balance scale, built rather than borrowed.
  *
- * Poly Pizza has no balance scale worth using, and the site's flat and room
- * halls showed a balance for economics from the first version until the
- * project owner's own economics award arrived. So it was built here rather
- * than borrowed. Flat-shaded low-poly, to sit beside the Poly models without
- * looking like a different set — the facets are the point, not a shortcut.
- * Output goes to assets-src/models/ and is then treated exactly like a
- * downloaded one: normalise-models.mjs centres, scales and re-casts it.
+ * Flat-shaded low-poly. Output goes to assets-src/models/ and is then treated
+ * exactly like a downloaded one: normalise-models.mjs centres, scales and
+ * re-casts it.
  *
- * It built the atom too. Both pieces have now been superseded by sculptures
- * the owner drew, and THOSE FILES ARE THE SOURCE — assets-src/models/
- * physics.glb, economics.glb — so this script may not write to those names.
- * SUPPLIED below is the guard, and it is a guard rather than a deletion for
- * two reasons: the balance is the only one this project has, and the owner is
- * still working through the six, so the shape of this file has to survive
- * literature arriving too.
+ * All six awards are sculptures the owner drew, and THOSE FILES ARE THE
+ * SOURCE — assets-src/models/<cat>.glb — so this script may not write to any
+ * of those names. SUPPLIED below is the guard, and it is a guard rather than a
+ * deletion: a model can be pulled for revision, and this balance is the only
+ * stand-in the project has.
  *
  *   node scripts/build-models.mjs
  */

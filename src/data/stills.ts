@@ -4,8 +4,9 @@
  * Three sources, in this order, and the order is the whole point:
  *
  *  1. a frame cut out of the recording itself, where one was needed —
- *     src/data/local-posters.json, written by the CI job in
- *     .github/workflows/poster-frames.yml
+ *     src/data/local-posters.json, written by scripts/cut-poster-frames.py
+ *     (run locally; the CI job in .github/workflows/poster-frames.yml cannot
+ *     reach YouTube from a runner)
  *  2. the best of the four frames YouTube samples, where the laureate was
  *     recognised in one — src/data/video-posters.json
  *  3. the uploader's own thumbnail, which for this series is very often the

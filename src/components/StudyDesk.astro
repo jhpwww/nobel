@@ -2,11 +2,9 @@
 /**
  * StudyDesk.astro — everything the visitor has written, in one place.
  *
- * It was a page of its own, /study/, and a page of its own is exactly what it
- * should not be: it is the third of the learning area's tools and the only
- * one that keeps anything, so a visitor had to leave the room to see what
- * they had done in it. It is a section of 學習專區 now, where the three
- * stages that produced these notes are set out.
+ * A section of 學習專區, not a page of its own: it is the third of the
+ * learning area's tools and the only one that keeps anything, so it stands
+ * where the three stages that produced these notes are set out.
  *
  * Reads only from localStorage, so it ships as an empty shell and is filled
  * in by script. That also means it is correct for a visitor who is not taking
@@ -65,12 +63,9 @@ const index = lectures.map((l) => ({
     <p class="study__blocked" data-blocked hidden>{t('study.blocked')}</p>
 
     {/* ---------- one record at a time ----------
-        The page could add and it could edit and it could throw the lot away,
-        and between those there was nothing: no list of what is actually in
-        the store, and no way to get rid of one thing. Un-ticking a lecture
-        does not delete its note — deliberately, because someone who changes
-        their six should not lose what they wrote — which meant the only
-        delete on the site was the one that took everything. */}
+        Un-ticking a lecture does not delete its note — deliberately, because
+        someone who changes their six should not lose what they wrote — so
+        this is where one record can be taken away or thrown out on its own. */}
     <section class="study__sec" aria-labelledby="h-rec">
       <h2 id="h-rec">{t('study.recordsTitle')}</h2>
       <p class="study__note">{t('study.recordsNote')}</p>
@@ -363,27 +358,11 @@ const index = lectures.map((l) => ({
   .work__saved { margin: 0; min-block-size: 1.1em; font-size: var(--step--1); color: var(--muted-dim); }
   .work__saved.is-fail { color: var(--c-medicine); }
 
-  .picks { display: grid; gap: .55rem; padding: 0; margin-block-start: 1.1rem; }
-  .picks li {
-    display: flex; align-items: center; gap: .8rem; flex-wrap: wrap;
-    border: 1px solid var(--line); border-radius: var(--radius);
-    background: var(--surface); padding: .7rem .9rem;
-  }
-  .picks a { text-decoration: none; color: var(--cream); font-size: var(--step-0); }
-  .picks a:hover { color: var(--gold); }
-  .picks .tags { display: flex; gap: .35rem; margin-inline-start: auto; flex-wrap: wrap; }
-  .picks .tag {
-    font-size: .64rem; letter-spacing: .06em; padding: .12rem .5rem;
-    border-radius: var(--radius-control); border: 1px solid var(--line); color: var(--muted-dim);
-  }
-  .picks .tag[data-on] { color: var(--on-accent); background: var(--gold); border-color: var(--gold); }
-
   .study__actions { display: flex; gap: .7rem; flex-wrap: wrap; align-items: center; margin-block-start: 1rem; }
-  /* The buttons here are museum buttons and the kit paints them — what stood
-     here was a gold fill, a radius, a padding and a hover, all of which beat
-     the kit because Astro scopes every compound. The one thing left is what
-     the kit has no role for: this button destroys the visitor's notes, and it
-     says so in the ink rather than in a second shape. */
+  /* Museum buttons, painted by the kit — a scoped rule here would beat it,
+     because Astro scopes every compound. The one thing left is what the kit
+     has no role for: this button destroys the visitor's notes, and it says so
+     in the ink rather than in a second shape. */
   .study button.danger { color: var(--c-medicine); }
   .study__file { display: inline-flex; }
   .study__msg { font-size: var(--step--1); color: var(--muted); }

@@ -147,8 +147,8 @@ src/
 **Outbound links**
 - Run `python3 scripts/check-links.py dist` after any change touching external URLs. A HEAD
   request is NOT enough — it misses dead DNS and soft 404s.
-- Verify every link that gets added, not a sample of them, and verify the SHARED urls as well
-  as the per-category ones. Shipping a broken link is what skipping the shared ones causes.
+- Verify every link that gets added, not a sample — the SHARED urls as well as the
+  per-category ones.
 - The YouTube ids are NOT in `href` — they sit in `data-yt`, iframe srcs and `data-picks`. Any
   link audit that only reads `href` misses every video on the site.
 - oEmbed 200 proves a video is public, not that it is embeddable — and `check-links.py` only
@@ -229,19 +229,18 @@ src/
 
 **Weight of the CSS-3D room**
 - `Sculpture3D` extrudes each SVG into 12 slices, each with its own `filter` — so each slice is
-  a separate composited surface. The room holds six of those plus a mirrored copy of each: 144
-  filtered SVGs. That is fine on a desktop GPU and will get the tab discarded on iOS Safari.
-- Below 62rem the mirrors and the video wall are hidden with `display: none` — their nodes stay
-  in the DOM — while the slices past the third are actually REMOVED, by a script that runs on
-  every `.x3d__turn` stack including the hidden mirrors'. Keeping the mirror's three slices in
-  the document is exactly why the phone count is 39 and not 21: do not "tidy" the removal to
-  skip hidden stacks without re-measuring.
-- The walk-in zoom is set from JS (`--walk-zoom`), 1 on small screens. Scaling the room
+  a separate composited surface; six pieces and a mirrored copy of each make 144 filtered SVGs,
+  fine on a desktop GPU and enough to get the tab discarded on iOS Safari.
+- Below 62rem the mirrors and the video wall are `display: none` (their nodes stay in the DOM)
+  while the slices past the third are actually REMOVED, by a script that runs on every
+  `.x3d__turn` stack including the hidden mirrors'. Keeping the mirror's three slices in the
+  document is exactly why the phone count is 39 and not 21: do not "tidy" the removal to skip
+  hidden stacks without re-measuring.
+- The walk-in zoom (`--walk-zoom`, set from JS) is 1 on small screens: scaling the room
   re-rasterises every composited layer at the new size, which is what kills the tab at the
   moment of navigating into a gallery.
-- If you add anything to this room, check the phone number first:
-  `document.querySelectorAll('.x3d svg').length` should be exactly 39 on a phone, against 152
-  untrimmed.
+- Before adding anything to this room, `document.querySelectorAll('.x3d svg').length` on a
+  phone must read exactly 39, against 152 untrimmed.
 
 **CSS**
 - Two accent tokens, and they are not interchangeable. `--accent` paints strokes, text, borders
@@ -257,7 +256,6 @@ src/
 - Dark-museum tokens live in `src/styles/global.css`; the bright museum restates them in
   `src/styles/bright.css`. Add a token rather than a one-off hex value — and add it to both files
   if the two museums need different values.
-- Every animation must be gated on `html[data-motion='off']`, never on the media query alone.
 
 **SVG**
 - Gradient strokes need `gradientUnits="userSpaceOnUse"`. With the default
@@ -271,6 +269,11 @@ src/
   captures nothing without one — then actually look at the PNGs in `shots/`. Shots need a
   current `dist/`: the script serves the built site, it does not build it. The viewport default
   is 1440×900, so 390 must be asked for.
+- For a change that is meant to alter nothing visible — a clean-up, a refactor — copy `dist/`
+  aside first and run `node scripts/check-render.mjs <before> <after>` (and the bright build
+  with its base path): it compares every page's DOM and every element's computed style, and
+  "identical" is the proof. Pixels are not: the halls' own motion makes two shots of one
+  build differ.
 - Keyboard-navigable, visible focus, WCAG AA contrast
 - No console errors; no layout shift
 - Test at 390px before 1440px
@@ -288,37 +291,32 @@ Every descriptive string on the site is a museum wall label, not a lesson.
   is the actual point, and at most once.
 - Chinese: 破折號 (——) sparingly, and never in a hook. Official lecture
   titles keep whatever punctuation they were delivered with.
-- Every proper noun carries its original in parentheses on first use.
 
 ## PageNav (the two standing controls, lower right)
 
-`src/components/PageNav.astro`, mounted once in `Base.astro`, so every page has it.
+`src/components/PageNav.astro`, mounted once in `Base.astro`.
 
-- "Back to top" appears only past `max(320px, 60vh)` of scroll. Clicking it
-  also moves focus to `#main` (which carries `tabindex="-1"`), or a keyboard
-  visitor is returned to the top visually while their focus stays deep in the
-  page.
-- "Previous page" is shown only when `document.referrer` is same-origin.
-  `history.length` is useless for this — a fresh tab already reports 2 — and
-  without the check the control would dead-end on a search engine.
-- z-index is 35: above page content, below the walk-in overlay (40) so the
-  transition covers it, and clear of the switcher (60) and toggle (61).
-- The button keeps its slot when hidden (`visibility`), so nothing shifts as
-  it fades in. Only the referrer check uses `hidden`, and it is decided once
-  at load.
+- "Back to top" appears only past `max(320px, 60vh)` of scroll. Clicking it also moves focus to
+  `#main` (which carries `tabindex="-1"`), or a keyboard visitor's focus stays deep in the page.
+- "Previous page" is shown only when `document.referrer` is same-origin. `history.length` is
+  useless for this — a fresh tab already reports 2 — and without the check the control dead-ends
+  on a search engine.
+- z-index is 35: above page content, below the walk-in overlay (40) so the transition covers
+  it, and clear of the switcher (60) and toggle (61).
+- The button keeps its slot when hidden (`visibility`), so nothing shifts as it fades in. Only
+  the referrer check uses `hidden`, decided once at load.
 
 ## The study store must never claim a save it did not make
 
-`localStorage.setItem` throws in a private window and wherever the browser is
-set to block site data. Swallowing that and printing 「已儲存」 is worse than
-any crash: the student writes six notes, trusts the confirmation, and loses
-all of it on reload.
+`localStorage.setItem` throws in a private window and wherever the browser blocks site data.
+Swallowing that and printing 「已儲存」 is worse than any crash: the student trusts the
+confirmation and loses every note on reload.
 
-- `write()` in `src/scripts/study.ts` returns whether the value was kept.
-  `setNote()` and `updateKept()` pass it up; the UI shows 「未能儲存」 in the
-  warning colour, and holds it longer than the success message.
-- `storageAvailable()` probes once on load; both `StudyPanel` and `StudyDesk`
-  show a standing banner when it fails, before anything has been typed.
+- `write()` in `src/scripts/study.ts` returns whether the value was kept; `setNote()` and
+  `updateKept()` pass it up, and the UI shows 「未能儲存」 in the warning colour, held longer
+  than the success message.
+- `storageAvailable()` probes once on load; `StudyPanel` and `StudyDesk` show a standing banner
+  when it fails, before anything has been typed.
 
 ## Where a visitor can actually write
 
@@ -334,53 +332,46 @@ being typed.
 
 ## The objects hall (`/models/`)
 
-The fourth hall shows real glTF models. All six pieces are now the owner's own
-award sculptures: `assets-src/models/<cat>.glb` IS the source and may not be
-overwritten. Four scripts own the pipeline; run them in this order:
+All six pieces are the owner's own award sculptures: `assets-src/models/<cat>.glb` IS the
+source and may not be overwritten. Three scripts own the pipeline; run them in this order:
 
-1. `scripts/build-base-rings.mjs` — cuts the three gold bands into the drum and
-   writes the `_base-ringed.glb` everything downstream consumes.
-2. `scripts/normalise-models.mjs` — the centre of the pipeline.
-3. `scripts/render-posters.mjs` — renders the poster through model-viewer itself,
-   so the still matches the frame the live model settles into. Serves `public/`
-   on its own port; needs no external server.
+1. `scripts/build-base-rings.mjs` — cuts the three gold bands into the drum and writes the
+   `_base-ringed.glb` everything downstream consumes.
+2. `scripts/normalise-models.mjs` — the centre of the pipeline (see "Smooth statues").
+3. `scripts/render-posters.mjs` — renders the poster through model-viewer itself, so the still
+   matches the frame the live model settles into (serves `public/` on its own port; needs no
+   external server). Re-run it after any geometry change, or the poster no longer matches the
+   model.
 
-`scripts/fetch-models.py` (Poly Pizza) and `scripts/build-models.mjs` (the
-balance) remain but are inert: all six names sit in their `SUPPLIED` sets and
-are skipped. Keep them, and keep their rules, for the day a borrowed stand-in
-comes back — restoring one means removing its name from `SUPPLIED` and from
-`ON_BASE`.
+`scripts/fetch-models.py` (Poly Pizza) and `scripts/build-models.mjs` (the balance) remain but
+are inert: all six names sit in their `SUPPLIED` sets and are skipped. Keep them, and keep
+their rules, for the day a borrowed stand-in comes back — restoring one means removing its
+name from `SUPPLIED` and from `ON_BASE`.
 
-- `ON_BASE` in normalise-models.mjs holds all six. Membership does three things:
-  it skips the perch-and-scale path, it skips `smoothNormals()` + `weld()` and
-  the `SUBDIVIDE` pass, and it puts the piece on the drum unchanged. One fixed
-  factor is then applied to all six assemblies with the drum's foot on the
+- `ON_BASE` in normalise-models.mjs holds all six. Membership skips the perch-and-scale path,
+  skips `smoothNormals()` + `weld()` and the `SUBDIVIDE` pass, and puts the piece on the drum
+  unchanged; one fixed factor is then applied to all six assemblies with the drum's foot on the
   bottom of the unit box, so every hall shows the same drum at the same size.
-- Materials are re-cast twice and the model written twice: once in the hall's
-  `TINT[cat]` to `public/assets/models/`, then again in gold to
-  `public/assets/models/gold/` for the bright museum. The drum's inlay ring
-  (`base__` prefix) and the invisible cage material are exempt.
-- `data/model-credits.json` is written by both inert scripts and **merged**,
-  never overwritten, so a future borrowed stand-in cannot clobber the rest.
-  An empty `page` is what suppresses the outbound credit link — the title
-  renders as `<b>` instead of `<a>`. `source: 'original'` selects the wording
-  and drives `borrowedCount`, which is 0 today.
-- Matrix order in build-models.mjs is column-major: in `chain(a, b)` it is
-  `b` that reaches the point first. Backwards, geometry collapses in ways that
-  look plausible until rendered.
-- `CAMERA`, `CAMERA_TARGET` and `CAMERA_LIMIT` appear in THREE places —
-  `render-posters.mjs`, `HallModels.astro` and `HallBright.astro`. All three
-  must match or the poster jumps when the model takes over.
-- model-viewer lives in `vendor/` at the repo root, not `public/`. Imported it is bundled once;
+- Materials are re-cast and the model written twice: in the hall's `TINT[cat]` to
+  `public/assets/models/`, then in gold to `public/assets/models/gold/` for the bright museum.
+  The drum's inlay ring (`base__` prefix) and the invisible cage material are exempt.
+- `data/model-credits.json` is written by both inert scripts and **merged**, never overwritten,
+  so a future borrowed stand-in cannot clobber the rest. An empty `page` suppresses the outbound
+  credit link (the title renders as `<b>` instead of `<a>`); `source: 'original'` selects the
+  wording and drives `borrowedCount`.
+- Matrix order in build-models.mjs is column-major: in `chain(a, b)` it is `b` that reaches the
+  point first. Backwards, geometry collapses in ways that look plausible until rendered.
+- `CAMERA`, `CAMERA_TARGET` and `CAMERA_LIMIT` appear in FOUR places — `render-posters.mjs`,
+  `HallModels.astro`, `HallBright.astro` and `GalleryPage.astro` — and must match, or the
+  poster jumps when the model takes over.
+- model-viewer lives in `vendor/` at the repo root, not `public/`: imported it is bundled once;
   a copy in `public/` would ship a second megabyte that nothing requests.
-- The model is decoration inside the link, so it carries `pointer-events: none`.
-  Without it the anchor never sees the click.
-- The fallback chain is model → poster → bare link. The `<img slot="poster">`
-  is what a browser that never upgrades the custom element renders, so it must
-  stay a real child element.
-- Credits are emitted with `<Fragment set:html>`. A JSX comment (`{/* … */}`)
-  is stripped at build and never reaches the page.
-- Rotation follows `motionOn()`, never the media query alone.
+- The model is decoration inside the link, so it carries `pointer-events: none`; without it the
+  anchor never sees the click.
+- The fallback chain is model → poster → bare link. The `<img slot="poster">` is what a browser
+  that never upgrades the custom element renders, so it must stay a real child element.
+- Credits are emitted with `<Fragment set:html>`; a JSX comment (`{/* … */}`) is stripped at
+  build and never reaches the page.
 
 ## Fonts are self-hosted and subset
 
@@ -426,59 +417,51 @@ request path of every visit, which the About page's privacy claim depends on.
 `LectureScreen.astro` has two paths and picks the first that is available:
 
 1. **Self-hosted cuts** — `src/data/backdrop.json`, generated by
-   `scripts/make-backdrop-clips.py`. Ten seconds each, looping, a few hundred
-   KB. Downloaded once; the backdrop then costs nothing however long a visitor
-   stays. A muted `playsinline` `<video>` also autoplays on iOS.
-2. **Cross-faded stills** — the fallback while that file is empty, which it is
-   today: the lectures' own frames, alternating between two `<img>` layers
-   every nine seconds.
+   `scripts/make-backdrop-clips.py`: ten-second loops, a few hundred KB, as a muted
+   `playsinline` `<video>` so it also autoplays on iOS.
+2. **Cross-faded stills** — the fallback while that file is empty, which it is today: the
+   lectures' own frames, alternating between two `<img>` layers every nine seconds.
 
 Both paths are gated on Save-Data, 2G-class connections and `motionOn()`.
 
-**When clips are added, the About page must be amended again in both languages.**
-Its rights note now discloses single still frames only. Moving footage,
-re-hosted under `public/media/backdrop/`, is outside what it says.
+**When clips are added, the About page must be amended in both languages.** Its rights note
+discloses single still frames only; moving footage re-hosted under `public/media/backdrop/` is
+outside what it says.
 
-Never verify this by asking whether the element exists. `iframe present` and
-`data-on set` say nothing about playback. Compare two frames after the reveal has
-finished, and remember that headless Chromium applies desktop autoplay policy
-whatever the `isMobile` flag says.
+Never verify playback by asking whether the element exists — `iframe present` and `data-on set`
+say nothing about it. Compare two frames after the reveal has finished, and remember that
+headless Chromium applies desktop autoplay policy whatever the `isMobile` flag says.
 
 ## Card thumbnails
 
-Two rules from the owner: the frame comes from the **Taiwan lecture** recording,
-never the 導讀, and it shows the **laureate's** face. Both scripts skip guide
-videos for exactly that reason.
+Two rules from the owner: the frame comes from the **Taiwan lecture** recording, never the
+導讀, and it shows the **laureate's** face.
 
-`src/data/stills.ts` is the single resolver, in order — a cut still
-(`local-posters.json`), then the verified YouTube frame (`video-posters.json`),
-then the uploader's `hqdefault`.
+`src/data/stills.ts` is the single resolver, in order — a cut still (`local-posters.json`),
+then the verified YouTube frame (`video-posters.json`), then the uploader's `hqdefault`.
 
-- `scripts/pick-posters.py` writes two files: `src/data/posters.json` (lecture id
-  → frame suffix, for the card in a grid) and `src/data/video-posters.json`
-  (YouTube id → frame suffix, for every facade on a laureate's page). **Both are
-  needed.** Without the second, a recording carries the laureate's face in the
-  grid and an opening speaker's on its own page. Run it as
-  `.venv-cv/bin/python scripts/pick-posters.py [--report]`.
-- Detection alone cannot find the laureate. Over these recordings YuNet returns
-  faces on the banner behind the stage, in a slide, in the audience. So each
-  laureate's official portrait is read from the nobelprize.org page the catalogue
-  already links to and every candidate face is matched against it with SFace.
-  `SAME_PERSON` is 0.363, the model's own threshold; loosening it lets through
-  any grey-haired man in a dark suit.
-- `maxresdefault` is a hard last resort, not a scoring nudge — in this series it
-  is usually a designed title card, which is not a 講座截圖.
+- `scripts/pick-posters.py` writes two files, and **both are needed**: `src/data/posters.json`
+  (lecture id → frame suffix, for the card in a grid) and `src/data/video-posters.json`
+  (YouTube id → frame suffix, for every facade on a laureate's page). Without the second, a
+  recording carries the laureate's face in the grid and an opening speaker's on its own page.
+  Run it as `.venv-cv/bin/python scripts/pick-posters.py [--report]`.
+- Detection alone cannot find the laureate — YuNet also returns the banner behind the stage, a
+  slide, the audience — so every candidate face is matched with SFace against the laureate's
+  official portrait, read from the nobelprize.org page the catalogue already links to.
+  `SAME_PERSON` is 0.363, the model's own threshold; loosening it lets through any grey-haired
+  man in a dark suit.
+- `maxresdefault` is a hard last resort, not a scoring nudge — in this series it is usually a
+  designed title card, which is not a 講座截圖.
 - Where none of the four frames YouTube samples holds the laureate,
   `scripts/cut-poster-frames.py` samples the recording itself and writes
-  `public/assets/posters/<youtube id>.webp` plus `src/data/local-posters.json`
-  (20 stills today). **Run it locally** — a CI runner is a datacenter address and
-  YouTube answers it with "sign in to confirm you're not a bot" on every player
-  client. `.github/workflows/poster-frames.yml` is kept as a fallback that does
-  not currently work.
+  `public/assets/posters/<youtube id>.webp` plus `src/data/local-posters.json`. **Run it
+  locally** — a CI runner is a datacenter address and YouTube answers it with "sign in to
+  confirm you're not a bot" on every player client; `.github/workflows/poster-frames.yml` is
+  kept as a fallback that does not currently work.
 - Re-run after changing which video a lecture points at.
-- `scripts/facecheck.py` is the shared module both scripts import for the
-  portrait, the detector and the threshold, and it names the models to fetch.
-  They live in `.tools/` (gitignored).
+- `scripts/facecheck.py` is the shared module both scripts import for the portrait, the
+  detector and the threshold; it names the models to fetch, which live in `.tools/`
+  (gitignored).
 
 ## The bright museum
 
@@ -506,13 +489,12 @@ then copied into `dist/bright` by the deploy workflow.
 - No embers and no dust: motes are invisible against a hall this bright. The
   light in this room is the photograph's own.
 
-**The fade band is a fixed copy of the room, not a mask on the page.**
-`mask-image` has no `fixed` attachment, so a mask driven from a scroll handler
-can never keep up with the compositor: the text rises at full opacity and then
-snaps pale. Instead each page renders its room a second time, marked
-`[data-roomtop]`, laid over the page with a static mask. A cover of alpha
-`1 − a` over the page is identical to blending the page toward the room at `a`,
-and it costs nothing per frame. Do not reintroduce a scroll-driven mask.
+**The fade band is a fixed copy of the room, not a mask on the page.** `mask-image` has no
+`fixed` attachment, so a mask driven from a scroll handler can never keep up with the
+compositor: the text rises at full opacity and then snaps pale. Instead each page renders its
+room a second time, marked `[data-roomtop]`, laid over the page with a static mask — a cover of
+alpha `1 − a` equals blending the page toward the room at `a`, at no per-frame cost. Do not
+reintroduce a scroll-driven mask.
 
 **Traps in the bright layout that have already cost a rebuild:**
 - A CSS box gap is not the painted gap when the background is a picture with
@@ -535,27 +517,25 @@ and it costs nothing per frame. Do not reintroduce a scroll-driven mask.
 
 ## Colour is measured, not eyeballed
 
-Two scripts, both worth running after any palette change:
+Run both after any palette change:
 
-- `node scripts/check-contrast.mjs [--theme bright]` — reads the tokens out of
-  the stylesheet and checks the pairings the site renders.
-- `node scripts/audit-contrast.mjs <origin>` — the one that finds real bugs.
-  It walks every text node on the built pages, resolves the colour actually
-  painted and the nearest opaque background behind it, and reports anything
-  under AA. Token-level checking cannot see a safe colour applied over a
-  surface it was never measured against, which is how a gold link reaches 3.2:1.
+- `node scripts/check-contrast.mjs [--theme bright]` — reads the tokens out of the stylesheet
+  and checks the pairings the site renders.
+- `node scripts/audit-contrast.mjs <origin>` — the one that finds real bugs: for every text node
+  on the built pages it resolves the colour actually painted and the nearest opaque background
+  behind it, and reports anything under AA. Token-level checking cannot see a safe colour
+  applied over a surface it was never measured against, which is how a gold link reaches 3.2:1.
 
 Three things a sampler cannot do, and they all produce false readings:
 
-- A computed colour comes back as `rgb()` with 0–255 channels, or — once
-  `color-mix()` is involved, which every surface here uses — as
-  `color(srgb r g b / a)` with 0–1 channels. Reading the second as the first
-  makes every surface look black and every reading a false failure.
+- A computed colour comes back as `rgb()` with 0–255 channels, or — once `color-mix()` is
+  involved, which every surface here uses — as `color(srgb r g b / a)` with 0–1 channels.
+  Reading the second as the first makes every surface look black and every reading a false
+  failure.
 - Text over a gradient cannot be sampled this way at all. Skip it and look.
-- Text under a cover is sampled THROUGH the cover. `[data-roomtop]` is in
-  `check-glass.mjs`'s exclusion list for that reason; anything else laid over
-  the page needs the same treatment, or the walker reports 1.11:1 on type that
-  actually reads at 7:1.
+- Text under a cover is sampled THROUGH the cover. `[data-roomtop]` is in `check-glass.mjs`'s
+  exclusion list for that reason; anything else laid over the page needs the same treatment, or
+  the walker reports 1.11:1 on type that actually reads at 7:1.
 
 **Never fix a theme problem by out-specifying a component.** Astro's scoped
 selectors carry a `[data-astro-cid-…]` on every part, so a component's own
@@ -568,37 +548,28 @@ specificity, not to scope.
 
 ## Smooth statues
 
-`scripts/normalise-models.mjs` runs, in order: `dedup, prune`, then
-`smoothNormals` on named parts only (`SMOOTH_PARTS = { peace: ['dove'] }`, the
-owner's exception), then prune, textureCompress and quantize.
+`scripts/normalise-models.mjs` runs, in order: `dedup, prune`, then `smoothNormals` on named
+parts only (`SMOOTH_PARTS = { peace: ['dove'] }`, the owner's exception), then prune,
+textureCompress and quantize. Full `smoothNormals()`, `weld()` and the `SUBDIVIDE` pass are
+gated on `!ON_BASE.has(cat)` and so run for no shipped model (see the objects hall). Keep the
+code and keep these rules for the day a borrowed low-poly stand-in comes back:
 
-Steps that no longer run for any shipped model — full `smoothNormals()`,
-`weld()`, and the `SUBDIVIDE` pass — are gated on `!ON_BASE.has(cat)`, and
-`ON_BASE` now holds all six: the owner's sculptures arrive smooth, welded and
-dense. Keep the code and keep these rules for the day a borrowed low-poly
-stand-in comes back:
-
-1. `smoothNormals()` is per **corner**, not per vertex, and crease-aware at 60°:
-   a corner averages only the faces meeting at its position whose own normal
-   lies within the threshold. Average everything and the sharp edges soften
-   too — a flask's rim rounds off, a balance's beam melts into its pans.
-2. `weld()` is worth doing only after smoothing. Before it every corner carries
-   its own face normal and nothing can merge.
-3. Loop subdivision is for `SUBDIVIDE` only, then smooth and weld again. Smooth
-   normals fix the shading but not the outline: an eight-facet flask has an
-   eight-sided silhouette however it is lit.
-4. The dove is deliberately NOT subdivided. Its mesh carries split vertices
-   along the wings and tail, and Loop subdivision pulls those apart into visible
-   cracks — the wing detaches from the body.
+1. `smoothNormals()` is per **corner**, not per vertex, and crease-aware at 60°: a corner
+   averages only the faces meeting at its position whose own normal lies within the threshold.
+   Average everything and the sharp edges soften too — a flask's rim rounds off, a balance's
+   beam melts into its pans.
+2. `weld()` only after smoothing: before it every corner carries its own face normal and
+   nothing can merge.
+3. Loop subdivision is for `SUBDIVIDE` only, then smooth and weld again. Smooth normals fix the
+   shading but not the outline: an eight-facet flask has an eight-sided silhouette however lit.
+4. The dove is deliberately NOT subdivided: its mesh carries split vertices along the wings and
+   tail, and Loop subdivision pulls those apart into visible cracks — the wing detaches.
 
 `quantize()` — **and the extension must be registered on the `NodeIO`**.
 gltf-transform silently drops an unregistered extension on write, which leaves
 quantised accessors with no `KHR_mesh_quantization` declaration: invalid glTF
 that happens to load in three.js. Check `extensionsRequired` in the output
 before trusting it.
-
-Re-run `scripts/render-posters.mjs` after any geometry change, or the poster
-no longer matches the model it stands in for.
 
 ## The bright palette's one known exception
 
@@ -616,71 +587,38 @@ bar drops to 3:1.
 
 ## Type on paper
 
-`scripts/audit-type.mjs <origin>` lists what each page actually renders —
-family, size, weight, tracking in em, leading as a ratio — rather than what the
-stylesheet intends. Run it before and after any type change; the numbers a
-typographer reasons in are not the ones `getComputedStyle` returns.
+`scripts/audit-type.mjs <origin>` lists what each page actually renders — family, size, weight,
+tracking in em, leading as a ratio — rather than what the stylesheet intends. Run it before and
+after any type change; the numbers a typographer reasons in are not the ones
+`getComputedStyle` returns. Run its conflict check when a label looks different between a
+parent and child page: the same text set in two faces is a defect, but a filter chip set in
+sans while the heading is serif is not — those are different roles.
 
-The bright theme restates the type, because light-on-dark and dark-on-light are
-different optical problems. On the dark ground glyphs bloom into the
-background, so that museum opens its tracking to keep counters clear and sits
-at a light weight. Reverse the ground and both corrections invert: the same
-weight reads thin, the same tracking reads loose enough that words stop
-holding together.
+The bright theme restates the type: on the dark ground glyphs bloom, so that museum opens its
+tracking and sits at a light weight; on white the same weight reads thin and the same tracking
+reads loose.
 
-- Headings and the title-and-name set go to **600** on paper, because Source
-  Sans carries less colour than the serif did at the same number. (Cormorant is
-  not in the bright museum at all — a display Garamond's hairlines disappear on
-  white under about 40px, which is why it was replaced here.)
-- Uppercase Latin labels keep their tracking; that is correct typography. What
-  is pulled back is Chinese that inherited a Latin small-caps measure: Latin
-  eyebrows 0.22em → 0.13em, `:lang(zh)` eyebrows 0.16em → 0.08em, hall hints
-  0.18em → 0.07em. CJK is already set on an even body.
-- Leading tightens slightly (1.75 → 1.72), because the higher contrast lets the
-  eye find the next line with less help.
+- Headings and the title-and-name set go to **600** on paper, because Source Sans carries
+  less colour than the serif at the same number. Cormorant is not in the bright museum at all —
+  a display Garamond's hairlines disappear on white under about 40px.
+- Uppercase Latin labels keep their tracking. What is pulled back is Chinese that inherited a
+  Latin small-caps measure: Latin eyebrows 0.22em → 0.13em, `:lang(zh)` eyebrows
+  0.16em → 0.08em, hall hints 0.18em → 0.07em.
+- Leading tightens slightly (1.75 → 1.72).
 
-All of it is scoped to `html[data-theme='bright']`; the dark museum's type is
-untouched, and the audit on the dark origin should still report `.lec__who` at
-500/0.03em and `.eyebrow` at 0.16em.
+All of it is scoped to `html[data-theme='bright']`; the audit on the dark origin should still
+report `.lec__who` at 500/0.03em and `.eyebrow` at 0.16em.
 
-**Undimmed backgrounds mean type carries its own light.** The four section
-backgrounds are shown at full strength with only a gradient at the foot, so
-every title, gold sub-line and note over them needs its own layered white edge
-(`text-shadow`, four stops). A heading that looked fine over a washed background
-is eaten by an unwashed one.
-
-## Two museums, two sets of faces
-
-`scripts/subset-fonts.mjs [--theme bright]` runs once per museum and nothing is
-shared: separate font list, separate output directory, separate stylesheet,
-separate manifest, so changing one museum's type cannot touch the other's.
-
-- dark: Cormorant Garamond + Noto Sans/Serif TC → `public/assets/fonts/`
-- bright: Source Serif 4 + Source Sans 3 + Noto Sans/Serif TC →
-  `public/assets/fonts/bright/`
-
-Source Serif and Source Sans are chosen on purpose: Noto Serif TC **is** Source
-Han Serif TC and Noto Sans TC **is** Source Han Sans TC, so the Source Latin
-faces are their siblings by design and share their proportions and colour.
-
-`scripts/audit-type.mjs` reports what each page renders. Run the conflict check
-against it when a label looks different between a parent and child page — the
-same text set in two faces is a defect, but a filter chip set in sans while the
-heading is serif is not: those are different roles.
+**Undimmed backgrounds mean type carries its own light.** The four section backgrounds are
+shown at full strength with only a gradient at the foot, so every title, gold sub-line and note
+over them needs its own layered white edge (`text-shadow`, four stops).
 
 ## The bright museum leads with its sans
 
-Every title, and every laureate's name where it heads a block, is set in
-Source Sans. Only the one-line hook keeps a serif — it is a pull-quote, the
-one place the museum speaks rather than labels, and it has its own token
-(`--font-hook`) so a theme can move every heading without dragging the
-editorial voice along.
+Every title, and every laureate's name where it heads a block, is set in Source Sans. Only the
+one-line hook keeps a serif — it is a pull-quote, the one place the museum speaks rather than
+labels, and it has its own token (`--font-hook`) so a theme can move every heading without
+dragging the editorial voice along.
 
-Do this **at the token**, never by out-specifying components. `--font-display`
-and `--font-han-serif` are both the sans in the bright theme. A per-selector
-list loses quietly to Astro's `[data-astro-cid-…]` scoping, and the failure
-shows up as one heading in the wrong face on one page.
-
-Re-run `scripts/subset-fonts.mjs --theme bright` after moving text between
-faces: headings moving from the serif to the sans moves their glyphs too. Skip
-it and the headings lose coverage.
+Do this **at the token**, never by out-specifying components (see "Colour is measured"):
+`--font-display` and `--font-han-serif` are both the sans in the bright theme.
