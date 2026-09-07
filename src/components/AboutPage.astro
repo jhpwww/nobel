@@ -30,7 +30,7 @@ const hostList = Object.entries(hosts);
       The head is in a box of its own, outside the box that fades, so that it
       stands where the medal stands — see 'what a room is called does not
       dissolve' in bright.css. */}
-  <div class:list={['wrap-narrow', 'about', 'about--top', bright && 'room-head']}>
+  <div class:list={['wrap-narrow', 'about', 'about--top', bright && 'room-head', bright && 'room-sheet']}>
     <header class="abt__hero hall-head">
       {/* Three lines, in the page's own order: what this room is, then whose
           it is, then what it is part of. Both lines under the name are gold,
@@ -51,7 +51,7 @@ const hostList = Object.entries(hosts);
       <p class="visually-hidden">{t('about.medalAlt')}</p>
     </header>
   </div>
-  <div class="wrap-narrow about about--body" data-fade>
+  <div class:list={['wrap-narrow', 'about', 'about--body', bright && 'room-sheet']} data-fade>
     <span id="about-body" class="gr__anchor"></span>
     {lang === 'zh' ? (
       <div class="prose stack" style="--gap:1.2rem">
@@ -297,30 +297,15 @@ const hostList = Object.entries(hosts);
   }
 
   /* ---------- read over the room ----------
-     The colophon carries no sheet in daylight — it is one of the four rooms
-     the bar opens, and none of them has one — so from the first heading down
-     every line of this page was standing on about-hall with nothing under it.
-     The head already had its light; the rest had none.
+     The colophon is two thousand words read straight over about-hall, and
+     that is too much page to lift a line at a time: the white edge every
+     other room's caption carries was, at this length, a haze over the whole
+     of it. So the column stands on a translucent rectangle instead — see 'a
+     room that is mostly reading stands its text on a sheet' in bright.css,
+     which also takes the edge and the title's halo off everything inside it.
 
-     The museum's two answers, and no third: --pane under what is framed,
-     --ink-edge on what stands on the photograph. Both at the head of
-     bright.css. The glass key in the list of special events is the button
-     kit's own material and is not answered here. */
-  :global(html[data-theme='bright']) code,
-  :global(html[data-theme='bright']) .hosts li {
-    background: var(--pane);
-    -webkit-backdrop-filter: var(--pane-blur);
-    backdrop-filter: var(--pane-blur);
-    /* the domain name is set inside a paragraph, so it would otherwise take
-       the paragraph's edge on top of its own ground and be printed twice */
-    text-shadow: none;
-  }
-  :global(html[data-theme='bright']) .about h2 {
-    text-shadow: var(--ink-edge-h);
-  }
-  :global(html[data-theme='bright']) .prose p,
-  :global(html[data-theme='bright']) .special > li > span {
-    text-shadow: var(--ink-edge);
-  }
+     What the page draws for itself keeps the tints it always had. They are
+     read on the sheet now, not on a photograph, which is what they were
+     written for. */
 </style>
 

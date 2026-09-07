@@ -247,20 +247,30 @@ src/
   phone must read exactly 39, against 152 untrimmed.
 
 **CSS**
-- Two ways type is read over a room, and only two. Four pages are read in front of a fixed
-  photograph — the index of films, the learning area, the introduction room, the colophon — and
-  bright.css declares the pair at its head: `--ink-edge` (and `--ink-edge-h` for a heading), the
-  four-layer white text-shadow a line carries when it stands on the photograph, and `--pane` /
-  `--pane-blur`, the 62% white and 9px blur a framed block brings as its own ground. Never both
-  on one element: a pane already is the ground, and type on it with an edge as well reads as
-  type printed twice. `--surface` is 3.5% BLACK — a dark-museum tint that over a photograph
-  darkens a block instead of lifting it; do not reach for it on these four pages.
+- Three ways type is read over a room, and the length of the read chooses between them.
+  bright.css declares all three at its head. For a caption, a label or one sentence: `--ink-edge`
+  (and `--ink-edge-h` for a heading), the four-layer white text-shadow a line carries when it
+  stands on the photograph. For a framed block: `--pane` / `--pane-blur`, the 62% white and 9px
+  blur the index of films puts under every card. For a room that is MOSTLY reading — the
+  introduction room and the colophon — neither: the column stands on `room-sheet`, a plain
+  translucent rectangle of the column's own width, and the edge comes off everything inside it.
+  At two thousand words an edge per line is a haze over the whole page, which is the owner's
+  judgement and the reason the sheet exists. Never two of the three on one element: a ground is
+  a ground, and type on one with an edge as well is type printed twice. `--surface` is 3.5%
+  BLACK — a dark-museum tint that over a photograph darkens a block instead of lifting it.
 - A room's head — emblem, title, the three words it is read by, the sentence under them — stands
   in a box of its own OUTSIDE the box marked `[data-fade]`, and wears `room-head`. `[data-fade]`
   is `isolation: isolate`, and an isolated ancestor caps every z-index under it, so a title
   inside the faded box can never be lifted over the band the page dissolves into. The page's own
   opening padding goes on the head's box; the body's is zeroed, because `.hall-head` places
-  itself by subtracting that same 3.4rem.
+  itself by subtracting that same 3.4rem. A room whose head is a HERO — a prize room, a
+  laureate's page — says the same thing by putting `room-head` on the element that already
+  carries `data-fade`: isolation caps what is inside an element, a z-index is where the whole of
+  it stands, so the two sit together.
+- The ladder over the band is band 10, a room's head 11, the logo beside that head 12 — and the
+  logo is a step above the head, not level with it, because the head draws a field of light
+  behind its own title that reaches past the title's box and is later in the document. Level,
+  it painted over the medal and the wreath.
 - Two accent tokens, and they are not interchangeable. `--accent` paints strokes, text, borders
   and the sculptures — full-strength hue. `--accent-block` paints solid fills: the guide badge in
   its three forms and the study panel's keys and marks. Never use `--accent` for a solid block.
@@ -574,7 +584,15 @@ reintroduce a scroll-driven mask.
   edge on the mark's own; a phone keeps 0.38 and the old centring, because 0.38 of an emblem that
   is already a fifth of the screen is the size of the mark beside it. `--emb-h` is load-bearing
   for `--head-min`, `--hall-indent` and `.hall-head`'s top margin; `--emb-k` and `--emb-y` are
-  read in one place only.
+  read in one place only. A prize room's sculpture is doubled the same way, in `GalleryPage`'s
+  own `.gr__rail[data-pinned] .gr__piece` (0.4, with `--piece-back-y` halving the crop with it);
+  the phone keeps `--piece-back-k`.
+- A laureate's name is caught into the corner beside the mark when the h1's top edge reaches the
+  top of the window, and the h1 hands it over in the same movement (`data-handed`) — two of the
+  same name a finger apart read as a fault, and until the head was lifted out of the band the big
+  one was half dissolved by then. It wraps rather than being cut: the room beside the mark is
+  measured every frame (`--pin-max`) because that row is five labels in one of two languages and
+  folds into a column on a phone.
 
 **Traps in the bright layout that have already cost a rebuild:**
 - A CSS box gap is not the painted gap when the background is a picture with

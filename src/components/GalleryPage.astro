@@ -171,8 +171,12 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
         prize room takes: the emblem on a rail, the title block centred on it,
         and the sentence that says what the room is directly underneath. See
         .hall-head in bright.css. */}
+    {/* The head of a prize room is a hero rather than a title on a page, and
+        it stands out of the band with the piece beside it — the eyebrow, the
+        name and the count were dissolving while the sculpture next to them
+        stayed gold. See 'what a room is called does not dissolve'. */}
     {!isIntro && (
-    <header class="gr" data-cat={cat} data-fade>
+    <header class:list={['gr', bright && 'room-head']} data-cat={cat} data-fade>
       <div class="wrap gr__in">
         <div class="gr__id">
           <h1 class="gr__title">{title}</h1>
@@ -257,7 +261,7 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
       The prize rooms keep theirs where it is: their head is a hero inside a
       band of photograph, not a title standing on the room. */}
   {isIntro && (
-    <div class:list={['wrap', 'np', 'np--top', bright && 'room-head']}>
+    <div class:list={['wrap', 'np', 'np--top', bright && 'room-head', bright && 'room-sheet']}>
       <header class="hall-head" data-cat={cat}>
         <h1 class="gr__title np__title">{introA}<span class="conj">{introConj}</span>{introB}</h1>
         {/* 關於這座獎 is out of the bright museum and hidden rather than
@@ -357,7 +361,7 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
       sentence it comes from, the six doors it opens, what it has added up to,
       and how one is decided. */}
   {isIntro && (
-    <div class="wrap np np--body">
+    <div class:list={['wrap', 'np', 'np--body', bright && 'room-sheet']}>
       {/* the sentence the whole thing rests on */}
       <figure class="np__will">
         <blockquote>
@@ -631,13 +635,13 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
   .gr__rail {
     position: sticky;
     inset-block-start: var(--gr-stick);
-    /* Over the band the page dissolves into, which is 10 — the same lift the
-       emblem takes on the four rooms that are not prize rooms. A prize's own
-       sculpture shrinks into a mark beside the museum's name and comes to
-       rest exactly inside that band; at 3 the band was drawn over it and the
-       piece faded out with the page it is pinned above. It is chrome, not
-       reading: it does not fade. */
-    z-index: 11;
+    /* Over the band the page dissolves into, which is 10, and over the head it
+       stands beside, which is 11 — the same lift the emblem takes on the four
+       rooms that are not prize rooms. A prize's own sculpture shrinks into a
+       mark beside the museum's name and comes to rest exactly inside that
+       band; at 3 the band was drawn over it and the piece faded out with the
+       page it is pinned above. It is chrome, not reading: it does not fade. */
+    z-index: 12;
     /* A hair of height, and the pull-up given straight back underneath.
        The rail has to sit its own height higher than where the flow would put
        it, and must not take that height from anything else — a bare negative
@@ -671,12 +675,23 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
      * script at the foot of this file, and the mark clears it in both
      * languages at every width. The fallback is the Han name's measurement,
      * for the frame before the script runs. */
+  /* Twice what it was on a desktop, at the owner's word — the same doubling
+     the emblems took on the four rooms that hang one, and for the same reason:
+     a mark beside the museum's name is what tells you which room you are still
+     in. A phone keeps --piece-back-k, below; the piece is already the size of
+     the mark there.
+
+     The vertical figure goes with it. It is not a placement but a crop: the
+     cage the model stands in is mostly air, and -0.4rem was how much of that
+     air came off the top at 0.2. At twice the scale the same air is twice as
+     tall, so the same crop is -0.8rem — and the phone, which keeps its own
+     scale, keeps its own crop with it. */
   .gr__rail[data-pinned] .gr__piece {
-    scale: 0.2;
+    scale: 0.4;
     translate:
       calc(var(--mark-x) + var(--lock-w, 10.9rem) + var(--mark-over, 0px) + 0.55rem
            - max(1rem, (100vw - 76rem) / 2))
-      -0.4rem;
+      var(--piece-back-y, -0.8rem);
   }
   :global(html[data-motion='off']) .gr__piece { transition: none; }
   .gr__piece .bh__art {
@@ -727,7 +742,10 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
     /* Beside the museum's name, not under it: the horizontal offset is the
        desktop's — measured off the name's own rendered width — and only the
        size is a phone's. */
-    .gr__rail[data-pinned] .gr__piece { scale: var(--piece-back-k); }
+    .gr__rail[data-pinned] .gr__piece {
+      scale: var(--piece-back-k);
+      --piece-back-y: -0.4rem;
+    }
     .gr__in { gap: 0.5rem; }
     .gr__title { font-size: var(--step-2); }
   }
@@ -1029,32 +1047,15 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
   .empty__b { color: var(--muted); line-height: 1.85; }
 
   /* ---------- read over the room (the introduction room only) ----------
-     This is the one page built out of a prize room that carries no sheet: it
-     is one of the four rooms the bar opens, and none of those has one — see
-     .gr__sheet:has(.np) in bright.css. So every word of it is read directly
-     on nobel-hall, and until now only the title, the three words under it and
-     the sentence below them answered that, because those wear .hall-head and
-     .hall-note.
-
-     The museum's two treatments and no third: --pane under what is framed,
-     --ink-edge on what stands on the photograph. Both are declared at the
-     head of bright.css. The figure panes were already glass but at 55% and
-     with no blur, which is a half-answer to the same question; they take the
-     museum's own material now, the one the index of films puts under every
-     card. */
-  :global(html[data-theme='bright']) .np__stats div {
-    background: var(--pane);
-    -webkit-backdrop-filter: var(--pane-blur);
-    backdrop-filter: var(--pane-blur);
-  }
-  :global(html[data-theme='bright']) :is(.np__h, .np__what) {
-    text-shadow: var(--ink-edge-h);
-  }
-  :global(html[data-theme='bright'])
-  :is(.np__will blockquote, .np__will figcaption, .np__prose p, .np__note,
-      .np__asof, .np__six-n, .np__six-en, .np__six-m, .np__when, .np__how) {
-    text-shadow: var(--ink-edge);
-  }
+     This is the one page built out of a prize room that carries no sheet of
+     the window's width — it is one of the four rooms the bar opens, and none
+     of those has one. It is also the longest read in the museum, and a white
+     edge under every line of it came out as a haze over the whole page. So
+     the room's own column stands on a translucent rectangle instead: see 'a
+     room that is mostly reading stands its text on a sheet' in bright.css,
+     which takes the edge and the title's halo off everything inside it. The
+     figure panes keep their own glass; on the sheet they read as blocks
+     rather than as a second haze. */
 </style>
 
 <script>

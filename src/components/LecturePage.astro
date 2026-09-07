@@ -119,7 +119,12 @@ const piece = bright ? {
       </picture>
     </div>
   )}
-  <header class="lec__head" data-fade>
+  {/* Out of the band with the prize's own piece beside it: the eyebrow above
+      the laureate's name was going white a finger's width into the page while
+      the piece it stands beside stayed gold. See 'what a room is called does
+      not dissolve' in bright.css. The header carries no ground of its own in
+      daylight — see the rule below — so nothing but its type rises. */}
+  <header class:list={['lec__head', bright && 'room-head']} data-fade>
       <div class="wrap lec__head-in">
         <div class="lec__crest" aria-hidden="true">
           {piece ? (
@@ -333,17 +338,22 @@ const piece = bright ? {
     /* above the mark's 60, which is the top of the ladder — see 'the band
        every page dissolves into' in bright.css */
     z-index: 61;
-    /* as far as the bar's own keys, and no further — measured, because that
-       row is five labels in one of two languages and folds into a column on a
-       phone. Until it is measured the name simply does not stand. */
-    max-inline-size: var(--pin-max, 0px);
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+    /* As far as the bar's own keys and no further, measured — that row is five
+       labels in one of two languages and folds into a column on a phone, so
+       the room beside the mark is never the same number twice. Where the whole
+       name will not go on one line it wraps rather than being cut: a name
+       ending in an ellipsis names nobody, and the part that identifies anyone
+       is the end of it. The block is at least the mark's own height and the
+       lines are centred in it, so one line sits on the mark's line and two sit
+       either side of it. */
+    max-inline-size: var(--pin-max, 40vw);
+    min-block-size: var(--lock-h);
+    display: grid;
+    align-content: center;
     font-family: var(--font-display);
     font-size: var(--step-0);
     font-weight: 600;
-    line-height: var(--lock-h);
+    line-height: 1.24;
     color: var(--cream);
     text-shadow: var(--ink-edge);
     pointer-events: none;
@@ -353,14 +363,21 @@ const piece = bright ? {
   }
   .lec__pin[data-pinned] { opacity: 1; translate: none; }
   :global(html[data-motion='off']) .lec__pin { transition: none; }
-  /* Wherever the bar folds, which is the same 48rem, there is no room beside
-     the mark: the keys open into a column whose first row is on the mark's own
-     line, and what is left is about ninety pixels — enough for 'Prof. Sir A…',
-     which is worse than nothing. On a phone the name is one screen up rather
-     than five, and the way back to it is the same scroll. */
+  /* A phone has about ninety pixels beside the mark once the bar's keys have
+     opened into their column, so the name is set a step smaller there and
+     takes the two or three lines it needs. */
   @media (max-width: 48rem) {
-    .lec__pin { display: none; }
+    .lec__pin { font-size: var(--step--1); }
   }
+
+  /* One name at a time. The small one arrives at the moment the big one's top
+     edge reaches the top of the window — the owner's own cue — and until the
+     head was lifted out of the band the big one was half dissolved by then, so
+     the two never met. Now it is not, and two of the same name a finger apart
+     read as a fault. So the head hands its name over. */
+  .lec__who { transition: opacity 0.3s var(--ease); }
+  .lec__who[data-handed] { opacity: 0; }
+  :global(html[data-motion='off']) .lec__who { transition: none; }
   /* the prize's own piece, in the bright museum */
   .lec__crest .bh__art {
     inline-size: 7.5rem;
@@ -477,19 +494,15 @@ const piece = bright ? {
          into a column that is wider than the key it folded behind. So it is
          read here rather than guessed, on the same frames the catch itself
          is decided on. */
-      let fits = false;
       if (bar) {
         const room = bar.getBoundingClientRect().left
           - pin.getBoundingClientRect().left - 12;
         pin.style.setProperty('--pin-max', `${Math.max(0, Math.round(room))}px`);
-        /* And if the whole name does not fit, it does not stand at all.
-           'Prof. Ge…' beside the mark is worse than the mark alone: the part
-           of a name that identifies anyone is the end of it, and a clipped
-           one is a label for nobody. scrollWidth is the name's own width even
-           while the box is clamped narrower than it. */
-        fits = pin.scrollWidth > 0 && room >= pin.scrollWidth;
       }
-      pin.toggleAttribute('data-pinned', fits && who.getBoundingClientRect().top <= 0);
+      const on = who.getBoundingClientRect().top <= 0;
+      pin.toggleAttribute('data-pinned', on);
+      /* and the head lets go of the name in the same movement */
+      who.toggleAttribute('data-handed', on);
     };
     measureMark();
     test();
