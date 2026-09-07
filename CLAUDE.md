@@ -196,7 +196,10 @@ src/
   Category prose lives in `scripts/copy-galleries.py`; the numbers in `data/prize-facts.json`.
 - The official Nobel pages sit in the 延伸探索 rail down the right of each prize room — the same
   place and shape a laureate's page keeps it. Each is an ExtLink with its description rendered
-  beside it as plain text, always visible: no hover popup, no touch-device branch.
+  beside it as plain text, always visible: no hover popup, no touch-device branch. They share
+  ONE pink rectangle (`links__key`) and the two series links below it have none: what the frame
+  says in this museum is "this is nobelprize.org". The count comes off `exploreItems.length`,
+  never a literal.
 - nobelprize.org slugs are **not** uniform — Peace and Economic Sciences break the
   `…-nobel-prize-in-X` pattern. Verify every URL in `fetch-prize-facts.py` with a live request
   before changing one; do not tidy them by pattern.
@@ -258,6 +261,12 @@ src/
   judgement and the reason the sheet exists. Never two of the three on one element: a ground is
   a ground, and type on one with an edge as well is type printed twice. `--surface` is 3.5%
   BLACK — a dark-museum tint that over a photograph darkens a block instead of lifting it.
+  The other two logo rooms take the rectangle for their HEAD only (`room-sheet--head`, which
+  fades out inside the sentence's own bottom margin rather than ruling a line across the page);
+  their cards and keys go on standing on the room. On a phone the rectangle's gutter moves
+  INSIDE it — the column there is very nearly the screen, and a rectangle that bleeds past it
+  leaves a four-pixel rag of photograph down each side and reads as the page having turned
+  white.
 - A room's head — emblem, title, the three words it is read by, the sentence under them — stands
   in a box of its own OUTSIDE the box marked `[data-fade]`, and wears `room-head`. `[data-fade]`
   is `isolation: isolate`, and an isolated ancestor caps every z-index under it, so a title
@@ -330,10 +339,15 @@ Every descriptive string on the site is a museum wall label, not a lesson.
   useless for this — a fresh tab already reports 2 — and without the check the control dead-ends
   on a search engine.
 - "Next page" sits under it and calls `history.forward()`. There is no `canGoForward` and there
-  never was — the session's entries are deliberately unreadable — so the key shows itself only
-  where the browser will admit there is something ahead: on a page whose
-  `PerformanceNavigationTiming.type` is `back_forward`. It re-asks on `pageshow`, because a page
-  restored from the back/forward cache never re-runs the module.
+  never was, so the museum counts its own entries: every history entry is stamped `nlmAt` in
+  `history.state`, the highest number the session has reached is kept in `sessionStorage`, and
+  something is ahead exactly when this entry is not that highest one. It is re-read on
+  `pageshow`, because a page restored from the back/forward cache never re-runs the module.
+  **Anything that calls `history.replaceState` must pass `history.state` through**, not `null` —
+  BrowsePage's filter did, and it silently wiped the stamp on the one page a visitor filters,
+  which is what made the key miss half its journeys. `PerformanceNavigationTiming.type` is NOT
+  the answer: it describes how the DOCUMENT was fetched, and a bfcache restore still says
+  `navigate`.
 - z-index is 35: above page content, below the walk-in overlay (40) so the transition covers
   it, and clear of the switcher (60) and toggle (61).
 - The button keeps its slot when hidden (`visibility`), so nothing shifts as it fades in. Only

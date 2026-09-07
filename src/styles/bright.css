@@ -705,10 +705,12 @@ html[data-theme='bright'] .room-sheet::before {
    it with a halo as well is type printed twice, and at this length the two
    together are what made the page look hazy. The title's own field of light
    goes with them — see 'every room's title stands in the hall's own light'. */
-html[data-theme='bright'] .room-sheet :is(.hall-note, .hall-head h1, .hall-stages) {
+html[data-theme='bright'] .room-sheet
+:is(.hall-note, .hall-head h1, .hall-stages, .browse__kinds, .course__stages) {
   text-shadow: none;
 }
-html[data-theme='bright'] .room-sheet :is(.gr__id, .browse__h, .abt__hero, .np .hall-head)::before {
+html[data-theme='bright'] .room-sheet
+:is(.gr__id, .browse__h, .abt__hero, .course__head, .np .hall-head)::before {
   display: none;
 }
 /* Four fifths of white is four fifths: the darkest thing the room puts under
@@ -717,6 +719,32 @@ html[data-theme='bright'] .room-sheet :is(.gr__id, .browse__h, .abt__hero, .np .
 html[data-theme='bright'] .room-sheet {
   --muted: #38332e;
   --muted-dim: #443e38;
+}
+/* A room whose reading is NOT mostly reading — the index of films, the
+   learning area — keeps its cards and its keys standing on the room, and only
+   its head takes the rectangle: the line of three words and the sentence under
+   them are small type in grey and gold, and over marble at its brightest the
+   white edge that lifts them off a column shaft only made a haze of them. So
+   the rectangle stops with the head, and it stops by fading rather than by
+   ruling a line across the page — it ends inside the sentence's own bottom
+   margin, so nothing is drawn over anything. */
+html[data-theme='bright'] .room-sheet--head::before {
+  background: linear-gradient(to bottom,
+    var(--room-sheet) calc(100% - 1.6rem), transparent);
+}
+
+/* On a phone the column IS very nearly the screen, and a rectangle that
+   bleeds past it leaves a four-pixel rag of photograph down each side and
+   reads as the page having simply turned white — which is the opposite of
+   what a rectangle standing ON the room is for. So there the gutter moves
+   inside: the sheet stops at the column's own edge and the words come in
+   from it, which leaves a finger's width of room down either side and gives
+   the rectangle two edges to be seen by. */
+@media (max-width: 48rem) {
+  html[data-theme='bright'] .room-sheet {
+    --room-sheet-bleed: 0px;
+    padding-inline: 0.9rem;
+  }
 }
 
 /* ---------- ground ---------- */

@@ -36,7 +36,8 @@ import { bright } from '../theme';
   {/* The head stands outside the box that fades, exactly as the emblem beside
       it does and for the same reason — see 'what a room is called does not
       dissolve' in bright.css. */}
-  <div class:list={['wrap', 'browse', 'browse--top', bright && 'room-head']}>
+  <div class:list={['wrap', 'browse', 'browse--top', bright && 'room-head',
+                    bright && 'room-sheet', bright && 'room-sheet--head']}>
     {/* the emblem struck for this room, on the rail every room that is not a
         prize room hangs one from — see PageEmblem and .hall-head */}
     <header class:list={['browse__id', bright && 'hall-head']}>
@@ -234,7 +235,11 @@ import { bright } from '../theme';
       for (const [k, v] of [['q', q], ['kind', kind], ['cat', cat], ['tag', tag]] as const) {
         v ? url.searchParams.set(k, v) : url.searchParams.delete(k);
       }
-      history.replaceState(null, '', url);
+      /* the URL, and only the URL: the entry's own state is the museum's —
+         PageNav stamps every history entry with a number so that it can tell
+         whether there is anything ahead of this one, and a null here wiped it
+         on the one page a visitor filters */
+      history.replaceState(history.state, '', url);
     };
 
     const p = new URLSearchParams(location.search);

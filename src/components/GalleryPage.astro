@@ -345,8 +345,25 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
       <aside class="lec__aside gh__aside" aria-labelledby="h-deep">
         <h3 id="h-deep" class="lec__h">{t('explore.title')}</h3>
         <ul class="links" role="list">
-          {deeper.map((l, i) => (
-            <li class:list={[i === 0 && 'links__key']}>
+          {/* The prize's own pages share one rectangle, the way the two that
+              belong to a laureate do on their page: what the frame says in
+              this museum is 'this is nobelprize.org', and the two under it —
+              the university's own page for the series and the magazine's —
+              are not. Counted off the list rather than written as a number,
+              so a seventh official page added to the catalogue is inside the
+              frame without anyone remembering to come back here. */}
+          <li class="links__key">
+            <ul class="links__in" role="list">
+              {deeper.slice(0, exploreItems.length).map((l) => (
+                <li>
+                  <ExtLink lang={lang} href={l.url}>{l.title}</ExtLink>
+                  {l.desc && <span>{l.desc}</span>}
+                </li>
+              ))}
+            </ul>
+          </li>
+          {deeper.slice(exploreItems.length).map((l) => (
+            <li>
               <ExtLink lang={lang} href={l.url}>{l.title}</ExtLink>
               {l.desc && <span>{l.desc}</span>}
             </li>
@@ -1020,6 +1037,11 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
   }
   .gh__aside .links a:hover { border-block-end-color: currentColor; }
   .gh__aside .links span { font-size: var(--step--1); color: var(--muted-dim); line-height: 1.55; }
+  /* two entries and more in one rectangle, and the gap between them has to be
+     larger than the gap between a title and its own line of description, or
+     the lines read as one long entry — the same figure the laureate's rail
+     uses */
+  .gh__aside .links__in { display: grid; gap: .75rem; padding: 0; margin: 0; }
   .gh__aside .links__key {
     padding: .7rem .85rem; margin-block-end: .3rem;
     border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);

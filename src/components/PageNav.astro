@@ -12,9 +12,10 @@
  *   · "top"  appears only once the page has been scrolled past a screenful
  *   · "back" appears only when the previous page was inside the museum, so it
  *     can never dead-end on a search engine or an empty history
- *   · "next" appears only on a page that was itself reached by going back or
- *     forward, which is the one case in which the browser will admit there is
- *     anything ahead — there is no way to ask it how much
+ *   · "next" appears only when there IS a next. The browser will not say —
+ *     there is no `canGoForward` — so the museum stamps every history entry it
+ *     creates with a number and remembers the highest the session has reached;
+ *     something is ahead exactly when this entry is not that highest one
  *
  * Below 48rem the labels drop and the pills become 44px circles — the same
  * decision the style switcher makes with its own descriptions.
@@ -145,22 +146,47 @@ const t = useT(lang);
 
     // ── and the way forward again ──────────────────────────────────────────
     // There is no `history.canGoForward`, and there never was: the length and
-    // the index of the session's entries are deliberately not readable. What
-    // IS readable is how this page was arrived at, and a page arrived at by
-    // going back is a page with something in front of it. So the key shows
-    // itself there and nowhere else, which is the same shape of answer the
-    // referrer gives the key above.
+    // the index of the session's entries are deliberately unreadable. The
+    // first answer here was to ask how the page had been ARRIVED at —
+    // PerformanceNavigationTiming.type === 'back_forward' — and it was wrong
+    // more often than right. That entry describes how the DOCUMENT was
+    // originally fetched, and a page the browser hands back out of its
+    // back/forward cache is not fetched again: it comes back still saying
+    // 'navigate', so the key stayed away on exactly the journey it is for.
     //
-    // A page restored from the back/forward cache does not re-run this
-    // module, so the question is asked again on `pageshow` — that is the one
-    // event a restored page does fire.
-    const wentThroughHistory = () => {
-      const nav = performance.getEntriesByType('navigation')[0] as
-        PerformanceNavigationTiming | undefined;
-      return nav?.type === 'back_forward';
+    // So the museum counts its own entries instead. Every history entry it
+    // creates is stamped with a number, the highest number the session has
+    // reached is kept beside it, and there is something ahead whenever this
+    // entry is not the highest. A fresh navigation is the one that truncates
+    // the forward list, and it is also the one that mints a new number, so
+    // the two facts are the same fact.
+    //
+    // A stamped entry survives the back/forward cache — history.state does —
+    // and a restored page never re-runs this module, so the count is read
+    // again on `pageshow`, which is the one event a restored page does fire.
+    const AT = 'nlm:nav-at';
+    const TOP = 'nlm:nav-top';
+    const store = {
+      get(k: string) { try { return Number(sessionStorage.getItem(k)) || 0; } catch { return 0; } },
+      set(k: string, v: number) { try { sessionStorage.setItem(k, String(v)); } catch { /* blocked */ } },
     };
+
+    /* the stamp on this entry, minted if it does not have one yet */
+    let at = (history.state as { nlmAt?: number } | null)?.nlmAt;
+    if (typeof at !== 'number') {
+      at = store.get(AT) + 1;
+      try {
+        history.replaceState({ ...(history.state as object | null), nlmAt: at }, '');
+      } catch { /* opaque origin */ }
+      /* a new entry is the end of the line: whatever was ahead is gone */
+      store.set(TOP, at);
+    }
+    store.set(AT, at);
+
     const syncFwd = () => {
-      const on = wentThroughHistory();
+      const here = (history.state as { nlmAt?: number } | null)?.nlmAt ?? at!;
+      store.set(AT, here);
+      const on = here < store.get(TOP);
       fwd.hidden = !on;
       fwd.classList.toggle('is-on', on);
     };
