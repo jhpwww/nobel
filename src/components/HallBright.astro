@@ -464,10 +464,16 @@ const PLATE = { w: 836, h: 470 };
     letter-spacing: 0.24em;
     text-indent: 0.24em;
     color: var(--muted);
-    /* tight: the English line belongs to the name above it, and more leading
+    /* Tight: the English line belongs to the name above it, and more leading
        reads as a paragraph break rather than the second line of one
-       inscription */
-    margin-block-start: 0.07rem;
+       inscription. The figure is negative because what separates the two is
+       not this margin — it is the leading each line carries inside its own box
+       plus the air Han and Latin faces leave above and below their ink. The
+       INK gap is what the eye measures and what the owner set: 17.00px at
+       desktop, taken to three quarters of that, so 4.25px comes off here.
+       Measured, not guessed — see the note in README on measuring it again if
+       either font-size changes. */
+    margin-block-start: -0.196rem;
     line-height: 1.15;
   }
 
@@ -763,7 +769,8 @@ const PLATE = { w: 836, h: 470 };
     /* the English line sits under the name, not beside it — at this size the
        gap the desktop can afford reads as a paragraph break */
     .bh__lockup { gap: 0.02rem; }
-    .bh__title-en { margin-block-start: 0.02rem; line-height: 1.05; }
+    /* the same three quarters, measured at 390: 9.75px of ink gap, 2.44px off */
+    .bh__title-en { margin-block-start: -0.098rem; line-height: 1.05; }
     .bh__title { line-height: 1.06; }
     .bh__title { font-size: clamp(1.32rem, 7.4vw, 1.9rem); }
     .bh__title-en { font-size: 0.62rem; letter-spacing: 0.16em; text-indent: 0.16em; }

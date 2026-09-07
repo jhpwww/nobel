@@ -216,8 +216,11 @@ const hostList = Object.entries(hosts);
       </ul>
     </div>
 
-    {/* The small print stands last, under the credits — it is what a
-        reader looks up rather than what the room is about. */}
+    {/* The small print stands last, under the credits — it is what a reader
+        looks up rather than what the room is about, and the rule above it is
+        where the room stops speaking and starts stating terms. 隱私 is part of
+        the same small print, so nothing divides the two. */}
+    <hr class="abt__rule" />
     {lang === 'zh' ? (
       <div class="prose stack" style="--gap:1.2rem">
         <h2>影片與版權</h2>
@@ -360,6 +363,14 @@ const hostList = Object.entries(hosts);
   .prose p { color: var(--text); line-height: 1.9; max-inline-size: none; }
   .lede { font-size: var(--step-1); color: var(--cream); }
   code { font-size: 0.88em; background: var(--surface-hi); padding: 0.1em 0.4em; border-radius: 2px; }
+
+  /* the one rule on this page: the room above it, the terms below */
+  .abt__rule {
+    border: 0;
+    block-size: 1px;
+    background: var(--line);
+    margin-block: clamp(2.2rem, 6vw, 3.2rem) 0;
+  }
 
   .special { display: grid; gap: 0.9rem; padding: 0; margin: 0; }
   .special li { display: grid; gap: 0.1rem; }

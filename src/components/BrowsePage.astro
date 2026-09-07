@@ -32,7 +32,7 @@ import { bright } from '../theme';
 
 <Base lang={lang} title={t('browse.title')} segments={['lectures']} bare={bright}>
   {bright && <RoomBack lang={lang} room="video-hall" />}
-  {bright && <PageEmblem src="assets/ui/video-emblem.webp" w={720} h={576} outside />}
+  {bright && <PageEmblem src="assets/ui/video-emblem.webp" w={720} h={679} outside />}
   {/* The head stands outside the box that fades, exactly as the emblem beside
       it does and for the same reason — see 'what a room is called does not
       dissolve' in bright.css. */}
@@ -164,20 +164,26 @@ import { bright } from '../theme';
      .hall-head sets its title in from the column's edge by --hall-indent, and
      that is struck off the emblem's HEIGHT — which every other room's emblem
      shares with its width, the medal, the wreath and the learning area's
-     device all being square. This one is 720x576, so its right edge was
-     landing two pixels INSIDE the first glyph of the title, with ten more of
-     its own white edge past that: the room's mark fogging the room's name.
+     device all being square. This one is not: v3 of the reel is 720x679, so
+     its right edge would land inside the first glyph of the title with its own
+     white edge reaching further still — the room's mark fogging the room's
+     name, which is what the earlier 720x576 reel actually did.
+
+     The two numbers ARE the asset's own, so they move when the artwork does.
+     Re-measure with PIL if it is replaced again: trim to the alpha bounding
+     box, scale the long side to 720, and put that size both here and on the
+     PageEmblem above.
 
      Redeclared on the box rather than on the theme root, because a custom
      property is resolved where it is declared — --hall-indent computed on
      <html> has already substituted what it read there, and only a fresh
      declaration on an ancestor of .hall-head reaches the title. */
   :global(html[data-theme='bright']) .browse--top {
-    --hall-indent: calc(var(--emb-h) * 720 / 576 + clamp(1.1rem, 3vw, 2.2rem));
+    --hall-indent: calc(var(--emb-h) * 720 / 679 + clamp(1.1rem, 3vw, 2.2rem));
   }
   @media (max-width: 40rem) {
     :global(html[data-theme='bright']) .browse--top {
-      --hall-indent: calc(var(--emb-h) * 720 / 576 + clamp(0.7rem, 2.6vw, 1.4rem));
+      --hall-indent: calc(var(--emb-h) * 720 / 679 + clamp(0.7rem, 2.6vw, 1.4rem));
     }
   }
 
