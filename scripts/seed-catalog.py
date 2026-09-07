@@ -178,6 +178,131 @@ STANDALONE_RECORDS = [
          role_zh="世界和平基金會主席", date="2026-06-25"),
 ]
 
+# ---------------------------------------------------------------------------
+# 臺大「諾貝爾獎得主講座」 — the museum's second collection.
+#
+# These are NTU's own Nobel laureate lectures, and they are NOT 臺灣橋樑計畫.
+# The programme runs from 2019 and continues alongside it; the About page
+# tells that story. Everything the museum states about the Bridges series —
+# 31 lectures in 32 sittings — counts `lectures` alone and must stay that way.
+#
+# Provenance of every field below: the recording's own description on 臺大演講網
+# (UCSgvLn9EzRHS7yOJqXcJ68Q), cross-checked against NTU's own pages, which are
+# the `links` on each record. nobelprize.org slugs verified by live request.
+#
+# speech.ntu.edu.tw sits behind a Cloudflare challenge and answers 403 to every
+# automated client, so it is NOT linked anywhere — check-links.py would fail on
+# it. Link cge.ntu.edu.tw and www.ntu.edu.tw instead; both were fetched 200.
+# ---------------------------------------------------------------------------
+NTU_SERIES = {
+    "soong":      ("宋恭源先生頂尖研究講座",
+                   "Raymond Soong Chair Professorship of Distinguished Research"),
+    "palm":       ("臺大椰林講座", "NTU Royal Palm Lecture Series"),
+    "pilgrimage": ("我的學思歷程",
+                   "NTU Lectures on the Intellectual and Spiritual Pilgrimage"),
+    "spe":        ("臺大國際政經學院課堂講座",
+                   "Class lecture at the NTU School of Political Science and Economics"),
+}
+
+# no, id, laureate_en, laureate_zh, category, prize_year, affiliation, country,
+# date, series_key, title_en, yt, nobel_slug, links
+#
+# `affiliation` is the affiliation AT THE TIME OF THE AWARD, as nobelprize.org
+# gives it and as the 31 already do — not the post the laureate held when they
+# came to Taipei.
+NTU = [
+ (1,"mourou","Prof. Gérard Mourou","傑拉‧慕儒","physics",2018,
+  "École Polytechnique","France","2019-11-09","pilgrimage",
+  # NTU's own English page names the talk; the Chinese page names it 《我一生對光的追求》
+  "A Lifetime's Quest for Light","f_93MRC_cOQ","physics/2018/mourou",
+  dict(spotlight="https://www.ntu.edu.tw/spotlight/2019/1783_20191216.html",
+       cge="https://cge.ntu.edu.tw/News_Content_n_68922_s_75100.html")),
+ (2,"stoddart","Sir J. Fraser Stoddart","弗雷澤‧史托達特","chemistry",2016,
+  "Northwestern University","USA","2019-12-06","pilgrimage",
+  # No talk title was ever published for this sitting — NTU lists the speaker
+  # only. The series is what the session was, so the series is what stands
+  # here; a title would be a guess, and the museum does not guess.
+  "NTU Lectures on the Intellectual and Spiritual Pilgrimage","BclmeWfaM8Q",
+  "chemistry/2016/stoddart",
+  dict(cge="https://cge.ntu.edu.tw/News_Content_n_68922_s_75100.html")),
+ (3,"ciechanover-ntu","Prof. Aaron Ciechanover","亞倫‧切哈諾沃","chemistry",2004,
+  "Israel Institute of Technology","Israel","2024-04-01","palm",
+  "The Revolution of Personalized Medicine: Are We Going to Cure All Diseases and at What Price?",
+  "h0S66RZon2Y","chemistry/2004/ciechanover",
+  dict(spotlight="https://www.ntu.edu.tw/spotlight/2024/2254_20240410.html",
+       epaper="https://sec.ntu.edu.tw/epaper/article.asp?num=1600&sn=26071",
+       cge="https://cge.ntu.edu.tw/cl_n_203876.html")),
+ (4,"aspect","Prof. Alain Aspect","阿蘭‧阿斯佩","physics",2022,
+  "Université Paris-Saclay","France","2024-10-14","soong",
+  "From Einstein and Bell to quantum technologies: entanglement in action",
+  "bnjb7Y98D1k","physics/2022/aspect",
+  dict(spotlight="https://www.ntu.edu.tw/spotlight/2024/2309_20241016.html")),
+ (5,"aspect-2","Prof. Alain Aspect","阿蘭‧阿斯佩","physics",2022,
+  "Université Paris-Saclay","France","2024-10-15","soong",
+  "The two quantum revolutions: From concept to applications",
+  "VQ_QQD3BDkU","physics/2022/aspect",
+  dict(spotlight="https://www.ntu.edu.tw/spotlight/2024/2311_20241023.html")),
+ (6,"robinson","Prof. James A. Robinson","詹姆斯‧羅賓森","economics",2024,
+  "University of Chicago","USA","2025-12-17","soong",
+  "Why Nations Fail","BHLS1ogT6tE","economic-sciences/2024/robinson",
+  dict(spotlight="https://www.ntu.edu.tw/spotlight/2025/2444_20251219.html",
+       epaper="https://sec.ntu.edu.tw/epaper/article.asp?num=1672&sn=39658",
+       spe="https://spe.ntu.edu.tw/news-events/institutions-culture-and-prosperity-nobel-laureate-james-a-robinson-speaks-at-spe/")),
+ (7,"robinson-fish-i","Prof. James A. Robinson","詹姆斯‧羅賓森","economics",2024,
+  "University of Chicago","USA","2025-12-17","spe",
+  "Searching for Fish in Trees I","qgfcB-rGOcg","economic-sciences/2024/robinson",
+  dict(spe="https://spe.ntu.edu.tw/news-events/institutions-culture-and-prosperity-nobel-laureate-james-a-robinson-speaks-at-spe/")),
+ (8,"robinson-fish-ii","Prof. James A. Robinson","詹姆斯‧羅賓森","economics",2024,
+  "University of Chicago","USA","2025-12-19","spe",
+  "Searching for Fish in Trees II","sO6UQ214N88","economic-sciences/2024/robinson",
+  dict(spe="https://spe.ntu.edu.tw/news-events/institutions-culture-and-prosperity-nobel-laureate-james-a-robinson-speaks-at-spe/")),
+]
+
+
+def build_ntu():
+    """The NTU collection, in the same record shape the 31 use.
+
+    Same shape on purpose: a lecture page renders one of these exactly as it
+    renders a Bridges lecture. What differs is the `series` block, which the
+    page prints, and the absence of `cw_hub` — 天下's hub covers the Bridges
+    programme and nothing here belongs to it.
+    """
+    out = []
+    for (no, lid, en, zh, cat, yr, aff, country, date, skey, title, yt, nslug, links) in NTU:
+        h_en, h_zh, city = HOSTS["NTU"]
+        s_zh, s_en = NTU_SERIES[skey]
+        out.append({
+            "id": lid, "no": no,
+            "series": skey, "series_zh": s_zh, "series_en": s_en,
+            "laureate": {"en": en, "zh": zh},
+            "prize": {"category": cat, "year": yr},
+            "affiliation": {"institution": aff, "country": country},
+            "event": {"date": date, "host_key": "NTU", "host_en": h_en,
+                      "host_zh": h_zh, "city": city},
+            "title": {"en": title, "zh": None},
+            "description": {"en": None, "zh": None},
+            "video": {
+                # The 臺大演講網 upload IS the recording here, so it belongs in
+                # `lecture`. Never in `lecture_ntu`: that field means "a second
+                # upload of a Bridges lecture", and HallRing filters the hall's
+                # six turning panels on it with six-element arrays.
+                "lecture": yt, "lecture_ntu": None, "guide": None,
+                "extra_sessions": [],
+            },
+            "interviews": [],
+            "links": {
+                "nobel_facts": f"https://www.nobelprize.org/prizes/{nslug}/facts/",
+                "nobel_lecture": f"https://www.nobelprize.org/prizes/{nslug}/lecture/",
+                **({"ntu_spotlight": links["spotlight"]} if "spotlight" in links else {}),
+                **({"ntu_epaper": links["epaper"]} if "epaper" in links else {}),
+                **({"ntu_cge": links["cge"]} if "cge" in links else {}),
+                **({"ntu_spe": links["spe"]} if "spe" in links else {}),
+            },
+            "topic_tags": [],
+        })
+    return out
+
+
 CW_HUB = "https://event.cw.com.tw/2026taiwanbridge/index.html"
 
 def build():
@@ -216,8 +341,10 @@ def build():
             "topic_tags": [],
         }
         out.append(rec)
-    return {"lectures": out, "special_events": SPECIAL,
+    return {"lectures": out, "ntu_lectures": build_ntu(),
+            "special_events": SPECIAL,
             "standalone_records": STANDALONE_RECORDS,
+            "ntu_series": {k: {"zh": v[0], "en": v[1]} for k, v in NTU_SERIES.items()},
             "hosts": {k: {"en": v[0], "zh": v[1], "city": v[2]} for k, v in HOSTS.items()}}
 
 if __name__ == "__main__":
@@ -226,7 +353,8 @@ if __name__ == "__main__":
     p = root / "data" / "catalog.json"
     p.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
     lec = data["lectures"]
-    print(f"wrote {p}  ({len(lec)} lectures, {len(data['special_events'])} special events)")
+    print(f"wrote {p}  ({len(lec)} lectures, {len(data['ntu_lectures'])} NTU lectures, "
+          f"{len(data['special_events'])} special events)")
     print(f"  with 導讀影片        : {sum(1 for r in lec if r['video']['guide'])}")
     print(f"  with interviews    : {sum(1 for r in lec if r['interviews'])}")
     print(f"  interview videos   : {sum(len(r['interviews']) for r in lec)}")

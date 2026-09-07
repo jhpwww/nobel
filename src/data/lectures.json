@@ -1820,6 +1820,450 @@
       }
     }
   ],
+  "ntu_lectures": [
+    {
+      "id": "mourou",
+      "no": 1,
+      "series": "pilgrimage",
+      "series_zh": "我的學思歷程",
+      "series_en": "NTU Lectures on the Intellectual and Spiritual Pilgrimage",
+      "laureate": {
+        "en": "Prof. Gérard Mourou",
+        "zh": "傑拉‧慕儒"
+      },
+      "prize": {
+        "category": "physics",
+        "year": 2018
+      },
+      "affiliation": {
+        "institution": "École Polytechnique",
+        "country": "France"
+      },
+      "event": {
+        "date": "2019-11-09",
+        "host_key": "NTU",
+        "host_en": "National Taiwan University",
+        "host_zh": "國立臺灣大學",
+        "city": "Taipei"
+      },
+      "title": {
+        "en": "A Lifetime's Quest for Light",
+        "zh": "我一生對光的追求"
+      },
+      "description": {
+        "en": "Mourou and his doctoral student Donna Strickland invented chirped pulse amplification: a pulse is stretched, amplified, then squeezed back. Twenty years of stalled laser intensity ended with it, and laser eye surgery and particle acceleration followed. Asked what he does when work stalls, he says he always keeps several projects running.",
+        "zh": "慕儒與博士生史崔克蘭發明了啁啾脈衝放大（chirped pulse amplification, CPA）：脈衝先拉長，放大後再壓回。雷射強度 20 年的停滯就此結束，近視雷射手術與粒子加速隨之而來。談到研究卡關，他說手上永遠同時做好幾個題目。"
+      },
+      "video": {
+        "lecture": "f_93MRC_cOQ",
+        "lecture_ntu": null,
+        "guide": null,
+        "extra_sessions": []
+      },
+      "interviews": [],
+      "links": {
+        "nobel_facts": "https://www.nobelprize.org/prizes/physics/2018/mourou/facts/",
+        "nobel_lecture": "https://www.nobelprize.org/prizes/physics/2018/mourou/lecture/",
+        "ntu_spotlight": "https://www.ntu.edu.tw/spotlight/2019/1783_20191216.html",
+        "ntu_cge": "https://cge.ntu.edu.tw/News_Content_n_68922_s_75100.html"
+      },
+      "topic_tags": [
+        "physics-applied",
+        "method-discovery",
+        "education-career"
+      ],
+      "hook": {
+        "zh": "雷射脈衝得先拉長，才能放大。",
+        "en": "A laser pulse had to be stretched before it could be amplified."
+      }
+    },
+    {
+      "id": "stoddart",
+      "no": 2,
+      "series": "pilgrimage",
+      "series_zh": "我的學思歷程",
+      "series_en": "NTU Lectures on the Intellectual and Spiritual Pilgrimage",
+      "laureate": {
+        "en": "Sir J. Fraser Stoddart",
+        "zh": "弗雷澤‧史托達特"
+      },
+      "prize": {
+        "category": "chemistry",
+        "year": 2016
+      },
+      "affiliation": {
+        "institution": "Northwestern University",
+        "country": "USA"
+      },
+      "event": {
+        "date": "2019-12-06",
+        "host_key": "NTU",
+        "host_en": "National Taiwan University",
+        "host_zh": "國立臺灣大學",
+        "city": "Taipei"
+      },
+      "title": {
+        "en": "NTU Lectures on the Intellectual and Spiritual Pilgrimage",
+        "zh": "我的學思歷程"
+      },
+      "description": {
+        "en": "Stoddart's molecules are rings threaded through one another: no chemical bond, and impossible to pull apart. That mechanical bond lets a ring slide back and forth along an axle, and molecular machines follow. The lecture runs from a Scottish farm that had no electricity until he was eighteen to his advice to young researchers.",
+        "zh": "史托達特把分子做成互相套住的環：沒有化學鍵，卻分不開。這是機械鍵（mechanical bond）：環沿著軸來回滑動，分子機器（molecular machines）由此而來。演講從他 18 歲才通電的蘇格蘭農場講起，收在給年輕研究者的建議。"
+      },
+      "video": {
+        "lecture": "BclmeWfaM8Q",
+        "lecture_ntu": null,
+        "guide": null,
+        "extra_sessions": []
+      },
+      "interviews": [],
+      "links": {
+        "nobel_facts": "https://www.nobelprize.org/prizes/chemistry/2016/stoddart/facts/",
+        "nobel_lecture": "https://www.nobelprize.org/prizes/chemistry/2016/stoddart/lecture/",
+        "ntu_cge": "https://cge.ntu.edu.tw/News_Content_n_68922_s_75100.html"
+      },
+      "topic_tags": [
+        "chemistry-molecular",
+        "education-career"
+      ],
+      "hook": {
+        "zh": "在沒有電的農場長大，後來造出了會動的分子。",
+        "en": "A childhood on a farm with no electricity, a career building molecules that move."
+      }
+    },
+    {
+      "id": "ciechanover-ntu",
+      "no": 3,
+      "series": "palm",
+      "series_zh": "臺大椰林講座",
+      "series_en": "NTU Royal Palm Lecture Series",
+      "laureate": {
+        "en": "Prof. Aaron Ciechanover",
+        "zh": "亞倫‧切哈諾沃"
+      },
+      "prize": {
+        "category": "chemistry",
+        "year": 2004
+      },
+      "affiliation": {
+        "institution": "Israel Institute of Technology",
+        "country": "Israel"
+      },
+      "event": {
+        "date": "2024-04-01",
+        "host_key": "NTU",
+        "host_en": "National Taiwan University",
+        "host_zh": "國立臺灣大學",
+        "city": "Taipei"
+      },
+      "title": {
+        "en": "The Revolution of Personalized Medicine: Are We Going to Cure All Diseases and at What Price?",
+        "zh": "個人化醫療的革命：我們能治好所有疾病嗎？代價又是什麼？"
+      },
+      "description": {
+        "en": "The twentieth century made lives long enough to meet heart disease, cancer and neurodegeneration. Ciechanover traces drug development from chance — penicillin — through high-throughput screening to drugs aimed at a patient's own mutation, and puts the price at cost, access and genetic privacy.",
+        "zh": "20 世紀讓人活得夠久，才遇得上心血管疾病、癌症與神經退化疾病（neurodegenerative diseases）。切哈諾沃追溯藥物開發從偶然（penicillin，盤尼西林）到大量篩選（high-throughput screening），再到針對病人自身突變設計的藥物；代價落在費用、可近性（accessibility）與基因隱私。"
+      },
+      "video": {
+        "lecture": "h0S66RZon2Y",
+        "lecture_ntu": null,
+        "guide": null,
+        "extra_sessions": []
+      },
+      "interviews": [],
+      "links": {
+        "nobel_facts": "https://www.nobelprize.org/prizes/chemistry/2004/ciechanover/facts/",
+        "nobel_lecture": "https://www.nobelprize.org/prizes/chemistry/2004/ciechanover/lecture/",
+        "ntu_spotlight": "https://www.ntu.edu.tw/spotlight/2024/2254_20240410.html",
+        "ntu_epaper": "https://sec.ntu.edu.tw/epaper/article.asp?num=1600&sn=26071",
+        "ntu_cge": "https://cge.ntu.edu.tw/cl_n_203876.html"
+      },
+      "topic_tags": [
+        "medicine-clinical",
+        "method-discovery",
+        "ethics-responsibility"
+      ],
+      "hook": {
+        "zh": "人類多活的 35 年，大半是 20 世紀給的。",
+        "en": "Most of the years a life has gained were added in the twentieth century."
+      }
+    },
+    {
+      "id": "aspect",
+      "no": 4,
+      "series": "soong",
+      "series_zh": "宋恭源先生頂尖研究講座",
+      "series_en": "Raymond Soong Chair Professorship of Distinguished Research",
+      "laureate": {
+        "en": "Prof. Alain Aspect",
+        "zh": "阿蘭‧阿斯佩"
+      },
+      "prize": {
+        "category": "physics",
+        "year": 2022
+      },
+      "affiliation": {
+        "institution": "Université Paris-Saclay",
+        "country": "France"
+      },
+      "event": {
+        "date": "2024-10-14",
+        "host_key": "NTU",
+        "host_en": "National Taiwan University",
+        "host_zh": "國立臺灣大學",
+        "city": "Taipei"
+      },
+      "title": {
+        "en": "From Einstein and Bell to quantum technologies: entanglement in action",
+        "zh": "從愛因斯坦與貝爾到量子科技：量子糾纏的實際運作"
+      },
+      "description": {
+        "en": "Einstein held that quantum mechanics was incomplete; Bell showed the dispute could be settled by experiment. Aspect made that measurement with pairs of entangled photons, switching the direction of measurement while the photons were in flight. From there he turns to quantum cryptography and quantum computing.",
+        "zh": "愛因斯坦（Albert Einstein）認為量子力學並不完整，貝爾（John Bell）證明這個爭論可以用實驗裁決。阿斯佩以成對的糾纏光子（entangled photons）做出測量，並在光子飛行途中才切換測量的方向。他由此談到量子密碼（quantum cryptography）與量子運算（quantum computing）。"
+      },
+      "video": {
+        "lecture": "bnjb7Y98D1k",
+        "lecture_ntu": null,
+        "guide": null,
+        "extra_sessions": []
+      },
+      "interviews": [],
+      "links": {
+        "nobel_facts": "https://www.nobelprize.org/prizes/physics/2022/aspect/facts/",
+        "nobel_lecture": "https://www.nobelprize.org/prizes/physics/2022/aspect/lecture/",
+        "ntu_spotlight": "https://www.ntu.edu.tw/spotlight/2024/2309_20241016.html"
+      },
+      "topic_tags": [
+        "physics-fundamental",
+        "ai-computation",
+        "method-discovery"
+      ],
+      "hook": {
+        "zh": "光子還在路上，才切換要測的方向。",
+        "en": "The measurement was chosen while the photons were already in flight."
+      }
+    },
+    {
+      "id": "aspect-2",
+      "no": 5,
+      "series": "soong",
+      "series_zh": "宋恭源先生頂尖研究講座",
+      "series_en": "Raymond Soong Chair Professorship of Distinguished Research",
+      "laureate": {
+        "en": "Prof. Alain Aspect",
+        "zh": "阿蘭‧阿斯佩"
+      },
+      "prize": {
+        "category": "physics",
+        "year": 2022
+      },
+      "affiliation": {
+        "institution": "Université Paris-Saclay",
+        "country": "France"
+      },
+      "event": {
+        "date": "2024-10-15",
+        "host_key": "NTU",
+        "host_en": "National Taiwan University",
+        "host_zh": "國立臺灣大學",
+        "city": "Taipei"
+      },
+      "title": {
+        "en": "The two quantum revolutions: From concept to applications",
+        "zh": "兩次量子革命：從概念到應用"
+      },
+      "description": {
+        "en": "Aspect divides quantum physics into two revolutions. The first ran from wave-particle duality to the transistor and the laser; the second starts from entanglement, and needs quantum objects handled one at a time. A quantum computer's advantage, he suggests, may lie in using less electricity rather than in solving harder problems.",
+        "zh": "阿斯佩把量子物理分成兩次革命：第一次從波粒二象性（wave-particle duality）走到電晶體與雷射；第二次從量子糾纏（entanglement）起步，還要能逐一操控單一量子物體（individual quantum objects）。他指出，量子電腦（quantum computer）的優勢可能是更省電，而不是解出更難的題目。"
+      },
+      "video": {
+        "lecture": "VQ_QQD3BDkU",
+        "lecture_ntu": null,
+        "guide": null,
+        "extra_sessions": []
+      },
+      "interviews": [],
+      "links": {
+        "nobel_facts": "https://www.nobelprize.org/prizes/physics/2022/aspect/facts/",
+        "nobel_lecture": "https://www.nobelprize.org/prizes/physics/2022/aspect/lecture/",
+        "ntu_spotlight": "https://www.ntu.edu.tw/spotlight/2024/2311_20241023.html"
+      },
+      "topic_tags": [
+        "physics-fundamental",
+        "physics-applied",
+        "ai-computation"
+      ],
+      "hook": {
+        "zh": "電晶體與雷射，只是第一次量子革命的成果。",
+        "en": "The transistor and the laser were only the first quantum revolution."
+      }
+    },
+    {
+      "id": "robinson",
+      "no": 6,
+      "series": "soong",
+      "series_zh": "宋恭源先生頂尖研究講座",
+      "series_en": "Raymond Soong Chair Professorship of Distinguished Research",
+      "laureate": {
+        "en": "Prof. James A. Robinson",
+        "zh": "詹姆斯‧羅賓森"
+      },
+      "prize": {
+        "category": "economics",
+        "year": 2024
+      },
+      "affiliation": {
+        "institution": "University of Chicago",
+        "country": "USA"
+      },
+      "event": {
+        "date": "2025-12-17",
+        "host_key": "NTU",
+        "host_en": "National Taiwan University",
+        "host_zh": "國立臺灣大學",
+        "city": "Taipei"
+      },
+      "title": {
+        "en": "Why Nations Fail",
+        "zh": "國家為什麼會失敗"
+      },
+      "description": {
+        "en": "Inclusive institutions open incentives and opportunity to everyone; extractive ones keep both for a few, and prosperity follows. Whether an economy can be inclusive depends on how widely political power is spread. Growth under authoritarian rule in Taiwan and South Korea lasted, Robinson argues, because the politics opened afterwards.",
+        "zh": "廣納型制度（inclusive institutions）把誘因與機會開放給所有人，榨取型制度（extractive institutions）只留給少數人，貧富由此而分。經濟能否廣納，取決於政治權力是否分散：臺灣與南韓威權時期的成長，是靠後來的政治轉型才留下來。"
+      },
+      "video": {
+        "lecture": "BHLS1ogT6tE",
+        "lecture_ntu": null,
+        "guide": null,
+        "extra_sessions": []
+      },
+      "interviews": [],
+      "links": {
+        "nobel_facts": "https://www.nobelprize.org/prizes/economic-sciences/2024/robinson/facts/",
+        "nobel_lecture": "https://www.nobelprize.org/prizes/economic-sciences/2024/robinson/lecture/",
+        "ntu_spotlight": "https://www.ntu.edu.tw/spotlight/2025/2444_20251219.html",
+        "ntu_epaper": "https://sec.ntu.edu.tw/epaper/article.asp?num=1672&sn=39658",
+        "ntu_spe": "https://spe.ntu.edu.tw/news-events/institutions-culture-and-prosperity-nobel-laureate-james-a-robinson-speaks-at-spe/"
+      },
+      "topic_tags": [
+        "economics",
+        "peace-society"
+      ],
+      "hook": {
+        "zh": "他說自己和共同作者，當年太看重物質，低估了觀念。",
+        "en": "He and his co-author were too materialist, he says, and underrated ideas."
+      }
+    },
+    {
+      "id": "robinson-fish-i",
+      "no": 7,
+      "series": "spe",
+      "series_zh": "臺大國際政經學院課堂講座",
+      "series_en": "Class lecture at the NTU School of Political Science and Economics",
+      "laureate": {
+        "en": "Prof. James A. Robinson",
+        "zh": "詹姆斯‧羅賓森"
+      },
+      "prize": {
+        "category": "economics",
+        "year": 2024
+      },
+      "affiliation": {
+        "institution": "University of Chicago",
+        "country": "USA"
+      },
+      "event": {
+        "date": "2025-12-17",
+        "host_key": "NTU",
+        "host_en": "National Taiwan University",
+        "host_zh": "國立臺灣大學",
+        "city": "Taipei"
+      },
+      "title": {
+        "en": "Searching for Fish in Trees I",
+        "zh": "緣木求魚（上）"
+      },
+      "description": {
+        "en": "Development economics looks at a poor country and asks what it lacks. Robinson re-sorts those lacks: what can genuinely be ranked, what is merely different, and what can be changed. The World Bank opened a cattle market in Lesotho and nobody sold a cow. Cattle there are savings, and bride wealth.",
+        "zh": "發展經濟學（development economics）看窮國，向來是缺什麼就補什麼。羅賓森重新分類：哪些真有高下，哪些只是不同，哪些改得動。世界銀行（World Bank）在賴索托（Lesotho）開牛隻市場，沒有人賣牛：牛在當地是積蓄，也是聘禮。"
+      },
+      "video": {
+        "lecture": "qgfcB-rGOcg",
+        "lecture_ntu": null,
+        "guide": null,
+        "extra_sessions": []
+      },
+      "interviews": [],
+      "links": {
+        "nobel_facts": "https://www.nobelprize.org/prizes/economic-sciences/2024/robinson/facts/",
+        "nobel_lecture": "https://www.nobelprize.org/prizes/economic-sciences/2024/robinson/lecture/",
+        "ntu_spe": "https://spe.ntu.edu.tw/news-events/institutions-culture-and-prosperity-nobel-laureate-james-a-robinson-speaks-at-spe/"
+      },
+      "topic_tags": [
+        "economics",
+        "method-discovery"
+      ],
+      "hook": {
+        "zh": "健康與教育排得出高下，文化排不出。",
+        "en": "Health and schooling can be ranked. Culture cannot."
+      }
+    },
+    {
+      "id": "robinson-fish-ii",
+      "no": 8,
+      "series": "spe",
+      "series_zh": "臺大國際政經學院課堂講座",
+      "series_en": "Class lecture at the NTU School of Political Science and Economics",
+      "laureate": {
+        "en": "Prof. James A. Robinson",
+        "zh": "詹姆斯‧羅賓森"
+      },
+      "prize": {
+        "category": "economics",
+        "year": 2024
+      },
+      "affiliation": {
+        "institution": "University of Chicago",
+        "country": "USA"
+      },
+      "event": {
+        "date": "2025-12-19",
+        "host_key": "NTU",
+        "host_en": "National Taiwan University",
+        "host_zh": "國立臺灣大學",
+        "city": "Taipei"
+      },
+      "title": {
+        "en": "Searching for Fish in Trees II",
+        "zh": "緣木求魚（下）"
+      },
+      "description": {
+        "en": "Culture, norms and social organisation are development's non-classical determinants. Robinson argues they carry no general ranking: a trait that helps one society hinders the next, and policy aimed straight at changing it mostly misfires. The case is for interventions that take existing traits as given rather than remake them.",
+        "zh": "文化、規範與社會組織是發展的非古典決定因素（non-classical determinants）。羅賓森指出，這類特質沒有普遍的高下，換個社會就可能對調；想用政策直接改變，結果多半不如預期。干預應順著既有特質走，而非改造它。"
+      },
+      "video": {
+        "lecture": "sO6UQ214N88",
+        "lecture_ntu": null,
+        "guide": null,
+        "extra_sessions": []
+      },
+      "interviews": [],
+      "links": {
+        "nobel_facts": "https://www.nobelprize.org/prizes/economic-sciences/2024/robinson/facts/",
+        "nobel_lecture": "https://www.nobelprize.org/prizes/economic-sciences/2024/robinson/lecture/",
+        "ntu_spe": "https://spe.ntu.edu.tw/news-events/institutions-culture-and-prosperity-nobel-laureate-james-a-robinson-speaks-at-spe/"
+      },
+      "topic_tags": [
+        "economics",
+        "ethics-responsibility",
+        "method-discovery"
+      ],
+      "hook": {
+        "zh": "同一項特質，在不同的社會裡優劣可能相反。",
+        "en": "The same trait can rank opposite ways in two societies."
+      }
+    }
+  ],
   "special_events": [
     {
       "id": "launch",
@@ -1886,6 +2330,24 @@
       "date": "2026-06-25"
     }
   ],
+  "ntu_series": {
+    "soong": {
+      "zh": "宋恭源先生頂尖研究講座",
+      "en": "Raymond Soong Chair Professorship of Distinguished Research"
+    },
+    "palm": {
+      "zh": "臺大椰林講座",
+      "en": "NTU Royal Palm Lecture Series"
+    },
+    "pilgrimage": {
+      "zh": "我的學思歷程",
+      "en": "NTU Lectures on the Intellectual and Spiritual Pilgrimage"
+    },
+    "spe": {
+      "zh": "臺大國際政經學院課堂講座",
+      "en": "Class lecture at the NTU School of Political Science and Economics"
+    }
+  },
   "hosts": {
     "NTU": {
       "en": "National Taiwan University",
@@ -2001,8 +2463,8 @@
   "categories": {
     "physics": {
       "zh": "物理",
-      "en": "Physics",
       "prize_zh": "物理學",
+      "en": "Physics",
       "order": 1,
       "intro": {
         "zh": "諾貝爾物理學獎表彰「對人類帶來最大貢獻」的物理發現或發明。名單起自 X 光（X-ray）與放射性（radioactivity），經過量子力學（quantum mechanics），延伸至宇宙加速膨脹與重力波（gravitational waves）。一個世紀的物理學，大致都在其中。",

@@ -200,6 +200,27 @@ src/
   physics, chemistry, medicine, peace, economics, literature.
 - The museum counts SITTINGS, not lectures, wherever it says 場講座: 31 lectures in 32 sittings,
   because Südhof's was given twice. Medicine therefore shows 8 where it holds 7 lectures.
+- **TWO COLLECTIONS, and a figure belongs to exactly one of them.** `lectures` is 臺灣橋樑計畫;
+  `ntuLectures` is 臺大「諾貝爾獎得主講座」, NTU's own laureate lectures since 2019. They are the
+  same record shape, so one lecture page renders either, and they are routed together by
+  `allLectures()`. But `byCategory`, `categoryList`, `sittings`, `totalSittings`, `relatedTo`,
+  `nextUpcoming` and `recommended` read `lectures` ALONE — a room's 「N 場講座」, a plinth, and
+  「接著看」 are statements about the programme. `videoList` reads BOTH, because the index of
+  films must list every film the museum holds or its own total contradicts its own grid; so
+  `lectureFilms()` (40), not `totalSittings()` (32), is what stands beside that index and in the
+  home page's figure row, where 導讀 + 講座 + 專訪 has to come out at the total.
+  A prize room shows the second collection under its own heading below its own, never merged
+  into the grid above. The NTU records carry `series_zh` / `series_en`; the 31 do not, because
+  every page is already about the programme. Do not put an NTU recording in `video.lecture_ntu`
+  — that field means "a second upload of a Bridges lecture" and `HallRing` filters the hall's
+  six turning panels on it with six-element arrays.
+- A record outside 臺灣橋樑計畫 has no `cw_hub` (天下's hub covers the programme), no 導讀 and
+  no study panel: the learning area's chooser lists the programme's 31, so a note saved against
+  anything else is a note the student can never find again. All three are guarded in
+  `LecturePage`; an unguarded `ExtLink` with no href renders as a button that does nothing.
+- 臺大演講網 publishes these recordings, but **speech.ntu.edu.tw sits behind a bot challenge and
+  answers 403 to every client** — never link it, `check-links.py` would fail on it. Link
+  `cge.ntu.edu.tw` and `www.ntu.edu.tw` instead.
 - Every gallery must carry material beyond video: intro, history, statistics, official links.
   Category prose lives in `scripts/copy-galleries.py`; the numbers in `data/prize-facts.json`.
 - The official Nobel pages sit in the 延伸探索 rail down the right of each prize room — the same

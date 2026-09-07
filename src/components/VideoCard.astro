@@ -31,9 +31,19 @@ const href = v.lecture
   : `https://www.youtube.com/watch?v=${v.yt}`;
 const external = !v.lecture;
 const source = lang === 'zh' ? v.sourceZh : v.sourceEn;
+/* What stands under the name. For a lecture that is its title; for a record
+   tied to nobody's page it is what that person is, which the catalogue has
+   carried in `role_zh` / `role_en` since the record was seeded. It used to be
+   one person's job title written into this file, which meant every future
+   record would have printed it — and with the NTU collection arriving that
+   would have put 「世界和平基金會主席」 under four Nobel laureates. */
 const sub = v.lecture
   ? (v.lecture.title[lang === 'zh' ? 'zh' : 'en'] ?? v.lecture.title.en)
-  : (lang === 'zh' ? '世界和平基金會主席' : 'Chairman, International Peace Foundation');
+  : (lang === 'zh' ? v.roleZh : v.roleEn) ?? '';
+/* The series a recording was given in, where it belongs to the NTU collection
+   rather than to 臺灣橋樑計畫 — the card's own way of saying which of the
+   museum's two collections it came out of. */
+const seriesLine = lang === 'zh' ? v.seriesZh : v.seriesEn;
 ---
 
 <a
@@ -65,12 +75,16 @@ const sub = v.lecture
     <span class="vc__sub">{sub}</span>
     <span class="vc__meta">
       {localDate(v.date, lang)}
+      {seriesLine && <span class="vc__series"> · {seriesLine}</span>}
       {external && <span class="vc__ext"> · {t('browse.watchOn')} ↗</span>}
     </span>
   </span>
 </a>
 
 <style>
+  /* the collection a film came out of, set in the meta line beside its date */
+  .vc__series { color: var(--muted-dim); }
+
   .vc {
     display: grid; grid-template-rows: auto 1fr;
     text-decoration: none; color: var(--text);

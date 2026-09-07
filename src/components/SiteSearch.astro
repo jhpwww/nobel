@@ -27,7 +27,8 @@
  */
 import { useT, type Lang } from '../i18n/ui';
 import {
-  lectures, categories, catName, catNameAlt, tagName, totalSittings, sittings,
+  lectures, allLectures, seriesName, categories, catName, catNameAlt, tagName,
+  lectureFilms, sittings,
   intro, INTRO, type CategoryKey, type GalleryKey,
 } from '../data/catalog';
 import { path, gallery, browse, about, learn, lecture as lectureUrl } from '../i18n/routing';
@@ -56,13 +57,19 @@ type Row = {
 
 const rows: Row[] = [];
 
-/* ---- the laureates ---------------------------------------------------- */
-for (const l of lectures) {
+/* ---- the laureates ----------------------------------------------------
+   Both collections. A drawer that cannot find Aspect, Mourou, Stoddart or
+   Robinson by name is a drawer that says the museum does not hold them.
+   Ciechanover appears twice on purpose — two different events, two pages —
+   so the mark at the end of the line carries the series as well as the year,
+   which is the only thing that tells the two rows apart. */
+for (const l of allLectures()) {
   const cat = catName(l.prize.category, lang);
+  const ser = seriesName(l, lang);
   rows.push({
     n: zh ? `${l.laureate.zh}` : l.laureate.en,
     s: zh ? l.title.zh : l.title.en,
-    m: `${l.prize.year} · ${cat}`,
+    m: ser ? `${l.prize.year} · ${cat} · ${ser}` : `${l.prize.year} · ${cat}`,
     h: lectureUrl(lang, l.id),
     g: 'l',
     k: [
@@ -73,6 +80,7 @@ for (const l of lectures) {
       ...l.topic_tags.map((tg) => tagName(tg, lang)),
       ...l.topic_tags,
       l.hook[lang], l.description[lang],
+      l.series_zh, l.series_en,
     ].filter(Boolean).join(' ').toLowerCase(),
   });
 }
@@ -104,7 +112,7 @@ for (const key of rooms) {
 
 /* ---- the museum's own pages ------------------------------------------- */
 const pages: Row[] = [
-  { n: t('nav.all'), s: t('learn.toolAllD', { n: totalSittings() }), m: '',
+  { n: t('nav.all'), s: t('learn.toolAllD', { n: lectureFilms() }), m: '',
     h: browse(lang), g: 'p', k: `${t('nav.all')} videos lectures 影片 講座 導讀 專訪 index`.toLowerCase() },
   { n: t('nav.learn'), s: t('learn.blurb'), m: '',
     h: learn(lang), g: 'p', k: `${t('nav.learn')} learn study course 學習 課程 走進諾貝爾 libedu1140`.toLowerCase() },

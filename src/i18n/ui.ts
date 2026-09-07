@@ -78,6 +78,8 @@ export const ui = {
 
     'cat.back': '回到大廳',
     'cat.lectures': '本展廳的講座',
+    'cat.ntuLectures': '臺大「諾貝爾獎得主講座」',
+    'cat.ntuNote': '臺大自 2019 年起自辦的諾貝爾獎得主演講，不屬於臺灣橋樑計畫。',
 
     'lec.guide': '導讀影片',
     /* The same fact, said from the other side of the click. See guideBadgeKey
@@ -101,12 +103,16 @@ export const ui = {
     'lec.cwHubNote': '天下雜誌（CommonWealth Magazine）的中文專題報導',
     'lec.ntuNews': '臺大校訊報導',
     'lec.ntuSpotlight': '臺大焦點',
+    'lec.ntuSpe': '臺大國際政經學院報導',
     'lec.instagram': '講座短影音',
     'lec.next': '接著看',
     'lec.prize': '{year} 年諾貝爾{category}獎得主',
     'lec.at': '演講地點',
     'lec.date': '演講日期',
     'lec.affiliation': '所屬機構',
+    /* Which series a lecture was given in. Printed only for the NTU
+       collection: every 臺灣橋樑計畫 page is already about that programme. */
+    'lec.series': '演講系列',
     'lec.guideSoon': '本場導讀影片製作中，敬請期待。',
     'lec.playHint': '點擊播放（YouTube）',
     'lec.noVideo': '影片尚未提供',
@@ -318,6 +324,8 @@ export const ui = {
 
     'cat.back': 'Back to the hall',
     'cat.lectures': 'Lectures in this gallery',
+    'cat.ntuLectures': 'NTU Nobel Laureates Lecture Series',
+    'cat.ntuNote': "NTU's own Nobel laureate lectures, running since 2019 and not part of the Taiwan Bridges Program.",
 
     'lec.guide': 'Guide video',
     'lec.guideHas': 'Has a guide video',
@@ -337,12 +345,14 @@ export const ui = {
     'lec.cwHubNote': 'Chinese-language coverage of the programme',
     'lec.ntuNews': 'NTU e-Paper report',
     'lec.ntuSpotlight': 'NTU Spotlight',
+    'lec.ntuSpe': 'NTU School of Political Science and Economics',
     'lec.instagram': 'Short clip',
     'lec.next': 'Watch next',
     'lec.prize': 'Nobel Prize in {category}, {year}',
     'lec.at': 'Venue',
     'lec.date': 'Date',
     'lec.affiliation': 'Affiliation',
+    'lec.series': 'Series',
     'lec.guideSoon': 'The guide video for this lecture is in production.',
     'lec.playHint': 'Click to play (YouTube)',
     'lec.noVideo': 'Video not yet available',

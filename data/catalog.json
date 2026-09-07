@@ -1582,6 +1582,389 @@
       "topic_tags": []
     }
   ],
+  "ntu_lectures": [
+    {
+      "id": "mourou",
+      "no": 1,
+      "series": "pilgrimage",
+      "series_zh": "我的學思歷程",
+      "series_en": "NTU Lectures on the Intellectual and Spiritual Pilgrimage",
+      "laureate": {
+        "en": "Prof. Gérard Mourou",
+        "zh": "傑拉‧慕儒"
+      },
+      "prize": {
+        "category": "physics",
+        "year": 2018
+      },
+      "affiliation": {
+        "institution": "École Polytechnique",
+        "country": "France"
+      },
+      "event": {
+        "date": "2019-11-09",
+        "host_key": "NTU",
+        "host_en": "National Taiwan University",
+        "host_zh": "國立臺灣大學",
+        "city": "Taipei"
+      },
+      "title": {
+        "en": "A Lifetime's Quest for Light",
+        "zh": null
+      },
+      "description": {
+        "en": null,
+        "zh": null
+      },
+      "video": {
+        "lecture": "f_93MRC_cOQ",
+        "lecture_ntu": null,
+        "guide": null,
+        "extra_sessions": []
+      },
+      "interviews": [],
+      "links": {
+        "nobel_facts": "https://www.nobelprize.org/prizes/physics/2018/mourou/facts/",
+        "nobel_lecture": "https://www.nobelprize.org/prizes/physics/2018/mourou/lecture/",
+        "ntu_spotlight": "https://www.ntu.edu.tw/spotlight/2019/1783_20191216.html",
+        "ntu_cge": "https://cge.ntu.edu.tw/News_Content_n_68922_s_75100.html"
+      },
+      "topic_tags": []
+    },
+    {
+      "id": "stoddart",
+      "no": 2,
+      "series": "pilgrimage",
+      "series_zh": "我的學思歷程",
+      "series_en": "NTU Lectures on the Intellectual and Spiritual Pilgrimage",
+      "laureate": {
+        "en": "Sir J. Fraser Stoddart",
+        "zh": "弗雷澤‧史托達特"
+      },
+      "prize": {
+        "category": "chemistry",
+        "year": 2016
+      },
+      "affiliation": {
+        "institution": "Northwestern University",
+        "country": "USA"
+      },
+      "event": {
+        "date": "2019-12-06",
+        "host_key": "NTU",
+        "host_en": "National Taiwan University",
+        "host_zh": "國立臺灣大學",
+        "city": "Taipei"
+      },
+      "title": {
+        "en": "NTU Lectures on the Intellectual and Spiritual Pilgrimage",
+        "zh": null
+      },
+      "description": {
+        "en": null,
+        "zh": null
+      },
+      "video": {
+        "lecture": "BclmeWfaM8Q",
+        "lecture_ntu": null,
+        "guide": null,
+        "extra_sessions": []
+      },
+      "interviews": [],
+      "links": {
+        "nobel_facts": "https://www.nobelprize.org/prizes/chemistry/2016/stoddart/facts/",
+        "nobel_lecture": "https://www.nobelprize.org/prizes/chemistry/2016/stoddart/lecture/",
+        "ntu_cge": "https://cge.ntu.edu.tw/News_Content_n_68922_s_75100.html"
+      },
+      "topic_tags": []
+    },
+    {
+      "id": "ciechanover-ntu",
+      "no": 3,
+      "series": "palm",
+      "series_zh": "臺大椰林講座",
+      "series_en": "NTU Royal Palm Lecture Series",
+      "laureate": {
+        "en": "Prof. Aaron Ciechanover",
+        "zh": "亞倫‧切哈諾沃"
+      },
+      "prize": {
+        "category": "chemistry",
+        "year": 2004
+      },
+      "affiliation": {
+        "institution": "Israel Institute of Technology",
+        "country": "Israel"
+      },
+      "event": {
+        "date": "2024-04-01",
+        "host_key": "NTU",
+        "host_en": "National Taiwan University",
+        "host_zh": "國立臺灣大學",
+        "city": "Taipei"
+      },
+      "title": {
+        "en": "The Revolution of Personalized Medicine: Are We Going to Cure All Diseases and at What Price?",
+        "zh": null
+      },
+      "description": {
+        "en": null,
+        "zh": null
+      },
+      "video": {
+        "lecture": "h0S66RZon2Y",
+        "lecture_ntu": null,
+        "guide": null,
+        "extra_sessions": []
+      },
+      "interviews": [],
+      "links": {
+        "nobel_facts": "https://www.nobelprize.org/prizes/chemistry/2004/ciechanover/facts/",
+        "nobel_lecture": "https://www.nobelprize.org/prizes/chemistry/2004/ciechanover/lecture/",
+        "ntu_spotlight": "https://www.ntu.edu.tw/spotlight/2024/2254_20240410.html",
+        "ntu_epaper": "https://sec.ntu.edu.tw/epaper/article.asp?num=1600&sn=26071",
+        "ntu_cge": "https://cge.ntu.edu.tw/cl_n_203876.html"
+      },
+      "topic_tags": []
+    },
+    {
+      "id": "aspect",
+      "no": 4,
+      "series": "soong",
+      "series_zh": "宋恭源先生頂尖研究講座",
+      "series_en": "Raymond Soong Chair Professorship of Distinguished Research",
+      "laureate": {
+        "en": "Prof. Alain Aspect",
+        "zh": "阿蘭‧阿斯佩"
+      },
+      "prize": {
+        "category": "physics",
+        "year": 2022
+      },
+      "affiliation": {
+        "institution": "Université Paris-Saclay",
+        "country": "France"
+      },
+      "event": {
+        "date": "2024-10-14",
+        "host_key": "NTU",
+        "host_en": "National Taiwan University",
+        "host_zh": "國立臺灣大學",
+        "city": "Taipei"
+      },
+      "title": {
+        "en": "From Einstein and Bell to quantum technologies: entanglement in action",
+        "zh": null
+      },
+      "description": {
+        "en": null,
+        "zh": null
+      },
+      "video": {
+        "lecture": "bnjb7Y98D1k",
+        "lecture_ntu": null,
+        "guide": null,
+        "extra_sessions": []
+      },
+      "interviews": [],
+      "links": {
+        "nobel_facts": "https://www.nobelprize.org/prizes/physics/2022/aspect/facts/",
+        "nobel_lecture": "https://www.nobelprize.org/prizes/physics/2022/aspect/lecture/",
+        "ntu_spotlight": "https://www.ntu.edu.tw/spotlight/2024/2309_20241016.html"
+      },
+      "topic_tags": []
+    },
+    {
+      "id": "aspect-2",
+      "no": 5,
+      "series": "soong",
+      "series_zh": "宋恭源先生頂尖研究講座",
+      "series_en": "Raymond Soong Chair Professorship of Distinguished Research",
+      "laureate": {
+        "en": "Prof. Alain Aspect",
+        "zh": "阿蘭‧阿斯佩"
+      },
+      "prize": {
+        "category": "physics",
+        "year": 2022
+      },
+      "affiliation": {
+        "institution": "Université Paris-Saclay",
+        "country": "France"
+      },
+      "event": {
+        "date": "2024-10-15",
+        "host_key": "NTU",
+        "host_en": "National Taiwan University",
+        "host_zh": "國立臺灣大學",
+        "city": "Taipei"
+      },
+      "title": {
+        "en": "The two quantum revolutions: From concept to applications",
+        "zh": null
+      },
+      "description": {
+        "en": null,
+        "zh": null
+      },
+      "video": {
+        "lecture": "VQ_QQD3BDkU",
+        "lecture_ntu": null,
+        "guide": null,
+        "extra_sessions": []
+      },
+      "interviews": [],
+      "links": {
+        "nobel_facts": "https://www.nobelprize.org/prizes/physics/2022/aspect/facts/",
+        "nobel_lecture": "https://www.nobelprize.org/prizes/physics/2022/aspect/lecture/",
+        "ntu_spotlight": "https://www.ntu.edu.tw/spotlight/2024/2311_20241023.html"
+      },
+      "topic_tags": []
+    },
+    {
+      "id": "robinson",
+      "no": 6,
+      "series": "soong",
+      "series_zh": "宋恭源先生頂尖研究講座",
+      "series_en": "Raymond Soong Chair Professorship of Distinguished Research",
+      "laureate": {
+        "en": "Prof. James A. Robinson",
+        "zh": "詹姆斯‧羅賓森"
+      },
+      "prize": {
+        "category": "economics",
+        "year": 2024
+      },
+      "affiliation": {
+        "institution": "University of Chicago",
+        "country": "USA"
+      },
+      "event": {
+        "date": "2025-12-17",
+        "host_key": "NTU",
+        "host_en": "National Taiwan University",
+        "host_zh": "國立臺灣大學",
+        "city": "Taipei"
+      },
+      "title": {
+        "en": "Why Nations Fail",
+        "zh": null
+      },
+      "description": {
+        "en": null,
+        "zh": null
+      },
+      "video": {
+        "lecture": "BHLS1ogT6tE",
+        "lecture_ntu": null,
+        "guide": null,
+        "extra_sessions": []
+      },
+      "interviews": [],
+      "links": {
+        "nobel_facts": "https://www.nobelprize.org/prizes/economic-sciences/2024/robinson/facts/",
+        "nobel_lecture": "https://www.nobelprize.org/prizes/economic-sciences/2024/robinson/lecture/",
+        "ntu_spotlight": "https://www.ntu.edu.tw/spotlight/2025/2444_20251219.html",
+        "ntu_epaper": "https://sec.ntu.edu.tw/epaper/article.asp?num=1672&sn=39658",
+        "ntu_spe": "https://spe.ntu.edu.tw/news-events/institutions-culture-and-prosperity-nobel-laureate-james-a-robinson-speaks-at-spe/"
+      },
+      "topic_tags": []
+    },
+    {
+      "id": "robinson-fish-i",
+      "no": 7,
+      "series": "spe",
+      "series_zh": "臺大國際政經學院課堂講座",
+      "series_en": "Class lecture at the NTU School of Political Science and Economics",
+      "laureate": {
+        "en": "Prof. James A. Robinson",
+        "zh": "詹姆斯‧羅賓森"
+      },
+      "prize": {
+        "category": "economics",
+        "year": 2024
+      },
+      "affiliation": {
+        "institution": "University of Chicago",
+        "country": "USA"
+      },
+      "event": {
+        "date": "2025-12-17",
+        "host_key": "NTU",
+        "host_en": "National Taiwan University",
+        "host_zh": "國立臺灣大學",
+        "city": "Taipei"
+      },
+      "title": {
+        "en": "Searching for Fish in Trees I",
+        "zh": null
+      },
+      "description": {
+        "en": null,
+        "zh": null
+      },
+      "video": {
+        "lecture": "qgfcB-rGOcg",
+        "lecture_ntu": null,
+        "guide": null,
+        "extra_sessions": []
+      },
+      "interviews": [],
+      "links": {
+        "nobel_facts": "https://www.nobelprize.org/prizes/economic-sciences/2024/robinson/facts/",
+        "nobel_lecture": "https://www.nobelprize.org/prizes/economic-sciences/2024/robinson/lecture/",
+        "ntu_spe": "https://spe.ntu.edu.tw/news-events/institutions-culture-and-prosperity-nobel-laureate-james-a-robinson-speaks-at-spe/"
+      },
+      "topic_tags": []
+    },
+    {
+      "id": "robinson-fish-ii",
+      "no": 8,
+      "series": "spe",
+      "series_zh": "臺大國際政經學院課堂講座",
+      "series_en": "Class lecture at the NTU School of Political Science and Economics",
+      "laureate": {
+        "en": "Prof. James A. Robinson",
+        "zh": "詹姆斯‧羅賓森"
+      },
+      "prize": {
+        "category": "economics",
+        "year": 2024
+      },
+      "affiliation": {
+        "institution": "University of Chicago",
+        "country": "USA"
+      },
+      "event": {
+        "date": "2025-12-19",
+        "host_key": "NTU",
+        "host_en": "National Taiwan University",
+        "host_zh": "國立臺灣大學",
+        "city": "Taipei"
+      },
+      "title": {
+        "en": "Searching for Fish in Trees II",
+        "zh": null
+      },
+      "description": {
+        "en": null,
+        "zh": null
+      },
+      "video": {
+        "lecture": "sO6UQ214N88",
+        "lecture_ntu": null,
+        "guide": null,
+        "extra_sessions": []
+      },
+      "interviews": [],
+      "links": {
+        "nobel_facts": "https://www.nobelprize.org/prizes/economic-sciences/2024/robinson/facts/",
+        "nobel_lecture": "https://www.nobelprize.org/prizes/economic-sciences/2024/robinson/lecture/",
+        "ntu_spe": "https://spe.ntu.edu.tw/news-events/institutions-culture-and-prosperity-nobel-laureate-james-a-robinson-speaks-at-spe/"
+      },
+      "topic_tags": []
+    }
+  ],
   "special_events": [
     {
       "id": "launch",
@@ -1648,6 +2031,24 @@
       "date": "2026-06-25"
     }
   ],
+  "ntu_series": {
+    "soong": {
+      "zh": "宋恭源先生頂尖研究講座",
+      "en": "Raymond Soong Chair Professorship of Distinguished Research"
+    },
+    "palm": {
+      "zh": "臺大椰林講座",
+      "en": "NTU Royal Palm Lecture Series"
+    },
+    "pilgrimage": {
+      "zh": "我的學思歷程",
+      "en": "NTU Lectures on the Intellectual and Spiritual Pilgrimage"
+    },
+    "spe": {
+      "zh": "臺大國際政經學院課堂講座",
+      "en": "Class lecture at the NTU School of Political Science and Economics"
+    }
+  },
   "hosts": {
     "NTU": {
       "en": "National Taiwan University",

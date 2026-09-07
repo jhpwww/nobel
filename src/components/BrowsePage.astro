@@ -3,7 +3,7 @@ import Base from '../layouts/Base.astro';
 import ScrollCue from './ScrollCue.astro';
 import VideoCard from './VideoCard.astro';
 import { useT, type Lang } from '../i18n/ui';
-import { videoList, videoCounts, categories, tags, generalLinks, totalSittings } from '../data/catalog';
+import { videoList, videoCounts, categories, tags, generalLinks, lectureFilms } from '../data/catalog';
 import RoomBack from './RoomBack.astro';
 import PageEmblem from './PageEmblem.astro';
 import Explore from './Explore.astro';
@@ -43,7 +43,7 @@ import { bright } from '../theme';
       <h1 class="browse__h">{t('browse.title')}</h1>
       <p class="browse__kinds">{t('browse.kinds')}</p>
     </header>
-    <p class="browse__lede hall-note"><span>{t('learn.toolAllD', { n: totalSittings() })}</span></p>
+    <p class="browse__lede hall-note"><span>{t('learn.toolAllD', { n: lectureFilms() })}</span></p>
   </div>
   <div class="wrap browse browse--body" data-fade>
     <form class="filters" id="filters" aria-label={t('browse.title')}>

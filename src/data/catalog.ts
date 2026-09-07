@@ -13,7 +13,16 @@ export interface Bilingual { zh: string; en: string }
 export interface Lecture {
   id: string;
   no: number;
+  /**
+   * Which collection this lecture belongs to. `TAIWAN BRIDGES` for the 31;
+   * one of the `ntu_series` keys for the 臺大「諾貝爾獎得主講座」 records. The
+   * two names below are what a page prints — they are only present on the
+   * second collection, because the first has never needed to say which series
+   * it is: it is the museum's main axis and every page is already about it.
+   */
   series: string;
+  series_zh?: string;
+  series_en?: string;
   laureate: Bilingual;
   prize: { category: CategoryKey; year: number };
   affiliation: { institution: string; country: string };
@@ -31,10 +40,13 @@ export interface Lecture {
   links: {
     nobel_facts: string;
     nobel_lecture: string;
-    cw_hub: string;
+    /** 天下's programme hub — the Bridges lectures only; nothing else is in it. */
+    cw_hub?: string;
     instagram?: string;
     ntu_epaper?: string;
     ntu_spotlight?: string;
+    ntu_cge?: string;
+    ntu_spe?: string;
   };
   topic_tags: string[];
 }
@@ -69,6 +81,8 @@ export interface SpecialEvent {
 
 interface Catalog {
   lectures: Lecture[];
+  ntu_lectures: Lecture[];
+  ntu_series: Record<string, Bilingual>;
   special_events: SpecialEvent[];
   standalone_records: StandaloneRecord[];
   hosts: Record<string, { en: string; zh: string; city: string }>;
@@ -81,6 +95,46 @@ interface Catalog {
 export const catalog = raw as unknown as Catalog;
 
 export const lectures = catalog.lectures;
+/* ============================================================
+   Two collections, one museum
+   ============================================================
+   `lectures` is 臺灣橋樑計畫 — the 31, in 32 sittings, and every figure the
+   museum states about that programme counts these and only these.
+
+   `ntuLectures` is 臺大「諾貝爾獎得主講座」: NTU's own Nobel laureate lectures,
+   running from 2019 and continuing alongside the Bridges programme —
+   我的學思歷程, 臺大椰林講座, 宋恭源先生頂尖研究講座. They are the same record
+   shape, so a lecture page renders one exactly as it renders a Bridges
+   lecture, and they carry `series_zh` / `series_en`, which that page prints.
+
+   What they must never do is leak into a Bridges count. `byCategory`,
+   `categoryList`, `sittings`, `totalSittings`, `relatedTo`, `nextUpcoming` and
+   `recommended` all read `lectures` alone, and that is deliberate: the hall's
+   plinths, a room's 「N 場講座」 and the home page's 得主 figure are statements
+   about the programme this museum was built around.
+
+   What they SHOULD join is anything that describes the museum's holdings:
+   `videoList` (the index of films must list every film it holds, or its own
+   total contradicts its grid) and `allLectures`, which is what routes pages.
+   ============================================================ */
+export const ntuLectures = catalog.ntu_lectures ?? [];
+export const ntuSeries = catalog.ntu_series ?? {};
+
+/** Every lecture the museum holds, both collections. Routing reads this. */
+export const allLectures = (): Lecture[] => [...lectures, ...ntuLectures];
+
+/** True for a record in the NTU collection rather than 臺灣橋樑計畫. */
+export const isNtu = (l: Lecture) => l.series !== 'TAIWAN BRIDGES';
+
+/** The series this record was given in, named, or null for a Bridges lecture. */
+export const seriesName = (l: Lecture, lang: Lang) =>
+  (lang === 'zh' ? l.series_zh : l.series_en) ?? null;
+
+/** The NTU collection in one prize category, oldest first. */
+export const ntuByCategory = (key: GalleryKey) =>
+  ntuLectures.filter((l) => l.prize.category === key)
+             .sort((a, b) => a.event.date.localeCompare(b.event.date));
+
 export const specialEvents = catalog.special_events;
 const standaloneRecords = catalog.standalone_records ?? [];
 export const hosts = catalog.hosts;
@@ -158,8 +212,19 @@ export const byDateDesc = () => [...lectures].sort((a, b) => b.event.date.locale
 /** how many times this lecture was actually given */
 export const sittings = (l: Lecture) => 1 + l.video.extra_sessions.length;
 
-/** every sitting in the museum: 32 */
+/**
+ * Every sitting of 臺灣橋樑計畫: 32. A statement about the programme, so it
+ * counts `lectures` alone and does not move when the museum acquires
+ * anything else.
+ */
 export const totalSittings = () => lectures.reduce((n, l) => n + sittings(l), 0);
+
+/**
+ * Every lecture FILM the museum holds — both collections, which is what the
+ * index of films lists and therefore what any figure standing beside that
+ * index has to say. 32 sittings + the NTU collection.
+ */
+export const lectureFilms = () => videoList().filter((v) => v.kind === 'lecture').length;
 
 /** Every video this lecture offers, for the "n videos" badge. */
 export function videoCount(l: Lecture) {
@@ -169,7 +234,12 @@ export function videoCount(l: Lecture) {
 
 /** Onward viewing: same prize category first, then shared topics. */
 export function relatedTo(l: Lecture, n = 3) {
-  const others = lectures.filter((x) => x.id !== l.id);
+  /* A record looks for company inside its own collection. Mixing them would
+     rewrite 「接著看」 on twenty existing laureate pages, because the NTU
+     records predate every Bridges lecture and would sort to the head of the
+     same-category list. */
+  const pool = isNtu(l) ? ntuLectures : lectures;
+  const others = pool.filter((x) => x.id !== l.id);
   return [
     ...others.filter((x) => x.prize.category === l.prize.category),
     ...others.filter((x) => x.topic_tags.some((t) => l.topic_tags.includes(t))),
@@ -232,6 +302,12 @@ export interface VideoItem {
   /** 天下雜誌 / 風傳媒, for records only */
   sourceZh?: string;
   sourceEn?: string;
+  /** what this person is, where the row is not tied to a lecture page */
+  roleZh?: string;
+  roleEn?: string;
+  /** the series this recording was given in, for the NTU collection */
+  seriesZh?: string;
+  seriesEn?: string;
   /** a second upload of the same lecture, shown as a note */
   altOf?: string;
   /** which sitting this is, where a lecture was given more than once */
@@ -265,6 +341,21 @@ export function videoList(): VideoItem[] {
     }
   }
 
+  /* The NTU collection, after the programme's own films rather than
+     interleaved by date: these are older than every Bridges lecture, and
+     sorting them together would put 2019 at the head of the index of films.
+     Each row carries its series, which is what the card prints to say which
+     collection it came out of. */
+  for (const l of [...ntuLectures].sort((a, b) => a.event.date.localeCompare(b.event.date))) {
+    if (!l.video.lecture) continue;
+    out.push({
+      key: `${l.id}-lecture`, yt: l.video.lecture, kind: 'lecture', lecture: l,
+      personZh: l.laureate.zh, personEn: l.laureate.en,
+      category: l.prize.category, topics: l.topic_tags, date: l.event.date,
+      seriesZh: l.series_zh, seriesEn: l.series_en,
+    });
+  }
+
   for (const r of standaloneRecords) {
     out.push({
       key: r.id, yt: r.yt, kind: 'record', lecture: null,
@@ -272,6 +363,10 @@ export function videoList(): VideoItem[] {
       category: null, topics: [], date: r.date,
       sourceZh: r.source === 'cw' ? '天下雜誌' : '風傳媒',
       sourceEn: r.source === 'cw' ? 'CommonWealth Magazine' : 'The Storm Media',
+      /* the catalogue has carried these two since the record was seeded;
+         without them the card had to guess, and guessed one person's job
+         title onto everybody */
+      roleZh: r.role_zh, roleEn: r.role_en,
     });
   }
   return out;

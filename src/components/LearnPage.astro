@@ -20,7 +20,7 @@ import PageEmblem from './PageEmblem.astro';
 import StudyDesk from './StudyDesk.astro';
 import { useT, type Lang } from '../i18n/ui';
 import { browse } from '../i18n/routing';
-import { lectures, totalSittings } from '../data/catalog';
+import { lectureFilms } from '../data/catalog';
 
 /* the museum's own room behind this page too — see RoomBack */
 import { bright } from '../theme';
@@ -72,8 +72,9 @@ const cycle = [
       { href: browse(lang) + '?kind=guide', zh: '從導讀影片開始', en: 'Start with a guide video',
         zhD: '一支約 90 秒，講座內容的概覽。', enD: 'About 90 seconds each: an overview of what the lecture covers.' },
       { href: browse(lang), zh: '瀏覽所有影片', en: 'Browse every video',
-        zhD: `${totalSittings()} 場演講，含導讀、講座與專訪，可依獎項與主題篩選。`,
-        enD: `${totalSittings()} sittings — guides, lectures and interviews, filtered by prize and topic.` },
+        /* this line describes /lectures/, so it counts what /lectures/ lists */
+        zhD: `${lectureFilms()} 場演講，含導讀、講座與專訪，可依獎項與主題篩選。`,
+        enD: `${lectureFilms()} lectures — guides, lectures and interviews, filtered by prize and topic.` },
     ] },
   { n: '1', k: '準備', e: 'Prepare',
     zh: '導讀影片、原版 Nobel Lecture、官方得獎理由，以及一個帶著走的問題。不懂的名詞先上網查一查，帶著背景進場，聽到的會完全不同。',

@@ -1,9 +1,11 @@
 ---
 import LecturePage from '../../../components/LecturePage.astro';
-import { lectures } from '../../../data/catalog';
+import { allLectures } from '../../../data/catalog';
 
 export function getStaticPaths() {
-  return lectures.map((rec) => ({ params: { id: rec.id }, props: { rec } }));
+  /* Both collections: the 31 of 臺灣橋樑計畫 and the NTU records.
+     build-catalog.py refuses a duplicate id, so one page per address. */
+  return allLectures().map((rec) => ({ params: { id: rec.id }, props: { rec } }));
 }
 const { rec } = Astro.props;
 ---

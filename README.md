@@ -1,8 +1,14 @@
 # 諾貝爾講座博物館 · Nobel Lecture Museum
 
-A web-based virtual museum for the Nobel laureate lectures delivered in Taiwan under the
-**臺灣橋樑計畫 (Taiwan Bridges Program)** — the lectures themselves, their 導讀影片, and the
-interviews recorded alongside them.
+A web-based virtual museum for Nobel laureate lectures delivered in Taiwan. It holds two
+collections. The first and the main axis is **臺灣橋樑計畫 (Taiwan Bridges Program)** — the
+lectures themselves, their 導讀影片, and the interviews recorded alongside them. The second is
+**臺大「諾貝爾獎得主講座」**, NTU's own Nobel laureate lectures, running since 2019 and
+continuing alongside the programme.
+
+The two are never mixed. Every figure the museum states about the Bridges programme — 31
+lectures, 32 sittings — counts the first collection alone; the figures that describe the
+museum's holdings, on the front page and beside the index of films, count both.
 
 Audience: high-school students, undergraduates, and the general public. Not specialists.
 
@@ -19,11 +25,14 @@ Audience: high-school students, undergraduates, and the general public. Not spec
 | 導讀影片 | 6 published so far; the schema carries all 31 as they are released |
 | 專訪 | 25 — 天下雜誌 CommonWealth Magazine and 風傳媒 The Storm Media |
 | Special events | Launch ceremony, two 北一女中 outreach lectures, a laureate panel, the 對話諾貝爾特展 |
-| 63 videos | what `/lectures/` lists: 導讀 6 · 講座 32 · 專訪 25 |
+| 臺大「諾貝爾獎得主講座」 | 8 recordings, 5 laureates, 2019–2025, all at NTU: 我的學思歷程 (Mourou, Stoddart), 臺大椰林講座 (Ciechanover), 宋恭源先生頂尖研究講座 (Aspect ×2, Robinson), and two SPE class lectures (Robinson) |
+| 71 videos | what `/lectures/` lists: 導讀 6 · 講座 40 · 專訪 25 |
 
 Prize categories, in museum order: Physics 9 · Chemistry 8 · Medicine 7 · Peace 2 ·
-Economics 5 · Literature 0. Those are lecture counts; each room prints **sittings**, so
-Medicine shows 8.
+Economics 5 · Literature 0. Those are Bridges lecture counts, and they are what each room's
+heading and each plinth print; rooms print **sittings**, so Medicine shows 8. The NTU
+collection stands under its own heading further down the room — Physics 3, Chemistry 2,
+Economics 3 — and is counted separately, on purpose.
 
 The great hall shows all six prize categories. Literature has a plinth like the others but
 stands at the far right, since this series brought no Literature laureate — its room is built
@@ -203,8 +212,10 @@ feel they have wandered into someone's classroom.
 
 ## Browsing
 
-`/lectures/` lists every video the museum holds — 63 of them — with a search box and three
-independent filter groups: **影片類別** (導讀 6 · 講座 32 · 專訪 25), **獎項類別**, and **主題**.
+`/lectures/` lists every video the museum holds — 71 of them, both collections — with a search
+box and three independent filter groups: **影片類別** (導讀 6 · 講座 40 · 專訪 25),
+**獎項類別**, and **主題**. A card out of the NTU collection prints its series beside its date;
+the filters sort by kind, not by collection, because these are all 講座.
 Filter state lives in the URL, so a filtered view can be shared and survives a reload.
 
 ## Checking links

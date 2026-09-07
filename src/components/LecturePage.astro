@@ -11,7 +11,8 @@ import { useT, type Lang } from '../i18n/ui';
 import { gallery, home, asset } from '../i18n/routing';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
-import { catName, tagName, relatedTo, localDate, type Lecture, catPrizeName } from '../data/catalog';
+import { catName, tagName, relatedTo, localDate, type Lecture, catPrizeName,
+         isNtu, seriesName } from '../data/catalog';
 
 interface Props { lang: Lang; rec: Lecture }
 const { lang, rec } = Astro.props;
@@ -27,6 +28,18 @@ const host = lang === 'zh' ? rec.event.host_zh : rec.event.host_en;
 const who = rec.laureate.en;
 
 const next = relatedTo(rec, 3);
+/* Which collection this record belongs to. A record of 臺大「諾貝爾獎得主講座」
+   renders on this page exactly as a 臺灣橋樑計畫 lecture does — the two things
+   that differ are the series line in the facts list, and the three places
+   below where a Bridges assumption would otherwise print something untrue:
+   a 導讀 that is not coming, 天下's programme hub, and the study panel, whose
+   chooser in the learning area lists the programme's 31. */
+const ntu = isNtu(rec);
+const seriesOf = seriesName(rec, lang);
+/* Stoddart's sitting had no published talk title, so the series stands in the
+   title's place. Printing it again as a fact would say the same words twice
+   on one card. */
+const series = seriesOf === rec.title.en || seriesOf === rec.title.zh ? null : seriesOf;
 /** NTU 共同教育中心 collects all six NTU lectures and their material */
 const NTU_CGE = 'https://cge.ntu.edu.tw/cl_n_203079.html';
 
@@ -46,8 +59,15 @@ const deeper = [
   rec.links.ntu_spotlight && { url: rec.links.ntu_spotlight, title: t('lec.ntuSpotlight') },
   rec.links.ntu_epaper    && { url: rec.links.ntu_epaper,    title: t('lec.ntuNews') },
   rec.links.instagram     && { url: rec.links.instagram,     title: t('lec.instagram') },
-  { url: NTU_CGE,          title: t('lec.ntuCge'),  desc: t('lec.ntuCgeNote') },
-  { url: rec.links.cw_hub, title: t('lec.cwHub'),   desc: t('lec.cwHubNote') },
+  rec.links.ntu_spe       && { url: rec.links.ntu_spe,       title: t('lec.ntuSpe') },
+  /* The record's own page at 共同教育中心 where it has one, otherwise the
+     centre's index of the programme. Note that speech.ntu.edu.tw — where
+     these recordings are published — sits behind a bot challenge and answers
+     403 to any client, so it is never linked from here. */
+  { url: rec.links.ntu_cge ?? NTU_CGE, title: t('lec.ntuCge'), desc: t('lec.ntuCgeNote') },
+  /* 天下's hub covers 臺灣橋樑計畫. A record outside that programme is not in
+     it, and an ExtLink with no href renders as a button that does nothing. */
+  rec.links.cw_hub        && { url: rec.links.cw_hub, title: t('lec.cwHub'), desc: t('lec.cwHubNote') },
 ].filter(Boolean) as { url: string; title: string; desc?: string }[];
 
 const piece = bright ? {
@@ -158,6 +178,7 @@ const piece = bright ? {
             <div><dt>{t('lec.date')}</dt><dd>{date}</dd></div>
             <div><dt>{t('lec.at')}</dt><dd>{host}</dd></div>
             <div><dt>{t('lec.affiliation')}</dt><dd>{rec.affiliation.institution}, {rec.affiliation.country}</dd></div>
+            {series && <div><dt>{t('lec.series')}</dt><dd>{series}</dd></div>}
           </dl>
           <ul class="tags" role="list">
             {rec.topic_tags.map((tg) => <li>{tagName(tg, lang)}</li>)}
@@ -179,7 +200,10 @@ const piece = bright ? {
             <VideoFacade id={rec.video.guide} title={`${t('lec.guide')} — ${who}`} kind="guide"
                          note={t('lec.guideNote')} playHint={t('lec.playHint')} eager />
           </section>
-        ) : (
+        ) : ntu ? null : (
+          /* 「製作中，敬請期待」 is a promise about the programme's own 導讀
+             films. Nothing was ever filmed for the NTU collection, so the
+             line would be a promise the museum cannot keep. */
           <p class="lec__soon">{t('lec.guideSoon')}</p>
         )}
 
@@ -228,7 +252,11 @@ const piece = bright ? {
           </section>
         )}
         <CompareBlock lang={lang} rec={rec} />
-        <StudyPanel lang={lang} rec={rec} />
+        {/* The note panel writes into the same store the learning area reads,
+            and that chooser lists the programme's 31. A note saved here on a
+            record it does not list would be a note the student could never
+            find again. */}
+        {!ntu && <StudyPanel lang={lang} rec={rec} />}
       </div>
 
       {/* 5. go deeper — a sidebar to this laureate's page, not a conclusion
@@ -262,12 +290,14 @@ const piece = bright ? {
 
     </div>
 
-    <section class="wrap lec__next" aria-labelledby="h-next">
-      <h3 id="h-next" class="lec__h">{t('lec.next')}</h3>
-      <ul class="grid" role="list">
-        {next.map((r) => <li><LectureCard lang={lang} rec={r} /></li>)}
-      </ul>
-    </section>
+    {next.length > 0 && (
+      <section class="wrap lec__next" aria-labelledby="h-next">
+        <h3 id="h-next" class="lec__h">{t('lec.next')}</h3>
+        <ul class="grid" role="list">
+          {next.map((r) => <li><LectureCard lang={lang} rec={r} /></li>)}
+        </ul>
+      </section>
+    )}
 
     </div>
   </article>

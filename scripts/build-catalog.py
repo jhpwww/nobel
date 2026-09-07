@@ -22,21 +22,44 @@ gal  = load("gal",  "scripts/copy-galleries.py")
 cat  = json.loads((ROOT / "data" / "catalog.json").read_text(encoding="utf-8"))
 
 errors = []
-for rec in cat["lectures"]:
-    c = copy.COPY.get(rec["id"])
-    if not c:
-        errors.append(f"{rec['id']}: no editorial copy"); continue
-    for f in ("title_zh", "hook_zh", "hook_en", "summary_zh", "summary_en", "tags"):
-        if not c.get(f):
-            errors.append(f"{rec['id']}: empty {f}")
-    for t in c["tags"]:
-        if t not in copy.TAGS:
-            errors.append(f"{rec['id']}: unknown tag {t}")
-    rec["title"]["zh"]       = c["title_zh"]
-    rec["hook"]              = {"zh": c["hook_zh"], "en": c["hook_en"]}
-    rec["description"]["zh"] = c["summary_zh"]
-    rec["description"]["en"] = c["summary_en"]
-    rec["topic_tags"]        = c["tags"]
+
+
+def merge_copy(records, table, what):
+    """Fold editorial copy into verified facts, or fail loudly.
+
+    Two collections, one function: the 31 臺灣橋樑計畫 lectures take `COPY`, the
+    臺大「諾貝爾獎得主講座」 records take `NTU_COPY`. Neither may borrow the
+    other's key — an id that appears in the wrong table is a missing entry
+    here, which is exactly the error we want.
+    """
+    for rec in records:
+        c = table.get(rec["id"])
+        if not c:
+            errors.append(f"{what} {rec['id']}: no editorial copy"); continue
+        for f in ("title_zh", "hook_zh", "hook_en", "summary_zh", "summary_en", "tags"):
+            if not c.get(f):
+                errors.append(f"{what} {rec['id']}: empty {f}")
+        for t in c["tags"]:
+            if t not in copy.TAGS:
+                errors.append(f"{what} {rec['id']}: unknown tag {t}")
+        rec["title"]["zh"]       = c["title_zh"]
+        rec["hook"]              = {"zh": c["hook_zh"], "en": c["hook_en"]}
+        rec["description"]["zh"] = c["summary_zh"]
+        rec["description"]["en"] = c["summary_en"]
+        rec["topic_tags"]        = c["tags"]
+
+
+merge_copy(cat["lectures"], copy.COPY, "lecture")
+merge_copy(cat.get("ntu_lectures", []), copy.NTU_COPY, "ntu")
+
+# Two collections, one museum, and the ids must never collide: a lecture page
+# is routed by id alone, so a duplicate would be two pages at one address.
+_seen = {}
+for group in ("lectures", "ntu_lectures"):
+    for rec in cat.get(group, []):
+        if rec["id"] in _seen:
+            errors.append(f"duplicate id {rec['id']}: {_seen[rec['id']]} and {group}")
+        _seen[rec["id"]] = group
 
 if errors:
     print("BUILD FAILED:", file=sys.stderr)
@@ -95,10 +118,13 @@ if errors:
     for e in errors: print("  -", e, file=sys.stderr)
     sys.exit(1)
 cat["lectures"].sort(key=lambda r: r["event"]["date"])
+cat.get("ntu_lectures", []).sort(key=lambda r: r["event"]["date"])
 
 out = ROOT / "src" / "data" / "lectures.json"
 out.parent.mkdir(parents=True, exist_ok=True)
 out.write_text(json.dumps(cat, ensure_ascii=False, indent=2), encoding="utf-8")
 n = len(cat["lectures"])
-print(f"wrote {out.relative_to(ROOT)}  ({n} lectures, {len(cat['special_events'])} special events)")
+print(f"wrote {out.relative_to(ROOT)}  ({n} lectures, "
+      f"{len(cat.get('ntu_lectures', []))} NTU lectures, "
+      f"{len(cat['special_events'])} special events)")
 print(f"  copy complete for {n}/{n};  tags: {len(cat['tags'])};  categories: {len(cat['categories'])}")

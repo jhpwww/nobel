@@ -9,7 +9,8 @@ import LectureCard from './LectureCard.astro';
 import VideoFacade from './VideoFacade.astro';
 import { useT, type Lang } from '../i18n/ui';
 import { browse, lecture as lectureUrl } from '../i18n/routing';
-import { lectures, byDateDesc, nextUpcoming, recommended, localDate, catPrizeName, videoCounts, totalSittings } from '../data/catalog';
+import { allLectures, byDateDesc, nextUpcoming, recommended, localDate,
+         catPrizeName, videoCounts, lectureFilms } from '../data/catalog';
 
 interface Props { lang: Lang; style?: 'flat' | 'room' | 'gl' | 'models' }
 const { lang, style = 'flat' } = Astro.props;
@@ -38,14 +39,21 @@ const featuredHost = lang === 'zh' ? featured.event.host_zh : featured.event.hos
    than repeated: laureates are distinct people — a laureate who came twice is
    one laureate — and the three kinds of film are what the browse page
    filters by. */
+/* Both collections, because this row stands for the museum's holdings and
+   the index of films lists both. A laureate who came twice — or who came once
+   under each programme, as Ciechanover did — is still one laureate. */
+const held = allLectures();
 const kinds = videoCounts();
-const nLaureates = new Set(lectures.map((l) => l.laureate.en)).size;
-const nHosts = new Set(lectures.map((l) => l.event.host_en)).size;
+const nLaureates = new Set(held.map((l) => l.laureate.en)).size;
+const nHosts = new Set(held.map((l) => l.event.host_en)).size;
 const figures = [
   { n: nLaureates,      label: t('hall.stat.laureates') },
   { n: kinds.all,       label: t('hall.stat.videos') },
-  /* sittings, not lectures — see 'A lecture, and a sitting' in catalog.ts */
-  { n: totalSittings(),  label: t('hall.stat.lectures') },
+  /* Every lecture FILM, not 臺灣橋樑計畫's 32 sittings: 導讀 + 講座 + 專訪 is
+     the arithmetic this row states, and it has to come out at the total two
+     figures to its left. `totalSittings()` is still the programme's own
+     number and is what the pages about the programme print. */
+  { n: lectureFilms(),  label: t('hall.stat.lectures') },
   { n: kinds.guide,     label: t('hall.stat.guide') },
   { n: kinds.record,    label: t('hall.stat.interview') },
   { n: nHosts,          label: t('hall.stat.hosts') },

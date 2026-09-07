@@ -20,7 +20,10 @@ const server = createServer(async (req, res) => {
     res.end(buf);
   } catch { res.writeHead(404).end('nope'); }
 });
-await new Promise((r) => server.listen(4321, r));
+/* The dark museum's dev server owns 4321 on this machine, so the port is
+   settable: SHOTS_PORT=4399 npm run shots -- '[...]'. */
+const PORT = Number(process.env.SHOTS_PORT ?? 4321);
+await new Promise((r) => server.listen(PORT, r));
 
 const shots = JSON.parse(process.argv[2] ?? '[]');
 const outDir = new URL('../shots/', import.meta.url).pathname;
@@ -35,7 +38,7 @@ for (const s of shots) {
   });
   page.on('console', (m) => m.type() === 'error' && errors.push(`${s.name}: ${m.text()}`));
   page.on('pageerror', (e) => errors.push(`${s.name}: ${e.message}`));
-  await page.goto(`http://localhost:4321${BASE}${s.path}`, { waitUntil: 'networkidle', timeout: 30000 });
+  await page.goto(`http://localhost:${PORT}${BASE}${s.path}`, { waitUntil: 'networkidle', timeout: 30000 });
   await page.waitForTimeout(s.wait ?? 900);
   // a continuous rAF loop or a playing video never lets the page go idle
   await page.evaluate(() => {

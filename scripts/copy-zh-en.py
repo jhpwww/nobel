@@ -283,3 +283,83 @@ COPY = {
   summary_en="Frank developed the image processing that combines thousands of blurred electron-microscope pictures into one sharp three-dimensional structure. With flash-freezing — cryo-electron microscopy — proteins could be seen close to their natural state for the first time.",
   tags=["chemistry-molecular", "medicine-clinical", "method-discovery"]),
 }
+# ---------------------------------------------------------------------------
+# 臺大「諾貝爾獎得主講座」 — copy for the museum's second collection.
+#
+# Same fields, same voice, same ruler. Measured against the 31: title 4-31
+# characters, hook_zh 12-24, hook_en 5-15 words, summary_zh 53-88 characters of
+# prose once the bracketed originals are set aside, summary_en 31-55 words.
+# Glosses are free against that budget and every proper noun takes one on first
+# use — except a laureate this museum already holds, who is named bare the way
+# queloz and mayor name each other.
+#
+# Written from the recordings themselves, watched through their caption tracks;
+# nothing is quoted. Where the caption track could not support a claim, the
+# claim is not here.
+# ---------------------------------------------------------------------------
+NTU_COPY = {
+
+"mourou": dict(
+  title_zh="我一生對光的追求",
+  hook_zh="雷射脈衝得先拉長，才能放大。",
+  hook_en="A laser pulse had to be stretched before it could be amplified.",
+  summary_zh="慕儒與博士生史崔克蘭發明了啁啾脈衝放大（chirped pulse amplification, CPA）：脈衝先拉長，放大後再壓回。雷射強度 20 年的停滯就此結束，近視雷射手術與粒子加速隨之而來。談到研究卡關，他說手上永遠同時做好幾個題目。",
+  summary_en="Mourou and his doctoral student Donna Strickland invented chirped pulse amplification: a pulse is stretched, amplified, then squeezed back. Twenty years of stalled laser intensity ended with it, and laser eye surgery and particle acceleration followed. Asked what he does when work stalls, he says he always keeps several projects running.",
+  tags=["physics-applied", "method-discovery", "education-career"]),
+
+"stoddart": dict(
+  title_zh="我的學思歷程",
+  hook_zh="在沒有電的農場長大，後來造出了會動的分子。",
+  hook_en="A childhood on a farm with no electricity, a career building molecules that move.",
+  summary_zh="史托達特把分子做成互相套住的環：沒有化學鍵，卻分不開。這是機械鍵（mechanical bond）：環沿著軸來回滑動，分子機器（molecular machines）由此而來。演講從他 18 歲才通電的蘇格蘭農場講起，收在給年輕研究者的建議。",
+  summary_en="Stoddart's molecules are rings threaded through one another: no chemical bond, and impossible to pull apart. That mechanical bond lets a ring slide back and forth along an axle, and molecular machines follow. The lecture runs from a Scottish farm that had no electricity until he was eighteen to his advice to young researchers.",
+  tags=["chemistry-molecular", "education-career"]),
+
+"ciechanover-ntu": dict(
+  title_zh="個人化醫療的革命：我們能治好所有疾病嗎？代價又是什麼？",
+  hook_zh="人類多活的 35 年，大半是 20 世紀給的。",
+  hook_en="Most of the years a life has gained were added in the twentieth century.",
+  summary_zh="20 世紀讓人活得夠久，才遇得上心血管疾病、癌症與神經退化疾病（neurodegenerative diseases）。切哈諾沃追溯藥物開發從偶然（penicillin，盤尼西林）到大量篩選（high-throughput screening），再到針對病人自身突變設計的藥物；代價落在費用、可近性（accessibility）與基因隱私。",
+  summary_en="The twentieth century made lives long enough to meet heart disease, cancer and neurodegeneration. Ciechanover traces drug development from chance — penicillin — through high-throughput screening to drugs aimed at a patient's own mutation, and puts the price at cost, access and genetic privacy.",
+  tags=["medicine-clinical", "method-discovery", "ethics-responsibility"]),
+
+"aspect": dict(
+  title_zh="從愛因斯坦與貝爾到量子科技：量子糾纏的實際運作",
+  hook_zh="光子還在路上，才切換要測的方向。",
+  hook_en="The measurement was chosen while the photons were already in flight.",
+  summary_zh="愛因斯坦（Albert Einstein）認為量子力學並不完整，貝爾（John Bell）證明這個爭論可以用實驗裁決。阿斯佩以成對的糾纏光子（entangled photons）做出測量，並在光子飛行途中才切換測量的方向。他由此談到量子密碼（quantum cryptography）與量子運算（quantum computing）。",
+  summary_en="Einstein held that quantum mechanics was incomplete; Bell showed the dispute could be settled by experiment. Aspect made that measurement with pairs of entangled photons, switching the direction of measurement while the photons were in flight. From there he turns to quantum cryptography and quantum computing.",
+  tags=["physics-fundamental", "ai-computation", "method-discovery"]),
+
+"aspect-2": dict(
+  title_zh="兩次量子革命：從概念到應用",
+  hook_zh="電晶體與雷射，只是第一次量子革命的成果。",
+  hook_en="The transistor and the laser were only the first quantum revolution.",
+  summary_zh="阿斯佩把量子物理分成兩次革命：第一次從波粒二象性（wave-particle duality）走到電晶體與雷射；第二次從量子糾纏（entanglement）起步，還要能逐一操控單一量子物體（individual quantum objects）。他指出，量子電腦（quantum computer）的優勢可能是更省電，而不是解出更難的題目。",
+  summary_en="Aspect divides quantum physics into two revolutions. The first ran from wave-particle duality to the transistor and the laser; the second starts from entanglement, and needs quantum objects handled one at a time. A quantum computer's advantage, he suggests, may lie in using less electricity rather than in solving harder problems.",
+  tags=["physics-fundamental", "physics-applied", "ai-computation"]),
+
+"robinson": dict(
+  title_zh="國家為什麼會失敗",
+  hook_zh="他說自己和共同作者，當年太看重物質，低估了觀念。",
+  hook_en="He and his co-author were too materialist, he says, and underrated ideas.",
+  summary_zh="廣納型制度（inclusive institutions）把誘因與機會開放給所有人，榨取型制度（extractive institutions）只留給少數人，貧富由此而分。經濟能否廣納，取決於政治權力是否分散：臺灣與南韓威權時期的成長，是靠後來的政治轉型才留下來。",
+  summary_en="Inclusive institutions open incentives and opportunity to everyone; extractive ones keep both for a few, and prosperity follows. Whether an economy can be inclusive depends on how widely political power is spread. Growth under authoritarian rule in Taiwan and South Korea lasted, Robinson argues, because the politics opened afterwards.",
+  tags=["economics", "peace-society"]),
+
+"robinson-fish-i": dict(
+  title_zh="緣木求魚（上）",
+  hook_zh="健康與教育排得出高下，文化排不出。",
+  hook_en="Health and schooling can be ranked. Culture cannot.",
+  summary_zh="發展經濟學（development economics）看窮國，向來是缺什麼就補什麼。羅賓森重新分類：哪些真有高下，哪些只是不同，哪些改得動。世界銀行（World Bank）在賴索托（Lesotho）開牛隻市場，沒有人賣牛：牛在當地是積蓄，也是聘禮。",
+  summary_en="Development economics looks at a poor country and asks what it lacks. Robinson re-sorts those lacks: what can genuinely be ranked, what is merely different, and what can be changed. The World Bank opened a cattle market in Lesotho and nobody sold a cow. Cattle there are savings, and bride wealth.",
+  tags=["economics", "method-discovery"]),
+
+"robinson-fish-ii": dict(
+  title_zh="緣木求魚（下）",
+  hook_zh="同一項特質，在不同的社會裡優劣可能相反。",
+  hook_en="The same trait can rank opposite ways in two societies.",
+  summary_zh="文化、規範與社會組織是發展的非古典決定因素（non-classical determinants）。羅賓森指出，這類特質沒有普遍的高下，換個社會就可能對調；想用政策直接改變，結果多半不如預期。干預應順著既有特質走，而非改造它。",
+  summary_en="Culture, norms and social organisation are development's non-classical determinants. Robinson argues they carry no general ranking: a trait that helps one society hinders the next, and policy aimed straight at changing it mostly misfires. The case is for interventions that take existing traits as given rather than remake them.",
+  tags=["economics", "ethics-responsibility", "method-discovery"]),
+}
