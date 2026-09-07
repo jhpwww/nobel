@@ -919,9 +919,14 @@ const PLATE = { w: 836, h: 470 };
    * the flow, so where it begins down the document does not either. The
    * distance between the two is the cue, once.
    *
-   * A piece's foot is 95.7% of the way down its frame — the same figure the
-   * row is placed by, and the line the drums stand on. The frame's last 4% is
-   * the air a model is framed in, and the sculpture does not end there.
+   * A piece's foot is 72% of the way down its frame — where the gold ends and
+   * the marble begins. That is the sculpture's own bottom edge: the drum under
+   * it is the 底座, the word the owner uses for it separately, and it runs from
+   * there to 95.7%. Measuring to 95.7 fired the retreat a hundred pixels early
+   * — the reading arrived at the feet of the PLINTHS with the six still whole
+   * and dominant, which is exactly what was reported. At 72% the page comes up
+   * until the plinths are behind it and the six gold figures are standing on
+   * the top edge of what is being read, and that is when they step back.
    *
    * The floor of 60px is not a second rule, it is a guard: on a phone the
    * strip of figures already stands a finger's width under the second row of
@@ -961,7 +966,7 @@ const PLATE = { w: 836, h: 470 };
     if (back !== true && still && pieces.length) {
       feet = Math.max(...pieces.map((p) => {
         const r = (p.querySelector('.bh__art') ?? p).getBoundingClientRect();
-        return r.top + 0.957 * r.height;
+        return r.top + 0.72 * r.height;
       }));
     }
     const text = document.querySelector('.feature__grid') ?? document.getElementById('more');

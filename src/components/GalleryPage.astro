@@ -553,6 +553,14 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
     block-size: min(calc(100vw * 941 / 1672), min(100svh, 62rem));
   }
   .gr__room:has(~ * .np) img { object-fit: contain; object-position: 50% 0; }
+  /* and the same foot as the other three rooms: nothing for the top three
+     fifths, then the picture giving way to the page — see .roomback::after in
+     RoomBack. The prize rooms keep 78%, because theirs is a shallow band at
+     the head of a page rather than the room the page is read in. */
+  .gr__room:has(~ * .np)::after {
+    background: linear-gradient(to bottom,
+      transparent 0%, transparent 60%, var(--bg-0) 100%);
+  }
   /* the picture's own edges are a warm grey and the page is white; without
      this it ends on a ruled line */
   .gr__room::after {

@@ -819,13 +819,27 @@ html[data-theme='bright'] .topbar--ghost .topbar__nav a.topbar__lang:focus-visib
   html[data-theme='bright'] .topbar--ghost .topbar__nav {
     flex-direction: column;
     align-items: flex-end;
-    /* two fifths of that again: the keys carry their own plate now, and the
-       space between them no longer has to do any separating. Then half of that
-       again, and half once more at the owner's word — 0.14px between one plate
-       and the next, which is not a gap at all: what separates two keys here is
-       the gold rule drawn round each of them, and the column is now one strip
-       of plates rather than six things in a line. */
-    row-gap: 0.00875rem;
+    /* ---------- the space between two plates, actually ----------
+     *
+     * Zero, and then the keys are pulled INTO each other. Every halving of
+     * this figure since it was 0.35rem has been moving a number the eye
+     * cannot see, and the owner has now said so three times running: the gap
+     * between two keys down this column is not the gap between two boxes, it
+     * is the gap between two pictures, and the picture is smaller than its
+     * box. key-plate.webp is 700x294 with its artwork from row 33 to row 243
+     * — 11.2% of transparent margin above it and 17.3% below. Between one key
+     * and the next that is 28.5% of a key's height of nothing at all: 11.9px
+     * at 41.6, against a row-gap of 0.14. Halving 0.14 to 0.07 was arithmetic
+     * on the wrong number.
+     *
+     * So the boxes overlap by half the margin they carry, which halves what
+     * is actually between the plates — 11.9px to 5.9 — and cannot make them
+     * touch, because they only meet at the full 28.5%. The figure is written
+     * as a share of the key's own height so it stays true if the key is ever
+     * resized again, which it has been twice. */
+    --key-h: 41.6px;
+    --key-lap: calc(var(--key-h) * -0.1425);
+    row-gap: 0;
     column-gap: 0;
   }
   /* Half the gutter, for this bar only. .wrap holds every page's content
@@ -910,7 +924,7 @@ html[data-theme='bright'] .topbar--ghost .topbar__nav a.topbar__lang:focus-visib
     min-height: 0;
     block-size: 0;
     padding-block: 0;
-    margin-block-start: -0.00875rem;
+    margin-block-start: calc(var(--key-lap) - 0.00875rem);
     opacity: 0;
     visibility: hidden;
     translate: 0 -0.5rem;
@@ -925,8 +939,8 @@ html[data-theme='bright'] .topbar--ghost .topbar__nav a.topbar__lang:focus-visib
       visibility 0.34s var(--ease);
   }
   html[data-theme='bright'][data-nav-open] .topbar--ghost .topbar__nav .topbar__key {
-    block-size: 41.6px;
-    margin-block-start: 0;
+    block-size: var(--key-h);
+    margin-block-start: var(--key-lap);
     opacity: 1;
     visibility: visible;
     translate: none;
@@ -964,7 +978,7 @@ html[data-theme='bright'] .topbar--ghost .topbar__nav a.topbar__lang:focus-visib
      six is no taller than it was at 39.6 with the old one. */
   html[data-theme='bright'] .topbar--ghost .topbar__nav .topbar__menu,
   html[data-theme='bright'][data-nav-open] .topbar--ghost .topbar__nav .topbar__key {
-    min-height: 41.6px;
+    min-height: var(--key-h);
   }
 }
 
@@ -1049,7 +1063,9 @@ html[data-theme='bright'] .card:hover {
 /* A finger has no hover, so the words must be readable at rest there. */
 @media (hover: none) {
   html[data-theme='bright'] .card .card__body,
-  html[data-theme='bright'] .vc .vc__body {
+  html[data-theme='bright'] .vc .vc__body,
+  html[data-theme='bright'] .xp .cards a,
+  html[data-theme='bright'] .xp__panel {
     background: rgba(255, 255, 255, 0.9);
   }
 }
@@ -1156,11 +1172,15 @@ html[data-theme='bright'] .bh__cue-rule {
    name, a laureate's name, the index's heading, all of them large type over a
    colonnade. Large type survives that better than a hairline does, which is
    why it took longer to notice; it is still the same problem. */
-html[data-theme='bright'] :is(.gr__id, .lec__id, .browse__h, .abt__hero, .course__head) {
+/* The introduction room was the one head this never reached: it is a bare
+   .hall-head, added after this list was written, and it had no light of its
+   own at all. That was survivable while the photographs were washed white and
+   is not now. */
+html[data-theme='bright'] :is(.gr__id, .lec__id, .browse__h, .abt__hero, .course__head, .np .hall-head) {
   position: relative;
   isolation: isolate;
 }
-html[data-theme='bright'] :is(.gr__id, .lec__id, .browse__h, .abt__hero, .course__head)::before {
+html[data-theme='bright'] :is(.gr__id, .lec__id, .browse__h, .abt__hero, .course__head, .np .hall-head)::before {
   content: '';
   position: absolute;
   z-index: -1;
@@ -2015,15 +2035,27 @@ html[data-theme='bright'] .mat__ext { opacity: 0.6; }
    press must not have a button faked out of it. What they take is the
    system's *material* — borderless, champagne at the foot — so the room reads
    as part of the same building without pretending its cards are keys. */
-html[data-theme='bright'] .cards a {
+/* The fill is the video card's, at the owner's word. A gradient that ends at
+   24% champagne is a quarter of a ground, and the foot of one of these cards
+   is exactly where its description and its host stand — over an undimmed
+   photograph they were being read against a film reel. What the index of
+   films puts under the lower half of every card is 62% white and a 9px blur;
+   it is the same job, so it is the same material. See .vc__body above. The
+   edge stays: the inset highlight and the champagne under it are the card's
+   own modelling, not its transparency. */
+/* `.xp` is in the selector to win, not to scope. Explore's own scoped rule is
+   `.cards[cid] a[cid]` — three of the middle column against this rule's two —
+   so every `background` written here without it lost, silently, and the cards
+   have been wearing --surface (3.5% BLACK) since the day this was written.
+   The gradient below was never on the screen. `.cards` exists only inside
+   `.xp`, so naming it costs nothing and settles the argument. */
+html[data-theme='bright'] .xp .cards a {
   border: 0;
   border-radius: 9px;
   color: var(--museum-ink);
-  background: linear-gradient(180deg,
-    rgba(255, 255, 255, 0.72),
-    rgba(242, 226, 190, 0.24));
-  -webkit-backdrop-filter: blur(var(--museum-glass-blur)) saturate(108%);
-  backdrop-filter: blur(var(--museum-glass-blur)) saturate(108%);
+  background: rgba(255, 255, 255, 0.62);
+  -webkit-backdrop-filter: blur(9px) saturate(1.12);
+  backdrop-filter: blur(9px) saturate(1.12);
   box-shadow:
     inset 0 14px 22px -22px rgba(255, 255, 255, 0.98),
     inset 0 -12px 22px -22px rgba(166, 119, 27, 0.3),
@@ -2031,11 +2063,45 @@ html[data-theme='bright'] .cards a {
   transition: transform 160ms var(--museum-ease), box-shadow 160ms var(--museum-ease),
               background 160ms var(--museum-ease);
 }
-html[data-theme='bright'] .cards a:hover {
+/* solid on approach, the way every other glass in the building answers a
+   pointer — see 'Solid, not clearer' above */
+html[data-theme='bright'] .xp .cards a:hover {
   transform: translateY(-1px);
-  background: linear-gradient(180deg,
-    rgba(255, 255, 255, 0.82),
-    rgba(240, 220, 172, 0.36));
+  background: #fff;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+/* ---------- 延伸探索 ----------
+   The section every room ends on, and until now the one place in the bright
+   museum with no ground of its own: .xp__panel took --surface, which is 3.5%
+   BLACK — a tint meant for a dark page, and over a photograph no ground at
+   all. On the index of films the four links, their descriptions and their
+   hosts were being read against a colonnade and a film reel.
+
+   The same 62% white and 9px blur the cards take, for the same reason and by
+   the same instruction. And the heading and the line under it carry the white
+   edge every other title in these rooms carries: they stand ON the
+   photograph, not on the panel. */
+html[data-theme='bright'] .xp__panel {
+  background: rgba(255, 255, 255, 0.62);
+  border-color: rgba(255, 255, 255, 0.5);
+  -webkit-backdrop-filter: blur(9px) saturate(1.12);
+  backdrop-filter: blur(9px) saturate(1.12);
+}
+html[data-theme='bright'] .xp__h {
+  text-shadow:
+    0 0 3px rgba(255, 255, 255, 1),
+    0 0 8px rgba(255, 255, 255, 0.95),
+    0 0 18px rgba(255, 255, 255, 0.75),
+    0 0 34px rgba(255, 255, 255, 0.5);
+}
+html[data-theme='bright'] .xp__note {
+  text-shadow:
+    0 0 2px rgba(255, 255, 255, 1),
+    0 0 4px rgba(255, 255, 255, 0.98),
+    0 0 10px rgba(255, 255, 255, 0.85),
+    0 0 20px rgba(255, 255, 255, 0.6);
 }
 /* The v4 button kit's :root no longer declares --museum-gold-text — it was
    never a button colour, only this one line of ink on a lecture card, and it
@@ -2063,9 +2129,20 @@ html[data-theme='bright'] :is(.gr__sheet, .lec__sheet) {
   --muted-dim: #443e38;
 }
 html[data-theme='bright'] .about { background: none; }
+/* And the introduction room, for the same reason and now by the same rule.
+   關於諾獎 is one of the four rooms the bar opens, but it is built out of a
+   prize page, so it was inheriting the prize pages' half-sheet: 2452px of 50%
+   white laid over the whole document, from the top. That is the wash the
+   owner is seeing on four fifths of its photograph — not the picture's own
+   treatment, a second layer above it. The other three rooms have nothing of
+   the kind, so neither has this one; what the four have now is one treatment
+   between them, which is the point of taking it off. The prize and laureate
+   pages keep their sheet: their photograph is a band at the head, not the
+   room the whole page is read in. */
+html[data-theme='bright'] .gr__sheet:has(.np) { background: none; }
 
 html[data-theme='bright'] { --museum-gold-text: #6f5111; }
-html[data-theme='bright'] .cards__host { color: var(--museum-gold-text); }
+html[data-theme='bright'] .xp .cards__host { color: var(--museum-gold-text); }
 
 /* the learning area's three cards, for the same reason */
 html[data-theme='bright'] .tool {
