@@ -84,7 +84,9 @@ const strip = (root) => `
      cover hides is not a contrast question. See 'the band every page
      dissolves into' in bright.css. */
   [data-roomtop],
-  .topbar, .pn, .bh__lockup, .gr__lock, .bh__cue,
+  /* .lec__pin is the laureate's name caught into the corner beside the mark:
+     pinned, above everything, and chrome for the same reason the mark is */
+  .topbar, .pn, .bh__lockup, .gr__lock, .lec__pin, .bh__cue,
   /* the prize's own piece: it is pinned over the page like the museum's name,
      and a gold statue is not a ground anything is read against */
   .gr__rail { display: none !important; }
