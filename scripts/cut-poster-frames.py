@@ -17,11 +17,12 @@ official portrait from nobelprize.org, embedded with SFace, and a frame only
 counts if the person in it IS them — and writes the best one out as the
 session's representative image.
 
-WHY IT RUNS ON A RUNNER
-The working machine's network routes googlevideo.com to a TANet edge that
-refuses 443: yt-dlp reaches YouTube's metadata there and never its media. A
-runner has open internet. Same reason the backdrop clips are cut in CI, and
-.github/workflows/poster-frames.yml is that job.
+WHERE IT RUNS
+Locally. This machine reaches googlevideo.com, so yt-dlp gets the media it
+needs; the twenty stills committed here were cut that way. A runner cannot:
+it is a datacenter address and YouTube answers it with "sign in to confirm
+you're not a bot" on every player client. .github/workflows/poster-frames.yml
+is kept as a fallback but does not currently work.
 
 WHAT IT WRITES
   · public/assets/posters/<youtube id>.webp   the still

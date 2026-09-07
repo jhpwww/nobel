@@ -2,39 +2,77 @@
 
 Conventions for this repository. Read `README.md` first for what the project is.
 
+Everything here is a standing rule or a trap that has already cost a rebuild.
+Keep it that way: add a rule, not an account of the work that produced it.
+
 ## Stack
 
 Astro 5 + TypeScript, plain CSS, no UI framework. Fully static: no server, no serverless
 function, no database, no login. If a task seems to need one, stop and say so.
+
+## The owner's standing requests
+
+These are decided. Do not reopen them, and do not let a tidy-up quietly reverse one.
+
+- **The museum's name and its main axis do not change.**
+- **The dark museum is preserved as it is.** Bright work must never alter what the dark
+  build renders. Its ~56 text styles below AA are deliberate and stay.
+- **The 導讀 narration scripts are reference material only.** Their text must never
+  appear on the site.
+- **Representative images are chosen for 講座 and 專訪 only.** A 導讀 keeps the frame
+  YouTube gives it; both poster scripts skip guide videos on purpose.
+- **A number inside a design kit the owner supplied is already decided.** When feedback
+  touches one, build the comparison and send it first — the choice is theirs to make
+  while looking at it. The button kit's frame widths are not to be changed again.
+- **Do not darken the block red.** See "The bright palette's one known exception".
+- **Every change ships to both running dev servers and to GitHub Pages in the same turn**,
+  and is reported with three readings, not a claim: a clean `git status`,
+  `git rev-list --left-right --count origin/main...HEAD` at 0/0, and the Pages run green
+  on that SHA.
+- **Install whatever the work needs and finish it.** Do not stop mid-task to ask.
 
 ## Layout
 
 ```
 data/
   catalog.json          verified facts, produced by scripts/seed-catalog.py
+  prize-facts.json      per-category statistics, from the official Nobel API
+  model-credits.json    provenance for the six sculptures; merged, never overwritten
   sheet-seed.csv        the CSV to import when creating the Google Sheet
-scripts/
+scripts/                ~29 of them; these are the ones you will touch
   seed-catalog.py       hand-verified source data -> data/catalog.json
   copy-zh-en.py         editorial hook + summary for all 31, both languages
-  build-catalog.py      catalog.json + copy -> src/data/lectures.json
-  export-sheet-csv.py   src/data/lectures.json -> data/sheet-seed.csv
-  sync-sheet.mjs        published Google Sheet -> src/data/lectures.json (CI)
+  copy-galleries.py     per-category prose
+  build-catalog.py      catalog.json + copy -> src/data/lectures.json   (npm run content)
+  export-sheet-csv.py   src/data/lectures.json -> data/sheet-seed.csv   (npm run sheet)
+  sync-sheet.mjs        published Google Sheet -> src/data/lectures.json (CI, dormant)
+  pick-posters.py       -> src/data/posters.json + video-posters.json
+  cut-poster-frames.py  -> public/assets/posters/ + src/data/local-posters.json
+  facecheck.py          shared portrait/detector/threshold module for both of those
+  make-backdrop-clips.py-> public/media/backdrop/ + src/data/backdrop.json
+  normalise-models.mjs  the model pipeline's centre; writes both tinted and gold sets
+  subset-fonts.mjs      both museums' faces
+  check-links.py        four kinds of reference, over dist/
+  check-contrast.mjs / audit-contrast.mjs / audit-type.mjs / check-glass.mjs
   shots.mjs             serve dist/ and screenshot it with Playwright
 src/
   data/catalog.ts       the typed accessor — import from here, never from the JSON
   data/lectures.json    generated; do not hand-edit
+  data/stills.ts        the single poster resolver (cut still -> verified frame -> hqdefault)
   i18n/ui.ts            every user-facing string
   i18n/routing.ts       every internal URL
-  components/ layouts/ pages/ styles/
+  scripts/              env, motion, plinth, roomfade, rotunda, study, walkin
+  components/ layouts/ pages/ styles/ vendor/
 ```
 
 ## Rules
 
 **Content**
-- The published Google Sheet is authoritative. Never hand-edit `src/data/lectures.json`.
+- `src/data/lectures.json` is generated. Never hand-edit it — fix the upstream source and
+  re-run: `scripts/copy-zh-en.py` or `data/catalog.json` today, via `npm run content`;
+  the published Google Sheet once it exists.
 - Never invent a laureate name, date, video id, or URL. A missing field renders as absent,
   not as a plausible guess. `sync-sheet.mjs` fails the build on a malformed required field.
-- The 導讀 narration scripts are reference material. Their text must not appear on the site.
 - Do not put pronunciation glosses (e.g. `Sudhof (酥豆腐)`) anywhere near a page.
 
 **Language**
@@ -54,53 +92,68 @@ src/
   a project site served from `/<repo>/` and `base` must be respected.
 - Every EXTERNAL link goes through `ExtLink.astro`, or carries the same three things it does:
   `target="_blank"`, `rel="noopener noreferrer"`, and a visually-hidden "opens in a new tab".
-  The gallery material buttons are the one hand-rolled exception, because they need
-  `aria-describedby` for the popup. Audit with a grep over `dist/` for external `<a>` without
-  `target="_blank"` — it should return zero.
+  Audit with a grep over `dist/` for external `<a>` without `target="_blank"` — it should
+  return zero.
 
 **Home page**
 - The announcement slot is never empty: `nextUpcoming()` if the schedule still has a future
   lecture, otherwise `recommended()`. "Today" is the BUILD date, so a lecture stops being
   upcoming at the next rebuild, not at midnight. An upcoming lecture may have no video yet —
   that branch must keep working.
+- `recommended()` is a named choice, `RECOMMENDED` in `src/data/catalog.ts`, currently
+  `strickland`. The old ranking stays underneath as the fallback so the slot cannot go empty
+  if the id is retired or mistyped. Naming the lecture names the film: the home page shows
+  that lecture's 導讀.
 
-**The hall**
-- Three variants share one `HomePage.astro` via a `style` prop: `flat` (SVG), `room` (CSS 3D),
-  `gl` (WebGL). Only the hall differs; never fork the pages below it.
+**The halls**
+- Four variants share one `HomePage.astro` via a `style` prop: `flat` (SVG, `Hall.astro`),
+  `room` (CSS 3D, `Hall3D.astro`), `gl` (WebGL, `HallGL.astro`), `models` (glTF via
+  `<model-viewer>`, `HallModels.astro`). A fifth, `HallBright.astro`, is not a `style` value —
+  it is selected by `process.env.THEME === 'bright'` and overrides the prop. Only the hall
+  differs; never fork the pages below it.
 - `Sculpture3D.astro` EXTRUDES `Sculpture.astro` — it stacks the same SVG along Z and darkens
-  the back slices. Do not rebuild the forms from CSS primitives; that was tried and the
-  silhouettes came out worse than the artwork.
-- The WebGL scene is procedural on purpose: no model files, so the only payload is three.js.
-  Keep it that way. DPR is capped at 1.5, there are no shadow maps, and the loop must stop on
-  IntersectionObserver and visibilitychange.
+  the back slices. Do not rebuild the forms from CSS primitives.
+- The ROTUNDA's WebGL scene (`src/scripts/rotunda.ts`) is procedural on purpose: no model or
+  texture files, so its only payload is three.js. Keep it that way. DPR is capped at 1.6,
+  there are no shadow maps (contact shadows are painted planes), and the loop must stop on
+  IntersectionObserver and visibilitychange. The objects hall is the deliberate exception:
+  real glTF drawn by the vendored `model-viewer` (`vendor/model-viewer.min.js`), not three.js.
 - Anything drawn on the canvas is decoration. Every link must exist in the markup underneath.
 - NEVER gate an animation on `@media (prefers-reduced-motion: reduce)` or on
   `matchMedia(...).matches` alone. Ask `motionOn()` (`src/scripts/motion.ts`) in JS and key CSS
-  off `html[data-motion='off']`. The OS switch is system-wide and unoverridable; used raw it
-  leaves visitors with a completely static museum and no way back.
-- Overlays that need clicking must be checked against the fixed header, which spans the full
-  width. Painting above it (z-index) is not enough — the header still swallows the pointer.
+  off `html[data-motion='off']`, which is set before first paint and which the visitor's own
+  MotionToggle always wins. The OS switch is system-wide and unoverridable; used raw it leaves
+  visitors with a completely static museum and no way back.
+- Over the hall the header is `.topbar--ghost`: fixed, full width, and deliberately
+  `pointer-events: none`, with only its nav links and buttons re-enabled. Keep that pair
+  intact — give the ghost bar a surface again and it swallows taps across the whole strip it
+  covers, 200px tall on a phone, over the first row of sculptures. On ordinary pages the
+  topbar is `position: sticky` with a real panel and does take the pointer.
 - Camera moves are WALL-CLOCK driven (`performance.now()` against a stored `t0`), never by
   accumulating a clamped per-frame delta. With a clamp, a slow renderer stretches a 1.15 s move
   into tens of seconds and any navigation waiting on its callback never happens.
 - Any action that waits on the render loop needs a timeout backstop that runs regardless.
 - The adaptive quality ladder in `degrade()` must always draw a frame before it stops; resizing
   clears the buffer, so stopping straight after a resize leaves a black canvas.
-- The footer copyright must never wrap. It is `white-space: nowrap` with a viewport-scaled font,
-  and it needs `max-width: none` because the global `p { max-width: 62ch }` otherwise forces a
-  break. Verified from 320px up.
-- `scripts/make-ambient.py` regenerates the background loop. Every motion period must divide the
-  clip length exactly — that is what makes it seamless without a crossfade. Keep it dark; it sits
-  behind text.
+- The footer copyright must not wrap on desktop: `.foot__copy` is `white-space: nowrap` with a
+  viewport-scaled clamp, and it needs `max-width: none` because the global
+  `p { max-width: var(--measure) }` (62ch) otherwise forces a break. It must hold from 320px up.
+  Below 48rem it wraps on purpose — one unbroken Han line across a phone is unreadable type.
+- `scripts/make-ambient.py` regenerates the background loop, which runs behind the flat, room
+  and objects halls (not the rotunda, not the bright hall). Every motion period must divide the
+  clip length exactly — that is what makes it seamless without a crossfade. Keep it dark; it
+  sits behind text.
 
 **Outbound links**
 - Run `python3 scripts/check-links.py dist` after any change touching external URLs. A HEAD
-  request is NOT enough — it misses dead DNS and soft 404s. `educational.nobelprize.org` was
-  shipped broken because only the per-category URLs were verified and the shared ones were not.
-- Verify every link that gets added, not a sample of them.
+  request is NOT enough — it misses dead DNS and soft 404s.
+- Verify every link that gets added, not a sample of them, and verify the SHARED urls as well
+  as the per-category ones. Shipping a broken link is what skipping the shared ones causes.
 - The YouTube ids are NOT in `href` — they sit in `data-yt`, iframe srcs and `data-picks`. Any
   link audit that only reads `href` misses every video on the site.
-- oEmbed 200 proves a video is public, not that it is embeddable. Check the embed endpoint too.
+- oEmbed 200 proves a video is public, not that it is embeddable — and `check-links.py` only
+  calls oEmbed. The embed endpoint is a manual check the script does not cover: do it by hand
+  for every new id, or add it to `oembed()`.
 
 **Framing**
 - This site is a MUSEUM. Its name, its home page and its navigation are the museum's.
@@ -110,11 +163,14 @@ src/
   taking the course must not feel they have wandered into a classroom.
 
 **Media and rights**
-- The hall backdrop is real lecture footage via `LectureScreen.astro`, not a stock loop. A
-  cross-origin YouTube iframe CANNOT be read into a WebGL texture — that is why the rotunda
-  cycles the 1/2/3.jpg frames instead. Do not try to sample the player.
-- YouTube only, via `youtube-nocookie.com`, behind the click-to-load facade. Never download,
-  re-host, re-cut or proxy a video.
+- The hall backdrop is lecture imagery via `LectureScreen.astro`, never a stock loop and never
+  a live embed. A cross-origin YouTube iframe CANNOT be read into a WebGL texture — that is why
+  the rotunda cycles published frames instead. Do not try to sample the player.
+- Playback is always YouTube's, via `youtube-nocookie.com`, behind the click-to-load facade.
+  Never re-host, re-cut, proxy or redistribute a RECORDING.
+- Single still frames are the deliberate exception, and the About page's rights note is what
+  bounds it: one frame, used only to identify a session. Anything added here must stay inside
+  what that note already says — and if it cannot, the note changes first.
 - Nobel Foundation material is linked, never copied into the repo.
 
 **Security**
@@ -128,21 +184,27 @@ src/
   `categoryList()` deliberately excludes it. Use `galleryKeys()` for routing.
 - A category with zero lectures still gets a plinth and a page. Say so plainly and link out;
   never hide the category or show a bare "0". Hall order comes from `categoryList()`, which reads
-  the `order` field — change it in `scripts/build-catalog.py`, not in the component.
+  the `order` field — change it in `scripts/build-catalog.py`, not in the component. The order is
+  physics, chemistry, medicine, peace, economics, literature.
+- The museum counts SITTINGS, not lectures, wherever it says 場講座: 31 lectures in 32 sittings,
+  because Südhof's was given twice. Medicine therefore shows 8 where it holds 7 lectures.
 - Every gallery must carry material beyond video: intro, history, statistics, official links.
   Category prose lives in `scripts/copy-galleries.py`; the numbers in `data/prize-facts.json`.
-- The materials strip sits in the summary band, above the lectures, and shows titles only.
-  Descriptions live in a popup anchored to the *list*, not to each chip — that is deliberate,
-  so the popup spans the strip and can never overflow the viewport whichever chip is hovered.
-  Always pair a hover affordance with `:focus-visible` and a `@media (hover: none)` fallback
-  that reveals the text inline; a tooltip a touch user cannot open is a tooltip that does not exist.
+- The official Nobel pages sit in the 延伸探索 rail down the right of each prize room — the same
+  place and shape a laureate's page keeps it. Each is an ExtLink with its description rendered
+  beside it as plain text, always visible: no hover popup, no touch-device branch.
 - nobelprize.org slugs are **not** uniform — Peace and Economic Sciences break the
-  `…-nobel-prize-in-X` pattern. Every URL in `fetch-prize-facts.py` was checked with a live
-  request. Verify before changing one; do not tidy them by pattern.
+  `…-nobel-prize-in-X` pattern. Verify every URL in `fetch-prize-facts.py` with a live request
+  before changing one; do not tidy them by pattern.
 
 **Badges**
-- The 導讀影片 badge is the same object in two components — `.card__badge` in LectureCard and
-  `.vf__label` in VideoFacade. Top-left, `--accent-block`, dark text. Restyle both or neither.
+- The guide mark is the same object in THREE components: `.card__badge` in LectureCard,
+  `.vf__label` in VideoFacade, `.vc__kind` in VideoCard. All three are top-left, 0.66rem,
+  0.12em tracking, radius 2px, `--on-accent` on `--accent-block`. Restyle all three or none.
+- Two things differ and must not be flattened. The wording comes from `guideBadgeKey(action)`
+  in `src/data/catalog.ts` — a picture that PLAYS says 導讀影片, one that GOES somewhere says
+  有導讀影片. And `.vc__kind` is overridden per video kind (`--kind-guide` / `--kind-lecture` /
+  `--kind-record`), so on the browse page it does not take `--accent-block` at all.
 
 **Touch**
 - Never leave a `:hover` rule ungated on anything that navigates or acts on tap. On a touch
@@ -169,33 +231,46 @@ src/
 - `Sculpture3D` extrudes each SVG into 12 slices, each with its own `filter` — so each slice is
   a separate composited surface. The room holds six of those plus a mirrored copy of each: 144
   filtered SVGs. That is fine on a desktop GPU and will get the tab discarded on iOS Safari.
-- Below 62rem the mirrors, the video wall and all but three slices are removed — the extra
-  slices are deleted from the DOM, not merely hidden, because display:none still retains them.
+- Below 62rem the mirrors and the video wall are hidden with `display: none` — their nodes stay
+  in the DOM — while the slices past the third are actually REMOVED, by a script that runs on
+  every `.x3d__turn` stack including the hidden mirrors'. Keeping the mirror's three slices in
+  the document is exactly why the phone count is 39 and not 21: do not "tidy" the removal to
+  skip hidden stacks without re-measuring.
 - The walk-in zoom is set from JS (`--walk-zoom`), 1 on small screens. Scaling the room
-  re-rasterises every composited layer at the new size, which is what used to kill the tab at
-  exactly the moment of navigating into a gallery.
-- If you add anything to this room, check the phone numbers first: `document.querySelectorAll('.x3d svg').length` should stay around 39 on a phone, not 150.
+  re-rasterises every composited layer at the new size, which is what kills the tab at the
+  moment of navigating into a gallery.
+- If you add anything to this room, check the phone number first:
+  `document.querySelectorAll('.x3d svg').length` should be exactly 39 on a phone, against 152
+  untrimmed.
 
 **CSS**
 - Two accent tokens, and they are not interchangeable. `--accent` paints strokes, text, borders
-  and the sculptures — full-strength hue. `--accent-block` paints solid fills (material buttons,
-  the 導讀影片 badge); for chemistry and medicine it is the white-tinted pastel, because those two
-  hues read as garish over a large filled area. Never use `--accent` for a solid block.
-- Dark text sits on `--accent-block`, so any change to those tokens or to the button gradient
-  must be re-checked for WCAG AA (4.5:1). Economics is currently the tightest at 6.40:1.
-- Warm palette only. Prize category is the sole carrier of hue, via `[data-cat]` → `--accent`.
-- Tokens live in `src/styles/global.css`. Add a token rather than a one-off hex value.
-- Every animation must be disabled under `prefers-reduced-motion`.
+  and the sculptures — full-strength hue. `--accent-block` paints solid fills: the guide badge in
+  its three forms and the study panel's keys and marks. Never use `--accent` for a solid block.
+- In the dark museum `--on-accent` (#150d05) sits on `--accent-block`, so any change to those
+  tokens must be re-checked for WCAG AA (4.5:1); economics is the tightest at 7.03:1. In the
+  bright museum `--on-accent` is #ffffff on `--red` for every category.
+- Warm palette, and prize category is the sole carrier of hue via `[data-cat]` → `--accent` —
+  **in the dark museum only**. The bright museum deliberately drops category hue: all six `--c-*`
+  tokens resolve to `--red-ink` and every `[data-cat]` takes `--accent-block: var(--red)`, so the
+  sculptures, not the colour, say which hall you are in. Do not "restore" per-category hue there.
+- Dark-museum tokens live in `src/styles/global.css`; the bright museum restates them in
+  `src/styles/bright.css`. Add a token rather than a one-off hex value — and add it to both files
+  if the two museums need different values.
+- Every animation must be gated on `html[data-motion='off']`, never on the media query alone.
 
 **SVG**
 - Gradient strokes need `gradientUnits="userSpaceOnUse"`. With the default
   `objectBoundingBox`, a perfectly straight line has a zero-area box and renders **invisible**.
-  This already cost one debugging round — do not reintroduce it.
+  Do not reintroduce it.
 
 ## Definition of done
 
-- `npm run check` and `npm run build` both clean
-- `npm run shots` and actually look at the result before claiming a visual change works
+- `npm run check` (astro check; there is no separate tsc step) and `npm run build` both clean
+- `npm run shots -- '[{"name":"home","path":"/","w":390}]'` — the script takes a JSON array and
+  captures nothing without one — then actually look at the PNGs in `shots/`. Shots need a
+  current `dist/`: the script serves the built site, it does not build it. The viewport default
+  is 1440×900, so 390 must be asked for.
 - Keyboard-navigable, visible focus, WCAG AA contrast
 - No console errors; no layout shift
 - Test at 390px before 1440px
@@ -217,8 +292,7 @@ Every descriptive string on the site is a museum wall label, not a lesson.
 
 ## PageNav (the two standing controls, lower right)
 
-`src/components/PageNav.astro`, mounted once in `Base.astro`, so every page
-has it.
+`src/components/PageNav.astro`, mounted once in `Base.astro`, so every page has it.
 
 - "Back to top" appears only past `max(320px, 60vh)` of scroll. Clicking it
   also moves focus to `#main` (which carries `tabindex="-1"`), or a keyboard
@@ -243,64 +317,64 @@ all of it on reload.
 - `write()` in `src/scripts/study.ts` returns whether the value was kept.
   `setNote()` and `updateKept()` pass it up; the UI shows 「未能儲存」 in the
   warning colour, and holds it longer than the success message.
-- `storageAvailable()` probes once on load; both `StudyPanel` and `StudyPage`
+- `storageAvailable()` probes once on load; both `StudyPanel` and `StudyDesk`
   show a standing banner when it fails, before anything has been typed.
 
 ## Where a visitor can actually write
 
-Notes belong to a lecture, but requiring a trip to each lecture page made
-學習專區 a signpost with no writing surface anywhere behind it. `/study/` now
-carries the chooser (all 31 lectures), the watch toggles and the note fields,
-so the whole task can be done on one page. The lecture-page panel stays, and
-its notes open automatically once that lecture is chosen.
+The learning area carries the chooser (all 31 lectures), the watch toggles and
+the note fields, so the whole task can be done on one page: `StudyDesk.astro`,
+rendered inside `LearnPage.astro` at `/learn/#record`. `/study/` is now only a
+redirect stub, kept so old links still arrive. The lecture-page panel stays,
+with its three stages and all four fields always rendered.
 
 Rebuild the editable blocks only when the *set* of chosen ids changes — never
-on input. Repainting a textarea from storage mid-sentence is exactly how the
-panel used to lose text.
+on input. Repainting a textarea from storage mid-sentence discards what is
+being typed.
 
 ## The objects hall (`/models/`)
 
-The fourth hall shows real glTF models instead of drawn ones. Three scripts
-own the pipeline and are meant to be re-run in order:
+The fourth hall shows real glTF models. All six pieces are now the owner's own
+award sculptures: `assets-src/models/<cat>.glb` IS the source and may not be
+overwritten. Four scripts own the pipeline; run them in this order:
 
-1. `scripts/fetch-models.py` — downloads the four borrowed GLBs from Poly
-   Pizza. Provenance is re-read from the model page at fetch time rather than
-   typed in, so the credit cannot drift from the file. Swapping one is a
-   one-line change to `PICKS`.
-1b. `scripts/build-models.mjs` — the atom and the balance, built here: Poly
-   Pizza has no balance worth using and nothing that reads as an atom, and a
-   telescope narrowed physics to astronomy. Flat-shaded low-poly on purpose,
-   to sit beside the borrowed four. Both have since been superseded by the
-   owner's own award sculptures, so the script now writes nothing: `SUPPLIED`
-   lists the names whose file in `assets-src/models/` is the source and may
-   not be overwritten. Add a name to it whenever a sculpture arrives — and to
-   `ON_BASE` in normalise-models.mjs, which is what stops the piece being
-   scaled and perched as a stand-in.
+1. `scripts/build-base-rings.mjs` — cuts the three gold bands into the drum and
+   writes the `_base-ringed.glb` everything downstream consumes.
+2. `scripts/normalise-models.mjs` — the centre of the pipeline.
+3. `scripts/render-posters.mjs` — renders the poster through model-viewer itself,
+   so the still matches the frame the live model settles into. Serves `public/`
+   on its own port; needs no external server.
 
-   Both scripts write `data/model-credits.json` and **merge** rather than
-   overwrite — each owns part of the six, and running either alone must leave
-   a complete set. `source: 'original'` suppresses the outbound credit link.
+`scripts/fetch-models.py` (Poly Pizza) and `scripts/build-models.mjs` (the
+balance) remain but are inert: all six names sit in their `SUPPLIED` sets and
+are skipped. Keep them, and keep their rules, for the day a borrowed stand-in
+comes back — restoring one means removing its name from `SUPPLIED` and from
+`ON_BASE`.
 
-   Matrix order in build-models.mjs is column-major: in `chain(a, b)` it is
-   `b` that reaches the point first. Getting this backwards silently collapses
-   the atom's three shells into one plane and swings the balance beam off its
-   column — both looked plausible until rendered.
-2. `scripts/normalise-models.mjs` — six authors means six scales (the flask
-   arrives 19 units tall, the coin 0.03) and six pivots. Each is re-centred on
-   its own bounding box and scaled so its longest axis is 1, after which every
-   icon takes the same camera. Materials are then re-cast in the hall's accent
-   colour, which is also what removes the coin's dollar sign.
-3. `scripts/render-posters.mjs` — renders the poster through model-viewer
-   itself, so the still matches the frame the live model settles into. Serves
-   `public/` on its own port; needs no external server.
-
-`CAMERA` appears in both the renderer and `HallModels.astro`. They must match
-or the poster jumps when the model takes over.
-
-- model-viewer lives in `vendor/`, not `public/`. Imported it is bundled once;
+- `ON_BASE` in normalise-models.mjs holds all six. Membership does three things:
+  it skips the perch-and-scale path, it skips `smoothNormals()` + `weld()` and
+  the `SUBDIVIDE` pass, and it puts the piece on the drum unchanged. One fixed
+  factor is then applied to all six assemblies with the drum's foot on the
+  bottom of the unit box, so every hall shows the same drum at the same size.
+- Materials are re-cast twice and the model written twice: once in the hall's
+  `TINT[cat]` to `public/assets/models/`, then again in gold to
+  `public/assets/models/gold/` for the bright museum. The drum's inlay ring
+  (`base__` prefix) and the invisible cage material are exempt.
+- `data/model-credits.json` is written by both inert scripts and **merged**,
+  never overwritten, so a future borrowed stand-in cannot clobber the rest.
+  An empty `page` is what suppresses the outbound credit link — the title
+  renders as `<b>` instead of `<a>`. `source: 'original'` selects the wording
+  and drives `borrowedCount`, which is 0 today.
+- Matrix order in build-models.mjs is column-major: in `chain(a, b)` it is
+  `b` that reaches the point first. Backwards, geometry collapses in ways that
+  look plausible until rendered.
+- `CAMERA`, `CAMERA_TARGET` and `CAMERA_LIMIT` appear in THREE places —
+  `render-posters.mjs`, `HallModels.astro` and `HallBright.astro`. All three
+  must match or the poster jumps when the model takes over.
+- model-viewer lives in `vendor/` at the repo root, not `public/`. Imported it is bundled once;
   a copy in `public/` would ship a second megabyte that nothing requests.
-- The model is decoration inside the link, so it carries `pointer-events:
-  none`. Without it the anchor never sees the click.
+- The model is decoration inside the link, so it carries `pointer-events: none`.
+  Without it the anchor never sees the click.
 - The fallback chain is model → poster → bare link. The `<img slot="poster">`
   is what a browser that never upgrades the custom element renders, so it must
   stay a real child element.
@@ -310,25 +384,39 @@ or the poster jumps when the model takes over.
 
 ## Fonts are self-hosted and subset
 
-`scripts/subset-fonts.mjs` owns the three web fonts. Google Fonts was sending
-2.1–3.6 MB of CJK chunks per page — more than the difference between any two of
-the four hall designs — and put a third party in the request path of every
-visit, which the About page's privacy claim reads badly against.
+`scripts/subset-fonts.mjs` owns both museums' faces — five families. Dark: Noto
+Sans TC, Noto Serif TC, Cormorant Garamond. Bright: Noto Sans TC, Noto Serif TC,
+Source Serif 4, Source Sans 3. Self-hosting keeps a third party out of the
+request path of every visit, which the About page's privacy claim depends on.
 
-- The corpus is bucketed by **resolved** font, not by selector: the script
-  opens all 92 built pages and reads `getComputedStyle().fontFamily` on every
-  text node. The serif only draws headings, so it carries 350 ideographs where
-  the sans carries 993 — that split alone is worth 220 KB.
-- Two-pass, because the corpus comes from the rendered site:
-  `npm run build && node scripts/subset-fonts.mjs && npm run build`.
-- `src/styles/fonts.css` and `src/data/font-manifest.json` are **generated**.
-  The manifest exists so the preload in `Base.astro` names the identical
-  hashed URL the CSS asks for — name it differently and the font downloads
-  twice.
-- Font files are hashed for the same reason the models are: `public/` URLs are
-  stable across deploys and GitHub Pages serves them with `max-age`.
-- Upstream TTFs (29 MB) and `.venv-fonts/` are gitignored; the script fetches
-  the fonts if they are missing.
+- **Bucket by the font that will actually draw the character, not the head of
+  the stack.** The script opens all 92 built pages and reads
+  `getComputedStyle().fontFamily` on every text node, then reads the whole
+  stack: the bright body stack names Source Sans 3 first, so crediting
+  `fontFamily.split(',')[0]` gives a Latin face every ideograph and leaves the
+  CJK face with none at all. The serif only draws headings, so it carries far
+  fewer ideographs than the sans — that split is the whole saving.
+- **Two-pass per museum**, because the corpus comes from the rendered site and
+  the second build is what picks up the new hashes. Dark:
+  `npm run build && node scripts/subset-fonts.mjs && npm run build`. Bright: the
+  bright build, then `node scripts/subset-fonts.mjs --theme bright` (it reads
+  `dist-bright/` and writes `public/assets/fonts/bright/`), then the bright
+  build again. Re-run whenever visible text changes.
+- **Link the stylesheet, do not bundle it.** Both museums name families like
+  `Noto Serif TC`. With both stylesheets in one build the browser matches the
+  other museum's `@font-face` and fetches a file that is not there. One `<link>`
+  per build makes the collision impossible.
+- **Derive the URL from the output path.** Hardcoding `assets/fonts/` produces a
+  preload pointing at nothing once the bright faces move to a subdirectory.
+- Generated, do not hand-edit: `public/assets/fonts/fonts.css` and
+  `public/assets/fonts/bright/fonts.css`, plus `src/data/font-manifest.json` and
+  `src/data/font-manifest-bright.json`. The manifest exists so the preload in
+  `Base.astro` names the identical hashed URL the CSS asks for — name it
+  differently and the font downloads twice.
+- Font files are hashed because `public/` URLs are stable across deploys and
+  GitHub Pages serves them with `max-age`.
+- Upstream TTFs and `.venv-fonts/` are gitignored; the script fetches the fonts
+  if they are missing.
 - A glyph outside the corpus is not tofu — it falls back to PingFang TC /
   Microsoft JhengHei. Visitors typing into the study notes are fine; only the
   typeface shifts.
@@ -341,78 +429,109 @@ visit, which the About page's privacy claim reads badly against.
    `scripts/make-backdrop-clips.py`. Ten seconds each, looping, a few hundred
    KB. Downloaded once; the backdrop then costs nothing however long a visitor
    stays. A muted `playsinline` `<video>` also autoplays on iOS.
-2. **Cross-faded stills** — the fallback when that file is empty. The same
-   lecture frames, alternating between two `<img>` layers every nine seconds.
+2. **Cross-faded stills** — the fallback while that file is empty, which it is
+   today: the lectures' own frames, alternating between two `<img>` layers
+   every nine seconds.
 
-It used to be a live youtube-nocookie embed. On the deployed site that
-streamed 0.27–0.30 MB/s and never stopped: 7 MB for ten seconds of looking,
-21 MB for a minute. It could not work on a phone at all — iOS will not
-autoplay a cross-origin iframe without a gesture, so the player mounted, sat
-paused, and put a pause glyph over the hall.
+Both paths are gated on Save-Data, 2G-class connections and `motionOn()`.
 
-**When clips are added, the About page must change.** It currently states, in
-both languages, that nothing here is stored, re-cut or re-hosted. That is true
-while `backdrop.json` is empty and false the moment it is not.
+**When clips are added, the About page must be amended again in both languages.**
+Its rights note now discloses single still frames only. Moving footage,
+re-hosted under `public/media/backdrop/`, is outside what it says.
 
 Never verify this by asking whether the element exists. `iframe present` and
-`data-on set` say nothing about playback — that mistake is what shipped a
-paused player to phones. Compare two frames after the reveal has finished, and
-remember that headless Chromium applies desktop autoplay policy whatever the
-`isMobile` flag says.
+`data-on set` say nothing about playback. Compare two frames after the reveal has
+finished, and remember that headless Chromium applies desktop autoplay policy
+whatever the `isMobile` flag says.
 
 ## Card thumbnails
 
-`scripts/pick-posters.py` chooses them; `src/data/posters.json` is its output;
-`LectureCard.astro` reads it. Two rules from the owner: the frame comes from
-the **Taiwan lecture** recording, never the 導讀, and it shows the
-**laureate's** face.
+Two rules from the owner: the frame comes from the **Taiwan lecture** recording,
+never the 導讀, and it shows the **laureate's** face. Both scripts skip guide
+videos for exactly that reason.
 
-Detection alone cannot do the second. Run over these recordings YuNet happily
-returns a face — on the printed banner behind the stage, on a portrait in a
-slide, on an audience member. So each laureate's official portrait is read
-from the nobelprize.org page the catalogue already links to and every
-candidate face is matched against it with SFace. `SAME_PERSON` is 0.363, the
-model's own threshold; loosening it lets through any grey-haired man in a dark
-suit, which at these lectures is most of the third row.
+`src/data/stills.ts` is the single resolver, in order — a cut still
+(`local-posters.json`), then the verified YouTube frame (`video-posters.json`),
+then the uploader's `hqdefault`.
 
-`maxresdefault` is a hard last resort, not a scoring nudge — in this series it
-is usually a designed title card, which is not a 講座截圖, and its large
-centred portrait out-scores every real stage shot.
-
-The pool is only the three frames YouTube samples from inside the recording
-plus the uploader's pick. Storyboards would give far more but are 320×180, and
-the recording itself cannot be reached from this network to cut a frame at an
-arbitrary time — same block as the backdrop clips.
-
-Re-run after changing which video a lecture points at. Models live in
-`.tools/` (gitignored); the script names where to fetch them.
+- `scripts/pick-posters.py` writes two files: `src/data/posters.json` (lecture id
+  → frame suffix, for the card in a grid) and `src/data/video-posters.json`
+  (YouTube id → frame suffix, for every facade on a laureate's page). **Both are
+  needed.** Without the second, a recording carries the laureate's face in the
+  grid and an opening speaker's on its own page. Run it as
+  `.venv-cv/bin/python scripts/pick-posters.py [--report]`.
+- Detection alone cannot find the laureate. Over these recordings YuNet returns
+  faces on the banner behind the stage, in a slide, in the audience. So each
+  laureate's official portrait is read from the nobelprize.org page the catalogue
+  already links to and every candidate face is matched against it with SFace.
+  `SAME_PERSON` is 0.363, the model's own threshold; loosening it lets through
+  any grey-haired man in a dark suit.
+- `maxresdefault` is a hard last resort, not a scoring nudge — in this series it
+  is usually a designed title card, which is not a 講座截圖.
+- Where none of the four frames YouTube samples holds the laureate,
+  `scripts/cut-poster-frames.py` samples the recording itself and writes
+  `public/assets/posters/<youtube id>.webp` plus `src/data/local-posters.json`
+  (20 stills today). **Run it locally** — a CI runner is a datacenter address and
+  YouTube answers it with "sign in to confirm you're not a bot" on every player
+  client. `.github/workflows/poster-frames.yml` is kept as a fallback that does
+  not currently work.
+- Re-run after changing which video a lecture points at.
+- `scripts/facecheck.py` is the shared module both scripts import for the
+  portrait, the detector and the threshold, and it names the models to fetch.
+  They live in `.tools/` (gitignored).
 
 ## The bright museum
 
 The same site in daylight, at `/bright/`. Same routes, same data, same
-components — built a second time with `THEME=bright` and a nested
-`BASE_PATH`, then copied into `dist/bright` by the deploy workflow. The dark
-build is byte-for-byte what it was: nothing about it reads the flag.
+components — built a second time with `THEME=bright` and a nested `BASE_PATH`,
+then copied into `dist/bright` by the deploy workflow.
 
-- `src/styles/bright.css` is nothing but token overrides scoped to
-  `html[data-theme='bright']`. Both builds ship the same stylesheet; only the
-  attribute differs. Add a bright rule there, never a fork of a component.
-- White ground, near-black text, **red** for anything actionable, **gold** for
-  what the museum owns. Category hues stay inside that band — six unrelated
-  colours would fight the palette — and each is dark enough to hold on white.
+- `Base.astro` emits `data-theme` only when `THEME=bright`. The dark build ships
+  the same stylesheet, and with the attribute absent no bright rule matches — so
+  what is guaranteed unchanged is what the dark museum *renders*.
+- Everything in `src/styles/bright.css` is scoped to `html[data-theme='bright']`:
+  the token overrides first, then the component and layout rules the bright ground
+  needs. Add a bright rule there, never a fork of a component.
+- White ground, near-black text. Red carries the marks, the fills and `--accent`;
+  a plain link rests in gold (`--gold-deep`) and turns red on hover. There are no
+  category hues here at all.
 - Gold models: `scripts/normalise-models.mjs` writes a second set to
   `public/assets/models/gold/`. Metalness near 1 with low roughness is what
   makes them read as a statuette; the base colour alone reads as yellow paint.
-- `HallBright.astro` is the one component with no dark counterpart. The room is
-  **drawn** — perspective computed against a single vanishing point and emitted
-  as SVG — because rotated CSS planes fought each other: a ceiling laid back far
-  enough to be seen swung across the wall. CSS 3D is kept only for the curve of
-  the screens, which it does better than anything else.
-- Wall rows translate by `104%` of a panel's own height, not a pixel value. The
-  panels are clamped to the viewport, so a fixed gap opened between rows at
-  every width but one.
-- No embers: they belonged to a vault and read as dirt on marble. Daylight
-  shafts, with dust visible only inside them.
+- `HallBright.astro` and `HallRing.astro` are the two components with no dark
+  counterpart. The room is a **photograph**, and what stands in it is placed in
+  per cent of a plate carrying the picture's own aspect ratio, so a crop moves
+  the picture and its contents together. The eye level is measured at 69.2% of
+  the plate — see `scripts/crop-hall.py`.
+- No embers and no dust: motes are invisible against a hall this bright. The
+  light in this room is the photograph's own.
+
+**The fade band is a fixed copy of the room, not a mask on the page.**
+`mask-image` has no `fixed` attachment, so a mask driven from a scroll handler
+can never keep up with the compositor: the text rises at full opacity and then
+snaps pale. Instead each page renders its room a second time, marked
+`[data-roomtop]`, laid over the page with a static mask. A cover of alpha
+`1 − a` over the page is identical to blending the page toward the room at `a`,
+and it costs nothing per frame. Do not reintroduce a scroll-driven mask.
+
+**Traps in the bright layout that have already cost a rebuild:**
+- A CSS box gap is not the painted gap when the background is a picture with
+  transparent margin baked in. `key-plate.webp` carries 12px of its own margin;
+  halving `row-gap` changes nothing a visitor can see. Measure the artwork rows,
+  not the box.
+- `element.getAnimations()` keeps FINISHED animations. Test
+  `playState === 'running'`, or a stillness check never passes.
+- Individual transform properties resolve `translate → rotate → scale →
+  transform`, so a length written inside `transform` is multiplied by the
+  `scale` property. And `translate` percentages resolve against the element's
+  own size, `inset` percentages against the containing block.
+- Custom properties inherit downward only. A cue computed on a child cannot be
+  read by its parent.
+- Anything that must sit above the fade band needs a z-index above
+  `[data-roomtop]`'s 10.
+- Stop a Playwright check before editing source: an HMR navigation destroys its
+  execution context mid-run.
+- Never write a `pgrep -f` wait loop — it matches itself and never exits.
 
 ## Colour is measured, not eyeballed
 
@@ -424,73 +543,76 @@ Two scripts, both worth running after any palette change:
   It walks every text node on the built pages, resolves the colour actually
   painted and the nearest opaque background behind it, and reports anything
   under AA. Token-level checking cannot see a safe colour applied over a
-  surface it was never measured against, which is how the gold links ended up
-  at 3.2:1.
+  surface it was never measured against, which is how a gold link reaches 3.2:1.
 
-Two traps it took a while to see:
+Three things a sampler cannot do, and they all produce false readings:
 
 - A computed colour comes back as `rgb()` with 0–255 channels, or — once
   `color-mix()` is involved, which every surface here uses — as
   `color(srgb r g b / a)` with 0–1 channels. Reading the second as the first
   makes every surface look black and every reading a false failure.
 - Text over a gradient cannot be sampled this way at all. Skip it and look.
+- Text under a cover is sampled THROUGH the cover. `[data-roomtop]` is in
+  `check-glass.mjs`'s exclusion list for that reason; anything else laid over
+  the page needs the same treatment, or the walker reports 1.11:1 on type that
+  actually reads at 7:1.
 
 **Never fix a theme problem by out-specifying a component.** Astro's scoped
-selectors carry a `[data-astro-cid-…]` on every part, so `.study[cid]
-button[cid]` beats `html[data-theme='bright'] .study button`. When a component
-hardcodes a colour, give it a token — `--on-accent`, `--kind-guide` — and
-restate that token in the theme. The dark values are unchanged, so the dark
-site renders exactly as before.
-
-The dark theme has ~42 text styles below AA, nearly all muted greys on the
-warm dark ground. Left alone deliberately: the owner asked for that site to
-stay as it is.
+selectors carry a `[data-astro-cid-…]` on every part, so a component's own
+`.cards[cid] a[cid]` at (0,3,1) BEATS `html[data-theme='bright'] .cards a` at
+(0,2,2) — and it fails silently, so a rule can sit there unread for its whole
+life. When a component hardcodes a colour, give it a token — `--on-accent`,
+`--kind-guide` — and restate that token in the theme. Where a token cannot
+carry it, put the component's own class in the theme selector to win on
+specificity, not to scope.
 
 ## Smooth statues
 
-The pieces are smooth-shaded, in `scripts/normalise-models.mjs`. Order matters:
+`scripts/normalise-models.mjs` runs, in order: `dedup, prune`, then
+`smoothNormals` on named parts only (`SMOOTH_PARTS = { peace: ['dove'] }`, the
+owner's exception), then prune, textureCompress and quantize.
 
-1. `dedup, prune`
-2. `smoothNormals()` — per **corner**, not per vertex, and crease-aware at 60°:
+Steps that no longer run for any shipped model — full `smoothNormals()`,
+`weld()`, and the `SUBDIVIDE` pass — are gated on `!ON_BASE.has(cat)`, and
+`ON_BASE` now holds all six: the owner's sculptures arrive smooth, welded and
+dense. Keep the code and keep these rules for the day a borrowed low-poly
+stand-in comes back:
+
+1. `smoothNormals()` is per **corner**, not per vertex, and crease-aware at 60°:
    a corner averages only the faces meeting at its position whose own normal
    lies within the threshold. Average everything and the sharp edges soften
-   too — the flask's rim rounds off, the balance's beam melts into its pans.
-3. `weld()` — worth doing only now. Before smoothing every corner carried its
-   own face normal and nothing could merge; afterwards a sphere collapses from
-   three vertices a triangle to one a lattice point, and most files shrank.
-4. one round of Loop subdivision, for `SUBDIVIDE` only, then smooth and weld
-   again. Smooth normals fix the shading but not the outline: an eight-facet
-   flask has an eight-sided silhouette however it is lit.
-5. `quantize()` — **and the extension must be registered on the `NodeIO`**.
-   gltf-transform silently drops an unregistered extension on write, which
-   leaves quantised accessors with no `KHR_mesh_quantization` declaration:
-   invalid glTF that happens to load in three.js. Check `extensionsRequired`
-   in the output before trusting it.
+   too — a flask's rim rounds off, a balance's beam melts into its pans.
+2. `weld()` is worth doing only after smoothing. Before it every corner carries
+   its own face normal and nothing can merge.
+3. Loop subdivision is for `SUBDIVIDE` only, then smooth and weld again. Smooth
+   normals fix the shading but not the outline: an eight-facet flask has an
+   eight-sided silhouette however it is lit.
+4. The dove is deliberately NOT subdivided. Its mesh carries split vertices
+   along the wings and tail, and Loop subdivision pulls those apart into visible
+   cracks — the wing detaches from the body.
 
-The dove is deliberately **not** subdivided. Its mesh carries split vertices
-along the wings and tail, and Loop subdivision pulls those apart into visible
-cracks — the wing detaches from the body. Smooth normals alone carry it.
-
-The atom and the balance are generated, so they are simply built at a
-resolution that needs no help; raise the segment counts in `build-models.mjs`
-rather than subdividing them.
+`quantize()` — **and the extension must be registered on the `NodeIO`**.
+gltf-transform silently drops an unregistered extension on write, which leaves
+quantised accessors with no `KHR_mesh_quantization` declaration: invalid glTF
+that happens to load in three.js. Check `extensionsRequired` in the output
+before trusting it.
 
 Re-run `scripts/render-posters.mjs` after any geometry change, or the poster
 no longer matches the model it stands in for.
-
 
 ## The bright palette's one known exception
 
 `--accent-block` is TED's #e62b1e because the owner asked for the brand red on
 filled blocks. White on it measures **4.44:1** against AA's 4.5 — a 1.3%
 shortfall, and unfixable while the fill stays that red, since white is already
-the lightest ink available. Two small labels are affected: the note panel's
-copy button and the browse page's filter chips.
+the lightest ink available. What still puts white on it: the lecture card's
+badge, the video card's kind badge, the video facade's label, and the study
+desk's picked tags.
 
-Text red is the darkened `--red-ink` (5.72:1) and passes everywhere. Do not
-"fix" the block red by darkening it — that was asked for and reverted once.
-If strict AA is wanted later, the lever is the label, not the colour: at
-18.66px bold the bar drops to 3:1.
+Text red is the darkened `--red-ink` (5.72:1) and passes everywhere. **Do not
+"fix" the block red by darkening it — the owner has ruled on that.** If strict
+AA is wanted later, the lever is the label, not the colour: at 18.66px bold the
+bar drops to 3:1.
 
 ## Type on paper
 
@@ -506,12 +628,14 @@ at a light weight. Reverse the ground and both corrections invert: the same
 weight reads thin, the same tracking reads loose enough that words stop
 holding together.
 
-- Cormorant Garamond goes to **600** everywhere on paper. It is a display
-  Garamond — very high stroke contrast, small x-height — and under about 40px
-  its hairlines disappear on white. Backlit they held.
+- Headings and the title-and-name set go to **600** on paper, because Source
+  Sans carries less colour than the serif did at the same number. (Cormorant is
+  not in the bright museum at all — a display Garamond's hairlines disappear on
+  white under about 40px, which is why it was replaced here.)
 - Uppercase Latin labels keep their tracking; that is correct typography. What
-  is cut is Chinese that inherited a Latin small-caps measure — the eyebrows
-  at 0.16em, the hall hints at 0.18em. CJK is already set on an even body.
+  is pulled back is Chinese that inherited a Latin small-caps measure: Latin
+  eyebrows 0.22em → 0.13em, `:lang(zh)` eyebrows 0.16em → 0.08em, hall hints
+  0.18em → 0.07em. CJK is already set on an even body.
 - Leading tightens slightly (1.75 → 1.72), because the higher contrast lets the
   eye find the next line with less help.
 
@@ -519,11 +643,17 @@ All of it is scoped to `html[data-theme='bright']`; the dark museum's type is
 untouched, and the audit on the dark origin should still report `.lec__who` at
 500/0.03em and `.eyebrow` at 0.16em.
 
+**Undimmed backgrounds mean type carries its own light.** The four section
+backgrounds are shown at full strength with only a gradient at the foot, so
+every title, gold sub-line and note over them needs its own layered white edge
+(`text-shadow`, four stops). A heading that looked fine over a washed background
+is eaten by an unwashed one.
+
 ## Two museums, two sets of faces
 
 `scripts/subset-fonts.mjs [--theme bright]` runs once per museum and nothing is
 shared: separate font list, separate output directory, separate stylesheet,
-separate manifest.
+separate manifest, so changing one museum's type cannot touch the other's.
 
 - dark: Cormorant Garamond + Noto Sans/Serif TC → `public/assets/fonts/`
 - bright: Source Serif 4 + Source Sans 3 + Noto Sans/Serif TC →
@@ -532,26 +662,11 @@ separate manifest.
 Source Serif and Source Sans are chosen on purpose: Noto Serif TC **is** Source
 Han Serif TC and Noto Sans TC **is** Source Han Sans TC, so the Source Latin
 faces are their siblings by design and share their proportions and colour.
-Cormorant is a display Garamond whose hairlines vanish on white at text size.
-
-Three traps, all of which bit:
-
-- **Bucket by the font that will draw the character, not the head of the
-  stack.** The bright body stack names Source Sans 3 first, so reading only
-  `fontFamily.split(',')[0]` credited 964 ideographs to a face that has none and
-  left the CJK face with nothing at all.
-- **Link the stylesheet, do not bundle it.** Both museums name families like
-  `Noto Serif TC`. With both stylesheets in one build the browser matched the
-  other museum's `@font-face` and fetched a file that was not there. One
-  `<link>` per build makes the collision impossible.
-- **Derive the URL from the output path.** Hardcoding `assets/fonts/` produced
-  a preload pointing at nothing once the bright faces moved to a subdirectory.
 
 `scripts/audit-type.mjs` reports what each page renders. Run the conflict check
 against it when a label looks different between a parent and child page — the
 same text set in two faces is a defect, but a filter chip set in sans while the
 heading is serif is not: those are different roles.
-
 
 ## The bright museum leads with its sans
 
@@ -563,12 +678,9 @@ editorial voice along.
 
 Do this **at the token**, never by out-specifying components. `--font-display`
 and `--font-han-serif` are both the sans in the bright theme. A per-selector
-list was tried first and lost quietly: Astro scopes every rule with a
-`[data-astro-cid-…]`, so `.study[cid] h2[cid]` beats any reasonable theme
-selector, and the failure shows up as one heading in the wrong face on one
-page.
+list loses quietly to Astro's `[data-astro-cid-…]` scoping, and the failure
+shows up as one heading in the wrong face on one page.
 
 Re-run `scripts/subset-fonts.mjs --theme bright` after moving text between
-faces. Headings moving from the serif to the sans moves their glyphs too:
-Noto Serif TC dropped from 350 ideographs to 270 and Noto Sans TC gained them.
-Skip it and the headings lose coverage.
+faces: headings moving from the serif to the sans moves their glyphs too. Skip
+it and the headings lose coverage.

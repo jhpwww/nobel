@@ -7,6 +7,7 @@ interviews recorded alongside them.
 Audience: high-school students, undergraduates, and the general public. Not specialists.
 
 **Live site:** https://jhpwww.github.io/taiwan-nobel-museum/
+**In daylight:** https://jhpwww.github.io/taiwan-nobel-museum/bright/
 
 ---
 
@@ -14,40 +15,58 @@ Audience: high-school students, undergraduates, and the general public. Not spec
 
 | | |
 |---|---|
-| 31 lectures | Nov 2025 – May 2026, 31 Nobel laureates, 12 host institutions |
+| 31 lectures | Given in 32 sittings — Südhof's was delivered twice. Nov 2025 – May 2026, 31 Nobel laureates, 12 host institutions |
 | 導讀影片 | 6 published so far; the schema carries all 31 as they are released |
-| 專訪 | 25 interviews — 9 by 天下雜誌 CommonWealth Magazine, 16 by 風傳媒 The Storm Media |
+| 專訪 | 25 — 天下雜誌 CommonWealth Magazine and 風傳媒 The Storm Media |
 | Special events | Launch ceremony, two 北一女中 outreach lectures, a laureate panel, the 對話諾貝爾特展 |
+| 63 videos | what `/lectures/` lists: 導讀 6 · 講座 32 · 專訪 25 |
 
-Prize categories: Physics 9 · Chemistry 8 · Medicine 7 · Economics 5 · Peace 2 · Literature 0.
+Prize categories, in museum order: Physics 9 · Chemistry 8 · Medicine 7 · Peace 2 ·
+Economics 5 · Literature 0. Those are lecture counts; each room prints **sittings**, so
+Medicine shows 8.
 
 The great hall shows all six prize categories. Literature has a plinth like the others but
-stands at the far right, since this series brought no Literature laureate. **諾貝爾與他的獎** —
-the room about Alfred Nobel and how the prizes are decided — is not a prize category, so it sits
-below the plinths as its own marked entrance, with the medal as its emblem.
+stands at the far right, since this series brought no Literature laureate — its room is built
+and says so rather than showing a bare zero. **諾貝爾與諾貝爾獎** — the room about Alfred Nobel
+and how the prizes are decided — is not a prize category, so it sits below the plinths as its
+own marked entrance (關於這座獎 / About the prize), with the medal as its emblem.
 
-Every gallery opens with more than video: what the prize recognises, a short history, five counted
-statistics, and a strip of links into the Nobel Foundation's own site (the category hub, the full
-searchable laureate list, the facts page, and the education resources). The strip shows titles
-only, as solid filled buttons in a white-tinted version of the category colour; each description appears in a popup on hover or keyboard focus, and
-inline on touch devices, where hover never fires. The statistics come from the official
-Nobel API via `scripts/fetch-prize-facts.py` and are stamped with the date they were fetched —
-re-run it once a year after the October announcements.
+Every gallery opens with more than video: what the prize recognises, a short history, five
+counted statistics, and the 延伸探索 rail down the right — five official Nobel pages per
+category plus two series links, each an outbound button with its description beside it in
+plain text. The statistics come from the official Nobel API via
+`scripts/fetch-prize-facts.py` and are stamped with the date they were fetched — re-run it
+once a year after the October announcements.
 
-## Three hall styles
+## Two museums
 
-The entrance is being evaluated in three variants. Everything below the hall — galleries,
-lecture pages, browse, about — is shared, so all three are complete, working sites.
+The site is built twice from one codebase and both are published.
 
-| Route | Style | Technique | Extra JS |
+| | |
+|---|---|
+| **dark** | the original museum, at `/` |
+| **bright** | the same routes, same data, same components in daylight, at `/bright/` — white ground, red for anything actionable, gold for what the museum owns, and one hall of its own (`HallBright.astro`) |
+
+The bright build is `THEME=bright` with a nested `BASE_PATH`; `Base.astro` emits
+`data-theme="bright"` only then, and `src/styles/bright.css` is scoped entirely to that
+attribute. **The dark museum renders exactly as it always did** — that is a project
+constraint, not a side effect.
+
+## Four hall styles
+
+The entrance exists in four variants. Everything below the hall — galleries, lecture pages,
+browse, about — is shared, so all four are complete, working sites.
+
+| Route | Style | Technique | JS on that page |
 |---|---|---|---|
-| `/` | 平面 Flat | SVG sculptures over the ambient loop, pointer parallax | none |
-| `/room/` | 展廳 Room | **CSS 3D**: real perspective, receding colonnade, curved wall of lecture stills, SVG sculptures extruded into solid depth, floor reflections | none |
+| `/` | 平面 Flat | SVG sculptures over the ambient loop, pointer parallax, wall of lecture stills | ~3.5 KB gz |
+| `/room/` | 展廳 Room | **CSS 3D**: real perspective, receding colonnade, curved wall of stills, SVG sculptures extruded into solid depth, floor reflections | ~3.2 KB gz |
 | `/rotunda/` | 圓廳 Rotunda | **WebGL**: coffered dome over an oculus, fluted colonnade, six glossy bronze models, procedural environment map, floor reflections, bloom, contact shadows | ~136 KB gz (three.js) |
+| `/models/` | 藏品 Objects | real glTF, one `<model-viewer>` per piece rather than one shared scene, so a piece that fails to load costs only itself | ~3.3 KB gz + model-viewer (~287 KB gz) on demand |
 
-All three share the same choreography: a **dolly-in on arrival**, and a **walk-in
-transition** when a gallery is chosen — the room pushes toward the plinth and washes
-into that gallery's own colour before the page changes.
+The room and rotunda halls **dolly in on arrival**; the flat, room and rotunda halls share the
+**walk-in transition** when a gallery is chosen, pushing toward the plinth and washing into
+that gallery's own colour before the page changes.
 
 **Motion is a visitor preference, not just an OS one.** `prefers-reduced-motion` is honoured by
 default, but on Windows turning off "Animation effects" — which people do for performance — sets
@@ -56,17 +75,17 @@ motion is off, the choice is stored per browser, and `data-motion` on `<html>` i
 first paint. Everything, CSS and JS alike, asks `motionOn()` in `src/scripts/motion.ts`; nothing
 gates on the media query alone.
 
-**The backdrop is the lectures themselves.** `LectureScreen.astro` runs actual lecture footage
-behind the flat and room halls — the same `youtube-nocookie` embed used everywhere else, muted,
-chrome removed, heavily graded, cycling to the next lecture every 42 s. Nothing is downloaded or
-re-hosted. It is gated hard: never below 48rem, never under Save-Data, never when motion is off,
-and only after the page has painted. The WebGL rotunda cannot composite an iframe into a canvas,
-so its wall cycles the three real frames YouTube publishes per video instead.
+**The backdrop is the lectures themselves.** `LectureScreen.astro` runs behind the flat, room
+and objects halls (the rotunda has its own atmosphere in the scene). It has two paths and takes
+the first available: short self-hosted cuts listed in `src/data/backdrop.json`, or — while that
+file is empty, as it is today — the lectures' own published frames cross-fading between two
+image layers every nine seconds. No live embed: one streamed 0.27–0.30 MB/s and never stopped.
+Both paths are gated on Save-Data, on 2G-class connections and on the motion switch, and start
+only after load plus a pause.
 
-Behind every hall also runs `public/media/ambient.webm` — a 12-second seamless loop of
-drifting light and embers, generated by `scripts/make-ambient.py` (106 KB VP9). It is
-replaced by its 6 KB poster under reduced-motion or Save-Data, where the video never
-downloads.
+Behind the flat, room and objects halls also runs `public/media/ambient.webm` — a 12-second
+seamless loop of drifting light and embers, generated by `scripts/make-ambient.py`. It is
+replaced by its poster under reduced-motion or Save-Data, where the video never downloads.
 
 `/rotunda/` never loads three.js on small screens, with Save-Data on, or without WebGL2 — the
 markup underneath the canvas is the complete hall, so it degrades to a working page rather than
@@ -80,16 +99,19 @@ frame, and stopping. Camera moves are driven by wall clock rather than accumulat
 so a slow renderer can never strand a transition mid-flight, and clicking a gallery always
 navigates within 1.8 s whatever the GPU is doing.
 
-Pick one and delete `StyleSwitch.astro` plus the two spare routes.
-
 ## Stack
 
 Astro 5 + TypeScript, no UI framework, no runtime database, no CMS, no login.
 Plain CSS with custom properties. Deployed to GitHub Pages by GitHub Actions.
 
-The site ships **zero external JavaScript files** — the two small scripts (pointer parallax,
-video facade) are inlined. Videos are embedded from `youtube-nocookie.com` and load nothing
-until clicked.
+JavaScript is kept small and local: the shared modules in `src/scripts/` (env, motion, plinth,
+roomfade, rotunda, study, walkin) come to a few KB gzipped on an ordinary page. The two heavy
+payloads are opt-in by route — the rotunda's three.js bundle, behind its WebGL2/Save-Data gate,
+and the vendored model-viewer, imported on demand by the objects hall. Videos are embedded from
+`youtube-nocookie.com` and load nothing until clicked.
+
+Fonts are self-hosted and subset per museum, so no third party sits in the request path of a
+visit.
 
 ## Running it
 
@@ -97,33 +119,53 @@ until clicked.
 npm install
 npm run dev        # http://localhost:4321/taiwan-nobel-museum/
 npm run build      # -> dist/
-npm run check      # astro check + tsc
+npm run check      # astro check
+
+# the second museum — there is no npm script for it; CI does this inline
+THEME=bright BASE_PATH=/taiwan-nobel-museum/bright npx astro build --outDir dist-bright
 ```
+
+A build produces 92 HTML pages per museum, 184 in all.
 
 Node 20+ required. **On WSL, keep this repo in the Linux filesystem** (`~/…`), not under
 `/mnt/c/…` — npm on the Windows mount is roughly 50× slower and will appear to hang.
 
 ## Content backend
 
-The published Google Sheet is the source of truth for lecture data.
+`src/data/lectures.json` is the source of truth today. It is **generated** — never hand-edit
+it — from verified facts plus editorial copy:
 
 ```
-Google Sheet ──(publish tab as CSV)──> SHEET_CSV_URL ──> scripts/sync-sheet.mjs ──> src/data/lectures.json ──> build
+data/catalog.json (scripts/seed-catalog.py)  ┐
+scripts/copy-zh-en.py                        ├─ npm run content ─> src/data/lectures.json ─> build
+scripts/copy-galleries.py + prize-facts.json ┘
 ```
 
-**To add or edit a lecture:** edit the Sheet, then press **Run workflow** on the repository's
-Actions tab. There is no schedule — nothing publishes until someone decides to publish it.
+**To add or edit a lecture:** edit `scripts/copy-zh-en.py` (copy) or `data/catalog.json` via
+`scripts/seed-catalog.py` (facts), run `npm run content`, and commit. Pushing to `main` deploys.
+There is no schedule — nothing publishes until someone decides to publish it.
 
+A published Google Sheet is wired up as the eventual backend but **has never been switched on**:
+
+```
+Google Sheet ──(publish tab as CSV)──> SHEET_CSV_URL ──> scripts/sync-sheet.mjs ──> src/data/lectures.json
+```
+
+- Set `SHEET_CSV_URL` under **Settings → Secrets and variables → Actions → Variables**. While
+  it is unset, `sync-sheet.mjs` exits without writing and the build uses the committed
+  catalogue, so a fresh clone always works.
+- `scripts/sync-sheet.mjs` validates every row and **fails the build** on a malformed field
+  rather than shipping partial content. A row with `status` set to anything other than
+  `published` is skipped.
+- **Before turning the Sheet on, close one gap:** the round-trip drops `links.nobel_lecture`.
+  Neither `export-sheet-csv.py`'s `COLUMNS` nor `sync-sheet.mjs`'s `links` object carries it,
+  so the first real sync would strip a required field that two components render. Add it to
+  both, or have `sync-sheet.mjs` carry it forward from `prev` the way it already does for
+  `cw_hub`.
 - `data/prize-facts.json` holds the per-category statistics; regenerate with
   `python3 scripts/fetch-prize-facts.py`.
-- `data/sheet-seed.csv` is the CSV to import when first creating the Sheet.
-- `scripts/sync-sheet.mjs` validates every row and **fails the build** on a malformed field
-  rather than shipping partial content.
-- A row with `status` set to anything other than `published` is skipped.
-- Never hand-edit `src/data/lectures.json`. Fix the Sheet and re-run.
-
-Set `SHEET_CSV_URL` under **Settings → Secrets and variables → Actions → Variables**. Until
-it is set, the build uses the committed catalogue, so a fresh clone always works.
+- `data/sheet-seed.csv` is the CSV to import when first creating the Sheet;
+  regenerate with `npm run sheet`.
 
 > Publish only a dedicated tab holding publishable columns. The internal production sheet
 > carries staff names, phone numbers and email addresses; those must never reach the site.
@@ -132,22 +174,33 @@ it is set, the build uses the committed catalogue, so a fresh clone always works
 
 Everything in `data/catalog.json` is traceable. See the header of `scripts/seed-catalog.py`.
 
-- Schedule — the IPF 導讀拍攝進度 programme sheet, cross-checked against YouTube video titles
-- Lecture videos — the International Peace Foundation channel, matched by title, not by list order
+- Schedule — the IPF 導讀拍攝進度 programme sheet
+- Lecture videos — the International Peace Foundation channel
 - 導讀影片 and the NTU uploads — 臺大演講網
 - Per-lecture NTU material — https://cge.ntu.edu.tw/cl_n_203079.html
-- Nobel citations — nobelprize.org, all 31 URLs verified
+- Nobel citations — nobelprize.org, two per lecture: `nobel_facts` (the prize page) and
+  `nobel_lecture` (the Stockholm lecture page)
 
-Two dates that the programme book left ambiguous were settled from the video titles:
-**Wüthrich 2026-04-07** and **Semenza 2026-04-14**.
+## Representative images
+
+Each lecture and each video shows a frame of the **laureate**, taken from the **Taiwan lecture**
+recording. 導讀 films are left with whatever frame YouTube gives them.
+
+`scripts/pick-posters.py` scores the four frames YouTube publishes per video, matching every
+face against the laureate's official portrait with SFace at the model's own threshold — face
+detection alone finds the banner behind the stage, a portrait in a slide, someone in the third
+row. Where none of the four holds the laureate, `scripts/cut-poster-frames.py` goes into the
+recording itself and writes a single still under `public/assets/posters/` (20 today).
+`src/data/stills.ts` resolves the three sources in order.
 
 ## The learning area
 
 `/learn/` is a **museum** feature, not a course site: how to get something out of a lecture,
 a place to keep notes, and the two-version comparison. Every lecture page carries a notes panel
 (save the lecture, mark each version watched, write 摘要 / 反思 / 延伸問題, draft a question) and
-`/study/` aggregates it with export, backup and restore. No account and no server — it all lives
-in `localStorage`, and the page says so.
+the record section at `/learn/#record` aggregates it with export, backup and restore. No account
+and no server — it all lives in `localStorage`, and the page says so. (`/study/` is a redirect
+stub kept so older links still arrive.)
 
 One NTU course, 走進諾貝爾 (LibEdu1140), is built around this collection. It appears as a
 subordinate aside at the foot of `/learn/` and as short parenthetical notes in the tools. **Keep
@@ -156,9 +209,9 @@ feel they have wandered into someone's classroom.
 
 ## Browsing
 
-`/lectures/` lists every video the museum holds — 62 of them — filterable by three independent
-groups: **影片類別** (導讀 6 · 講座 31 · 專訪 25), **獎項類別**, and **主題**. Filter state lives
-in the URL, so a filtered view can be shared and survives a reload.
+`/lectures/` lists every video the museum holds — 63 of them — with a search box and three
+independent filter groups: **影片類別** (導讀 6 · 講座 32 · 專訪 25), **獎項類別**, and **主題**.
+Filter state lives in the URL, so a filtered view can be shared and survives a reload.
 
 ## Checking links
 
@@ -166,17 +219,18 @@ in the URL, so a filtered view can be shared and survives a reload.
 python3 scripts/check-links.py dist
 ```
 
-Audits four kinds of reference, because each fails differently:
+Audits four kinds of reference, because each fails differently, and exits non-zero if anything
+needs attention:
 
 | | |
 |---|---|
-| internal | resolved against the build — the target file must exist |
-| assets | img/script/link/video sources, including `data-src` and posters |
-| youtube | the ids actually embedded — these live in `data-yt` and iframe srcs, **not** in `href`, so an href-only sweep skips the most important links on the site |
+| internal | resolved against the build — the target file must exist. Stylesheet `href`s land here too |
+| assets | `src`, `data-src` and `poster` attributes: images, scripts, the ambient video, the poster frames |
+| youtube | the ids actually embedded — these live in `data-yt` and iframe srcs, **not** in `href` |
 | external | a real GET, following redirects, printing the destination title so a wrong-but-200 target is visible |
 
-Current state: 1004 internal, 10 local assets, 68 video ids, 165 external — all good, and all 68
-videos separately confirmed embeddable (public is not the same as embeddable).
+Note what it does **not** cover: a video being public is not the same as it being embeddable.
+The script calls oEmbed only, so the embed endpoint is a manual check for every new id.
 
 ## Editorial copy
 
@@ -192,7 +246,15 @@ The 導讀 narration scripts were used as background reference only. They are no
 
 ## Rights
 
-Nothing is downloaded, re-hosted, re-cut or proxied. Every video is embedded from YouTube and
-remains the copyright of its original publisher. Nobel Foundation text and images are linked,
-never copied. "Nobel Prize" and the medal are trademarks of the Nobel Foundation; this is an
-independent educational project, not affiliated with or endorsed by it.
+Playback is always YouTube's: every video is embedded and remains the copyright of its original
+publisher. Nothing here re-cuts, re-hosts or redistributes a recording. The one exception is the
+session stills — where none of the frames YouTube publishes holds the laureate, a single frame
+is taken from the recording, used only to identify that session, its copyright still its
+publisher's. The About page says so in both languages, and anything added to the site must stay
+inside what that note describes.
+
+Nobel Foundation text and images are linked, never copied. "Nobel Prize" and the medal are
+trademarks of the Nobel Foundation; this is an independent educational project, not affiliated
+with or endorsed by it.
+
+The six award sculptures are the copyright of 吳俊輝 (Jiun-Huei Proty Wu).
