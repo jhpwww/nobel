@@ -36,8 +36,7 @@ import { bright } from '../theme';
   {/* The head stands outside the box that fades, exactly as the emblem beside
       it does and for the same reason — see 'what a room is called does not
       dissolve' in bright.css. */}
-  <div class:list={['wrap', 'browse', 'browse--top', bright && 'room-head',
-                    bright && 'room-sheet', bright && 'room-sheet--head']}>
+  <div class:list={['wrap', 'browse', 'browse--top', bright && 'room-head']}>
     {/* the emblem struck for this room, on the rail every room that is not a
         prize room hangs one from — see PageEmblem and .hall-head */}
     <header class:list={['browse__id', bright && 'hall-head']}>

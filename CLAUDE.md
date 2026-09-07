@@ -250,23 +250,24 @@ src/
   phone must read exactly 39, against 152 untrimmed.
 
 **CSS**
-- Three ways type is read over a room, and the length of the read chooses between them.
-  bright.css declares all three at its head. For a caption, a label or one sentence: `--ink-edge`
-  (and `--ink-edge-h` for a heading), the four-layer white text-shadow a line carries when it
-  stands on the photograph. For a framed block: `--pane` / `--pane-blur`, the 62% white and 9px
-  blur the index of films puts under every card. For a room that is MOSTLY reading — the
-  introduction room and the colophon — neither: the column stands on `room-sheet`, a plain
-  translucent rectangle of the column's own width, and the edge comes off everything inside it.
-  At two thousand words an edge per line is a haze over the whole page, which is the owner's
-  judgement and the reason the sheet exists. Never two of the three on one element: a ground is
-  a ground, and type on one with an edge as well is type printed twice. `--surface` is 3.5%
-  BLACK — a dark-museum tint that over a photograph darkens a block instead of lifting it.
-  The other two logo rooms take the rectangle for their HEAD only (`room-sheet--head`, which
-  fades out inside the sentence's own bottom margin rather than ruling a line across the page);
-  their cards and keys go on standing on the room. On a phone the rectangle's gutter moves
-  INSIDE it — the column there is very nearly the screen, and a rectangle that bleeds past it
-  leaves a four-pixel rag of photograph down each side and reads as the page having turned
-  white.
+- Two ways type is read over a room, and only two — the learning area's, which is the owner's
+  model for all four rooms that stand on a photograph. A BLOCK of text stands on a frame of its
+  own: `--pane` / `--pane-blur`, the 62% white and 9px blur the index of films puts under every
+  card, with the ink hairline and a radius. Type BETWEEN those frames — a heading, a note, one
+  sentence — carries `--ink-edge` (`--ink-edge-h` at heading scale), a white shadow tight to the
+  letterform. Never both on one element: a frame IS the ground, and type on one with an edge as
+  well is type printed twice.
+  **The photograph itself is never washed.** No page-wide white, no veil, no tint over the room —
+  the only thing that fades it is its own gradient at the foot. A sheet the width of the column
+  was tried and rejected: what is under a block belongs to the block, and what is between them
+  is the room at its own strength.
+  The edge is a SHADOW, not a fog. It reached 20px once and small gold and small grey did not
+  read as lifted off the marble, they read as veiled by it — 白霧 where 白影 was wanted. The two
+  outer layers are half what they were.
+  Inside a frame the secondary inks take the darkened steps (`--muted: #38332e`,
+  `--muted-dim: #443e38`) the half sheet gives them; `check-glass` caught a date line at 4.36:1
+  on a phone without them. `--surface` is 3.5% BLACK — a dark-museum tint that over a photograph
+  darkens a block instead of lifting it.
 - A room's head — emblem, title, the three words it is read by, the sentence under them — stands
   in a box of its own OUTSIDE the box marked `[data-fade]`, and wears `room-head`. `[data-fade]`
   is `isolation: isolate`, and an isolated ancestor caps every z-index under it, so a title

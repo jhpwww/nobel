@@ -261,7 +261,7 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
       The prize rooms keep theirs where it is: their head is a hero inside a
       band of photograph, not a title standing on the room. */}
   {isIntro && (
-    <div class:list={['wrap', 'np', 'np--top', bright && 'room-head', bright && 'room-sheet']}>
+    <div class:list={['wrap', 'np', 'np--top', bright && 'room-head']}>
       <header class="hall-head" data-cat={cat}>
         <h1 class="gr__title np__title">{introA}<span class="conj">{introConj}</span>{introB}</h1>
         {/* 關於這座獎 is out of the bright museum and hidden rather than
@@ -378,7 +378,7 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
       sentence it comes from, the six doors it opens, what it has added up to,
       and how one is decided. */}
   {isIntro && (
-    <div class:list={['wrap', 'np', 'np--body', bright && 'room-sheet']}>
+    <div class="wrap np np--body">
       {/* the sentence the whole thing rests on */}
       <figure class="np__will">
         <blockquote>
@@ -1068,16 +1068,59 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
   .empty__t { font-family: var(--font-han-serif); font-size: var(--step-1); color: var(--cream); }
   .empty__b { color: var(--muted); line-height: 1.85; }
 
-  /* ---------- read over the room (the introduction room only) ----------
-     This is the one page built out of a prize room that carries no sheet of
-     the window's width — it is one of the four rooms the bar opens, and none
-     of those has one. It is also the longest read in the museum, and a white
-     edge under every line of it came out as a haze over the whole page. So
-     the room's own column stands on a translucent rectangle instead: see 'a
-     room that is mostly reading stands its text on a sheet' in bright.css,
-     which takes the edge and the title's halo off everything inside it. The
-     figure panes keep their own glass; on the sheet they read as blocks
-     rather than as a second haze. */
+  /* ---------- read over the room ----------
+     The learning area's own answer, at the owner's word: a block of text
+     stands on a frame of its own — 62% white and a 9px blur, which is the
+     material the index of films puts under every card — and the headings
+     BETWEEN those frames carry the museum's white edge instead. Nothing is
+     laid over the photograph itself: what is under a block belongs to the
+     block, and what is between them is the room, at its own strength.
+
+     The will, the prose and the calendar are the three text areas here. The
+     six doors are doors and the five figures already have a plate each; the
+     notes and the small print are single lines standing between blocks, so
+     they take the edge with the headings.
+
+     Written here rather than in bright.css because Astro scopes every
+     compound, so this page's own rules would out-specify a theme rule. */
+  :global(html[data-theme='bright']) :is(.np__will, .np__prose, .np__steps) {
+    /* Two thirds of white is two thirds: the darkest thing the room puts
+       under a block is the shadow under the colonnade, and the secondary inks
+       take the darkened steps a half sheet gives them — measured, at the
+       owner's word, by scripts/check-glass.mjs, which caught a date line at
+       4.36:1 on a phone before this. */
+    --muted: #38332e;
+    --muted-dim: #443e38;
+    background: var(--pane);
+    -webkit-backdrop-filter: var(--pane-blur);
+    backdrop-filter: var(--pane-blur);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: clamp(1.1rem, 3vw, 1.6rem) clamp(1.1rem, 3vw, 1.5rem);
+  }
+  /* the quotation keeps the gold rule down its left edge; it is now the
+     frame's own edge rather than a bar standing in the room */
+  :global(html[data-theme='bright']) .np__will {
+    border-inline-start: 3px solid var(--gold-orn, #b8862a);
+    padding-inline-start: clamp(1.1rem, 3vw, 1.5rem);
+  }
+  /* the calendar rules its own rows; inside a frame the first and last of
+     them would double the frame's own edge */
+  :global(html[data-theme='bright']) .np__steps li:first-child { border-block-start: 0; padding-block-start: 0; }
+  :global(html[data-theme='bright']) .np__steps li:last-child { border-block-end: 0; padding-block-end: 0; }
+  /* the five figures take the same material as every other block */
+  :global(html[data-theme='bright']) .np__stats div {
+    background: var(--pane);
+    -webkit-backdrop-filter: var(--pane-blur);
+    backdrop-filter: var(--pane-blur);
+  }
+  :global(html[data-theme='bright']) .np__h {
+    text-shadow: var(--ink-edge-h);
+  }
+  :global(html[data-theme='bright'])
+  :is(.np__note, .np__asof, .np__six-n, .np__six-en, .np__six-m) {
+    text-shadow: var(--ink-edge);
+  }
 </style>
 
 <script>

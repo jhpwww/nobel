@@ -30,7 +30,7 @@ const hostList = Object.entries(hosts);
       The head is in a box of its own, outside the box that fades, so that it
       stands where the medal stands — see 'what a room is called does not
       dissolve' in bright.css. */}
-  <div class:list={['wrap-narrow', 'about', 'about--top', bright && 'room-head', bright && 'room-sheet']}>
+  <div class:list={['wrap-narrow', 'about', 'about--top', bright && 'room-head']}>
     <header class="abt__hero hall-head">
       {/* Three lines, in the page's own order: what this room is, then whose
           it is, then what it is part of. Both lines under the name are gold,
@@ -51,7 +51,7 @@ const hostList = Object.entries(hosts);
       <p class="visually-hidden">{t('about.medalAlt')}</p>
     </header>
   </div>
-  <div class:list={['wrap-narrow', 'about', 'about--body', bright && 'room-sheet']} data-fade>
+  <div class="wrap-narrow about about--body" data-fade>
     <span id="about-body" class="gr__anchor"></span>
     {lang === 'zh' ? (
       <div class="prose stack" style="--gap:1.2rem">
@@ -61,56 +61,62 @@ const hostList = Object.entries(hosts);
         </span></p>
 
         <h2>諾貝爾獎在臺灣的回響</h2>
-        <p>
-          諾貝爾獎是近百年來影響全人類最深遠的獎項，而華人獲獎者也一直在各領域佔有一席之地，
-          如李政道、楊振寧、丁肇中、朱棣文等。其中 1986 年化學獎得主李遠哲教授，
-          則是出生及成長於臺灣的學者。
-        </p>
-        <p>
-          李教授於 1955 年進入臺大，先後就讀化工系及化學系，於清華大學取得碩士後，
-          赴加州大學柏克萊分校取得博士學位。他以研究交叉分子束技術、
-          觀察分子碰撞化學反應過程而獲獎。1994 年返臺出任中央研究院院長，
-          積極推動臺灣基礎科學研究與學術交流，顯著提升臺灣的國際學術地位與能見度。
-        </p>
-
+        <div class="abt__block">
+          <p>
+            諾貝爾獎是近百年來影響全人類最深遠的獎項，而華人獲獎者也一直在各領域佔有一席之地，
+            如李政道、楊振寧、丁肇中、朱棣文等。其中 1986 年化學獎得主李遠哲教授，
+            則是出生及成長於臺灣的學者。
+          </p>
+          <p>
+            李教授於 1955 年進入臺大，先後就讀化工系及化學系，於清華大學取得碩士後，
+            赴加州大學柏克萊分校取得博士學位。他以研究交叉分子束技術、
+            觀察分子碰撞化學反應過程而獲獎。1994 年返臺出任中央研究院院長，
+            積極推動臺灣基礎科學研究與學術交流，顯著提升臺灣的國際學術地位與能見度。
+          </p>
+        </div>
         <h2>臺灣橋樑計畫</h2>
-        <p>
-          李遠哲院長多年來持續推動臺灣國際學術交流。在其倡議及光寶科技創辦人宋恭源先生的支持下，
-          推動「臺灣橋樑計畫」（Taiwan Bridges Program），敦請賴清德總統擔任榮譽主席，
-          以國立臺灣大學與中央研究院為核心，結合國內 12 個學研機構，
-          並與世界和平基金會（International Peace Foundation, IPF）合作，
-          自 2025 年底起共半年間，邀請 31 位諾貝爾獎得主來臺進行系列演講與學術交流活動，
-          促進臺灣學界、社會與全球頂尖科學家之對話與合作。
-        </p>
-        <p>
-          在「臺灣橋樑計畫」中，臺大負責整合與推展的工作，包括辦理開幕式及其中六場講座，
-          涵蓋物理學、化學、生理學或醫學及經濟學等獎項得主，
-          並以「宋恭源先生頂尖研究講座」（NTU Raymond Soong Chair Professorship of
-          Distinguished Research）名義辦理。從各場講座的師生熱烈對話與交流中，
-          充份綻放了帶進不同高度思維後所產生的火花，將長遠影響臺灣的學術根基，
-          奠定邁向世界的基礎。
-        </p>
-
+        <div class="abt__block">
+          <p>
+            李遠哲院長多年來持續推動臺灣國際學術交流。在其倡議及光寶科技創辦人宋恭源先生的支持下，
+            推動「臺灣橋樑計畫」（Taiwan Bridges Program），敦請賴清德總統擔任榮譽主席，
+            以國立臺灣大學與中央研究院為核心，結合國內 12 個學研機構，
+            並與世界和平基金會（International Peace Foundation, IPF）合作，
+            自 2025 年底起共半年間，邀請 31 位諾貝爾獎得主來臺進行系列演講與學術交流活動，
+            促進臺灣學界、社會與全球頂尖科學家之對話與合作。
+          </p>
+          <p>
+            在「臺灣橋樑計畫」中，臺大負責整合與推展的工作，包括辦理開幕式及其中六場講座，
+            涵蓋物理學、化學、生理學或醫學及經濟學等獎項得主，
+            並以「宋恭源先生頂尖研究講座」（NTU Raymond Soong Chair Professorship of
+            Distinguished Research）名義辦理。從各場講座的師生熱烈對話與交流中，
+            充份綻放了帶進不同高度思維後所產生的火花，將長遠影響臺灣的學術根基，
+            奠定邁向世界的基礎。
+          </p>
+        </div>
         <h2>影片與版權</h2>
-        <p>
-          所有影片皆以 YouTube 內嵌方式播放，本站不重製、不轉錄、不再散布影片本身，
-          版權屬於原始發布單位，主要為世界和平基金會（International Peace Foundation）頻道與臺大演講網（NTU Speech）。
-          部分場次的代表圖為自該場錄影擷取之單張靜態畫面，僅供辨識該場次之用，著作權仍屬原發布單位所有。
-          諾貝爾基金會（Nobel Foundation）的文字與圖像一律以連結方式引用，不複製到本站。
-        </p>
-        <p>
-          「諾貝爾獎」（Nobel Prize）名稱與獎章為諾貝爾基金會（Nobel Foundation）之商標。本站為教育用途之獨立專案，
-          與諾貝爾基金會無隸屬關係，亦未獲其背書。
-        </p>
-        <p>
-          本站所使用之所有 3D 模型，其著作權均屬吳俊輝（Jiun-Huei Proty Wu）所有。
-          未經授權，不得以任何形式使用、重製、修改、散布或作其他用途。
-        </p>
+        <div class="abt__block">
+          <p>
+            所有影片皆以 YouTube 內嵌方式播放，本站不重製、不轉錄、不再散布影片本身，
+            版權屬於原始發布單位，主要為世界和平基金會（International Peace Foundation）頻道與臺大演講網（NTU Speech）。
+            部分場次的代表圖為自該場錄影擷取之單張靜態畫面，僅供辨識該場次之用，著作權仍屬原發布單位所有。
+            諾貝爾基金會（Nobel Foundation）的文字與圖像一律以連結方式引用，不複製到本站。
+          </p>
+          <p>
+            「諾貝爾獎」（Nobel Prize）名稱與獎章為諾貝爾基金會（Nobel Foundation）之商標。本站為教育用途之獨立專案，
+            與諾貝爾基金會無隸屬關係，亦未獲其背書。
+          </p>
+          <p>
+            本站所使用之所有 3D 模型，其著作權均屬吳俊輝（Jiun-Huei Proty Wu）所有。
+            未經授權，不得以任何形式使用、重製、修改、散布或作其他用途。
+          </p>
+        </div>
         <h2>隱私</h2>
-        <p>
-          本站沒有帳號、沒有追蹤 Cookie、沒有第三方廣告。影片使用 YouTube 的
-          <code>youtube-nocookie.com</code> 網域，在按下播放之前，不會載入 YouTube 的任何程式碼。
-        </p>
+        <div class="abt__block">
+          <p>
+            本站沒有帳號、沒有追蹤 Cookie、沒有第三方廣告。影片使用 YouTube 的
+            <code>youtube-nocookie.com</code> 網域，在按下播放之前，不會載入 YouTube 的任何程式碼。
+          </p>
+        </div>
       </div>
     ) : (
       <div class="prose stack" style="--gap:1.2rem">
@@ -121,86 +127,96 @@ const hostList = Object.entries(hosts);
         </span></p>
 
         <h2>Taiwan and the Nobel legacy</h2>
-        <p>
-          The Nobel Prize has been one of the most influential awards in shaping humanity
-          over the past century, and Chinese laureates have long held an important place
-          in many fields — Tsung-Dao Lee, Chen-Ning Yang, Samuel C. C. Ting, Steven Chu.
-          Among them, Professor Yuan Tseh Lee, the 1986 laureate in Chemistry, was born
-          and raised in Taiwan.
-        </p>
-        <p>
-          Professor Lee entered National Taiwan University in 1955, studying first in the
-          Department of Chemical Engineering and later in Chemistry. After a master's
-          degree from National Tsing Hua University he earned his Ph.D. at the University
-          of California, Berkeley. He was awarded the Nobel Prize for his work with the
-          crossed molecular beam technique, observing the chemical reactions of colliding
-          molecules. In 1994 he returned to Taiwan as President of Academia Sinica, where
-          he pressed for basic scientific research and academic exchange and markedly
-          raised the country's international academic standing.
-        </p>
-
+        <div class="abt__block">
+          <p>
+            The Nobel Prize has been one of the most influential awards in shaping humanity
+            over the past century, and Chinese laureates have long held an important place
+            in many fields — Tsung-Dao Lee, Chen-Ning Yang, Samuel C. C. Ting, Steven Chu.
+            Among them, Professor Yuan Tseh Lee, the 1986 laureate in Chemistry, was born
+            and raised in Taiwan.
+          </p>
+          <p>
+            Professor Lee entered National Taiwan University in 1955, studying first in the
+            Department of Chemical Engineering and later in Chemistry. After a master's
+            degree from National Tsing Hua University he earned his Ph.D. at the University
+            of California, Berkeley. He was awarded the Nobel Prize for his work with the
+            crossed molecular beam technique, observing the chemical reactions of colliding
+            molecules. In 1994 he returned to Taiwan as President of Academia Sinica, where
+            he pressed for basic scientific research and academic exchange and markedly
+            raised the country's international academic standing.
+          </p>
+        </div>
         <h2>The Taiwan Bridges Program</h2>
-        <p>
-          President Yuan Tseh Lee has worked for many years to open Taiwan's academic
-          exchange to the world. At his initiative, and with the support of Raymond Soong,
-          founder of Lite-On Technology, the Taiwan Bridges Program was launched with
-          President Ching-te Lai as honorary chair. Anchored by National Taiwan University
-          and Academia Sinica, joined by ten further academic and research institutions
-          across Taiwan, and developed with the International Peace Foundation, it invited
-          31 Nobel laureates to Taiwan over six months from late 2025 for a series of
-          lectures and exchanges — a conversation between Taiwan's academic community, its
-          society, and some of the world's leading scientists.
-        </p>
-        <p>
-          Within the programme, NTU took on the work of drawing it together: the opening
-          ceremony and six of the lectures, in physics, chemistry, physiology or medicine
-          and economic sciences, held under the Raymond Soong Chair Professorship of
-          Distinguished Research. What came out of the exchanges between speakers,
-          teachers and students in those rooms will bear on Taiwan's academic foundations
-          for a long time.
-        </p>
-
+        <div class="abt__block">
+          <p>
+            President Yuan Tseh Lee has worked for many years to open Taiwan's academic
+            exchange to the world. At his initiative, and with the support of Raymond Soong,
+            founder of Lite-On Technology, the Taiwan Bridges Program was launched with
+            President Ching-te Lai as honorary chair. Anchored by National Taiwan University
+            and Academia Sinica, joined by ten further academic and research institutions
+            across Taiwan, and developed with the International Peace Foundation, it invited
+            31 Nobel laureates to Taiwan over six months from late 2025 for a series of
+            lectures and exchanges — a conversation between Taiwan's academic community, its
+            society, and some of the world's leading scientists.
+          </p>
+          <p>
+            Within the programme, NTU took on the work of drawing it together: the opening
+            ceremony and six of the lectures, in physics, chemistry, physiology or medicine
+            and economic sciences, held under the Raymond Soong Chair Professorship of
+            Distinguished Research. What came out of the exchanges between speakers,
+            teachers and students in those rooms will bear on Taiwan's academic foundations
+            for a long time.
+          </p>
+        </div>
         <h2>Video and rights</h2>
-        <p>
-          Every video is embedded from YouTube and remains the copyright of its original
-          publisher, chiefly the International Peace Foundation channel and 臺大演講網; nothing
-          here re-cuts, re-hosts or redistributes a recording. For some sessions the still that
-          represents it is a single frame taken from that recording, used only to identify the
-          session, and the copyright in it remains its publisher's. Nobel Foundation text and
-          images are linked, never copied.
-        </p>
-        <p>
-          "Nobel Prize" and the medal are trademarks of the Nobel Foundation. This is an independent
-          educational project, not affiliated with or endorsed by the Nobel Foundation.
-        </p>
-        <p>
-          All 3D models used on this website are copyrighted by Jiun-Huei Proty Wu. Unauthorized
-          use, reproduction, modification, distribution, or any other form of use is prohibited.
-        </p>
+        <div class="abt__block">
+          <p>
+            Every video is embedded from YouTube and remains the copyright of its original
+            publisher, chiefly the International Peace Foundation channel and 臺大演講網; nothing
+            here re-cuts, re-hosts or redistributes a recording. For some sessions the still that
+            represents it is a single frame taken from that recording, used only to identify the
+            session, and the copyright in it remains its publisher's. Nobel Foundation text and
+            images are linked, never copied.
+          </p>
+          <p>
+            "Nobel Prize" and the medal are trademarks of the Nobel Foundation. This is an independent
+            educational project, not affiliated with or endorsed by the Nobel Foundation.
+          </p>
+          <p>
+            All 3D models used on this website are copyrighted by Jiun-Huei Proty Wu. Unauthorized
+            use, reproduction, modification, distribution, or any other form of use is prohibited.
+          </p>
+        </div>
         <h2>Privacy</h2>
-        <p>
-          No accounts, no tracking cookies, no third-party advertising. Embeds use YouTube's
-          <code>youtube-nocookie.com</code> domain, and no YouTube code loads until playback begins.
-        </p>
+        <div class="abt__block">
+          <p>
+            No accounts, no tracking cookies, no third-party advertising. Embeds use YouTube's
+            <code>youtube-nocookie.com</code> domain, and no YouTube code loads until playback begins.
+          </p>
+        </div>
       </div>
     )}
 
     <h2>{t('special.title')}</h2>
-    <ul class="special" role="list">
-      {special.map((s) => (
-        <li>
-          <ExtLink lang={lang} href={`https://www.youtube.com/watch?v=${s.yt}`}>
-            {lang === 'zh' ? s.title_zh : s.title_en}
-          </ExtLink>
-          <span>{s.date}{s.note_zh && lang === 'zh' ? ` · ${s.note_zh}` : ''}</span>
-        </li>
-      ))}
-    </ul>
+    <div class="abt__block">
+      <ul class="special" role="list">
+        {special.map((s) => (
+          <li>
+            <ExtLink lang={lang} href={`https://www.youtube.com/watch?v=${s.yt}`}>
+              {lang === 'zh' ? s.title_zh : s.title_en}
+            </ExtLink>
+            <span>{s.date}{s.note_zh && lang === 'zh' ? ` · ${s.note_zh}` : ''}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
 
     <h2>{lang === 'zh' ? '主辦與協辦單位' : 'Host institutions'}</h2>
-    <ul class="hosts" role="list">
-      {hostList.map(([, h]) => <li>{lang === 'zh' ? h.zh : h.en}</li>)}
-    </ul>
+    <div class="abt__block">
+      <ul class="hosts" role="list">
+        {hostList.map(([, h]) => <li>{lang === 'zh' ? h.zh : h.en}</li>)}
+      </ul>
+    </div>
   </div>
 
   {bright && <ScrollCue lang={lang} href="#about-body" />}
@@ -297,15 +313,39 @@ const hostList = Object.entries(hosts);
   }
 
   /* ---------- read over the room ----------
-     The colophon is two thousand words read straight over about-hall, and
-     that is too much page to lift a line at a time: the white edge every
-     other room's caption carries was, at this length, a haze over the whole
-     of it. So the column stands on a translucent rectangle instead — see 'a
-     room that is mostly reading stands its text on a sheet' in bright.css,
-     which also takes the edge and the title's halo off everything inside it.
+     The learning area's own answer, at the owner's word. This page is two
+     thousand words read straight over about-hall, and a white edge under
+     every line of that is a haze over the whole of it rather than type lifted
+     off anything. So each section's reading stands on a frame of its own —
+     62% white and a 9px blur, the material the index of films puts under
+     every card — and the headings BETWEEN those frames carry the edge. The
+     photograph itself is never washed: what is under a block belongs to the
+     block, and what is between them is the room at its own strength.
 
-     What the page draws for itself keeps the tints it always had. They are
-     read on the sheet now, not on a photograph, which is what they were
-     written for. */
+     Written here rather than in bright.css because Astro scopes every
+     compound, so this page's own rules would out-specify a theme rule. */
+  .abt__block { display: grid; gap: 1.2rem; }
+  :global(html[data-theme='bright']) .abt__block {
+    /* Two thirds of white is two thirds: the darkest thing the room puts
+       under a block is the shadow under the colonnade, and the secondary inks
+       take the darkened steps a half sheet gives them — measured, at the
+       owner's word, by scripts/check-glass.mjs, which caught a date line at
+       4.36:1 on a phone before this. */
+    --muted: #38332e;
+    --muted-dim: #443e38;
+    background: var(--pane);
+    -webkit-backdrop-filter: var(--pane-blur);
+    backdrop-filter: var(--pane-blur);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: clamp(1.1rem, 3vw, 1.6rem) clamp(1.1rem, 3vw, 1.5rem);
+  }
+  :global(html[data-theme='bright']) .about h2 {
+    text-shadow: var(--ink-edge-h);
+  }
+  /* the opening sentence stands with the head, above every frame */
+  :global(html[data-theme='bright']) .lede { text-shadow: var(--ink-edge); }
+  /* inside a frame, and so a tint rather than a ground of its own */
+  :global(html[data-theme='bright']) code { text-shadow: none; }
 </style>
 

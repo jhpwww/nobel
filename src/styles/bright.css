@@ -124,13 +124,15 @@ html[data-theme='bright'] {
    * pair are declared here rather than written out at each of the twenty
    * places that need them.
    *
-   *   --ink-edge   a line of type carries its own light. Four layers: one
-   *                opaque and tight, which is the edge, and three wider ones
-   *                behind it, which are the haze. The tight one is what the
-   *                way on carries; the wide ones are what the owner calls the
-   *                white fog. Copied from .hall-note, which had it first.
-   *   --ink-edge-h the same for a heading — wider and softer, because 48px of
-   *                Han with a tight edge reads as an outline.
+   *   --ink-edge   a line of type carries its own light: a white SHADOW tight
+   *                to the letterform, not a field of haze around it. It began
+   *                as four layers reaching 20px, and at that width small gold
+   *                and small grey did not read as lifted off the marble, they
+   *                read as veiled by it — the owner's word for the fault is
+   *                白霧, fog, and what is wanted is 白影, a shadow. So the two
+   *                outer layers are half what they were and the inner two are
+   *                tight and opaque: an edge you can see the letter through.
+   *   --ink-edge-h the same for a heading, at the scale a heading needs.
    *   --pane       a block brings a ground with it: the 62% white and the 9px
    *                blur the index of films puts under every card and under
    *                its 延伸探索 panel. --surface is 3.5% BLACK, written for a
@@ -141,15 +143,15 @@ html[data-theme='bright'] {
    * it with an edge as well reads as type that has been printed twice.
    */
   --ink-edge:
+    0 0 1px rgba(255, 255, 255, 1),
+    0 0 2px rgba(255, 255, 255, 1),
+    0 0 5px rgba(255, 255, 255, 0.92),
+    0 0 10px rgba(255, 255, 255, 0.7);
+  --ink-edge-h:
     0 0 2px rgba(255, 255, 255, 1),
     0 0 4px rgba(255, 255, 255, 0.98),
-    0 0 10px rgba(255, 255, 255, 0.88),
-    0 0 20px rgba(255, 255, 255, 0.66);
-  --ink-edge-h:
-    0 0 3px rgba(255, 255, 255, 1),
-    0 0 9px rgba(255, 255, 255, 0.95),
-    0 0 22px rgba(255, 255, 255, 0.78),
-    0 0 44px rgba(255, 255, 255, 0.5);
+    0 0 11px rgba(255, 255, 255, 0.82),
+    0 0 22px rgba(255, 255, 255, 0.55);
   --pane: rgba(255, 255, 255, 0.62);
   --pane-line: rgba(255, 255, 255, 0.5);
   --pane-blur: blur(9px) saturate(1.12);
@@ -520,11 +522,7 @@ html[data-theme='bright'] :is(.browse__kinds, .course__stages, .hall-stages) {
      cannot see it, because it measures against the darkest pixel under the
      box and the trouble here is the brightest. The same four layers the
      sentence below carries, which is the same size of type. */
-  text-shadow:
-    0 0 2px rgba(255, 255, 255, 1),
-    0 0 4px rgba(255, 255, 255, 0.98),
-    0 0 10px rgba(255, 255, 255, 0.85),
-    0 0 20px rgba(255, 255, 255, 0.6);
+  text-shadow: var(--ink-edge);
 }
 /* The title's own, the same on all four. Wider and softer than the two lines
    under it, because it is 48px of Han and a tight edge at that size reads as
@@ -658,94 +656,6 @@ html[data-theme='bright'] [data-fade] { isolation: isolate; }
    rises out of the band with its piece, its eyebrow and its title in one
    piece. */
 html[data-theme='bright'] .room-head { position: relative; z-index: 11; }
-
-/* ============================================================
-   A ROOM THAT IS MOSTLY READING STANDS ITS TEXT ON A SHEET
-   ============================================================
-   The introduction room and the colophon are not indexes with a picture on
-   each row; they are two thousand words each, read straight over a rotunda.
-   Giving every one of those lines its own white edge was answering the
-   question a word at a time, and at that length it reads as a haze over the
-   whole page rather than as type that has been lifted off anything — the
-   owner's judgement, and it is right: the museum's edge was made for a title,
-   a caption and a label, not for four columns of prose.
-
-   So those two rooms put their reading on a plain translucent rectangle and
-   drop the edge inside it. It is the same instrument as the sheet a prize
-   room and a laureate's page already rise over — see .gr__sheet below — with
-   one difference: it is the width of the room's own column rather than the
-   window's, so the photograph is still there at either side, and the page
-   reads as a document laid on the room rather than as a wall built across it.
-
-   Square, because a rectangle is what it is. It bleeds past the measure by a
-   gutter of its own so the words are not flush to its edge, and it is drawn
-   as a pseudo-element rather than a background so that adding it costs the
-   column no width — .hall-head places its title off that column's left edge,
-   and the emblem beside it is measured from the same place.
-   ============================================================ */
-html[data-theme='bright'] {
-  --room-sheet: rgba(255, 255, 255, 0.8);
-  --room-sheet-bleed: clamp(1rem, 3vw, 2.2rem);
-}
-/* flow-root, and it is what makes two boxes read as one rectangle: the last
-   line of the head carries a margin under it, and a margin escapes a box whose
-   padding is zero — so the sheet stopped at the words and the gap showed the
-   room through between the head and the reading. Contained, the two meet. */
-html[data-theme='bright'] .room-sheet { position: relative; display: flow-root; }
-html[data-theme='bright'] .room-sheet::before {
-  content: '';
-  position: absolute;
-  z-index: -1;
-  inset-block: 0;
-  inset-inline: calc(-1 * var(--room-sheet-bleed));
-  background: var(--room-sheet);
-  pointer-events: none;
-}
-/* Nothing inside it carries an edge of its own. A pane IS the ground; type on
-   it with a halo as well is type printed twice, and at this length the two
-   together are what made the page look hazy. The title's own field of light
-   goes with them — see 'every room's title stands in the hall's own light'. */
-html[data-theme='bright'] .room-sheet
-:is(.hall-note, .hall-head h1, .hall-stages, .browse__kinds, .course__stages) {
-  text-shadow: none;
-}
-html[data-theme='bright'] .room-sheet
-:is(.gr__id, .browse__h, .abt__hero, .course__head, .np .hall-head)::before {
-  display: none;
-}
-/* Four fifths of white is four fifths: the darkest thing the room puts under
-   these pages is the shadow under the colonnade, and the secondary inks take
-   the same darkened steps the half sheet gives them. */
-html[data-theme='bright'] .room-sheet {
-  --muted: #38332e;
-  --muted-dim: #443e38;
-}
-/* A room whose reading is NOT mostly reading — the index of films, the
-   learning area — keeps its cards and its keys standing on the room, and only
-   its head takes the rectangle: the line of three words and the sentence under
-   them are small type in grey and gold, and over marble at its brightest the
-   white edge that lifts them off a column shaft only made a haze of them. So
-   the rectangle stops with the head, and it stops by fading rather than by
-   ruling a line across the page — it ends inside the sentence's own bottom
-   margin, so nothing is drawn over anything. */
-html[data-theme='bright'] .room-sheet--head::before {
-  background: linear-gradient(to bottom,
-    var(--room-sheet) calc(100% - 1.6rem), transparent);
-}
-
-/* On a phone the column IS very nearly the screen, and a rectangle that
-   bleeds past it leaves a four-pixel rag of photograph down each side and
-   reads as the page having simply turned white — which is the opposite of
-   what a rectangle standing ON the room is for. So there the gutter moves
-   inside: the sheet stops at the column's own edge and the words come in
-   from it, which leaves a finger's width of room down either side and gives
-   the rectangle two edges to be seen by. */
-@media (max-width: 48rem) {
-  html[data-theme='bright'] .room-sheet {
-    --room-sheet-bleed: 0px;
-    padding-inline: 0.9rem;
-  }
-}
 
 /* ---------- ground ---------- */
 html[data-theme='bright'] body {
@@ -2012,10 +1922,7 @@ html[data-theme='bright'] .browse .search {
 html[data-theme='bright'] .browse legend {
   text-shadow: 0 0 3px rgba(255, 255, 255, 1), 0 0 10px rgba(255, 255, 255, 0.95);
 }
-html[data-theme='bright'] .browse__h {
-  text-shadow: 0 0 4px rgba(255, 255, 255, 1), 0 0 16px rgba(255, 255, 255, 0.9),
-               0 0 40px rgba(255, 255, 255, 0.7);
-}
+html[data-theme='bright'] .browse__h { text-shadow: var(--ink-edge-h); }
 
 
 

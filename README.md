@@ -68,11 +68,10 @@ Every page below the hall stands in the same room — `RoomBack.astro` paints it
 page, and a fixed band at the top dissolves each page into it. A room's own head is the one
 thing that never dissolves: emblem, title, the three words it is read by and the sentence
 under them stand over the band rather than under it, with the logo a step above the head.
-Below that, the length of the read chooses the treatment — a framed block brings its own
-ground (62% white and a 9px blur), a line standing on the photograph carries a four-layer
-white edge, and a room whose text is long puts it on a plain translucent rectangle instead —
-the whole column in the introduction room and the colophon, the head alone in the index of
-films and the learning area.
+Below that there are two treatments and only two: a block of text stands on a frame of its own
+(62% white and a 9px blur), and the headings between those frames carry a white shadow tight to
+the letterform. The photograph itself is never washed — the only thing that fades it is its own
+gradient at the foot.
 
 Three standing controls sit in the lower right (top, back, forward), the way on at the foot of
 the window travels one screen per press, and the key in the bar for the room you are in is
