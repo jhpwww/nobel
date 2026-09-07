@@ -924,7 +924,12 @@ html[data-theme='bright'] .topbar--ghost .topbar__nav a.topbar__lang:focus-visib
     min-height: 0;
     block-size: 0;
     padding-block: 0;
-    margin-block-start: calc(var(--key-lap) - 0.00875rem);
+    /* Zero, not the overlap. A folded key has no height and no padding, so
+       there is nothing under it to overlap — and six of them each pulling up
+       by half a plate's margin dragged the flag 36px onto the three bars and
+       hid the one key that opens the column. The overlap belongs to the open
+       state alone; folded, these take no room at all. */
+    margin-block-start: 0;
     opacity: 0;
     visibility: hidden;
     translate: 0 -0.5rem;

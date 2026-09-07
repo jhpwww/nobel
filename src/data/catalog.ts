@@ -196,14 +196,30 @@ export function nextUpcoming(today: string): Lecture | null {
 export const allUpcoming = (today: string) => byDateAsc().filter((l) => l.event.date > today);
 
 /**
- * What to show when nothing is upcoming: the richest lecture on the site —
- * most videos, guide video preferred — so the slot is never empty.
+ * What stands in 本館推薦 when nothing is upcoming.
+ *
+ * It was a ranking — guide video preferred, then most videos — and a ranking
+ * returns whatever the catalogue happens to make richest rather than what the
+ * museum would put in its window. That is the wrong kind of answer for a slot
+ * headed 本館推薦: a recommendation is a choice somebody makes.
+ *
+ * So it is named, and named in one place. The home page shows this lecture's
+ * 導讀 if it has one — see the facade in HomePage — so naming the lecture
+ * names the film.
+ *
+ * The old ranking stays as the fallback, for the day this id is retired or
+ * mistyped: the slot is on the museum's front page and must never be empty.
  */
+const RECOMMENDED = 'strickland';
+
 export function recommended(): Lecture {
-  return [...lectures].sort((a, b) => {
-    const g = Number(!!b.video.guide) - Number(!!a.video.guide);
-    return g !== 0 ? g : videoCount(b) - videoCount(a);
-  })[0];
+  return (
+    lectures.find((l) => l.id === RECOMMENDED) ??
+    [...lectures].sort((a, b) => {
+      const g = Number(!!b.video.guide) - Number(!!a.video.guide);
+      return g !== 0 ? g : videoCount(b) - videoCount(a);
+    })[0]
+  );
 }
 
 /* ------------------------------------------------------------------ *
