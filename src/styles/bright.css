@@ -886,61 +886,41 @@ html[data-theme='bright'] .topbar__nav :is(.topbar__key, .museum-glass-btn--nav)
 
    None of it is needed now: the owner has struck the door its own plate.
    `menu-button_plate-v2_on.png` out of the button kit is the same tablet in a
-   warmer gold, so the current key simply wears a different picture and nothing
-   is filtered, tinted or blended at all.
+   warmer gold, so the current key wears a different picture and nothing is
+   filtered, tinted or blended at all — one url, said the same way the plain
+   key says its own.
 
-   The picture still hangs on ::before rather than on the element, and that
-   part is worth keeping: it is what let the label stay unfiltered while the
-   experiments ran, and it means the two states are one swap of one url.
+   It goes on the ELEMENT, not on ::before, and that was learned the hard way.
+   The pseudo-element carried the plate for two rounds and rendered a plain
+   gradient with no frame and no corners — the kit's own button, which is
+   exactly what the owner reported seeing. Computed style said the right url
+   at the right size with opacity 1 and no filter, and the pixels still said
+   otherwise; only a rendered comparison of the two settled it. The lesson is
+   the method, not the property: read the pixels, not the rule.
 
    The two plates are interchangeable ONLY because the second was rebuilt to
    the first's geometry — trimmed to its own content, scaled to 668x210 and
-   placed at 25,33 on a 700x294 canvas, which is exactly where the plain
-   plate's content sits. Both are painted at `100% 100%`, so anything else
-   would have made the current key's tablet a different size from its
-   neighbours'. Re-do that arithmetic if either artwork is replaced.
+   placed at 25,33 on a 700x294 canvas, which is where the plain plate's
+   content sits. Both are painted at `100% 100%`, and both artworks share one
+   aspect ratio, 3.181, which is what made the rebuild exact rather than a fit.
+   Redo that arithmetic if either picture is replaced.
 
    What NOT to try, both measured and both wrong: `filter` on the key darkens
    the LABEL along with the plate, so white type comes out the same grey as the
-   ground and the key reads as empty; and a masked dark overlay on ::before
-   loses to the kit's own dressing of that pseudo-element and renders pale. */
+   ground and the key reads as empty; and a dark overlay on ::before loses to
+   the kit's own dressing of that pseudo-element and renders pale. */
 html[data-theme='bright'] .topbar__nav :is(.topbar__key, .museum-glass-btn--nav)[aria-current='page']:not(.ss__key) {
-  /* The plate is warm gold rather than dark, so the label stays the museum's
-     own red — measured on the new artwork, not assumed. */
-  color: var(--red-deep);
-  /* the picture moves to the pseudo-element below */
-  background: none;
-}
-html[data-theme='bright'] .topbar__nav :is(.topbar__key, .museum-glass-btn--nav)[aria-current='page']:not(.ss__key)::before {
-  display: block;
-  content: '';
-  position: absolute;
-  inset: 0;
+  /* One line, and it is the same line the plain key uses three rules above:
+     the plate is the element's own background. The plate is warm gold rather
+     than dark, so the label stays the museum's own red — measured on the new
+     artwork, not assumed. */
   background: var(--key-plate-on) center / 100% 100% no-repeat;
-  /* The kit marks the current key by dimming its own ::before —
-     `.museum-glass-btn--nav[aria-current="page"]::before { opacity: .78 }` in
-     liquid-glass-buttons.css. This pseudo-element is no longer that glass, it
-     is the owner's plate, so the dimming has to be said off explicitly: a more
-     specific selector does NOT win a property it never declares, and the plate
-     was shipping at 78% over nothing, which is why it read as a tint of the
-     plain plate rather than as the artwork. Same for the kit's saturate. */
-  opacity: 1;
-  filter: none;
-  pointer-events: none;
-  z-index: 0;
-}
-/* the label rides over its own plate */
-html[data-theme='bright'] .topbar__nav :is(.topbar__key, .museum-glass-btn--nav)[aria-current='page']:not(.ss__key) > * {
-  position: relative;
-  z-index: 1;
+  color: var(--red-deep);
 }
 /* It stays the current key under a finger. The bar's hover is a single
    `filter`, which here would darken the white label along with everything
    else, so this key says its hover on the overlay instead. */
 html[data-theme='bright'] .topbar__nav :is(.topbar__key, .museum-glass-btn--nav)[aria-current='page']:not(.ss__key):hover {
-  filter: none;
-}
-html[data-theme='bright'] .topbar__nav :is(.topbar__key, .museum-glass-btn--nav)[aria-current='page']:not(.ss__key):hover::before {
   filter: brightness(1.04);
 }
 
