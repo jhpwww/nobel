@@ -124,30 +124,6 @@ const hostList = Object.entries(hosts);
             奠定邁向世界的基礎。
           </p>
         </div>
-        <h2>影片與版權</h2>
-        <div class="abt__block">
-          <p>
-            所有影片皆以 YouTube 內嵌方式播放，本站不重製、不轉錄、不再散布影片本身，
-            版權屬於原始發布單位，主要為世界和平基金會（International Peace Foundation）頻道與臺大演講網（NTU Speech）。
-            部分場次的代表圖為自該場錄影擷取之單張靜態畫面，僅供辨識該場次之用，著作權仍屬原發布單位所有。
-            諾貝爾基金會（Nobel Foundation）的文字與圖像一律以連結方式引用，不複製到本站。
-          </p>
-          <p>
-            「諾貝爾獎」（Nobel Prize）名稱與獎章為諾貝爾基金會（Nobel Foundation）之商標。本站為教育用途之獨立專案，
-            與諾貝爾基金會無隸屬關係，亦未獲其背書。
-          </p>
-          <p>
-            本站所使用之所有 3D 模型、網站設計等，其著作權均屬吳俊輝（Jiun-Huei Proty Wu）所有，
-            並無償授權予國立臺灣大學使用。未經授權，不得以任何形式使用、重製、修改、散布或作其他用途。
-          </p>
-        </div>
-        <h2>隱私</h2>
-        <div class="abt__block">
-          <p>
-            本站沒有帳號、沒有追蹤 Cookie、沒有第三方廣告。影片使用 YouTube 的
-            <code>youtube-nocookie.com</code> 網域，在按下播放之前，不會載入 YouTube 的任何程式碼。
-          </p>
-        </div>
       </div>
     ) : (
       <div class="prose stack" style="--gap:1.2rem">
@@ -216,6 +192,61 @@ const hostList = Object.entries(hosts);
             for a long time.
           </p>
         </div>
+      </div>
+    )}
+
+    <h2>{t('special.title')}</h2>
+    <div class="abt__block">
+      <ul class="special" role="list">
+        {special.map((s) => (
+          <li>
+            <ExtLink lang={lang} href={`https://www.youtube.com/watch?v=${s.yt}`}>
+              {lang === 'zh' ? s.title_zh : s.title_en}
+            </ExtLink>
+            <span>{s.date}{s.note_zh && lang === 'zh' ? ` · ${s.note_zh}` : ''}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <h2>{lang === 'zh' ? '主辦與協辦單位' : 'Host institutions'}</h2>
+    <div class="abt__block">
+      <ul class="hosts" role="list">
+        {hostList.map(([, h]) => <li>{lang === 'zh' ? h.zh : h.en}</li>)}
+      </ul>
+    </div>
+
+    {/* The small print stands last, under the credits — it is what a
+        reader looks up rather than what the room is about. */}
+    {lang === 'zh' ? (
+      <div class="prose stack" style="--gap:1.2rem">
+        <h2>影片與版權</h2>
+        <div class="abt__block">
+          <p>
+            所有影片皆以 YouTube 內嵌方式播放，本站不重製、不轉錄、不再散布影片本身，
+            版權屬於原始發布單位，主要為世界和平基金會（International Peace Foundation）頻道與臺大演講網（NTU Speech）。
+            部分場次的代表圖為自該場錄影擷取之單張靜態畫面，僅供辨識該場次之用，著作權仍屬原發布單位所有。
+            諾貝爾基金會（Nobel Foundation）的文字與圖像一律以連結方式引用，不複製到本站。
+          </p>
+          <p>
+            「諾貝爾獎」（Nobel Prize）名稱與獎章為諾貝爾基金會（Nobel Foundation）之商標。本站為教育用途之獨立專案，
+            與諾貝爾基金會無隸屬關係，亦未獲其背書。
+          </p>
+          <p>
+            本站所使用之所有 3D 模型、網站設計等，其著作權均屬吳俊輝（Jiun-Huei Proty Wu）所有，
+            並無償授權予國立臺灣大學使用。未經授權，不得以任何形式使用、重製、修改、散布或作其他用途。
+          </p>
+        </div>
+        <h2>隱私</h2>
+        <div class="abt__block">
+          <p>
+            本站沒有帳號、沒有追蹤 Cookie、沒有第三方廣告。影片使用 YouTube 的
+            <code>youtube-nocookie.com</code> 網域，在按下播放之前，不會載入 YouTube 的任何程式碼。
+          </p>
+        </div>
+      </div>
+    ) : (
+      <div class="prose stack" style="--gap:1.2rem">
         <h2>Video and rights</h2>
         <div class="abt__block">
           <p>
@@ -246,27 +277,6 @@ const hostList = Object.entries(hosts);
         </div>
       </div>
     )}
-
-    <h2>{t('special.title')}</h2>
-    <div class="abt__block">
-      <ul class="special" role="list">
-        {special.map((s) => (
-          <li>
-            <ExtLink lang={lang} href={`https://www.youtube.com/watch?v=${s.yt}`}>
-              {lang === 'zh' ? s.title_zh : s.title_en}
-            </ExtLink>
-            <span>{s.date}{s.note_zh && lang === 'zh' ? ` · ${s.note_zh}` : ''}</span>
-          </li>
-        ))}
-      </ul>
-    </div>
-
-    <h2>{lang === 'zh' ? '主辦與協辦單位' : 'Host institutions'}</h2>
-    <div class="abt__block">
-      <ul class="hosts" role="list">
-        {hostList.map(([, h]) => <li>{lang === 'zh' ? h.zh : h.en}</li>)}
-      </ul>
-    </div>
   </div>
 
   {bright && <ScrollCue lang={lang} href="#about-body" />}
