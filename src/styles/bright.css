@@ -917,6 +917,15 @@ html[data-theme='bright'] .topbar__nav :is(.topbar__key, .museum-glass-btn--nav)
   position: absolute;
   inset: 0;
   background: var(--key-plate-on) center / 100% 100% no-repeat;
+  /* The kit marks the current key by dimming its own ::before —
+     `.museum-glass-btn--nav[aria-current="page"]::before { opacity: .78 }` in
+     liquid-glass-buttons.css. This pseudo-element is no longer that glass, it
+     is the owner's plate, so the dimming has to be said off explicitly: a more
+     specific selector does NOT win a property it never declares, and the plate
+     was shipping at 78% over nothing, which is why it read as a tint of the
+     plain plate rather than as the artwork. Same for the kit's saturate. */
+  opacity: 1;
+  filter: none;
   pointer-events: none;
   z-index: 0;
 }
