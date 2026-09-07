@@ -121,12 +121,20 @@ const server = http.createServer((req, res) => {
 await new Promise((r) => server.listen(0, r));
 const origin = `http://127.0.0.1:${server.address().port}${BASE}`;
 
+/* Every page but the ones that are not pages. A redirect stub is a meta
+   refresh with a zero delay: it navigates the moment it is opened, and the
+   evaluate below then dies with 'execution context was destroyed' and takes
+   the whole run with it. They carry no type of their own worth cutting a face
+   for, so they are simply not read. */
 const pages = [];
 (function walk(dir) {
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
     const p = path.join(dir, e.name);
     if (e.isDirectory()) walk(p);
-    else if (e.name === 'index.html') pages.push(p.replace(DIST, '').replace(/index\.html$/, ''));
+    else if (e.name === 'index.html') {
+      if (/http-equiv=["']?refresh/i.test(fs.readFileSync(p, 'utf8'))) continue;
+      pages.push(p.replace(DIST, '').replace(/index\.html$/, ''));
+    }
   }
 })(DIST);
 console.log(`${pages.length} pages to read\n`);

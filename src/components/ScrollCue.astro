@@ -18,8 +18,13 @@
  * 'the way on carries its own edge' in bright.css for why a haze cannot lift
  * three hairlines off anything.
  *
- * `href` is the anchor it leads to — the first thing below the room on that
- * page. Every page that has something below its opening screen gets one.
+ * What it does is one screen, every press, at the owner's word: a reader who
+ * presses it twice has travelled two windows, not arrived twice at the same
+ * named place. So the jump is scripted and the anchor stays as the fallback
+ * for a visitor whose scripts have not run — `href` is still the first thing
+ * below the room on that page, which is where one press used to land and is
+ * near enough to where it lands now. Every page that has something below its
+ * opening screen gets one.
  */
 import { useT, type Lang } from '../i18n/ui';
 
@@ -66,6 +71,8 @@ const t = useT(lang);
 </style>
 
 <script>
+  import { motionOn } from '../scripts/motion';
+
   /* The one thing this has to know is whether there is any page left to go to.
      The 40px is the slack a phone's rubber-banding and a fractional device
      pixel ratio need before 'at the end' is true. */
@@ -85,5 +92,36 @@ const t = useT(lang);
       requestAnimationFrame(sync);
     }, { passive: true });
     addEventListener('resize', sync, { passive: true });
+
+    /* One window per press. The distance is carried rather than measured off
+       the page, because a smooth scroll reports the position it has animated
+       to so far: two quick presses read the same half-travelled number twice
+       and arrive one screen short. The carried figure is given back to the
+       page the moment the reader moves it themselves — a wheel, a finger, an
+       arrow key — so the next press starts from where they are looking and
+       not from where the cue last aimed.
+
+       And it is smooth only when the museum is moving at all. motionOn() is
+       the single question every animation here asks; the pinned keys ask it
+       for the same journey upward. */
+    const link = cue.querySelector<HTMLElement>('.bh__cue');
+    let aim: number | null = null;
+    /* the press that lands on the cue is not the reader taking the page back
+       — it is the next screen being asked for, and it arrives as a mousedown
+       or a keydown a moment before the click that answers it */
+    const release = (ev: Event) => {
+      const t = ev.target;
+      if (!(t instanceof Node) || !cue.contains(t)) aim = null;
+    };
+    for (const name of ['wheel', 'touchstart', 'keydown', 'mousedown'] as const) {
+      addEventListener(name, release, { passive: true });
+    }
+
+    link?.addEventListener('click', (e) => {
+      e.preventDefault();
+      const end = Math.max(0, doc.scrollHeight - innerHeight);
+      aim = Math.min((aim ?? scrollY) + innerHeight, end);
+      scrollTo({ top: aim, behavior: motionOn() ? 'smooth' : 'auto' });
+    });
   }
 </script>

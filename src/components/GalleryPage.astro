@@ -250,6 +250,42 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
       </div>
     </header>
   )}
+  {/* ---------- the introduction room's head ----------
+      Before the sheet, and outside it, so that the room's name stands where
+      its laurel stands rather than dissolving into the band at the top of the
+      window — see 'what a room is called does not dissolve' in bright.css.
+      The prize rooms keep theirs where it is: their head is a hero inside a
+      band of photograph, not a title standing on the room. */}
+  {isIntro && (
+    <div class:list={['wrap', 'np', 'np--top', bright && 'room-head']}>
+      <header class="hall-head" data-cat={cat}>
+        <h1 class="gr__title np__title">{introA}<span class="conj">{introConj}</span>{introB}</h1>
+        {/* 關於這座獎 is out of the bright museum and hidden rather than
+            removed: the dark museum is preserved as it stands. What stands
+            here in daylight instead is the room's own shape, said the way the
+            other three rooms say theirs — see 'the line a room is read by' in
+            bright.css. */}
+        <p class="gr__n np__n">{t('hall.nobelRoom')}</p>
+        <p class="hall-stages">{t('nobel.stages')}</p>
+      </header>
+      {lang === 'zh' ? (
+        <p class="np__lede hall-note"><span>
+          諾貝爾獎不是一座獎，是六座。它們出自同一份遺囑、同一筆基金，
+          卻由四個互不隸屬的機構分別評選，每年 12 月 10 日同時頒出。
+          這一頁說的是這座獎本身：它從哪裡來，包含哪些領域，一百多年來累積了什麼，
+          以及一座獎是怎麼決定的。
+        </span></p>
+      ) : (
+        <p class="np__lede hall-note"><span>
+          The Nobel Prize is not one prize but six. They come from a single
+          will and a single fund, are decided by four institutions answerable
+          to no common authority, and are handed over on the same day every
+          year. This room is about the prize itself: where it came from, what
+          it covers, what it has added up to, and how one is decided.
+        </span></p>
+      )}
+    </div>
+  )}
   {/* Everything below the room, on its own sheet. The room is fixed, so
       anything transparent over it shows a rotunda sliding under the words:
       one ground here, and the room is wiped by the page rising over it. */}
@@ -321,34 +357,7 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
       sentence it comes from, the six doors it opens, what it has added up to,
       and how one is decided. */}
   {isIntro && (
-    <div class="wrap np">
-      <header class="hall-head" data-cat={cat}>
-        <h1 class="gr__title np__title">{introA}<span class="conj">{introConj}</span>{introB}</h1>
-        {/* 關於這座獎 is out of the bright museum and hidden rather than
-            removed: the dark museum is preserved as it stands. What stands
-            here in daylight instead is the room's own shape, said the way the
-            other three rooms say theirs — see 'the line a room is read by' in
-            bright.css. */}
-        <p class="gr__n np__n">{t('hall.nobelRoom')}</p>
-        <p class="hall-stages">{t('nobel.stages')}</p>
-      </header>
-      {lang === 'zh' ? (
-        <p class="np__lede hall-note"><span>
-          諾貝爾獎不是一座獎，是六座。它們出自同一份遺囑、同一筆基金，
-          卻由四個互不隸屬的機構分別評選，每年 12 月 10 日同時頒出。
-          這一頁說的是這座獎本身：它從哪裡來，包含哪些領域，一百多年來累積了什麼，
-          以及一座獎是怎麼決定的。
-        </span></p>
-      ) : (
-        <p class="np__lede hall-note"><span>
-          The Nobel Prize is not one prize but six. They come from a single
-          will and a single fund, are decided by four institutions answerable
-          to no common authority, and are handed over on the same day every
-          year. This room is about the prize itself: where it came from, what
-          it covers, what it has added up to, and how one is decided.
-        </span></p>
-      )}
-
+    <div class="wrap np np--body">
       {/* the sentence the whole thing rests on */}
       <figure class="np__will">
         <blockquote>
@@ -483,11 +492,22 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
             : 'Nomination and deliberation records are sealed for 50 years, so only the result is ever public.'}
         </p>
       </section>
+
+      {/* ---------- the prize's own pages, at the foot of the room ----------
+          The same 延伸探索 the index of films ends on — the heading, the rule
+          under it, the framed panel and the columned list — and every entry in
+          it framed rather than only the first, because on this page every
+          entry is one of the prize's own pages on nobelprize.org and that is
+          what the frame is saying.
+
+          Inside the room's own column rather than in a gutter of its own: the
+          section wraps itself by default at the page's full 76rem, and this
+          room is 60, so a panel that wrapped itself would run wider than
+          everything it belongs under. */}
+      <Explore lang={lang} items={exploreItems} variant="panel" wrap={false}
+               keys={exploreItems.length} />
     </div>
   )}
-
-  {/* the prize's own pages, at the foot of the room */}
-  {isIntro && <Explore lang={lang} items={exploreItems} heading={false} />}
   </div>
 </Base>
 
@@ -725,6 +745,10 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
   /* 3.4rem, which is what every page in the bright museum opens with and what
      .hall-head measures its own placement against */
   .np { padding-block: 3.4rem 0; max-inline-size: 60rem; }
+  /* two boxes, one room: the opening padding belongs to the head, which
+     stands outside the sheet, and nothing belongs between them */
+  .np--top { padding-block-end: 0; }
+  .np--body { padding-block-start: 0; }
   .np__n { margin-block-start: 0; color: var(--gold); letter-spacing: 0.16em; text-indent: 0.16em; }
   :global(html[data-theme='bright']) .np__n { display: none; }
   .np__title { font-size: var(--step-3); }
@@ -1004,17 +1028,42 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
   .empty__t { font-family: var(--font-han-serif); font-size: var(--step-1); color: var(--cream); }
   .empty__b { color: var(--muted); line-height: 1.85; }
 
+  /* ---------- read over the room (the introduction room only) ----------
+     This is the one page built out of a prize room that carries no sheet: it
+     is one of the four rooms the bar opens, and none of those has one — see
+     .gr__sheet:has(.np) in bright.css. So every word of it is read directly
+     on nobel-hall, and until now only the title, the three words under it and
+     the sentence below them answered that, because those wear .hall-head and
+     .hall-note.
+
+     The museum's two treatments and no third: --pane under what is framed,
+     --ink-edge on what stands on the photograph. Both are declared at the
+     head of bright.css. The figure panes were already glass but at 55% and
+     with no blur, which is a half-answer to the same question; they take the
+     museum's own material now, the one the index of films puts under every
+     card. */
+  :global(html[data-theme='bright']) .np__stats div {
+    background: var(--pane);
+    -webkit-backdrop-filter: var(--pane-blur);
+    backdrop-filter: var(--pane-blur);
+  }
+  :global(html[data-theme='bright']) :is(.np__h, .np__what) {
+    text-shadow: var(--ink-edge-h);
+  }
+  :global(html[data-theme='bright'])
+  :is(.np__will blockquote, .np__will figcaption, .np__prose p, .np__note,
+      .np__asof, .np__six-n, .np__six-en, .np__six-m, .np__when, .np__how) {
+    text-shadow: var(--ink-edge);
+  }
 </style>
 
 <script>
   import '../../vendor/model-viewer.min.js';
   import { dressPlinths } from '../scripts/plinth';
+  import { measureMark } from '../scripts/mark';
   /* one piece rather than six, but the same object — same drum, same rings,
      same name bent onto the same cylinder */
   dressPlinths();
-
-  const lock = document.querySelector<HTMLElement>('.gr__lock');
-  const root = document.documentElement;
 
   /* ---- when the piece is caught ----
      The rail does the pinning — sticky is the compositor's own job, so the
@@ -1041,19 +1090,10 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
      Lecture Museum' are different widths, and neither of them tracks 7vw. And
      the plate under it is drawn half again as wide as the name and centred on
      it, so what has to be cleared is the ornament rather than the box. Both
-     are measured here and handed to the stylesheet; the museum's faces are
-     self-hosted and arrive after first paint, in which the name is a
+     figures are mark.ts, which the emblem and a laureate's pinned name ask
+     for too; it is re-asked on fonts.ready below, because the museum's faces
+     are self-hosted and arrive after first paint, in which the name is a
      different width again. */
-  const measureMark = () => {
-    if (!lock) return;
-    root.style.setProperty('--lock-w', `${Math.round(lock.offsetWidth)}px`);
-    const name = lock.querySelector<HTMLElement>('.gr__lock-name');
-    if (!name) return;
-    const nb = name.getBoundingClientRect();
-    const pw = parseFloat(getComputedStyle(name, '::before').width) || 0;
-    const over = nb.left + nb.width / 2 + pw / 2 - lock.getBoundingClientRect().right;
-    root.style.setProperty('--mark-over', `${Math.max(0, Math.round(over))}px`);
-  };
   measureMark();
 
   let ticking = false;

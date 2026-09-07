@@ -152,7 +152,14 @@ const groups = { l: t('search.groupLaureate'), r: t('search.groupRoom'), p: t('s
         <circle cx="11" cy="11" r="6.6" fill="none" stroke="currentColor" stroke-width="1.8" />
         <path d="M16 16 21 21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
       </svg>
-      <input class="ss__in" type="search" data-ss-in autocomplete="off" spellcheck="false"
+      {/* autofocus, and it is not decoration. A modal dialog's own focusing
+          steps run inside showModal(), before any script of ours: with no
+          element asking for the caret the browser leaves focus on the dialog
+          box itself, so the panel opens with nothing to type into and no
+          caret to see. On a phone that is worse than untidy — a soft keyboard
+          rises only for a focus that happens inside the press that asked for
+          it, and a focus deferred to the next frame has already spent it. */}
+      <input class="ss__in" type="search" data-ss-in autocomplete="off" spellcheck="false" autofocus
              enterkeyhint="go" placeholder={t('search.ph')} aria-label={t('search.label')}
              role="combobox" aria-expanded="true" aria-controls="ss-list" aria-autocomplete="list" />
       <button class="ss__close" type="button" data-ss-close aria-label={t('search.close')}>
@@ -506,14 +513,26 @@ const groups = { l: t('search.groupLaureate'), r: t('search.groupRoom'), p: t('s
     color: var(--muted);
   }
 
-  /* On a phone the plate is the screen, and the keyboard takes half of it —
-     so it starts at the top and the hint line goes, because a row of key caps
-     is no use to a thumb. */
+  /* On a phone the plate is very nearly the screen, and the keyboard takes
+     half of what is left — so the hint line goes, because a row of key caps is
+     no use to a thumb.
+
+     It used to start half a rem from the top. A phone's address bar sits over
+     the top of the window in several of the states a phone is held in, and
+     what it covered was the field: the panel opened and the thing you had
+     opened it to type into was behind the browser's own chrome. So the gap is
+     ten times what it was, at the owner's word — and the cap has to come down
+     by the same amount plus the half-rem the panel keeps at the foot, or the
+     bottom of the list lands off a screen that cannot scroll: the dialog is
+     100% of the window with `overflow: visible`, the plate clips its own
+     overflow, and the document behind is locked while the dialog is open.
+     What it costs is about a screen-row and a half of results, and the list
+     scrolls. */
   @media (max-width: 40rem) {
     .ss__panel {
-      inset-block-start: 0.5rem;
+      inset-block-start: 5rem;
       inline-size: min(100% - 1rem, 40rem);
-      max-block-size: calc(100svh - 1rem);
+      max-block-size: calc(100svh - 5.5rem);
       border-radius: 0.7rem;
     }
     .ss__hint { display: none; }
@@ -671,10 +690,16 @@ const groups = { l: t('search.groupLaureate'), r: t('search.groupRoom'), p: t('s
       if (dlg!.open) return;
       dlg!.showModal();
       input.value = '';
+      /* The caret, not the first row: this opens because someone means to
+         type. `autofocus` on the field is what actually puts it there — the
+         dialog's own focusing steps run inside showModal() above, inside the
+         press, which is the only moment a phone will raise its keyboard. This
+         is the second ask, for the ways in that are not a press: the two
+         keyboard shortcuts below, and any browser that reads autofocus only
+         on a page's first load. It runs in the same turn, not a frame later,
+         so it spends nothing. */
+      input.focus();
       paint();
-      /* the caret, not the first row: this opens because someone means to
-         type */
-      requestAnimationFrame(() => input.focus());
     }
 
     for (const b of openers) b.addEventListener('click', open);

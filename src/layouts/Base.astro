@@ -30,6 +30,25 @@ interface Props {
 const { lang, title, description, segments = [], bare = false } = Astro.props;
 const t = useT(lang);
 const other = otherLang(lang, ...segments);
+/**
+ * Which of the bar's doors the visitor is already through, so that its key can
+ * say so and go on saying it after the room has scrolled away. `segments` is
+ * the same list routing.ts builds every key's href from, so there is no second
+ * table here to fall out of step with the first.
+ *
+ * The introduction room is a gallery like any other as far as the URL is
+ * concerned, so it is matched by name: '關於諾獎' opens that one room, and a
+ * prize room is not it. A laureate's page answers to none of the five, and
+ * nothing lights there — which is the truth, and better than pointing at a
+ * door the visitor did not come through.
+ */
+const current = (key: 'lectures' | 'learn' | 'about' | 'gallery' | 'home') =>
+  (key === 'home'
+    ? segments.length === 0
+    : key === 'gallery'
+      ? segments[0] === 'gallery' && segments[1] === INTRO
+      : segments[0] === key)
+    ? 'page' : undefined;
 const pageTitle = title ? `${title} — ${t('site.title')}` : t('site.title');
 const desc = description ?? t('site.description');
 const canonical = new URL(Astro.url.pathname, Astro.site);
@@ -135,10 +154,10 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
             {segments.length > 0 && <a class="topbar__key museum-glass-btn museum-glass-btn--nav" href={home(lang)}><span>{t('nav.backHall')}</span></a>}
             {/* the id the fold key points at goes on the first key that is on
                 every page: the hall has no '回到大廳' of its own */}
-            <a class="topbar__key museum-glass-btn museum-glass-btn--nav" id="topbar-keys" href={browse(lang)}><span>{t('nav.all')}</span></a>
-            <a class="topbar__key museum-glass-btn museum-glass-btn--nav" href={learn(lang)}><span>{t('nav.learn')}</span></a>
-            <a class="topbar__key museum-glass-btn museum-glass-btn--nav" href={gallery(lang, INTRO)}><span>{t('nav.prize')}</span></a>
-            <a class="topbar__key museum-glass-btn museum-glass-btn--nav" href={about(lang)}><span>{t('nav.about')}</span></a>
+            <a class="topbar__key museum-glass-btn museum-glass-btn--nav" id="topbar-keys" href={browse(lang)} aria-current={current('lectures')}><span>{t('nav.all')}</span></a>
+            <a class="topbar__key museum-glass-btn museum-glass-btn--nav" href={learn(lang)} aria-current={current('learn')}><span>{t('nav.learn')}</span></a>
+            <a class="topbar__key museum-glass-btn museum-glass-btn--nav" href={gallery(lang, INTRO)} aria-current={current('gallery')}><span>{t('nav.prize')}</span></a>
+            <a class="topbar__key museum-glass-btn museum-glass-btn--nav" href={about(lang)} aria-current={current('about')}><span>{t('nav.about')}</span></a>
             {/* Last of the keys, at the owner's word: the four doors are what
                 the bar is for, and a search field is what you reach for when
                 none of them is the answer. See SiteSearch. */}
@@ -212,11 +231,11 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
             </span>
           </a>
           <nav class="topbar__nav" aria-label={t('nav.hall')}>
-            <a class="museum-glass-btn museum-glass-btn--nav" href={home(lang)}><span>{t('nav.backHall')}</span></a>
-            <a class="museum-glass-btn museum-glass-btn--nav" href={browse(lang)}><span>{t('nav.all')}</span></a>
-            <a class="museum-glass-btn museum-glass-btn--nav" href={learn(lang)}><span>{t('nav.learn')}</span></a>
-            <a class="museum-glass-btn museum-glass-btn--nav" href={gallery(lang, INTRO)}><span>{t('nav.prize')}</span></a>
-            <a class="museum-glass-btn museum-glass-btn--nav" href={about(lang)}><span>{t('nav.about')}</span></a>
+            <a class="museum-glass-btn museum-glass-btn--nav" href={home(lang)} aria-current={current('home')}><span>{t('nav.backHall')}</span></a>
+            <a class="museum-glass-btn museum-glass-btn--nav" href={browse(lang)} aria-current={current('lectures')}><span>{t('nav.all')}</span></a>
+            <a class="museum-glass-btn museum-glass-btn--nav" href={learn(lang)} aria-current={current('learn')}><span>{t('nav.learn')}</span></a>
+            <a class="museum-glass-btn museum-glass-btn--nav" href={gallery(lang, INTRO)} aria-current={current('gallery')}><span>{t('nav.prize')}</span></a>
+            <a class="museum-glass-btn museum-glass-btn--nav" href={about(lang)} aria-current={current('about')}><span>{t('nav.about')}</span></a>
             <SiteSearch lang={lang} only="key" />
             <a class="topbar__lang" href={other.href} lang={other.lang === 'zh' ? 'zh-Hant-TW' : 'en'}
                aria-label={LANG_LABEL[other.lang]} title={LANG_LABEL[other.lang]}>

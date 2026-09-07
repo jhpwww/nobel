@@ -6,8 +6,9 @@
  * stand on a rail beside the heading, ride up with the page, and then be
  * caught into a mark beside the museum's own name — which is where the
  * introduction room's laurel ends up too, by its own arithmetic inside
- * GalleryPage. All three are the same size when caught; see --emb-h and
- * --emb-k in bright.css, which is where the numbers live.
+ * GalleryPage. See --emb-h, --emb-k and --emb-y in bright.css, which is where
+ * the numbers live: a desktop catches them at twice the size a phone does and
+ * hangs them from the mark's top edge rather than its middle.
  *
  * The rail carries no height of its own, so the emblem takes nothing from the
  * flow: the heading beside it is placed with padding, and the rail is pulled
@@ -79,16 +80,18 @@ const { src, srcSmall, w, h, outside = false } = Astro.props;
     transition: scale 0.45s var(--ease), translate 0.45s var(--ease);
   }
   /* Caught: beside the museum's name, at the size every emblem in the museum
-     becomes, and level with it — half the mark's height down from its top
-     edge, less half of what the emblem has become, less the rail's own
-     stick. */
+     becomes, and hung from the same line it is. Both numbers are the
+     stylesheet's — --emb-k and --emb-y, declared with the room's other
+     measurements in bright.css, where a phone gives each of them its own
+     answer. Only the sideways reach is arithmetic here, because only it
+     depends on the rail: the mark's inset, the mark's own width, whatever the
+     plate hangs past it, a gap, and back off the rail's left edge. */
   .emb[data-pinned] .emb__piece {
     scale: var(--emb-k);
     translate:
       calc(var(--mark-x) + var(--lock-w, 10.9rem) + var(--mark-over, 0px) + 0.55rem
            - var(--emb-x, 0px))
-      calc(0.62rem + var(--lock-h) / 2 - 0.5 * var(--emb-k) * var(--emb-h)
-           - var(--gr-stick));
+      var(--emb-y);
   }
   :global(html[data-motion='off']) .emb__piece { transition: none; }
   .emb__pic { position: relative; display: block; line-height: 0; }
@@ -110,35 +113,25 @@ const { src, srcSmall, w, h, outside = false } = Astro.props;
 </style>
 
 <script>
+  import { measureMark } from '../scripts/mark';
+
   /* The emblem is caught at half its own height of scrolling, and the mark it
      stands beside is a line of type rather than a share of the viewport — so
-     the name's rendered width is measured and handed to the stylesheet. Both
-     are the introduction room's own rules; see the script at the foot of
-     GalleryPage, where the same two things are done for the laurel. */
+     the name is measured and handed to the stylesheet. That measuring is
+     mark.ts, which the prize room's sculpture and a laureate's pinned name
+     ask the same two questions of; what is left here is this rail's own
+     figure, the left edge of the head the emblem stands beside. */
   const rails = [...document.querySelectorAll<HTMLElement>('[data-emb]')];
   const root = document.documentElement;
 
   if (rails.length) {
-    const lock = document.querySelector<HTMLElement>('.gr__lock');
-
     /* the head this emblem stands beside — its own column's left edge */
     const head = document.querySelector<HTMLElement>('.hall-head');
 
     function measure() {
-      if (lock) root.style.setProperty('--lock-w', `${Math.round(lock.offsetWidth)}px`);
+      measureMark();
       const box = (head ?? rails[0]).getBoundingClientRect();
       root.style.setProperty('--emb-x', `${Math.round(box.left)}px`);
-      /* How far the plate hangs past the mark's own box on the right. It is
-         drawn half again as wide as the name and centred on it, so anything
-         standing beside the mark has to clear the ornament rather than the
-         box — which is why the caught emblem was landing on the acanthus. */
-      const name = document.querySelector<HTMLElement>('.gr__lock-name');
-      if (name && lock) {
-        const nb = name.getBoundingClientRect();
-        const pw = parseFloat(getComputedStyle(name, '::before').width) || 0;
-        const over = nb.left + nb.width / 2 + pw / 2 - lock.getBoundingClientRect().right;
-        root.style.setProperty('--mark-over', `${Math.max(0, Math.round(over))}px`);
-      }
     }
 
     let ticking = false;

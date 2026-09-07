@@ -92,11 +92,14 @@ const cycle = [
 <Base lang={lang} title={t('learn.title')} description={t('learn.blurb')} segments={['learn']} bare={bright}>
   {bright && <RoomBack lang={lang} room="learn-hall" />}
   {bright && <PageEmblem src="assets/ui/learn-emblem.webp" w={710} h={720} outside />}
-  <div class="wrap course" data-fade>
-    {/* The emblem struck for this area, on the same rail the about page's
-        medal hangs from and caught the same way — see PageEmblem, and
-        --emb-h in bright.css, where the size the three of them share lives. */}
+  {/* The emblem struck for this area, on the same rail the about page's
+      medal hangs from and caught the same way — see PageEmblem, and --emb-h
+      in bright.css, where the size the four of them share lives.
 
+      The head stands outside the box that fades, exactly as that emblem does
+      and for the same reason — see 'what a room is called does not dissolve'
+      in bright.css. */}
+  <div class:list={['wrap', 'course', 'course--top', bright && 'room-head']}>
     <header class:list={['course__head', bright && 'hall-head']}>
       {/* no eyebrow: the museum's name over a page inside the museum is the
           name said twice */}
@@ -106,7 +109,8 @@ const cycle = [
       <p class="course__stages">{t('learn.stages')}</p>
     </header>
     <p class="course__blurb hall-note"><span>{t('learn.blurb')}</span></p>
-
+  </div>
+  <div class="wrap course course--body" data-fade>
     <section class="course__sec" aria-labelledby="cy">
       <h2 id="cy">{t('learn.cycleTitle')}</h2>
       {/* Two thirds of the column, at the owner's word. It is the one long
@@ -205,6 +209,11 @@ const cycle = [
 <style>
   :global(html[data-theme='bright']) .course { padding-block-start: 3.4rem; }
   .course { padding-block: clamp(2rem, 5vw, 3.5rem); max-inline-size: 62rem; }
+  /* two boxes, one page: the opening padding belongs to the head, and nothing
+     belongs between them — see the note beside the head above */
+  .course--top { padding-block-end: 0; }
+  .course--body { padding-block-start: 0; }
+  :global(html[data-theme='bright']) .course--body { padding-block-start: 0; }
   .course__head h1 { font-size: var(--step-3); color: var(--cream); margin-block-start: .3rem; }
   /* the emblem, the centring and the indent are .hall-head's, in bright.css */
   .course__stages {
@@ -311,4 +320,46 @@ const cycle = [
   .forcourse__more summary::before { content: '▸'; margin-inline-end: .45rem; transition: rotate .2s; display: inline-block; }
   .forcourse__more[open] summary::before { rotate: 90deg; }
   .forcourse .marks { margin-block-start: 1rem; }
+
+  /* ---------- read over the room ----------
+     This page is read in front of learn-hall, pinned for the whole document,
+     and until now only three runs on it answered that: the title, the three
+     stages and the sentence under them, which carry the museum's white edge
+     because they wear .hall-head and .hall-note. Everything else was still in
+     the dark museum's own tints — --surface is 3.5% BLACK, which over a
+     photograph darkens a block instead of lifting it — or in nothing at all.
+
+     So, at the owner's word, the two treatments the museum already has, and
+     no third: a block brings a ground, --pane, which is the 62% white and the
+     9px blur the index of films puts under every one of its cards; a line
+     that stands on the photograph carries its own light, --ink-edge, which is
+     one tight white stroke and three wide ones behind it. Both are declared
+     at the head of bright.css. Never both on one thing — a pane already is
+     the ground.
+
+     The hairline round each block stays the ink one it already was: that is
+     what the index of films' cards do — a dark rule round a white body — and
+     a white rule would leave these blocks with no visible frame at all over
+     the half of the window where the room has given way to the page.
+
+     Written here rather than in bright.css because Astro stamps its scope
+     attribute on every compound, so this page's own `.cycle > li` would
+     out-specify a theme rule and win silently. */
+  :global(html[data-theme='bright']) :is(.cycle > li, .forcourse) {
+    background: var(--pane);
+    -webkit-backdrop-filter: var(--pane-blur);
+    backdrop-filter: var(--pane-blur);
+  }
+  :global(html[data-theme='bright']) .course__sec h2 {
+    text-shadow: var(--ink-edge-h);
+  }
+  /* the notes and the reading list stand on the room; the ones inside
+     .forcourse stand on its pane and are left alone */
+  :global(html[data-theme='bright']) .course__sec > .course__note,
+  :global(html[data-theme='bright']) .links span {
+    text-shadow: var(--ink-edge);
+  }
+  :global(html[data-theme='bright']) .links :global(a) {
+    text-shadow: var(--ink-edge);
+  }
 </style>

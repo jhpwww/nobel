@@ -34,6 +34,26 @@ const t = useT(lang);
 
   <p class="sp__blocked" data-blocked hidden>{t('study.blocked')}</p>
 
+  {/* Choosing this lecture is not part of writing about it. It was the fourth
+      thing inside 準備, between a checkbox about a video and a box for a
+      question, where it read as one more field to fill in — and it is not: it
+      is the one mark on this page that the learning area counts, the six a
+      visitor is asked to pick out of thirty-one. So it stands above the three
+      stages, under the line that says where those six are kept, and in the
+      same red that line is written in, at the owner's word.
+
+      After the storage warning rather than before it: the warning is hidden
+      unless the browser refuses to keep anything, and on the day it appears it
+      is about this control as much as about the fields below. */}
+  <label class="sp__pick">
+    <input type="checkbox" data-pick />
+    <span class="sp__pick-box" aria-hidden="true"></span>
+    <span class="sp__pick-txt">
+      <b>{t('study.pick')}</b>
+      <em data-pick-count data-tmpl={t('study.pickCount')}></em>
+    </span>
+  </label>
+
   {/* Three stages, in the order they happen, each saying what it is for. The
       three are the learning area's own — see .cycle in LearnPage. */}
   <ol class="sp__stages" role="list">
@@ -47,15 +67,6 @@ const t = useT(lang);
       <div class="sp__watch">
         <label><input type="checkbox" data-watch="nobel" /> <span>{t('study.watchedNobel')}</span></label>
       </div>
-
-      <label class="sp__pick">
-        <input type="checkbox" data-pick />
-        <span class="sp__pick-box" aria-hidden="true"></span>
-        <span class="sp__pick-txt">
-          <b>{t('study.pick')}</b>
-          <em data-pick-count data-tmpl={t('study.pickCount')}></em>
-        </span>
-      </label>
 
       <div class="sp__field">
         <span class="sp__label">{t('study.askTitle')}</span>
@@ -171,7 +182,17 @@ const t = useT(lang);
   .sp__stage[data-stage='attend'] { border-color: color-mix(in srgb, var(--accent) 40%, transparent); color: var(--accent); }
   .sp__stage + .sp__stage { margin-inline-start: -0.25rem; }
 
-  .sp__pick { display: flex; align-items: flex-start; gap: .6rem; cursor: pointer; }
+  /* Out of the stage's own grid now, so it carries the space it used to be
+     given: close under the line it belongs with, and clear of the first
+     stage's frame below it. */
+  .sp__pick {
+    /* positioned, because the box below is the checkbox and the real input is
+       taken out of flow behind it — outside a stage's grid there is nothing
+       else here for it to resolve against but the window */
+    position: relative;
+    display: flex; align-items: flex-start; gap: .6rem; cursor: pointer;
+    margin-block: -.15rem .35rem;
+  }
   .sp__pick input { position: absolute; opacity: 0; inline-size: 0; }
   .sp__pick-box {
     flex: none; inline-size: 20px; block-size: 20px; margin-block-start: 2px;
@@ -184,8 +205,11 @@ const t = useT(lang);
   .sp__pick input:checked + .sp__pick-box::after { content: '✓'; color: var(--on-accent); font-size: 13px; line-height: 1; }
   .sp__pick input:focus-visible + .sp__pick-box { outline: 2px solid var(--gold-bright); outline-offset: 2px; }
   .sp__pick-txt { display: grid; gap: .1rem; }
-  .sp__pick-txt b { font-weight: 500; color: var(--cream); font-size: var(--step-0); }
-  .sp__pick-txt em { font-style: normal; font-size: var(--step--1); color: var(--muted); }
+  /* Red, and both lines of it: this is the only thing on the page that asks
+     the visitor for a decision rather than for writing, and the line above it
+     — the way to the six it counts towards — is written in the same ink. */
+  .sp__pick-txt b { font-weight: 500; color: var(--accent); font-size: var(--step-0); }
+  .sp__pick-txt em { font-style: normal; font-size: var(--step--1); color: var(--accent); }
 
   .sp__watch { display: flex; flex-wrap: wrap; gap: .5rem 1.3rem; }
   .sp__look {

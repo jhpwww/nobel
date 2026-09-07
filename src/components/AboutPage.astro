@@ -20,14 +20,17 @@ const hostList = Object.entries(hosts);
 <Base lang={lang} title={t('about.title')} segments={['about']} bare={bright}>
   {bright && <RoomBack lang={lang} room="about-hall" />}
   {bright && <PageEmblem src="assets/ui/medal.webp" srcSmall="assets/ui/medal-sm.webp" w={720} h={720} outside />}
-  <div class="wrap-narrow about" data-fade>
-    {/* The medal the project struck for itself: the bell tower and the palms
-        inside a ring of the six prizes, NOBEL LAUREATE LECTURES round the top
-        and NATIONAL TAIWAN UNIVERSITY round the foot. Set beside the title, and
-        caught into a mark beside the museum's name once the visitor has gone
-        half its height; that rail and that catch are one component, shared
-        with the learning area — see PageEmblem. */}
+  {/* The medal the project struck for itself: the bell tower and the palms
+      inside a ring of the six prizes, NOBEL LAUREATE LECTURES round the top
+      and NATIONAL TAIWAN UNIVERSITY round the foot. Set beside the title, and
+      caught into a mark beside the museum's name once the visitor has gone
+      half its height; that rail and that catch are one component, shared with
+      the learning area — see PageEmblem.
 
+      The head is in a box of its own, outside the box that fades, so that it
+      stands where the medal stands — see 'what a room is called does not
+      dissolve' in bright.css. */}
+  <div class:list={['wrap-narrow', 'about', 'about--top', bright && 'room-head']}>
     <header class="abt__hero hall-head">
       {/* Three lines, in the page's own order: what this room is, then whose
           it is, then what it is part of. Both lines under the name are gold,
@@ -47,7 +50,8 @@ const hostList = Object.entries(hosts);
       <p class="hall-stages">{t('about.stages')}</p>
       <p class="visually-hidden">{t('about.medalAlt')}</p>
     </header>
-
+  </div>
+  <div class="wrap-narrow about about--body" data-fade>
     <span id="about-body" class="gr__anchor"></span>
     {lang === 'zh' ? (
       <div class="prose stack" style="--gap:1.2rem">
@@ -214,6 +218,11 @@ const hostList = Object.entries(hosts);
      three to be a fifth of its width rather than a share of a sculpture's
      frame. */
   .about { padding-block: clamp(2rem, 5vw, 3.5rem) 0; }
+  /* two boxes, one page: the opening padding belongs to the head, and nothing
+     belongs between them — see the note beside the head above */
+  .about--top { padding-block-end: 0; }
+  .about--body { padding-block-start: 0; }
+  :global(html[data-theme='bright']) .about--body { padding-block-start: 0; }
   .about h1 { font-size: var(--step-3); color: var(--cream); }
 
   /* ---------- the medal, and the name beside it ----------
@@ -285,6 +294,33 @@ const hostList = Object.entries(hosts);
   .hosts li {
     font-size: var(--step--1); color: var(--muted);
     border: 1px solid var(--line); border-radius: var(--radius-control); padding: 0.2rem 0.8rem;
+  }
+
+  /* ---------- read over the room ----------
+     The colophon carries no sheet in daylight — it is one of the four rooms
+     the bar opens, and none of them has one — so from the first heading down
+     every line of this page was standing on about-hall with nothing under it.
+     The head already had its light; the rest had none.
+
+     The museum's two answers, and no third: --pane under what is framed,
+     --ink-edge on what stands on the photograph. Both at the head of
+     bright.css. The glass key in the list of special events is the button
+     kit's own material and is not answered here. */
+  :global(html[data-theme='bright']) code,
+  :global(html[data-theme='bright']) .hosts li {
+    background: var(--pane);
+    -webkit-backdrop-filter: var(--pane-blur);
+    backdrop-filter: var(--pane-blur);
+    /* the domain name is set inside a paragraph, so it would otherwise take
+       the paragraph's edge on top of its own ground and be printed twice */
+    text-shadow: none;
+  }
+  :global(html[data-theme='bright']) .about h2 {
+    text-shadow: var(--ink-edge-h);
+  }
+  :global(html[data-theme='bright']) .prose p,
+  :global(html[data-theme='bright']) .special > li > span {
+    text-shadow: var(--ink-edge);
   }
 </style>
 

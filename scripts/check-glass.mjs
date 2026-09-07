@@ -38,7 +38,12 @@ const BASE = (process.env.URL ?? 'http://localhost:4322/nobel/').replace(/\/$/, 
 const PAGES = [
   { path: '/',                  root: '.after' },
   { path: '/gallery/physics/',  root: '.gr__sheet' },
-  { path: '/gallery/nobel/',    root: '.gr__sheet' },
+  /* The introduction room's head stands outside the sheet — it is lifted over
+     the band the page dissolves into, the way the emblem beside it is — so the
+     room's title and the sentence under it have to be named here or they go
+     unmeasured. The other three rooms keep one class across both of their
+     boxes, so their roots still reach everything. */
+  { path: '/gallery/nobel/',    root: ':is(.gr__sheet, .np--top)' },
   { path: '/lecture/geim/',     root: '.lec__sheet' },
   { path: '/lectures/',         root: '.browse' },
   { path: '/learn/',            root: '.course' },

@@ -373,6 +373,35 @@ const index = lectures.map((l) => ({
     border: 1px solid var(--line); border-radius: var(--radius);
     padding: .8rem .9rem; font: inherit; font-size: var(--step--1); line-height: 1.8;
   }
+
+  /* ---------- read over the room ----------
+     The record sits in the middle of the learning area, and that page is read
+     in front of a photograph — see the note at the foot of LearnPage, which
+     is the same change for the blocks around this one. Same two treatments
+     and no third: --pane under anything framed, --ink-edge on anything that
+     stands on the room itself. Both are at the head of bright.css.
+
+     Here rather than there because Astro scopes every compound, so this
+     component's own rules would out-specify a theme rule and win in silence. */
+  :global(html[data-theme='bright'])
+  :is(.study__stats div, .study__nudge, .chooser, .work__item, .spread li) {
+    background: var(--pane);
+    -webkit-backdrop-filter: var(--pane-blur);
+    backdrop-filter: var(--pane-blur);
+  }
+  /* the one field still filled from the dark museum: a quarter of black,
+     which on paper is a hole */
+  :global(html[data-theme='bright']) .work__field textarea {
+    background: rgba(255, 255, 255, 0.78);
+  }
+  :global(html[data-theme='bright']) .study__sec h2 {
+    text-shadow: var(--ink-edge-h);
+  }
+  :global(html[data-theme='bright'])
+  :is(.study__note, .study__empty, .study__count, .study__msg,
+      .recs th, .recs td) {
+    text-shadow: var(--ink-edge);
+  }
 </style>
 
 <script>

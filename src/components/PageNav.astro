@@ -3,13 +3,18 @@
  * PageNav.astro — two standing controls in the lower right of every page.
  *
  * The galleries and lecture pages run long, and the only way back up was the
- * scrollbar. These two do not move with the page: one returns to the top of
- * the current page, one returns to wherever the visitor came from.
+ * scrollbar. These three do not move with the page: one returns to the top of
+ * the current page, one returns to wherever the visitor came from, and one
+ * goes the other way again for a visitor who came back too far.
  *
- * Both are conditional rather than permanent, so a short page shows nothing:
+ * All three are conditional rather than permanent, so a short page shows
+ * nothing:
  *   · "top"  appears only once the page has been scrolled past a screenful
  *   · "back" appears only when the previous page was inside the museum, so it
  *     can never dead-end on a search engine or an empty history
+ *   · "next" appears only on a page that was itself reached by going back or
+ *     forward, which is the one case in which the browser will admit there is
+ *     anything ahead — there is no way to ask it how much
  *
  * Below 48rem the labels drop and the pills become 44px circles — the same
  * decision the style switcher makes with its own descriptions.
@@ -38,6 +43,16 @@ const t = useT(lang);
       <path d="M19 12H6" /><path d="M11.5 5.5 5 12l6.5 6.5" />
     </svg>
     <span class="pn__t" aria-hidden="true">{t('nav.back')}</span>
+  </button>
+
+  {/* below the one it undoes, and drawn as its mirror: the same rule and the
+      same head, pointing the other way */}
+  <button class="pn__b museum-glass-btn museum-glass-btn--nav" type="button" data-pn-act="fwd" aria-label={t('nav.fwd')}>
+    <svg class="pn__i" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M5 12h13" /><path d="M12.5 5.5 19 12l-6.5 6.5" />
+    </svg>
+    <span class="pn__t" aria-hidden="true">{t('nav.fwd')}</span>
   </button>
 </div>
 
@@ -110,8 +125,9 @@ const t = useT(lang);
   const wrap = document.querySelector<HTMLElement>('[data-pn]');
   const toTop = wrap?.querySelector<HTMLButtonElement>('[data-pn-act="top"]');
   const back = wrap?.querySelector<HTMLButtonElement>('[data-pn-act="back"]');
+  const fwd = wrap?.querySelector<HTMLButtonElement>('[data-pn-act="fwd"]');
 
-  if (toTop && back) {
+  if (toTop && back && fwd) {
     // ── back ──────────────────────────────────────────────────────────────
     // history.length is unreliable (a fresh tab already reports 2), so the
     // referrer decides: it is set on every same-origin navigation and empty
@@ -126,6 +142,32 @@ const t = useT(lang);
     else back.hidden = true;
 
     back.addEventListener('click', () => history.back());
+
+    // ── and the way forward again ──────────────────────────────────────────
+    // There is no `history.canGoForward`, and there never was: the length and
+    // the index of the session's entries are deliberately not readable. What
+    // IS readable is how this page was arrived at, and a page arrived at by
+    // going back is a page with something in front of it. So the key shows
+    // itself there and nowhere else, which is the same shape of answer the
+    // referrer gives the key above.
+    //
+    // A page restored from the back/forward cache does not re-run this
+    // module, so the question is asked again on `pageshow` — that is the one
+    // event a restored page does fire.
+    const wentThroughHistory = () => {
+      const nav = performance.getEntriesByType('navigation')[0] as
+        PerformanceNavigationTiming | undefined;
+      return nav?.type === 'back_forward';
+    };
+    const syncFwd = () => {
+      const on = wentThroughHistory();
+      fwd.hidden = !on;
+      fwd.classList.toggle('is-on', on);
+    };
+    syncFwd();
+    addEventListener('pageshow', syncFwd);
+
+    fwd.addEventListener('click', () => history.forward());
 
     // ── back to top ───────────────────────────────────────────────────────
     // a screenful, floored so that a short page on a small phone still has to

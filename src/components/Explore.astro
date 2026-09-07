@@ -34,8 +34,16 @@ interface Props {
    *   columns because at the foot of a page there is a page's width to use.
    */
   variant?: 'cards' | 'panel';
+  /**
+   * How many entries at the head of the list wear the key's frame. One, by
+   * default and by the rail's own convention. The pages that pass a larger
+   * number are saying something different with it: that these entries are the
+   * prize's own pages on nobelprize.org and the rest are not, which is worth
+   * marking when a list holds both. Panel only — the cards carry no frame.
+   */
+  keys?: number;
 }
-const { lang, items, note, heading = true, wrap = true, variant = 'cards' } = Astro.props;
+const { lang, items, note, heading = true, wrap = true, variant = 'cards', keys = 1 } = Astro.props;
 const t = useT(lang);
 const Wrap = wrap ? 'div' : Fragment;
 ---
@@ -50,7 +58,7 @@ const Wrap = wrap ? 'div' : Fragment;
       <div class="xp__panel">
         <ul class="xp__links" role="list">
           {items.map((l, i) => (
-            <li class:list={[i === 0 && 'xp__key']}>
+            <li class:list={[i < keys && 'xp__key']}>
               <a href={l.url} target="_blank" rel="noopener noreferrer">{l.title}
                 <span class="xp__ext" aria-hidden="true"> ↗</span>
                 <span class="visually-hidden">{t('a11y.newTab')}</span>
@@ -147,8 +155,10 @@ const Wrap = wrap ? 'div' : Fragment;
   .xp__links a:hover { border-block-end-color: currentColor; }
   .xp__ext { opacity: 0.6; }
   .xp__d { font-size: var(--step--1); color: var(--muted-dim); line-height: 1.55; }
-  /* the first entry is the one the room would send you to if it could only
-     send you to one; the sidebar marks it the same way */
+  /* Framed: the entry the room would send you to if it could only send you to
+     one — the sidebar marks its first the same way — or, where a page says so
+     with `keys`, every entry that belongs to the prize's own site, so that a
+     list holding those and the museum's own does not read as one list. */
   .xp__key {
     padding: .7rem .85rem; margin-block-end: .3rem;
     border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);

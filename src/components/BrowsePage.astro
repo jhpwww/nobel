@@ -33,7 +33,10 @@ import { bright } from '../theme';
 <Base lang={lang} title={t('browse.title')} segments={['lectures']} bare={bright}>
   {bright && <RoomBack lang={lang} room="video-hall" />}
   {bright && <PageEmblem src="assets/ui/video-emblem.webp" w={720} h={576} outside />}
-  <div class="wrap browse" data-fade>
+  {/* The head stands outside the box that fades, exactly as the emblem beside
+      it does and for the same reason — see 'what a room is called does not
+      dissolve' in bright.css. */}
+  <div class:list={['wrap', 'browse', 'browse--top', bright && 'room-head']}>
     {/* the emblem struck for this room, on the rail every room that is not a
         prize room hangs one from — see PageEmblem and .hall-head */}
     <header class:list={['browse__id', bright && 'hall-head']}>
@@ -41,7 +44,8 @@ import { bright } from '../theme';
       <p class="browse__kinds">{t('browse.kinds')}</p>
     </header>
     <p class="browse__lede hall-note"><span>{t('learn.toolAllD', { n: totalSittings() })}</span></p>
-
+  </div>
+  <div class="wrap browse browse--body" data-fade>
     <form class="filters" id="filters" aria-label={t('browse.title')}>
       <label class="search">
         <span class="visually-hidden">{t('browse.search')}</span>
@@ -112,11 +116,15 @@ import { bright } from '../theme';
   </div>
 
   {/* The index of films ends the way the prize rooms and the laureate pages
-      do — the same panel, the same list, the same first entry marked — except
-      that a foot has a page's width to lay it out in rather than a 17rem rail.
-      It carries the prize's own four, plus the two that are about the series
-      rather than about one laureate. */}
+      do — the same panel, the same list — except that a foot has a page's
+      width to lay it out in rather than a 17rem rail. It carries the prize's
+      own four, plus the two that are about the series rather than about one
+      laureate; and it is the first four that wear the frame, because what the
+      frame says here is 'this one is nobelprize.org'. Counted off the list
+      itself rather than written as 4, so that a fifth page added to
+      catalog.ts is marked without anyone remembering to come back here. */}
   <Explore lang={lang} note={t('explore.noteAll')} variant="panel"
+           keys={generalLinks.length}
            items={[
              ...generalLinks.map((l) => ({
                url: l.url,
@@ -144,6 +152,13 @@ import { bright } from '../theme';
   }
   :global(html:not([data-theme='bright'])) .browse__kinds { display: none; }
   :global(html[data-theme='bright']) .browse { padding-block-start: 3.4rem; }
+  /* The page is two boxes now — the head, and everything under it — so the
+     padding that opens the page belongs to the first of them and nothing at
+     all belongs between them. .hall-head places itself by subtracting that
+     same 3.4rem, so it has to be on the box the head is in. */
+  .browse--top { padding-block-end: 0; }
+  .browse--body { padding-block-start: 0; }
+  :global(html[data-theme='bright']) .browse--body { padding-block-start: 0; }
 
   .filters { display: grid; gap: 1.1rem; margin-block: 1.8rem 1.4rem; }
   .search {

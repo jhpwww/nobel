@@ -247,6 +247,20 @@ src/
   phone must read exactly 39, against 152 untrimmed.
 
 **CSS**
+- Two ways type is read over a room, and only two. Four pages are read in front of a fixed
+  photograph — the index of films, the learning area, the introduction room, the colophon — and
+  bright.css declares the pair at its head: `--ink-edge` (and `--ink-edge-h` for a heading), the
+  four-layer white text-shadow a line carries when it stands on the photograph, and `--pane` /
+  `--pane-blur`, the 62% white and 9px blur a framed block brings as its own ground. Never both
+  on one element: a pane already is the ground, and type on it with an edge as well reads as
+  type printed twice. `--surface` is 3.5% BLACK — a dark-museum tint that over a photograph
+  darkens a block instead of lifting it; do not reach for it on these four pages.
+- A room's head — emblem, title, the three words it is read by, the sentence under them — stands
+  in a box of its own OUTSIDE the box marked `[data-fade]`, and wears `room-head`. `[data-fade]`
+  is `isolation: isolate`, and an isolated ancestor caps every z-index under it, so a title
+  inside the faded box can never be lifted over the band the page dissolves into. The page's own
+  opening padding goes on the head's box; the body's is zeroed, because `.hall-head` places
+  itself by subtracting that same 3.4rem.
 - Two accent tokens, and they are not interchangeable. `--accent` paints strokes, text, borders
   and the sculptures — full-strength hue. `--accent-block` paints solid fills: the guide badge in
   its three forms and the study panel's keys and marks. Never use `--accent` for a solid block.
@@ -296,7 +310,7 @@ Every descriptive string on the site is a museum wall label, not a lesson.
 - Chinese: 破折號 (——) sparingly, and never in a hook. Official lecture
   titles keep whatever punctuation they were delivered with.
 
-## PageNav (the two standing controls, lower right)
+## PageNav (the three standing controls, lower right)
 
 `src/components/PageNav.astro`, mounted once in `Base.astro`.
 
@@ -305,10 +319,31 @@ Every descriptive string on the site is a museum wall label, not a lesson.
 - "Previous page" is shown only when `document.referrer` is same-origin. `history.length` is
   useless for this — a fresh tab already reports 2 — and without the check the control dead-ends
   on a search engine.
+- "Next page" sits under it and calls `history.forward()`. There is no `canGoForward` and there
+  never was — the session's entries are deliberately unreadable — so the key shows itself only
+  where the browser will admit there is something ahead: on a page whose
+  `PerformanceNavigationTiming.type` is `back_forward`. It re-asks on `pageshow`, because a page
+  restored from the back/forward cache never re-runs the module.
 - z-index is 35: above page content, below the walk-in overlay (40) so the transition covers
   it, and clear of the switcher (60) and toggle (61).
 - The button keeps its slot when hidden (`visibility`), so nothing shifts as it fades in. Only
-  the referrer check uses `hidden`, decided once at load.
+  the referrer and history checks use `hidden`, decided once at load.
+
+## The way on travels a screen at a time
+
+`src/components/ScrollCue.astro`, pinned to the foot of the window on every page that has
+something below its opening screen.
+
+- One press is one window, every press, and the press before it does not have to have finished.
+  A smooth scroll reports the position it has animated TO, so `scrollBy` from there loses the
+  difference and two quick presses travel less than two screens: the target is carried in the
+  module instead, clamped to `scrollHeight - innerHeight`.
+- The carried target is released the moment the reader moves the page themselves — a wheel, a
+  touch, an arrow key — but NOT when the press lands on the cue, which arrives as a `mousedown`
+  or a `keydown` a moment before the click it belongs to.
+- Smooth only when `motionOn()` says so, exactly as the pinned keys ask it.
+- It is still an `<a href="#…">`. The anchor is the fallback for a visitor whose scripts have
+  not run, and the three `<span class="gr__anchor">` marker spans exist for it.
 
 ## The study store must never claim a save it did not make
 
@@ -333,6 +368,30 @@ with its three stages and all four fields always rendered.
 Rebuild the editable blocks only when the *set* of chosen ids changes — never
 on input. Repainting a textarea from storage mid-sentence discards what is
 being typed.
+
+「收藏這場演講」 stands ABOVE the three stages, under the line that says where
+the six are kept, and in red. It is the one mark on a lecture page that the
+learning area counts — not a field to fill in — and inside 準備 it read as a
+fourth. It has to stay inside `<section class="sp">`: that element carries
+`data-study` and is the panel script's query root, so a row moved out of it
+takes `[data-pick]` with it and the panel dies before it hydrates.
+
+## The search panel
+
+`src/components/SiteSearch.astro`, one `<dialog>` opened with `showModal()`.
+
+- The field carries `autofocus`. That is what puts the caret there: the dialog's
+  own focusing steps run inside `showModal()`, in the same turn as the press,
+  and a phone raises its keyboard only for a focus that happens inside the
+  gesture that asked for it. A `requestAnimationFrame(() => input.focus())` has
+  already spent the activation. `open()` focuses again, synchronously, for the
+  two keyboard ways in.
+- On a phone the plate stands 5rem from the top and its cap is
+  `calc(100svh - 5.5rem)`. The two move together: the dialog is the window with
+  `overflow: visible`, the plate clips its own overflow, and the document behind
+  is scroll-locked, so any height past the bottom of the screen is unreachable.
+- Do not reach for `env(safe-area-inset-*)`: the viewport meta has no
+  `viewport-fit=cover`, so on iOS it resolves to 0.
 
 ## The objects hall (`/models/`)
 
@@ -502,6 +561,20 @@ compositor: the text rises at full opacity and then snaps pale. Instead each pag
 room a second time, marked `[data-roomtop]`, laid over the page with a static mask — a cover of
 alpha `1 − a` equals blending the page toward the room at `a`, at no per-frame cost. Do not
 reintroduce a scroll-driven mask.
+
+- The bar says which room you are in. `Base.astro` derives it from `segments` — the same list
+  `routing.ts` builds every key's href from — and writes `aria-current="page"`; bright.css turns
+  that into red ink and a fuller plate. Colour and colour only: a key's width is its label plus
+  its padding, so a heavier or wider label pushes every key to its right along a row joined by a
+  hairline, and the frame widths are the owner's. The kit's own `[aria-current]` rule is inert
+  here — it paints `::before`, which the plate hides. A prize room lights nothing: the 關於諾獎
+  key opens the introduction room, and a physics room is not it.
+- The emblem a room hangs beside its title is caught at `--emb-k` and hung at `--emb-y`, both in
+  bright.css. A desktop catches it at 0.4 — twice what it was, at the owner's word — with its top
+  edge on the mark's own; a phone keeps 0.38 and the old centring, because 0.38 of an emblem that
+  is already a fifth of the screen is the size of the mark beside it. `--emb-h` is load-bearing
+  for `--head-min`, `--hall-indent` and `.hall-head`'s top margin; `--emb-k` and `--emb-y` are
+  read in one place only.
 
 **Traps in the bright layout that have already cost a rebuild:**
 - A CSS box gap is not the painted gap when the background is a picture with
