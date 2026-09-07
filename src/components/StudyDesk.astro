@@ -55,9 +55,11 @@ const index = lectures.map((l) => ({
 
     <section class="study__sec">
       <h2>{t('study.spreadTitle')}</h2>
-      <p class="study__note">{t('study.spreadNote')}</p>
-      <ul class="spread" data-spread role="list"></ul>
-      <p class="study__nudge" data-nudge hidden></p>
+      <div class="study__block">
+        <p class="study__note">{t('study.spreadNote')}</p>
+        <ul class="spread" data-spread role="list"></ul>
+        <p class="study__nudge" data-nudge hidden></p>
+      </div>
     </section>
 
     <p class="study__blocked" data-blocked hidden>{t('study.blocked')}</p>
@@ -68,6 +70,7 @@ const index = lectures.map((l) => ({
         this is where one record can be taken away or thrown out on its own. */}
     <section class="study__sec" aria-labelledby="h-rec">
       <h2 id="h-rec">{t('study.recordsTitle')}</h2>
+      <div class="study__block">
       <p class="study__note">{t('study.recordsNote')}</p>
       <p class="study__empty" data-rec-empty hidden>{t('study.recordsEmpty')}</p>
       <table class="recs" data-recs hidden>
@@ -82,6 +85,7 @@ const index = lectures.map((l) => ({
         <tbody data-rec-body></tbody>
       </table>
       <p class="study__count" data-rec-count hidden></p>
+      </div>
     </section>
 
     {/* a template, not createElement: Astro stamps its scope on compiled
@@ -125,26 +129,56 @@ const index = lectures.map((l) => ({
           <a class="work__name" data-work-name href="#"></a>
           <a class="work__go museum-glass-btn museum-glass-btn--nav" data-work-go href="#"><span>{t('study.openLecture')} →</span></a>
         </header>
-        <div class="work__watch">
-          <label><input type="checkbox" data-wwatch="tw" /> <span>{t('study.watchedTw')}</span></label>
-          <label><input type="checkbox" data-wwatch="nobel" /> <span>{t('study.watchedNobel')}</span></label>
-        </div>
-        <label class="work__field">
-          <span class="work__label">1. {t('study.fSummary')}</span>
-          <textarea data-wfield="summary" rows="3" placeholder={t('study.fSummaryPh')}></textarea>
-        </label>
-        <label class="work__field">
-          <span class="work__label">2. {t('study.fReflection')}</span>
-          <textarea data-wfield="reflection" rows="3" placeholder={t('study.fReflectionPh')}></textarea>
-        </label>
-        <label class="work__field">
-          <span class="work__label">3. {t('study.fQuestion')}</span>
-          <textarea data-wfield="question" rows="2" placeholder={t('study.fQuestionPh')}></textarea>
-        </label>
-        <label class="work__field">
-          <span class="work__label">{t('study.workAsk')}</span>
-          <textarea data-wfield="askQuestion" rows="2" placeholder={t('study.askPh')}></textarea>
-        </label>
+        {/* The same three stages, in the same order, carrying the same four
+            fields as the panel on a laureate's own page — see .sp__stages in
+            StudyPanel. A student who writes here and a student who writes
+            there are answering one form, and a form that reorders itself
+            between two rooms of the same museum is two forms. What is left
+            behind is only what belongs to a single lecture: the criteria
+            under the question, and the two copy keys, which this page has an
+            export for instead. */}
+        <ol class="work__stages" role="list">
+          <li class="work__stage" data-stage="1">
+            <h4 class="work__stage-h"><span class="work__stage-n">1</span>{t('study.stagePrepare')}</h4>
+            <p class="work__aim">{t('study.aim1')}</p>
+            <div class="work__watch">
+              <label><input type="checkbox" data-wwatch="nobel" /> <span>{t('study.watchedNobel')}</span></label>
+            </div>
+            <label class="work__field">
+              <span class="work__label">{t('study.askTitle')}</span>
+              <span class="work__aid">{t('study.askHint')}</span>
+              <textarea data-wfield="askQuestion" rows="3" placeholder={t('study.askPh')}></textarea>
+            </label>
+          </li>
+
+          <li class="work__stage" data-stage="2">
+            <h4 class="work__stage-h"><span class="work__stage-n">2</span>{t('study.stageAttend')}</h4>
+            <p class="work__aim">{t('study.aim2')}</p>
+            <div class="work__watch">
+              <label><input type="checkbox" data-wwatch="tw" /> <span>{t('study.watchedTw')}</span></label>
+            </div>
+            <label class="work__field">
+              <span class="work__label">{t('study.fSummary')}</span>
+              <span class="work__aid">{t('study.fSummaryAid')}</span>
+              <textarea data-wfield="summary" rows="3" placeholder={t('study.fSummaryPh')}></textarea>
+            </label>
+          </li>
+
+          <li class="work__stage" data-stage="3">
+            <h4 class="work__stage-h"><span class="work__stage-n">3</span>{t('study.stageReflect')}</h4>
+            <p class="work__aim">{t('study.aim3')}</p>
+            <label class="work__field">
+              <span class="work__label">{t('study.fReflection')}</span>
+              <span class="work__aid">{t('study.fReflectionAid')}</span>
+              <textarea data-wfield="reflection" rows="3" placeholder={t('study.fReflectionPh')}></textarea>
+            </label>
+            <label class="work__field">
+              <span class="work__label">{t('study.fQuestion')}</span>
+              <span class="work__aid">{t('study.fQuestionAid')}</span>
+              <textarea data-wfield="question" rows="2" placeholder={t('study.fQuestionPh')}></textarea>
+            </label>
+          </li>
+        </ol>
         <p class="work__saved" data-work-saved
            data-msg={t('study.saved')} data-fail={t('study.saveFail')}></p>
       </article>
@@ -171,14 +205,16 @@ const index = lectures.map((l) => ({
 
     <section class="study__sec">
       <h2>{t('study.manageTitle')}</h2>
-      <p class="study__note">{t('study.manageNote')}</p>
-      <div class="study__actions">
-        <button class="museum-glass-btn museum-glass-btn--nav" type="button" data-backup><span>{t('study.backup')}</span></button>
-        <label class="study__file">
-          <input type="file" accept="application/json,.json" data-restore hidden />
-          <span class="museum-glass-btn museum-glass-btn--nav"><span>{t('study.restore')}</span></span>
-        </label>
-        <button type="button" class="danger museum-glass-btn museum-glass-btn--nav" data-clear><span>{t('study.clear')}</span></button>
+      <div class="study__block">
+        <p class="study__note">{t('study.manageNote')}</p>
+        <div class="study__actions">
+          <button class="museum-glass-btn museum-glass-btn--nav" type="button" data-backup><span>{t('study.backup')}</span></button>
+          <label class="study__file">
+            <input type="file" accept="application/json,.json" data-restore hidden />
+            <span class="museum-glass-btn museum-glass-btn--nav"><span>{t('study.restore')}</span></span>
+          </label>
+          <button type="button" class="danger museum-glass-btn museum-glass-btn--nav" data-clear><span>{t('study.clear')}</span></button>
+        </div>
       </div>
     </section>
   </div>
@@ -336,6 +372,35 @@ const index = lectures.map((l) => ({
   .work__name:hover { color: var(--gold-bright); }
   .work__go { color: var(--gold); text-decoration: none; font-size: var(--step--1); white-space: nowrap; }
   .work__go:hover { color: var(--gold-bright); }
+  /* ---------- the three stages, as a laureate's page sets them out ----------
+     Same shape, same numbers, same gold disc — see .sp__stage in StudyPanel.
+     They are one form written in two rooms. */
+  .work__stages { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.1rem; }
+  .work__stage {
+    display: grid;
+    gap: .55rem;
+    padding-block-start: .9rem;
+    border-block-start: 1px solid var(--line);
+  }
+  .work__stage-h {
+    display: flex; align-items: center; gap: .55rem;
+    margin: 0; font-size: var(--step-0); color: var(--cream);
+    font-family: var(--font-han-serif); letter-spacing: .06em;
+  }
+  .work__stage-n {
+    flex: none;
+    inline-size: 1.45rem; block-size: 1.45rem;
+    display: grid; place-items: center;
+    border-radius: 50%;
+    background: var(--gold-deep);
+    color: var(--bg-0);
+    font-family: var(--font-display);
+    font-size: var(--step--1);
+    line-height: 1;
+  }
+  .work__aim { margin: 0; font-size: var(--step--1); color: var(--muted); line-height: 1.75; max-inline-size: none; }
+  .work__aid { font-size: var(--step--2); color: var(--muted-dim); line-height: 1.6; }
+
   .work__watch {
     display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem;
     font-size: var(--step--1); color: var(--muted);
@@ -383,6 +448,28 @@ const index = lectures.map((l) => ({
 
      Here rather than there because Astro scopes every compound, so this
      component's own rules would out-specify a theme rule and win in silence. */
+
+  /* ---------- a section's reading stands on a frame ----------
+     The learning area's own rule, at the owner's word: what a section holds
+     stands on 62% white and a 9px blur, and the heading above it stands on the
+     room with the museum's white edge. 學習進度's five figures and 我的收藏's
+     chooser and records already carried a plate each; these are the ones whose
+     reading was standing on the photograph itself. */
+  .study__block { display: grid; gap: .3rem; margin-block-start: .8rem; }
+  :global(html[data-theme='bright']) .study__block {
+    --muted: #38332e;
+    --muted-dim: #443e38;
+    background: var(--pane);
+    -webkit-backdrop-filter: var(--pane-blur);
+    backdrop-filter: var(--pane-blur);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: clamp(1.1rem, 3vw, 1.5rem) clamp(1.1rem, 3vw, 1.4rem);
+  }
+  /* inside the frame the note is the block's first line, not a caption hung
+     under a heading, so it loses the margin it carried in the open */
+  .study__block > .study__note:first-child { margin-block-start: 0; }
+
   :global(html[data-theme='bright'])
   :is(.study__stats div, .study__nudge, .chooser, .work__item, .spread li) {
     background: var(--pane);

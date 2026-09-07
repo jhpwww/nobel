@@ -162,16 +162,18 @@ const cycle = [
 
     <section class="course__sec" aria-labelledby="rd">
       <h2 id="rd">{t('learn.readTitle')}</h2>
-      <ul class="links" role="list">
-        <li>
-          <ExtLink lang={lang} href={NOBEL}>nobelprize.org</ExtLink>
-          <span>{t('learn.readNobel')}</span>
-        </li>
-        <li>
-          <ExtLink lang={lang} href={CGE}>{t('lec.ntuCge')}</ExtLink>
-          <span>{t('lec.ntuCgeNote')}</span>
-        </li>
-      </ul>
+      <div class="course__block">
+        <ul class="links" role="list">
+          <li>
+            <ExtLink lang={lang} href={NOBEL}>nobelprize.org</ExtLink>
+            <span>{t('learn.readNobel')}</span>
+          </li>
+          <li>
+            <ExtLink lang={lang} href={CGE}>{t('lec.ntuCge')}</ExtLink>
+            <span>{t('lec.ntuCgeNote')}</span>
+          </li>
+        </ul>
+      </div>
     </section>
 
     <!-- Subordinate by design: one course happens to use this collection. -->
@@ -350,6 +352,25 @@ const cycle = [
     -webkit-backdrop-filter: var(--pane-blur);
     backdrop-filter: var(--pane-blur);
   }
+  /* the reading list is a text area like any other; the heading above it
+     stands on the room — see the note above */
+  .course__block { margin-block-start: 1.2rem; }
+  :global(html[data-theme='bright']) .course__block {
+    --muted: #38332e;
+    --muted-dim: #443e38;
+    background: var(--pane);
+    -webkit-backdrop-filter: var(--pane-blur);
+    backdrop-filter: var(--pane-blur);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: clamp(1.1rem, 3vw, 1.5rem) clamp(1.1rem, 3vw, 1.4rem);
+  }
+  :global(html[data-theme='bright']) .course__block .links { margin-block-start: 0; }
+  /* inside the frame they are read on paper, not on marble */
+  :global(html[data-theme='bright']) .course__block :is(.links span, .links :global(a)) {
+    text-shadow: none;
+  }
+
   :global(html[data-theme='bright']) .course__sec h2 {
     text-shadow: var(--ink-edge-h);
   }

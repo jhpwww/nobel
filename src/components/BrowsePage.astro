@@ -160,6 +160,27 @@ import { bright } from '../theme';
   .browse--body { padding-block-start: 0; }
   :global(html[data-theme='bright']) .browse--body { padding-block-start: 0; }
 
+  /* ---------- the reel is wider than it is tall ----------
+     .hall-head sets its title in from the column's edge by --hall-indent, and
+     that is struck off the emblem's HEIGHT — which every other room's emblem
+     shares with its width, the medal, the wreath and the learning area's
+     device all being square. This one is 720x576, so its right edge was
+     landing two pixels INSIDE the first glyph of the title, with ten more of
+     its own white edge past that: the room's mark fogging the room's name.
+
+     Redeclared on the box rather than on the theme root, because a custom
+     property is resolved where it is declared — --hall-indent computed on
+     <html> has already substituted what it read there, and only a fresh
+     declaration on an ancestor of .hall-head reaches the title. */
+  :global(html[data-theme='bright']) .browse--top {
+    --hall-indent: calc(var(--emb-h) * 720 / 576 + clamp(1.1rem, 3vw, 2.2rem));
+  }
+  @media (max-width: 40rem) {
+    :global(html[data-theme='bright']) .browse--top {
+      --hall-indent: calc(var(--emb-h) * 720 / 576 + clamp(0.7rem, 2.6vw, 1.4rem));
+    }
+  }
+
   .filters { display: grid; gap: 1.1rem; margin-block: 1.8rem 1.4rem; }
   .search {
     position: relative; display: flex; align-items: center;

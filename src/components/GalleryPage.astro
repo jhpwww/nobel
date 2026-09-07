@@ -1083,6 +1083,17 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
 
      Written here rather than in bright.css because Astro scopes every
      compound, so this page's own rules would out-specify a theme rule. */
+  /* The six doors are text areas too — a name, its English and a line of
+     figures — and they were standing on nothing at all: a transparent border
+     and one hairline under each. They take the same material as every other
+     block in this room, at the owner's word. */
+  :global(html[data-theme='bright']) .np__six a {
+    background: var(--pane);
+    -webkit-backdrop-filter: var(--pane-blur);
+    backdrop-filter: var(--pane-blur);
+    border-color: var(--line);
+  }
+  :global(html[data-theme='bright']) .np__six a:hover { background: #fff; }
   :global(html[data-theme='bright']) :is(.np__will, .np__prose, .np__steps) {
     /* Two thirds of white is two thirds: the darkest thing the room puts
        under a block is the shadow under the colonnade, and the secondary inks

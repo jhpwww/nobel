@@ -406,6 +406,15 @@ Rebuild the editable blocks only when the *set* of chosen ids changes — never
 on input. Repainting a textarea from storage mid-sentence discards what is
 being typed.
 
+The block a chosen lecture gets on `/learn/` carries the SAME three stages, in
+the same order, with the same four fields as the panel on a laureate's own page
+— 準備 takes the Nobel-lecture tick and the question, 參與 takes the Taiwan tick
+and the summary, 反思 takes the reflection and the further question. They are one
+form written in two rooms, and a form that reorders itself between them is two
+forms. What the desk leaves out is only what belongs to a single lecture: the
+criteria under the question and the two copy keys, which this page has an export
+for instead.
+
 「收藏這場演講」 stands ABOVE the three stages, under the line that says where
 the six are kept, and in red. It is the one mark on a lecture page that the
 learning area counts — not a field to fill in — and inside 準備 it read as a

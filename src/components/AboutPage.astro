@@ -50,16 +50,27 @@ const hostList = Object.entries(hosts);
       <p class="hall-stages">{t('about.stages')}</p>
       <p class="visually-hidden">{t('about.medalAlt')}</p>
     </header>
+    {/* The sentence that says what this room is belongs with the head, not
+        with the reading: it is the one line the other three rooms carry there
+        too, and inside the faded box it was the only one of the four that the
+        band could still reach. */}
+    {lang === 'zh' ? (
+      <p class="lede hall-note"><span>
+        本站將近年由臺大參與或主辦的諾貝爾獎得主演講，收攏成為一座線上博物館，
+        供大眾或學生瀏覽及自我學習，以擴展國際視野。
+      </span></p>
+    ) : (
+      <p class="lede hall-note"><span>
+        This site gathers the Nobel laureate lectures that National Taiwan University
+        hosted or took part in over recent years into one online museum, open to the
+        public and to students to browse and learn from, and to widen the view.
+      </span></p>
+    )}
   </div>
   <div class="wrap-narrow about about--body" data-fade>
     <span id="about-body" class="gr__anchor"></span>
     {lang === 'zh' ? (
       <div class="prose stack" style="--gap:1.2rem">
-        <p class="lede hall-note"><span>
-          本站將近年由臺大參與或主辦的諾貝爾獎得主演講，收攏成為一座線上博物館，
-          供大眾或學生瀏覽及自我學習，以擴展國際視野。
-        </span></p>
-
         <h2>諾貝爾獎在臺灣的回響</h2>
         <div class="abt__block">
           <p>
@@ -120,12 +131,6 @@ const hostList = Object.entries(hosts);
       </div>
     ) : (
       <div class="prose stack" style="--gap:1.2rem">
-        <p class="lede hall-note"><span>
-          This site gathers the Nobel laureate lectures that National Taiwan University
-          hosted or took part in over recent years into one online museum, open to the
-          public and to students to browse and learn from, and to widen the view.
-        </span></p>
-
         <h2>Taiwan and the Nobel legacy</h2>
         <div class="abt__block">
           <p>
