@@ -377,9 +377,12 @@ const cycle = [
   }
   /* the notes and the reading list stand on the room; the ones inside
      .forcourse stand on its pane and are left alone */
+  /* the sentence under a heading, read straight off the room — black ink and
+     the wide field, see --ink-edge-wide in bright.css */
   :global(html[data-theme='bright']) .course__sec > .course__note,
   :global(html[data-theme='bright']) .links span {
-    text-shadow: var(--ink-edge);
+    color: var(--ink-solid);
+    text-shadow: var(--ink-edge-wide);
   }
   :global(html[data-theme='bright']) .links :global(a) {
     text-shadow: var(--ink-edge);

@@ -485,9 +485,14 @@ const index = lectures.map((l) => ({
     text-shadow: var(--ink-edge-h);
   }
   :global(html[data-theme='bright'])
-  :is(.study__note, .study__empty, .study__count, .study__msg,
-      .recs th, .recs td) {
+  :is(.study__msg, .recs th, .recs td) {
     text-shadow: var(--ink-edge);
+  }
+  /* the sentence under a heading — black ink and the wide field */
+  :global(html[data-theme='bright'])
+  :is(.study__note, .study__empty, .study__count) {
+    color: var(--ink-solid);
+    text-shadow: var(--ink-edge-wide);
   }
 </style>
 

@@ -1159,8 +1159,18 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
     text-shadow: var(--ink-edge-h);
   }
   :global(html[data-theme='bright'])
-  :is(.np__note, .np__asof, .np__six-n, .np__six-en, .np__six-m) {
+  :is(.np__six-n, .np__six-en, .np__six-m) {
     text-shadow: var(--ink-edge);
+  }
+  /* the sentence under a heading, read straight off the room — black ink and
+     the wide field, see --ink-edge-wide in bright.css */
+  :global(html[data-theme='bright']) :is(.np__note, .np__asof) {
+    color: var(--ink-solid);
+    text-shadow: var(--ink-edge-wide);
+  }
+  :global(html[data-theme='bright']) .gh__note {
+    color: var(--ink-solid);
+    text-shadow: var(--ink-edge-wide);
   }
 </style>
 

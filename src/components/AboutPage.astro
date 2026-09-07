@@ -222,7 +222,7 @@ const hostList = Object.entries(hosts);
         the same small print, so nothing divides the two. */}
     <hr class="abt__rule" />
     {lang === 'zh' ? (
-      <div class="prose stack" style="--gap:1.2rem">
+      <div class="prose stack abt__terms" style="--gap:1.2rem">
         <h2>影片與版權</h2>
         <div class="abt__block">
           <p>
@@ -249,7 +249,7 @@ const hostList = Object.entries(hosts);
         </div>
       </div>
     ) : (
-      <div class="prose stack" style="--gap:1.2rem">
+      <div class="prose stack abt__terms" style="--gap:1.2rem">
         <h2>Video and rights</h2>
         <div class="abt__block">
           <p>
@@ -364,7 +364,15 @@ const hostList = Object.entries(hosts);
   .lede { font-size: var(--step-1); color: var(--cream); }
   code { font-size: 0.88em; background: var(--surface-hi); padding: 0.1em 0.4em; border-radius: 2px; }
 
-  /* the one rule on this page: the room above it, the terms below */
+  /* The one rule on this page: the room above it, the terms below. Every
+     .about h2 draws a rule of its own, which is right while the headings are
+     the room's sections and wrong here — 影片與版權 and 隱私 are two halves of
+     the same small print, and a line between them would divide what the <hr>
+     above has already set apart. So the terms keep the <hr> and give up their
+     own. */
+  .about .abt__terms h2 { border-block-start: 0; padding-block-start: 0; }
+  .about .abt__terms > h2:first-child { margin-block-start: 0; }
+
   .abt__rule {
     border: 0;
     block-size: 1px;
@@ -414,8 +422,12 @@ const hostList = Object.entries(hosts);
   :global(html[data-theme='bright']) .about h2 {
     text-shadow: var(--ink-edge-h);
   }
-  /* the opening sentence stands with the head, above every frame */
-  :global(html[data-theme='bright']) .lede { text-shadow: var(--ink-edge); }
+  /* the opening sentence stands with the head, above every frame — black ink
+     and the wide field, see --ink-edge-wide in bright.css */
+  :global(html[data-theme='bright']) .lede {
+    color: var(--ink-solid);
+    text-shadow: var(--ink-edge-wide);
+  }
   /* inside a frame, and so a tint rather than a ground of its own */
   :global(html[data-theme='bright']) code { text-shadow: none; }
 </style>

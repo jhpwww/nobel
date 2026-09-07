@@ -152,6 +152,33 @@ html[data-theme='bright'] {
     0 0 4px rgba(255, 255, 255, 0.98),
     0 0 11px rgba(255, 255, 255, 0.82),
     0 0 22px rgba(255, 255, 255, 0.55);
+  /* The sentence under a heading is the hardest line in these rooms: it is
+     the smallest type that has to be read straight off marble, gold and
+     window, with no frame under it and no size to carry it. --ink-edge is the
+     edge for type BETWEEN frames and it holds for a heading; under one, at
+     --step--1 over a bright ground, the owner reports the ground winning.
+
+     So this line, and only this line, gets more: seven layers instead of
+     four, opaque to 4px and reaching to 52px. The near ones are the edge that
+     keeps the letterform; the far ones are a field of light that clears the
+     ground behind the whole line. The reason this is not the 白霧 the owner
+     rejected earlier is the ink — that fault was PALE type inside a halo,
+     where the halo wins and the letters go to mist. Under this stack the ink
+     is solid black, so the halo has nothing to take. Never put this on pale
+     type, and never on type that already stands on a pane. */
+  --ink-edge-wide:
+    0 0 1px rgba(255, 255, 255, 1),
+    0 0 2px rgba(255, 255, 255, 1),
+    0 0 4px rgba(255, 255, 255, 1),
+    0 0 8px rgba(255, 255, 255, 0.95),
+    0 0 16px rgba(255, 255, 255, 0.85),
+    0 0 30px rgba(255, 255, 255, 0.7),
+    0 0 52px rgba(255, 255, 255, 0.5);
+  /* Black, not the museum's brown ink. Every other reading in the building is
+     --text on paper; this one is read off a photograph and is the one place
+     the owner has asked for the full stop. */
+  --ink-solid: #000;
+
   --pane: rgba(255, 255, 255, 0.62);
   --pane-line: rgba(255, 255, 255, 0.5);
   --pane-blur: blur(9px) saturate(1.12);
@@ -545,7 +572,7 @@ html[data-theme='bright'] .hall-note {
      letters go to mist. The colophon's own opening sentence has always been
      set in the darkest ink for exactly this reason and has never been
      reported; the other three rooms now say theirs as plainly. */
-  color: var(--text);
+  color: var(--ink-solid);
   /* The same field of light the museum's own labels carry over a photograph:
      these rooms are read against marble, gold and window.
 
@@ -557,7 +584,7 @@ html[data-theme='bright'] .hall-note {
      the three wider ones behind it are the haze the owner asked for. The
      stack itself is --ink-edge now, declared at the head of this file, so the
      rooms that met the same ground later say it in the same words. */
-  text-shadow: var(--ink-edge);
+  text-shadow: var(--ink-edge-wide);
 }
 /* Two thirds of the COLUMN, not of what is left of it after the indent — the
    note is set in from the title, so its own 100% is the column less that. */
@@ -747,22 +774,31 @@ html[data-theme='bright'] .topbar__nav :is(.topbar__key, .topbar__menu, .museum-
 html[data-theme='bright'] .topbar__nav :is(.topbar__key, .topbar__menu, .museum-glass-btn--nav):not(.ss__key)::after {
   display: none;
 }
-/* ---------- the label sits where the plate's own panel is ----------
-   The plate is a photograph of a tablet and its cream panel is not centred in
-   the file: it runs from 11.9% to 79.3% of the picture's height, so the panel's
-   middle is at 45.6% and a label centred in the BOX lands 1.7px below it. The
-   capsule the search key wears is inset to match that panel exactly, which is
-   why the fault shows there first — a capsule is a plain shape and the eye
-   reads its middle at once, where a tablet with acanthus at both ends hides it.
+/* ---------- the label sits on the middle of the plate's own rule ----------
+   Two things are off-centre here and only one of them is the picture.
 
-   So the ink is lifted to the panel's middle rather than the box's, on every
-   key at once: they are one row of type, and moving one of them would trade a
-   label off its capsule for a label off the line its neighbours are on. 1.7px
-   is 4.4% of the 37.3px key and 4.4% of the phone's 41.6px is 1.8px, so one
-   length serves both. */
+   The plate is a photograph of a tablet, and the gold rule drawn inside it
+   runs from 5.63px to 30.50px of a 37.3px key — its middle at 18.06px, about
+   0.6px above the box's 18.65px. Small.
+
+   The larger one is the type. A Han label's INK does not sit in the middle of
+   its own line box: measured on the rendered bar at eight times scale, the
+   ink of 回到大廳 ran 8.88px to 21.88px, centre 15.38px — 2.69px ABOVE the
+   rule's middle before anything was translated at all. So the first attempt
+   here, which lifted the label a further 1.7px to meet the picture's cream
+   panel, moved it the wrong way and the row read high.
+
+   What the eye centres is ink against the rule that frames it, so that is
+   what is measured and that is what is set. Measure it again the same way if
+   the face, the size or the plate changes: screenshot one key at DPR 8, find
+   the gold rows and the dark rows, and put the two centres together. One
+   length serves the phone too — 1px is 2.7% of the 37.3px key and 2.7% of the
+   phone's 41.6px is 1.1px. It is set on every key at once because they are
+   one row of type: moving one would trade a label off its own plate for a
+   label off the line its neighbours are on. */
 html[data-theme='bright'] .topbar__nav
 :is(.topbar__key, .topbar__menu, .museum-glass-btn--nav) > * {
-  translate: 0 -1.7px;
+  translate: 0 1px;
 }
 
 /* the plate is a picture, so pressing it lifts and brightens the picture */
@@ -793,14 +829,30 @@ html[data-theme='bright'] .topbar__nav :is(.topbar__key, .museum-glass-btn--nav)
    the BOX floats clear of the tablet, and on a phone it would land in the
    overlap the folded column keeps. Neither `color` nor `filter` is touched by
    the fold's transitions, so the phone needs no rule of its own. */
+/* The picture comes forward far enough to see. The first pass brightened it,
+   which on a cream plate is nearly nothing: measured against a plain key at
+   six times scale it moved the plate's mean by 12 of 255 — the owner reported
+   it as 'only the label turns red', correctly. Six candidates were rendered
+   and measured; this one darkens and enriches instead of brightening, moves
+   the mean by 61 — five times the first pass — and still leaves the red label
+   at 4.98:1 on the ground directly under it. Darkening rather than tinting on
+   purpose: the sepia candidates moved as far but turned the plate yellow-green,
+   which reads as a highlighter and leaves the museum's palette, where a plate
+   pressed a step into the wall is the same door with the visitor standing in
+   it. Going further is one number — brightness 0.82 measured Δ69 at 4.73:1 —
+   but the margin over AA gets thin, and 0.80 lands at 4.54:1.
+
+   Sample the GROUND, not across the glyphs, if this is measured again — the
+   anti-aliased edge of red type reads as a dark ground and reports every
+   candidate as failing. */
 html[data-theme='bright'] .topbar__nav :is(.topbar__key, .museum-glass-btn--nav)[aria-current='page']:not(.ss__key) {
   color: var(--red-deep);
-  filter: saturate(1.18) brightness(1.03);
+  filter: saturate(1.8) brightness(0.84) contrast(1.05);
 }
 /* and it stays the current key under a finger: the bar's hover is a single
    `filter`, which would otherwise replace this one outright */
 html[data-theme='bright'] .topbar__nav :is(.topbar__key, .museum-glass-btn--nav)[aria-current='page']:not(.ss__key):hover {
-  filter: saturate(1.18) brightness(1.07);
+  filter: saturate(1.8) brightness(0.88) contrast(1.05);
 }
 
 /* ---------- the size of a key ----------
@@ -2018,9 +2070,9 @@ html[data-theme='bright'] .xp__h {
    owner's word, so it keeps the edge and gets two more layers of haze behind
    it — wide and faint, a field of light rather than a second outline. */
 html[data-theme='bright'] .xp__note {
+  color: var(--ink-solid);
   text-shadow:
-    var(--ink-edge),
-    0 0 34px rgba(255, 255, 255, 0.58),
+    var(--ink-edge-wide),
     0 0 64px rgba(255, 255, 255, 0.42);
 }
 /* ---------- the page's ground, half-way ----------
