@@ -333,7 +333,10 @@ const piece = bright ? {
     /* above the mark's 60, which is the top of the ladder — see 'the band
        every page dissolves into' in bright.css */
     z-index: 61;
-    max-inline-size: calc(100vw - var(--mark-x) - var(--lock-w, 10.9rem) - 11rem);
+    /* as far as the bar's own keys, and no further — measured, because that
+       row is five labels in one of two languages and folds into a column on a
+       phone. Until it is measured the name simply does not stand. */
+    max-inline-size: var(--pin-max, 0px);
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -350,10 +353,11 @@ const piece = bright ? {
   }
   .lec__pin[data-pinned] { opacity: 1; translate: none; }
   :global(html[data-motion='off']) .lec__pin { transition: none; }
-  /* On a phone the bar's own keys start at the top right and the mark already
-     reaches half way across; a name after it would be a second line of type
-     under the browser's chrome. The page's title is a screen away there, not
-     five. */
+  /* Wherever the bar folds, which is the same 48rem, there is no room beside
+     the mark: the keys open into a column whose first row is on the mark's own
+     line, and what is left is about ninety pixels — enough for 'Prof. Sir A…',
+     which is worse than nothing. On a phone the name is one screen up rather
+     than five, and the way back to it is the same scroll. */
   @media (max-width: 48rem) {
     .lec__pin { display: none; }
   }
@@ -461,12 +465,31 @@ const piece = bright ? {
      the only reader here and has to ask. */
   const who = document.querySelector<HTMLElement>('.lec__who');
   const pin = document.querySelector<HTMLElement>('.lec__pin');
+  const bar = document.querySelector<HTMLElement>('.topbar__nav');
 
   if (who && pin) {
     let queued = false;
     const test = () => {
       queued = false;
-      pin.toggleAttribute('data-pinned', who.getBoundingClientRect().top <= 0);
+      /* How much room there is between the mark and the bar's keys. It is not
+         a constant: the row is five labels in either of two languages, and on
+         a phone it is folded until half a screen has gone by and then opens
+         into a column that is wider than the key it folded behind. So it is
+         read here rather than guessed, on the same frames the catch itself
+         is decided on. */
+      let fits = false;
+      if (bar) {
+        const room = bar.getBoundingClientRect().left
+          - pin.getBoundingClientRect().left - 12;
+        pin.style.setProperty('--pin-max', `${Math.max(0, Math.round(room))}px`);
+        /* And if the whole name does not fit, it does not stand at all.
+           'Prof. Ge…' beside the mark is worse than the mark alone: the part
+           of a name that identifies anyone is the end of it, and a clipped
+           one is a label for nobody. scrollWidth is the name's own width even
+           while the box is clamped narrower than it. */
+        fits = pin.scrollWidth > 0 && room >= pin.scrollWidth;
+      }
+      pin.toggleAttribute('data-pinned', fits && who.getBoundingClientRect().top <= 0);
     };
     measureMark();
     test();
