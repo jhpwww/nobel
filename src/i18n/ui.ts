@@ -78,8 +78,6 @@ export const ui = {
 
     'cat.back': '回到大廳',
     'cat.lectures': '本展廳的講座',
-    'cat.ntuLectures': '臺大「諾貝爾獎得主講座」',
-    'cat.ntuNote': '臺大自 2019 年起自辦的諾貝爾獎得主演講，不屬於臺灣橋樑計畫。',
 
     'lec.guide': '導讀影片',
     /* The same fact, said from the other side of the click. See guideBadgeKey
@@ -324,8 +322,6 @@ export const ui = {
 
     'cat.back': 'Back to the hall',
     'cat.lectures': 'Lectures in this gallery',
-    'cat.ntuLectures': 'NTU Nobel Laureates Lecture Series',
-    'cat.ntuNote': "NTU's own Nobel laureate lectures, running since 2019 and not part of the Taiwan Bridges Program.",
 
     'lec.guide': 'Guide video',
     'lec.guideHas': 'Has a guide video',

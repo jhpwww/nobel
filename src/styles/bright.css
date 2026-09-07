@@ -178,6 +178,12 @@ html[data-theme='bright'] {
      --text on paper; this one is read off a photograph and is the one place
      the owner has asked for the full stop. */
   --ink-solid: #000;
+  /* A step of its own, between --step--1 and --step-0. The sentence under a
+     heading is the one line in these rooms with no frame under it and no size
+     to carry it, and at --step--1 over a photograph the owner reports it as
+     hard to read. Both ends of the clamp move, so a phone gains as much as a
+     desktop does. */
+  --step-note: clamp(0.885rem, 0.85rem + 0.19vw, 0.99rem);
 
   --pane: rgba(255, 255, 255, 0.62);
   --pane-line: rgba(255, 255, 255, 0.5);
@@ -542,6 +548,13 @@ html:not([data-theme='bright']) .hall-stages { display: none; }
    this is where most of the closing happens. */
 html[data-theme='bright'] :is(.browse__kinds, .course__stages, .hall-stages) {
   line-height: 1.15;
+  /* Above the sentence below it, and that is not decoration. That sentence now
+     carries --ink-edge-wide, a field of light reaching 52px; this line stands
+     inside that reach and EARLIER in the document, so the field was painting
+     over the top of it and the owner saw the gold go white. A shadow always
+     spills — what settles it is which of the two is drawn last. */
+  position: relative;
+  z-index: 1;
   /* And its own light, now that the room has none.
      The wash the photographs carried was doing this line's work for it: gold
      at 17px with no shadow at all, standing on a pale glass panel in the
@@ -793,12 +806,21 @@ html[data-theme='bright'] .topbar__nav :is(.topbar__key, .topbar__menu, .museum-
    the face, the size or the plate changes: screenshot one key at DPR 8, find
    the gold rows and the dark rows, and put the two centres together. One
    length serves the phone too — 1px is 2.7% of the 37.3px key and 2.7% of the
-   phone's 41.6px is 1.1px. It is set on every key at once because they are
-   one row of type: moving one would trade a label off its own plate for a
-   label off the line its neighbours are on. */
+   phone's 41.6px is 1.1px.
+
+   The search key needed its own figure and had been taking the plates'. It is
+   a CAPSULE, not a tablet, and its rule sits higher in its own box: measured
+   the same way, the capsule's rule runs 6.00px to 27.88px with its middle at
+   16.94px against the plate's 18.06px, so on one shared figure its label came
+   out 1.94px low. That is exactly what the owner saw, and why the search read
+   worse than the rest of the row. The row keeps the plates' figure; the
+   capsule takes its own. */
 html[data-theme='bright'] .topbar__nav
 :is(.topbar__key, .topbar__menu, .museum-glass-btn--nav) > * {
-  translate: 0 1px;
+  translate: 0 0.5px;
+}
+html[data-theme='bright'] .topbar__nav .ss__key > * {
+  translate: 0 -0.94px;
 }
 
 /* the plate is a picture, so pressing it lifts and brightens the picture */
@@ -844,15 +866,60 @@ html[data-theme='bright'] .topbar__nav :is(.topbar__key, .museum-glass-btn--nav)
 
    Sample the GROUND, not across the glyphs, if this is measured again — the
    anti-aliased edge of red type reads as a dark ground and reports every
-   candidate as failing. */
+   candidate as failing.
+
+   None of that went far enough, so at the owner's word the door now goes DARK
+   and its name goes white.
+
+   It cannot be done with `filter`, and that is the trap worth writing down: a
+   filter applies to everything the element renders, its TEXT included, so a
+   white label under brightness(0.32) comes out the same dark grey as the plate
+   and the key reads as empty. Two rounds of candidates were measured before
+   that showed up, because a colour sampler reads the plate and never asks
+   whether the label survived.
+
+   The answer is to move the PICTURE. The plate is normally the element's own
+   background, and a filter on the element takes the label with it; so on this
+   one key the background is handed to ::before and the filter goes there. The
+   pseudo-element holds nothing but the picture, the label is its sibling above
+   it, and #fff is #fff — measured 8.58:1 on the ground directly under the
+   label, against 4.98:1 for the red label on darkened cream, with the plate's
+   own mean moving 289 where it moved 61 before.
+
+   A masked dark overlay was tried first and is the thing NOT to do: the kit
+   already dresses ::before, so a background declared on it there loses, and
+   the overlay rendered pale. Filtering the picture in place needs no mask, no
+   blend mode and no isolation, and the transparent margin the artwork carries
+   stays transparent because it is still the same image. */
 html[data-theme='bright'] .topbar__nav :is(.topbar__key, .museum-glass-btn--nav)[aria-current='page']:not(.ss__key) {
-  color: var(--red-deep);
-  filter: saturate(1.8) brightness(0.84) contrast(1.05);
+  color: #fff;
+  /* the picture moves to the pseudo-element below, so nothing is left here to
+     darken the label with */
+  background: none;
 }
-/* and it stays the current key under a finger: the bar's hover is a single
-   `filter`, which would otherwise replace this one outright */
+html[data-theme='bright'] .topbar__nav :is(.topbar__key, .museum-glass-btn--nav)[aria-current='page']:not(.ss__key)::before {
+  display: block;
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--key-plate) center / 100% 100% no-repeat;
+  filter: saturate(1.45) brightness(0.32) contrast(1.10);
+  pointer-events: none;
+  z-index: 0;
+}
+/* the label rides over its own plate */
+html[data-theme='bright'] .topbar__nav :is(.topbar__key, .museum-glass-btn--nav)[aria-current='page']:not(.ss__key) > * {
+  position: relative;
+  z-index: 1;
+}
+/* It stays the current key under a finger. The bar's hover is a single
+   `filter`, which here would darken the white label along with everything
+   else, so this key says its hover on the overlay instead. */
 html[data-theme='bright'] .topbar__nav :is(.topbar__key, .museum-glass-btn--nav)[aria-current='page']:not(.ss__key):hover {
-  filter: saturate(1.8) brightness(0.88) contrast(1.05);
+  filter: none;
+}
+html[data-theme='bright'] .topbar__nav :is(.topbar__key, .museum-glass-btn--nav)[aria-current='page']:not(.ss__key):hover::before {
+  filter: saturate(1.45) brightness(0.38) contrast(1.10);
 }
 
 /* ---------- the size of a key ----------
@@ -2071,6 +2138,7 @@ html[data-theme='bright'] .xp__h {
    it — wide and faint, a field of light rather than a second outline. */
 html[data-theme='bright'] .xp__note {
   color: var(--ink-solid);
+  font-size: var(--step-note);
   text-shadow:
     var(--ink-edge-wide),
     0 0 64px rgba(255, 255, 255, 0.42);

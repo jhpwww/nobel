@@ -209,11 +209,17 @@ src/
   films must list every film the museum holds or its own total contradicts its own grid; so
   `lectureFilms()` (40), not `totalSittings()` (32), is what stands beside that index and in the
   home page's figure row, where 導讀 + 講座 + 專訪 has to come out at the total.
-  A prize room shows the second collection under its own heading below its own, never merged
-  into the grid above. The NTU records carry `series_zh` / `series_en`; the 31 do not, because
-  every page is already about the programme. Do not put an NTU recording in `video.lecture_ntu`
-  — that field means "a second upload of a Bridges lecture" and `HallRing` filters the hall's
-  six turning panels on it with six-element arrays.
+  **A prize room holds both**, at the owner's word: its lectures are not limited to the
+  programme, so `byCategory` returns both collections in one grid with no second heading, and
+  「N 場講座」 counts them — Physics 12, Chemistry 10, Economics 8. The figure appears in three
+  places (the plinth's label, the plinth's caption, the search drawer's room rows) and all
+  three must read `categoryList()`; each once counted it locally over `lectures` and each
+  drifted the day the rooms began holding both. `totalSittings()` (32) stays the programme's
+  own figure and is what the colophon's story counts.
+  The NTU records carry `series_zh` / `series_en`; the 31 do not, because every page is
+  already about the programme. Do not put an NTU recording in `video.lecture_ntu` — that field
+  means "a second upload of a Bridges lecture" and `HallRing` filters the hall's six turning
+  panels on it with six-element arrays.
 - A record outside 臺灣橋樑計畫 has no `cw_hub` (天下's hub covers the programme), no 導讀 and
   no study panel: the learning area's chooser lists the programme's 31, so a note saved against
   anything else is a note the student can never find again. All three are guarded in

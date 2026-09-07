@@ -27,7 +27,7 @@
  */
 import { useT, type Lang } from '../i18n/ui';
 import {
-  lectures, allLectures, seriesName, categories, catName, catNameAlt, tagName,
+  allLectures, byCategory, seriesName, categories, catName, catNameAlt, tagName,
   lectureFilms, sittings,
   intro, INTRO, type CategoryKey, type GalleryKey,
 } from '../data/catalog';
@@ -94,10 +94,12 @@ for (const key of rooms) {
   const isIntro = key === INTRO;
   const n = catName(key, lang);
   const n2 = catNameAlt(key, lang);
-  /* sittings, not lecture records — the same figure the hall shows under each
-     piece; Südhof's lecture was given twice. See catalog.ts. */
-  const held = lectures.filter((l) => l.prize.category === key)
-                       .reduce((a, l) => a + sittings(l), 0);
+  /* Sittings, not lecture records — the same figure the hall shows under each
+     piece and the room shows on its own head; Südhof's lecture was given
+     twice. byCategory, so this is that one figure and not a third sum of its
+     own: counted here against `lectures` alone, the drawer went on offering
+     nine where both the plinth and the room said twelve. */
+  const held = byCategory(key).reduce((a, l) => a + sittings(l), 0);
   rows.push({
     n: isIntro ? t('nav.prize') : n,
     s: isIntro ? t('hall.introDesc') : n2,

@@ -28,11 +28,15 @@ Audience: high-school students, undergraduates, and the general public. Not spec
 | 臺大「諾貝爾獎得主講座」 | 8 recordings, 5 laureates, 2019–2025, all at NTU: 我的學思歷程 (Mourou, Stoddart), 臺大椰林講座 (Ciechanover), 宋恭源先生頂尖研究講座 (Aspect ×2, Robinson), and two SPE class lectures (Robinson) |
 | 71 videos | what `/lectures/` lists: 導讀 6 · 講座 40 · 專訪 25 |
 
-Prize categories, in museum order: Physics 9 · Chemistry 8 · Medicine 7 · Peace 2 ·
-Economics 5 · Literature 0. Those are Bridges lecture counts, and they are what each room's
-heading and each plinth print; rooms print **sittings**, so Medicine shows 8. The NTU
-collection stands under its own heading further down the room — Physics 3, Chemistry 2,
-Economics 3 — and is counted separately, on purpose.
+Prize categories, in museum order, as the plinths and the room headings print them —
+**sittings** across both collections: Physics 12 · Chemistry 10 · Medicine 8 · Peace 2 ·
+Economics 8 · Literature 0. A prize room's lectures are not limited to the Bridges
+programme, at the owner's word: the NTU records stand in the room's own grid with no
+heading of their own. Medicine shows 8 against 7 lectures because Südhof's was given twice.
+
+Three places print that figure — the plinth's label, the plinth's caption and the search
+drawer's room rows — and all three read `categoryList()`. Do not count it again locally;
+each of the three did once, and each drifted.
 
 The great hall shows all six prize categories. Literature has a plinth like the others but
 stands at the far right, since this series brought no Literature laureate — its room is built

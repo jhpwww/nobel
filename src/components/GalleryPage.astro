@@ -11,7 +11,7 @@ import { home, gallery, asset } from '../i18n/routing';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import {
-  byCategory, ntuByCategory, catName, categories, factsAsOf, introParts, INTRO,
+  byCategory, catName, categories, factsAsOf, introParts, INTRO,
   generalLinks, sittings, catNameAlt, type GalleryKey, type CategoryKey,
 } from '../data/catalog';
 
@@ -22,13 +22,11 @@ const t = useT(lang);
 const title = catName(cat, lang);
 /** the same prize in the other language, set under the heading */
 const titleAlt = catNameAlt(cat, lang);
+/* Both collections, in one grid and under one heading, at the owner's word:
+   these are this prize's lectures too, and the room is not the programme. The
+   count below therefore covers them, and so does the plinth in the hall —
+   see byCategory in catalog.ts. */
 const recs = byCategory(cat);
-/* The NTU collection in this room, if it holds any. A second, labelled
-   group under the room's own — never mixed into `recs`, because the count
-   in the hero and the plinth in the hall are statements about
-   臺灣橋樑計畫. Physics, chemistry and economics have these; the rest
-   render no heading at all. */
-const ntuRecs = ntuByCategory(cat);
 /* what the room says it holds: sittings, not lecture records — Südhof's
    lecture was given twice and both are here. See catalog.ts. */
 const nSittings = recs.reduce((n, l) => n + sittings(l), 0);
@@ -328,9 +326,9 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
 
   {!isIntro && (
   <div class="wrap gh__body" data-cat={cat}>
-      {/* Both groups stand in one box so that the 延伸探索 rail stays the
-          SECOND child of the two-column grid. A third sibling here would fall
-          into a new implicit row under the rail, and the room would end on its
+      {/* One box for the room's reading, so the 延伸探索 rail stays the SECOND
+          child of the two-column grid. A third sibling here would fall into a
+          new implicit row under the rail, and the room would end on its
           outbound links and then start again. */}
       <div class="gh__main stack" style="--gap:3rem">
       <section aria-labelledby="h-lectures">
@@ -346,19 +344,6 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
           </ul>
         )}
       </section>
-
-      {/* 臺大「諾貝爾獎得主講座」 — the museum's second collection, and the
-          heading plus the sentence under it are what keep the room honest:
-          the hero above still counts the programme's own sittings. */}
-      {ntuRecs.length > 0 && (
-        <section aria-labelledby="h-ntu">
-          <h2 id="h-ntu" class="sec-h">{t('cat.ntuLectures')}</h2>
-          <p class="gh__note">{t('cat.ntuNote')}</p>
-          <ul class="grid" role="list">
-            {ntuRecs.map((rec) => <li><LectureCard lang={lang} rec={rec} /></li>)}
-          </ul>
-        </section>
-      )}
       </div>
 
       {/* 延伸探索, in the rail down the right — the same place and the same
@@ -1041,10 +1026,6 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
   /* ---------- body ---------- */
   .gh__body { display: grid; gap: clamp(2.5rem, 7vw, 4.5rem); padding-block: clamp(2rem, 5vw, 3rem); }
   .gh__main { min-inline-size: 0; }
-  .gh__note {
-    font-size: var(--step--1); color: var(--muted);
-    margin: -0.5rem 0 1rem; max-inline-size: var(--measure);
-  }
   /* the same measure the laureate pages use, so the rail is in the same place
      in both rooms */
   @media (min-width: 62rem) {
@@ -1166,12 +1147,10 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
      the wide field, see --ink-edge-wide in bright.css */
   :global(html[data-theme='bright']) :is(.np__note, .np__asof) {
     color: var(--ink-solid);
+    font-size: var(--step-note);
     text-shadow: var(--ink-edge-wide);
   }
-  :global(html[data-theme='bright']) .gh__note {
-    color: var(--ink-solid);
-    text-shadow: var(--ink-edge-wide);
-  }
+
 </style>
 
 <script>

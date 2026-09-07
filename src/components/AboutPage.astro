@@ -377,7 +377,9 @@ const hostList = Object.entries(hosts);
     border: 0;
     block-size: 1px;
     background: var(--line);
-    margin-block: clamp(2.2rem, 6vw, 3.2rem) 0;
+    /* air on both sides: the rule sets the terms apart from the room, and a
+       heading sitting straight on it reads as a caption to the line */
+    margin-block: clamp(2.2rem, 6vw, 3.2rem) clamp(1.5rem, 4vw, 2.1rem);
   }
 
   .special { display: grid; gap: 0.9rem; padding: 0; margin: 0; }

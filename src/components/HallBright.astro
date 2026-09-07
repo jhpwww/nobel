@@ -32,7 +32,7 @@
  */
 import { useT, type Lang } from '../i18n/ui';
 import { gallery, asset } from '../i18n/routing';
-import { lectures, catName, catNameAlt, categoryList, sittings } from '../data/catalog';
+import { catName, catNameAlt, categoryList } from '../data/catalog';
 import credits from '../../data/model-credits.json';
 import HallRing from './HallRing.astro';
 import ScrollCue from './ScrollCue.astro';
@@ -43,12 +43,15 @@ interface Props { lang: Lang }
 const { lang } = Astro.props;
 const t = useT(lang);
 
-/* sittings, not lecture records: Südhof's lecture was given twice and the
-   room says so. See 'A lecture, and a sitting' in catalog.ts. */
-const counts = lectures.reduce<Record<string, number>>((a, l) => {
-  a[l.prize.category] = (a[l.prize.category] ?? 0) + sittings(l);
-  return a;
-}, {});
+/* Sittings, not lecture records: Südhof's lecture was given twice and the room
+   says so. See 'A lecture, and a sitting' in catalog.ts.
+
+   Taken from categoryList() rather than counted again here. The figure under a
+   plinth and the figure on the room's own head are one statement, and the hall
+   used to arrive at it by its own arithmetic over `lectures` alone — so when
+   the rooms began holding both collections the plinths went on saying nine
+   where the room said twelve. One source, no second sum. */
+const counts = Object.fromEntries(categoryList().map((c) => [c.key, c.count]));
 
 type Credit = { title: string; author: string; licence: string; page: string; source?: string };
 const credited = credits as Record<string, Credit>;

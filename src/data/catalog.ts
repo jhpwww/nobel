@@ -176,9 +176,10 @@ export function categoryList() {
     .map((key) => ({
       key,
       order: categories[key].order,
-      /* sittings, not lectures — see 'A lecture, and a sitting' above */
-      count: lectures.filter((l) => l.prize.category === key)
-                     .reduce((n, l) => n + sittings(l), 0),
+      /* Sittings, not lectures — see 'A lecture, and a sitting' above. Both
+         collections, because this is the figure under a plinth and on a room's
+         own head, and those two have to say the same thing as the grid. */
+      count: byCategory(key).reduce((n, l) => n + sittings(l), 0),
     }));
 }
 
@@ -186,9 +187,19 @@ export function categoryList() {
 export const galleryKeys = (): GalleryKey[] =>
   [...categoryList().map((c) => c.key), INTRO];
 
+/**
+ * Every lecture a prize room holds, oldest first — BOTH collections.
+ *
+ * At the owner's word: a room's lectures are not limited to 臺灣橋樑計畫. The
+ * NTU records are that prize's lectures too, so they stand in the room's own
+ * grid with no heading of their own, and the room's 「N 場講座」 counts them.
+ * What stays a statement about the programme is the programme's own figure,
+ * `totalSittings()`, and the copy on the colophon that tells its story.
+ */
 export const byCategory = (key: GalleryKey) =>
-  lectures.filter((l) => l.prize.category === key)
-          .sort((a, b) => a.event.date.localeCompare(b.event.date));
+  [...lectures, ...ntuLectures]
+    .filter((l) => l.prize.category === key)
+    .sort((a, b) => a.event.date.localeCompare(b.event.date));
 
 const byDateAsc  = () => [...lectures].sort((a, b) => a.event.date.localeCompare(b.event.date));
 export const byDateDesc = () => [...lectures].sort((a, b) => b.event.date.localeCompare(a.event.date));
