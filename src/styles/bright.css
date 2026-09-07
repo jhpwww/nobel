@@ -178,11 +178,19 @@ html[data-theme='bright'] {
      --text on paper; this one is read off a photograph and is the one place
      the owner has asked for the full stop. */
   --ink-solid: #000;
-  /* A step of its own, between --step--1 and --step-0. The sentence under a
-     heading is the one line in these rooms with no frame under it and no size
-     to carry it, and at --step--1 over a photograph the owner reports it as
-     hard to read. Both ends of the clamp move, so a phone gains as much as a
-     desktop does. */
+  /* A step of its own, between --step--1 and --step-0, and the two sentences
+     it sorts out are not the same sentence.
+
+     A room's own line — the one under the title that says what the room is,
+     .hall-note — takes THIS, a step down from the --step-0 it used to have. It
+     is the head's, it is already the widest measure on the page, and the owner
+     asked for it back where it was rather than grown.
+
+     The sentence under a SECTION heading in the body goes the other way, up to
+     --step-0: it is the smallest reading in these rooms with no frame under it
+     and no size to carry it, and over a photograph the owner reports it as
+     hard to read. Both ends of every clamp move, so a phone gains as much as a
+     desktop. */
   --step-note: clamp(0.885rem, 0.85rem + 0.19vw, 0.99rem);
 
   --pane: rgba(255, 255, 255, 0.62);
@@ -583,7 +591,8 @@ html[data-theme='bright'] .hall-note {
   margin-block: 0.21rem clamp(1.6rem, 4vw, 2.6rem);
   padding-inline-start: var(--hall-indent);
   max-inline-size: none;
-  font-size: var(--step-0);
+  /* back where it was, at the owner's word — see --step-note above */
+  font-size: var(--step-note);
   line-height: 1.75;
   /* Not the caption grey. This is the one sentence that says what the room is,
      and it is read over marble at its brightest — pale ink inside its own
@@ -2140,7 +2149,7 @@ html[data-theme='bright'] .xp__h {
    it — wide and faint, a field of light rather than a second outline. */
 html[data-theme='bright'] .xp__note {
   color: var(--ink-solid);
-  font-size: var(--step-note);
+  font-size: var(--step-0);
   text-shadow:
     var(--ink-edge-wide),
     0 0 64px rgba(255, 255, 255, 0.42);
