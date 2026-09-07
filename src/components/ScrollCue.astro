@@ -71,7 +71,7 @@ const t = useT(lang);
 </style>
 
 <script>
-  import { motionOn } from '../scripts/motion';
+  import { journeysAnimate } from '../scripts/motion';
 
   /* The one thing this has to know is whether there is any page left to go to.
      The 40px is the slack a phone's rubber-banding and a fractional device
@@ -101,9 +101,10 @@ const t = useT(lang);
        arrow key — so the next press starts from where they are looking and
        not from where the cue last aimed.
 
-       And it is smooth only when the museum is moving at all. motionOn() is
-       the single question every animation here asks; the pinned keys ask it
-       for the same journey upward. */
+       And it glides. journeysAnimate(), not motionOn(): the glide is not an
+       ornament on the answer, it is the answer — a screen that teleports has
+       taken the reader's place away from them. Only the museum's own motion
+       toggle, set to off, makes it a jump. See src/scripts/motion.ts. */
     const link = cue.querySelector<HTMLElement>('.bh__cue');
     let aim: number | null = null;
     /* the press that lands on the cue is not the reader taking the page back
@@ -121,7 +122,7 @@ const t = useT(lang);
       e.preventDefault();
       const end = Math.max(0, doc.scrollHeight - innerHeight);
       aim = Math.min((aim ?? scrollY) + innerHeight, end);
-      scrollTo({ top: aim, behavior: motionOn() ? 'smooth' : 'auto' });
+      scrollTo({ top: aim, behavior: journeysAnimate() ? 'smooth' : 'auto' });
     });
   }
 </script>

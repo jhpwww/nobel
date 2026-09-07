@@ -128,6 +128,14 @@ src/
   off `html[data-motion='off']`, which is set before first paint and which the visitor's own
   MotionToggle always wins. The OS switch is system-wide and unoverridable; used raw it leaves
   visitors with a completely static museum and no way back.
+- A JOURNEY is not an animation and asks a different question: `journeysAnimate()`, which is
+  false only when the visitor's own toggle says off. The way on and the key that returns to the
+  top move the page from here to there, and the movement between the two IS the answer — it is
+  what says the page moved rather than that another page arrived. Teleport a screen and the
+  reader has lost their place, which is the disorientation the setting exists to prevent,
+  arrived at from the other side. Note that CSS `scroll-behavior: auto !important` (which
+  `html[data-motion='off']` sets) does NOT override an explicit `behavior: 'smooth'` passed to
+  `scrollTo` — the argument wins, which is why this works at all.
 - Over the hall the header is `.topbar--ghost`: fixed, full width, and deliberately
   `pointer-events: none`, with only its nav links and buttons re-enabled. Keep that pair
   intact — give the ghost bar a surface again and it swallows taps across the whole strip it
@@ -366,7 +374,9 @@ something below its opening screen.
 - The carried target is released the moment the reader moves the page themselves — a wheel, a
   touch, an arrow key — but NOT when the press lands on the cue, which arrives as a `mousedown`
   or a `keydown` a moment before the click it belongs to.
-- Smooth only when `motionOn()` says so, exactly as the pinned keys ask it.
+- Smooth unless the visitor's own toggle says off — `journeysAnimate()`, not `motionOn()`. On a
+  desktop with the OS "reduce motion" switch on (on Windows the same switch as "Animation
+  effects", which people turn off for performance) the old test made every press a teleport.
 - It is still an `<a href="#…">`. The anchor is the fallback for a visitor whose scripts have
   not run, and the three `<span class="gr__anchor">` marker spans exist for it.
 

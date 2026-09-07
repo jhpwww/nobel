@@ -121,7 +121,7 @@ const t = useT(lang);
 </style>
 
 <script>
-  import { motionOn } from '../scripts/motion';
+  import { journeysAnimate } from '../scripts/motion';
 
   const wrap = document.querySelector<HTMLElement>('[data-pn]');
   const toTop = wrap?.querySelector<HTMLButtonElement>('[data-pn-act="top"]');
@@ -216,7 +216,9 @@ const t = useT(lang);
     sync();
 
     toTop.addEventListener('click', () => {
-      scrollTo({ top: 0, behavior: motionOn() ? 'smooth' : 'auto' });
+      /* the same journey, and the same question — see journeysAnimate(). Five
+         thousand pixels crossed in one frame is the worst of the two. */
+      scrollTo({ top: 0, behavior: journeysAnimate() ? 'smooth' : 'auto' });
       // move the reading position too, or a keyboard visitor is returned to
       // the top visually while their focus stays deep in the page
       document.getElementById('main')?.focus({ preventScroll: true });

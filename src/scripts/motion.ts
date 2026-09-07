@@ -36,6 +36,27 @@ export function motionOn(): boolean {
   return !systemReduces();
 }
 
+/**
+ * And the one question a JOURNEY should ask, which is not the same question.
+ *
+ * Pressing the way on, or the key that returns to the top, asks the page to go
+ * somewhere. The movement between here and there is not an ornament on that
+ * answer, it IS the answer: it is what tells the reader that the page moved
+ * rather than that a different page arrived, and which way it went. Teleport
+ * a screen and they have lost their place — which is the disorientation the
+ * setting is there to prevent, arrived at from the other side.
+ *
+ * So a journey is smooth unless the visitor has said, in this museum, that
+ * they want no motion. The operating system's own switch is not enough on its
+ * own: it is system-wide and blunt, people turn it on for performance — on
+ * Windows it is the same switch as "Animation effects" — and this museum has
+ * always held that the visitor's own choice is the one that counts. That is
+ * what MotionToggle is for, and setting it to off stops these too.
+ */
+export function journeysAnimate(): boolean {
+  return readPref() !== 'off';
+}
+
 export function applyPref(p: MotionPref = readPref()) {
   document.documentElement.setAttribute('data-motion', p === 'auto' ? (systemReduces() ? 'off' : 'on') : p);
 }

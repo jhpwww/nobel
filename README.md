@@ -82,7 +82,10 @@ default, but on Windows turning off "Animation effects" — which people do for 
 it system-wide and silently kills every effect here. So a toggle appears in the hall whenever
 motion is off, the choice is stored per browser, and `data-motion` on `<html>` is set before
 first paint. Everything, CSS and JS alike, asks `motionOn()` in `src/scripts/motion.ts`; nothing
-gates on the media query alone.
+gates on the media query alone. A journey asks a different question — the way on and the key
+that returns to the top glide unless the visitor's own toggle says otherwise, because the
+movement between here and there is what tells a reader the page moved rather than that another
+page arrived.
 
 The dark museum's four halls — flat SVG (`Hall.astro`), CSS 3D room (`Hall3D.astro`), WebGL
 rotunda (`HallGL.astro`), glTF objects (`HallModels.astro`) — are still in this tree, and the
