@@ -62,7 +62,8 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
       data-home={segments.length === 0 ? '' : undefined}
       style={bright ? `--glass-frame: url('${asset('assets/ui/glass-frame.webp')}');`
                     + ` --plate: url('${asset('assets/ui/name-plate.webp')}');`
-                    + ` --key-plate: url('${asset('assets/ui/key-plate.webp')}')` : undefined}>
+                    + ` --key-plate: url('${asset('assets/ui/key-plate.webp')}');`
+                    + ` --key-plate-on: url('${asset('assets/ui/key-plate-on.webp')}')` : undefined}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />

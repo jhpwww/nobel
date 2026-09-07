@@ -346,7 +346,13 @@ html[data-theme='bright'] {
        about 71px, or the heading it is set beside would need a negative
        indent and the rule would be thrown away whole. */
     --emb-h: clamp(4.6rem, 20vw, 6rem);
-    --emb-k: 0.38;
+    /* Half again as big as it was, at the owner's word. This is what every
+       emblem BECOMES once it is caught into the mark beside the museum's name
+       — the medal, the film reel, the learning area's device, the laurel. The
+       prize sculptures are not this: they are Sculpture/plinth and keep their
+       own size. --emb-y below is a formula over this figure, so where the
+       caught mark sits follows it without a second number to keep in step. */
+    --emb-k: 0.57;
     /* and here it stays on the mark's middle: half the mark's height down
        from its top edge, less half of what the emblem has become */
     --emb-y: calc(0.62rem + var(--lock-h) / 2 - 0.5 * var(--emb-k) * var(--emb-h)
@@ -878,23 +884,31 @@ html[data-theme='bright'] .topbar__nav :is(.topbar__key, .museum-glass-btn--nav)
    that showed up, because a colour sampler reads the plate and never asks
    whether the label survived.
 
-   The answer is to move the PICTURE. The plate is normally the element's own
-   background, and a filter on the element takes the label with it; so on this
-   one key the background is handed to ::before and the filter goes there. The
-   pseudo-element holds nothing but the picture, the label is its sibling above
-   it, and #fff is #fff — measured 8.58:1 on the ground directly under the
-   label, against 4.98:1 for the red label on darkened cream, with the plate's
-   own mean moving 289 where it moved 61 before.
+   None of it is needed now: the owner has struck the door its own plate.
+   `menu-button_plate-v2_on.png` out of the button kit is the same tablet in a
+   warmer gold, so the current key simply wears a different picture and nothing
+   is filtered, tinted or blended at all.
 
-   A masked dark overlay was tried first and is the thing NOT to do: the kit
-   already dresses ::before, so a background declared on it there loses, and
-   the overlay rendered pale. Filtering the picture in place needs no mask, no
-   blend mode and no isolation, and the transparent margin the artwork carries
-   stays transparent because it is still the same image. */
+   The picture still hangs on ::before rather than on the element, and that
+   part is worth keeping: it is what let the label stay unfiltered while the
+   experiments ran, and it means the two states are one swap of one url.
+
+   The two plates are interchangeable ONLY because the second was rebuilt to
+   the first's geometry — trimmed to its own content, scaled to 668x210 and
+   placed at 25,33 on a 700x294 canvas, which is exactly where the plain
+   plate's content sits. Both are painted at `100% 100%`, so anything else
+   would have made the current key's tablet a different size from its
+   neighbours'. Re-do that arithmetic if either artwork is replaced.
+
+   What NOT to try, both measured and both wrong: `filter` on the key darkens
+   the LABEL along with the plate, so white type comes out the same grey as the
+   ground and the key reads as empty; and a masked dark overlay on ::before
+   loses to the kit's own dressing of that pseudo-element and renders pale. */
 html[data-theme='bright'] .topbar__nav :is(.topbar__key, .museum-glass-btn--nav)[aria-current='page']:not(.ss__key) {
-  color: #fff;
-  /* the picture moves to the pseudo-element below, so nothing is left here to
-     darken the label with */
+  /* The plate is warm gold rather than dark, so the label stays the museum's
+     own red — measured on the new artwork, not assumed. */
+  color: var(--red-deep);
+  /* the picture moves to the pseudo-element below */
   background: none;
 }
 html[data-theme='bright'] .topbar__nav :is(.topbar__key, .museum-glass-btn--nav)[aria-current='page']:not(.ss__key)::before {
@@ -902,8 +916,7 @@ html[data-theme='bright'] .topbar__nav :is(.topbar__key, .museum-glass-btn--nav)
   content: '';
   position: absolute;
   inset: 0;
-  background: var(--key-plate) center / 100% 100% no-repeat;
-  filter: saturate(1.45) brightness(0.32) contrast(1.10);
+  background: var(--key-plate-on) center / 100% 100% no-repeat;
   pointer-events: none;
   z-index: 0;
 }
@@ -919,7 +932,7 @@ html[data-theme='bright'] .topbar__nav :is(.topbar__key, .museum-glass-btn--nav)
   filter: none;
 }
 html[data-theme='bright'] .topbar__nav :is(.topbar__key, .museum-glass-btn--nav)[aria-current='page']:not(.ss__key):hover::before {
-  filter: saturate(1.45) brightness(0.38) contrast(1.10);
+  filter: brightness(1.04);
 }
 
 /* ---------- the size of a key ----------
