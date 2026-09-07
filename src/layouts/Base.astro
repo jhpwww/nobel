@@ -8,8 +8,8 @@ import '../styles/buttons.css';
 import fonts from '../data/font-manifest.json';
 import fontsBright from '../data/font-manifest-bright.json';
 
-/** set at build time — see the bright-museum note in astro.config.mjs */
-const bright = process.env.THEME === 'bright';
+/** this is the bright museum; THEME=dark rebuilds the dark one for comparison — see src/theme.ts */
+import { bright } from '../theme';
 /** this museum's faces: names, hashed URLs, and its own stylesheet */
 const face: Record<string, string> = bright ? fontsBright : fonts;
 import PageNav from '../components/PageNav.astro';

@@ -4,7 +4,7 @@
 
 @font-face {
   font-family: 'Noto Sans TC';
-  src: url('/taiwan-nobel-museum/bright/assets/fonts/bright/noto-sans-tc.woff2?v=8a54b525') format('woff2-variations');
+  src: url('/nobel/assets/fonts/bright/noto-sans-tc.woff2?v=8a54b525') format('woff2-variations');
   font-weight: 350 600;
   font-style: normal;
   font-display: swap;
@@ -12,7 +12,7 @@
 
 @font-face {
   font-family: 'Noto Serif TC';
-  src: url('/taiwan-nobel-museum/bright/assets/fonts/bright/noto-serif-tc.woff2?v=2e1e523a') format('woff2-variations');
+  src: url('/nobel/assets/fonts/bright/noto-serif-tc.woff2?v=2e1e523a') format('woff2-variations');
   font-weight: 400 700;
   font-style: normal;
   font-display: swap;
@@ -20,7 +20,7 @@
 
 @font-face {
   font-family: 'Source Serif 4';
-  src: url('/taiwan-nobel-museum/bright/assets/fonts/bright/source-serif-4.woff2?v=bd1bb8cc') format('woff2-variations');
+  src: url('/nobel/assets/fonts/bright/source-serif-4.woff2?v=bd1bb8cc') format('woff2-variations');
   font-weight: 400 700;
   font-style: normal;
   font-display: swap;
@@ -28,7 +28,7 @@
 
 @font-face {
   font-family: 'Source Sans 3';
-  src: url('/taiwan-nobel-museum/bright/assets/fonts/bright/source-sans-3.woff2?v=55b4b2c8') format('woff2-variations');
+  src: url('/nobel/assets/fonts/bright/source-sans-3.woff2?v=55b4b2c8') format('woff2-variations');
   font-weight: 400 600;
   font-style: normal;
   font-display: swap;

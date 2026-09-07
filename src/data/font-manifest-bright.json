@@ -1,7 +1,7 @@
 {
-  "noto-sans-tc": "/taiwan-nobel-museum/bright/assets/fonts/bright/noto-sans-tc.woff2?v=8a54b525",
-  "noto-serif-tc": "/taiwan-nobel-museum/bright/assets/fonts/bright/noto-serif-tc.woff2?v=2e1e523a",
-  "source-serif-4": "/taiwan-nobel-museum/bright/assets/fonts/bright/source-serif-4.woff2?v=bd1bb8cc",
-  "source-sans-3": "/taiwan-nobel-museum/bright/assets/fonts/bright/source-sans-3.woff2?v=55b4b2c8",
-  "_stylesheet": "/taiwan-nobel-museum/bright/assets/fonts/bright/fonts.css"
+  "noto-sans-tc": "/nobel/assets/fonts/bright/noto-sans-tc.woff2?v=8a54b525",
+  "noto-serif-tc": "/nobel/assets/fonts/bright/noto-serif-tc.woff2?v=2e1e523a",
+  "source-serif-4": "/nobel/assets/fonts/bright/source-serif-4.woff2?v=bd1bb8cc",
+  "source-sans-3": "/nobel/assets/fonts/bright/source-sans-3.woff2?v=55b4b2c8",
+  "_stylesheet": "/nobel/assets/fonts/bright/fonts.css"
 }

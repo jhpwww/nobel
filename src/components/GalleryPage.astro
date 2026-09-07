@@ -105,7 +105,7 @@ const introStats = [
  * keeps its URL for ever, so a redeployed model sits behind whatever the
  * visitor already cached.
  * ------------------------------------------------------------- */
-const bright = process.env.THEME === 'bright';
+import { bright } from '../theme';
 const stamp = (rel: string) => {
   const hash = createHash('sha256')
     .update(readFileSync(new URL(`../../public/${rel}`, import.meta.url)))

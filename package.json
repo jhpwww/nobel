@@ -1,10 +1,10 @@
 {
-  "name": "nobel-museum",
+  "name": "nobel",
   "type": "module",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "astro dev",
+    "dev": "astro dev --port 4322",
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
@@ -29,7 +29,7 @@
     "pngjs": "^7.0.0",
     "typescript": "^5.9.3"
   },
-  "description": "A virtual museum of the Nobel laureate lectures delivered in Taiwan.",
+  "description": "The bright museum of the Nobel laureate lectures delivered in Taiwan.",
   "license": "MIT",
   "engines": {
     "node": ">=20"

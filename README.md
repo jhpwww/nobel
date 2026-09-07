@@ -6,8 +6,8 @@ interviews recorded alongside them.
 
 Audience: high-school students, undergraduates, and the general public. Not specialists.
 
-**Live site:** https://jhpwww.github.io/taiwan-nobel-museum/
-**In daylight:** https://jhpwww.github.io/taiwan-nobel-museum/bright/
+**Live site:** https://jhpwww.github.io/nobel/
+**The dark museum it grew from:** https://jhpwww.github.io/taiwan-nobel-museum/
 
 ---
 
@@ -38,35 +38,34 @@ plain text. The statistics come from the official Nobel API via
 `scripts/fetch-prize-facts.py` and are stamped with the date they were fetched — re-run it
 once a year after the October announcements.
 
-## Two museums
+## Two museums, two repositories
 
-The site is built twice from one codebase and both are published.
+This repository is the **bright museum**: white ground, red for anything actionable, gold for
+what the museum owns, and one hall of its own. It began inside
+[jhpwww/taiwan-nobel-museum](https://github.com/jhpwww/taiwan-nobel-museum) as the same site
+built a second time in daylight and published under `/bright/`; on 2026-09-07 it moved here
+and to https://jhpwww.github.io/nobel/, and the old `/bright/` addresses redirect to it.
 
-| | |
-|---|---|
-| **dark** | the original museum, at `/` |
-| **bright** | the same routes, same data, same components in daylight, at `/bright/` — white ground, red for anything actionable, gold for what the museum owns, and one hall of its own (`HallBright.astro`) |
+The **dark museum** — the original — is preserved as it was, in that repository and at
+https://jhpwww.github.io/taiwan-nobel-museum/. Nothing here changes it.
 
-The bright build is `THEME=bright` with a nested `BASE_PATH`; `Base.astro` emits
-`data-theme="bright"` only then, and `src/styles/bright.css` is scoped entirely to that
-attribute. **The dark museum renders exactly as it always did** — that is a project
-constraint, not a side effect.
+Same routes, same data, same components. `src/theme.ts` exports `bright`, true unless
+`THEME=dark`; `Base.astro` then emits `data-theme="bright"`, and `src/styles/bright.css` is
+scoped entirely to that attribute. A `THEME=dark` build still renders the dark museum from this
+tree, for comparison only.
 
-## Four hall styles
+## The hall
 
-The entrance exists in four variants. Everything below the hall — galleries, lecture pages,
-browse, about — is shared, so all four are complete, working sites.
+The entrance is one hall, `HallBright.astro`: a domed neoclassical rotunda — white marble, a
+glazed dome, a ring of arched windows — with the six prize sculptures set out on its floor in
+gold, each a real glTF piece in its own `<model-viewer>`. The room is a photograph, and what
+stands in it is placed in per cent of a plate that carries the picture's own aspect ratio, so
+a crop moves the picture and its contents together; the eye level is measured at 69.2% of the
+plate (`scripts/crop-hall.py`). No embers, no dust, no video wall: the light in this room is
+the photograph's own.
 
-| Route | Style | Technique | JS on that page |
-|---|---|---|---|
-| `/` | 平面 Flat | SVG sculptures over the ambient loop, pointer parallax, wall of lecture stills | ~3.5 KB gz |
-| `/room/` | 展廳 Room | **CSS 3D**: real perspective, receding colonnade, curved wall of stills, SVG sculptures extruded into solid depth, floor reflections | ~3.2 KB gz |
-| `/rotunda/` | 圓廳 Rotunda | **WebGL**: coffered dome over an oculus, fluted colonnade, six glossy bronze models, procedural environment map, floor reflections, bloom, contact shadows | ~136 KB gz (three.js) |
-| `/models/` | 藏品 Objects | real glTF, one `<model-viewer>` per piece rather than one shared scene, so a piece that fails to load costs only itself | ~3.3 KB gz + model-viewer (~287 KB gz) on demand |
-
-The room and rotunda halls **dolly in on arrival**; the flat, room and rotunda halls share the
-**walk-in transition** when a gallery is chosen, pushing toward the plinth and washing into
-that gallery's own colour before the page changes.
+Every page below the hall stands in the same room — `RoomBack.astro` paints it behind the
+page, and a fixed band at the top dissolves each page into it.
 
 **Motion is a visitor preference, not just an OS one.** `prefers-reduced-motion` is honoured by
 default, but on Windows turning off "Animation effects" — which people do for performance — sets
@@ -75,29 +74,12 @@ motion is off, the choice is stored per browser, and `data-motion` on `<html>` i
 first paint. Everything, CSS and JS alike, asks `motionOn()` in `src/scripts/motion.ts`; nothing
 gates on the media query alone.
 
-**The backdrop is the lectures themselves.** `LectureScreen.astro` runs behind the flat, room
-and objects halls (the rotunda has its own atmosphere in the scene). It has two paths and takes
-the first available: short self-hosted cuts listed in `src/data/backdrop.json`, or — while that
-file is empty, as it is today — the lectures' own published frames cross-fading between two
-image layers every nine seconds. No live embed: one streamed 0.27–0.30 MB/s and never stopped.
-Both paths are gated on Save-Data, on 2G-class connections and on the motion switch, and start
-only after load plus a pause.
-
-Behind the flat, room and objects halls also runs `public/media/ambient.webm` — a 12-second
-seamless loop of drifting light and embers, generated by `scripts/make-ambient.py`. It is
-replaced by its poster under reduced-motion or Save-Data, where the video never downloads.
-
-`/rotunda/` never loads three.js on small screens, with Save-Data on, or without WebGL2 — the
-markup underneath the canvas is the complete hall, so it degrades to a working page rather than
-a blank one. Its render loop stops when the canvas scrolls out of view or the tab is hidden.
-
-It also **measures itself**. A machine without GPU acceleration can spend hundreds of
-milliseconds a frame, which starves the main thread — timers stop firing and the page feels
-broken. So the loop caps itself at 36 fps, watches real draw cost, and steps down twice: first
-dropping bloom and pixel ratio, then settling on the intended composition, drawing one good
-frame, and stopping. Camera moves are driven by wall clock rather than accumulated frame time,
-so a slow renderer can never strand a transition mid-flight, and clicking a gallery always
-navigates within 1.8 s whatever the GPU is doing.
+The dark museum's four halls — flat SVG (`Hall.astro`), CSS 3D room (`Hall3D.astro`), WebGL
+rotunda (`HallGL.astro`), glTF objects (`HallModels.astro`) — are still in this tree, and the
+routes `/room/`, `/rotunda/` and `/models/` still build; in this museum every one of them
+opens on the bright hall. Their backdrop (`LectureScreen.astro`, `AmbientVideo.astro`) is
+likewise here and on no bright page; the clip pipeline behind it (`scripts/make-backdrop-clips.py`,
+`src/data/backdrop.json`) is kept for whatever replaces the apse's video wall.
 
 ## Stack
 
@@ -105,27 +87,26 @@ Astro 5 + TypeScript, no UI framework, no runtime database, no CMS, no login.
 Plain CSS with custom properties. Deployed to GitHub Pages by GitHub Actions.
 
 JavaScript is kept small and local: the shared modules in `src/scripts/` (env, motion, plinth,
-roomfade, rotunda, study, walkin) come to a few KB gzipped on an ordinary page. The two heavy
-payloads are opt-in by route — the rotunda's three.js bundle, behind its WebGL2/Save-Data gate,
-and the vendored model-viewer, imported on demand by the objects hall. Videos are embedded from
-`youtube-nocookie.com` and load nothing until clicked.
+roomfade, rotunda, study, walkin) come to a few KB gzipped on an ordinary page. The one heavy
+payload is the vendored model-viewer (~287 KB gz), imported on demand by the hall for its six
+gold pieces; the dark museum's three.js rotunda is in the tree but on no bright page. Videos
+are embedded from `youtube-nocookie.com` and load nothing until clicked.
 
-Fonts are self-hosted and subset per museum, so no third party sits in the request path of a
-visit.
+Fonts are self-hosted and subset to the site's own text, so no third party sits in the request
+path of a visit.
 
 ## Running it
 
 ```bash
 npm install
-npm run dev        # http://localhost:4321/taiwan-nobel-museum/
-npm run build      # -> dist/
+npm run dev        # http://localhost:4322/nobel/  (port 4322 leaves 4321 to the dark museum's checkout)
+npm run build      # -> dist/, base path /nobel/
 npm run check      # astro check
 
-# the second museum — there is no npm script for it; CI does this inline
-THEME=bright BASE_PATH=/taiwan-nobel-museum/bright npx astro build --outDir dist-bright
+THEME=dark npm run build   # the dark museum from this tree, for comparison only
 ```
 
-A build produces 92 HTML pages per museum, 184 in all.
+A build produces 92 HTML pages.
 
 Node 20+ required. **On WSL, keep this repo in the Linux filesystem** (`~/…`), not under
 `/mnt/c/…` — npm on the Windows mount is roughly 50× slower and will appear to hang.

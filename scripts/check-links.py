@@ -22,7 +22,7 @@ Exit code is non-zero if anything needs attention, so it can gate a release.
 import concurrent.futures as cf, html, json, pathlib, re, sys, urllib.error, urllib.parse, urllib.request
 
 root = pathlib.Path(sys.argv[1] if len(sys.argv) > 1 else "dist")
-BASE = "/taiwan-nobel-museum/"
+BASE = "/nobel/"
 UA = {"User-Agent": "Mozilla/5.0 (compatible; nlm-link-check/2.0)"}
 
 external, internal, assets, ytids = set(), set(), set(), set()

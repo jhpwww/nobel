@@ -41,22 +41,8 @@ jobs:
       - name: Build
         env:
           SITE_URL: ${{ vars.SITE_URL }}
-          BASE_PATH: ${{ vars.BASE_PATH }}
+          BASE_PATH: ${{ vars.BASE_PATH }}   # unset → /nobel, see astro.config.mjs
         run: npm run build
-
-      # The bright museum is the same site in daylight: same routes, same data,
-      # same components, built again with THEME=bright and nested under
-      # /bright/. Building it second and copying it in means the dark site is
-      # byte-for-byte what it was — nothing about it depends on this step.
-      - name: Build the bright museum
-        env:
-          SITE_URL: ${{ vars.SITE_URL }}
-          BASE_PATH: ${{ vars.BASE_PATH || '/taiwan-nobel-museum' }}/bright
-          THEME: bright
-        run: |
-          npx astro build --outDir dist-bright
-          rm -rf dist/bright
-          cp -r dist-bright dist/bright
 
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

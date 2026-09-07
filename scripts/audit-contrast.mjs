@@ -11,7 +11,7 @@
  */
 import { chromium } from 'playwright';
 
-const ORIGIN = process.argv[2] ?? 'http://localhost:4570/taiwan-nobel-museum/bright';
+const ORIGIN = process.argv[2] ?? 'http://localhost:4570/nobel';
 const PAGES = ['/', '/gallery/physics/', '/gallery/peace/', '/lecture/geim/',
                '/lectures/', '/learn/', '/study/', '/about/', '/en/'];
 

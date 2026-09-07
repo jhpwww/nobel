@@ -4,7 +4,7 @@ import { readFile, mkdir } from 'node:fs/promises';
 import { extname, join } from 'node:path';
 
 const ROOT = new URL('../dist/', import.meta.url).pathname;
-const BASE = '/taiwan-nobel-museum';
+const BASE = '/nobel';
 const MIME = { '.html':'text/html', '.css':'text/css', '.js':'text/javascript',
                '.svg':'image/svg+xml', '.png':'image/png', '.jpg':'image/jpeg',
                '.xml':'application/xml', '.json':'application/json', '.webp':'image/webp' };

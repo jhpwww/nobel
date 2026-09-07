@@ -47,12 +47,13 @@ const PY = '.venv-fonts/bin/python';
 const SUBSET = '.venv-fonts/bin/pyftsubset';
 const SRC = 'assets-src/fonts';
 
-const BRIGHT = process.argv.includes('--theme')
-  && process.argv[process.argv.indexOf('--theme') + 1] === 'bright';
+/* this museum's faces by default; `--theme dark` re-cuts the dark museum's set */
+const BRIGHT = !(process.argv.includes('--theme')
+  && process.argv[process.argv.indexOf('--theme') + 1] === 'dark');
 
 const OUT = BRIGHT ? 'public/assets/fonts/bright' : 'public/assets/fonts';
-const BASE = BRIGHT ? '/taiwan-nobel-museum/bright' : '/taiwan-nobel-museum';
-const DIST = BRIGHT ? 'dist-bright' : 'dist';
+const BASE = process.env.BASE_PATH || '/nobel';
+const DIST = 'dist';
 /*
  * The @font-face rules go to public/, not src/, and are linked rather than
  * bundled. Both museums name families like 'Noto Serif TC', so bundling both

@@ -27,8 +27,8 @@
    src/styles/ and src/assets/ — so the kit's own `url("../assets/…")`
    resolves untouched, and Vite fingerprints both WebPs and applies each
    build's base path. Neither WebP is in public/: a stylesheet cannot write
-   /taiwan-nobel-museum/bright/ in one build and /taiwan-nobel-museum/ in
-   the other.
+   /nobel/ here and /taiwan-nobel-museum/ in the dark museum it came from.
+   Keep it that way: the base path stays one setting in astro.config.mjs.
 
    Two departures. A selector added at the chip's pressed rule — see the note
    there. And a second pass of the same skin, screen-blended, so the specular

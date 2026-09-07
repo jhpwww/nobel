@@ -27,7 +27,7 @@
 import { chromium } from 'playwright';
 import { PNG } from 'pngjs';
 
-const BASE = (process.env.URL ?? 'http://localhost:4322/taiwan-nobel-museum/bright/').replace(/\/$/, '');
+const BASE = (process.env.URL ?? 'http://localhost:4322/nobel/').replace(/\/$/, '');
 
 /*
  * Every room whose page is read in front of the hall rather than on a ground

@@ -8,7 +8,7 @@ import RoomBack from './RoomBack.astro';
 import { specialEvents, hosts } from '../data/catalog';
 
 /* the museum's own room behind this page too — see RoomBack */
-const bright = process.env.THEME === 'bright';
+import { bright } from '../theme';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;

@@ -23,7 +23,7 @@ import { browse } from '../i18n/routing';
 import { lectures, totalSittings } from '../data/catalog';
 
 /* the museum's own room behind this page too — see RoomBack */
-const bright = process.env.THEME === 'bright';
+import { bright } from '../theme';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;

@@ -27,7 +27,7 @@ const KINDS = [
 ] as const;
 
 /* the museum's own room behind this page too — see GalleryPage */
-const bright = process.env.THEME === 'bright';
+import { bright } from '../theme';
 ---
 
 <Base lang={lang} title={t('browse.title')} segments={['lectures']} bare={bright}>

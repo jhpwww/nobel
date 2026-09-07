@@ -1,7 +1,7 @@
 import type { Lang } from './ui';
 import { DEFAULT_LANG } from './ui';
 
-const BASE = import.meta.env.BASE_URL; // e.g. '/taiwan-nobel-museum/'
+const BASE = import.meta.env.BASE_URL; // e.g. '/nobel/'
 
 /**
  * The single place internal URLs are built. Everything respects `base`, so

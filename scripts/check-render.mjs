@@ -7,12 +7,12 @@
 // measures the stylesheets, not the network). A clean run means the DOM and
 // the cascade are identical; a cleaned-up rule that changed nothing on any
 // page shows up as nothing here. Copy dist/ aside before the change to have a
-// before. Use base-path /taiwan-nobel-museum/bright/ for dist-bright.
+// before. The base path defaults to this museum's, /nobel/.
 import { chromium } from 'playwright';
 import { readdir, readFile, stat } from 'node:fs/promises';
 import { join, relative } from 'node:path';
 
-const [,, A, B, BASE = '/taiwan-nobel-museum/'] = process.argv;
+const [,, A, B, BASE = '/nobel/'] = process.argv;
 if (!A || !B) { console.error('usage: node scripts/check-render.mjs <before-dist> <after-dist> [base-path]'); process.exit(2); }
 
 async function walk(d, acc = []) {

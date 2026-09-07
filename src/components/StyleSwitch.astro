@@ -12,8 +12,8 @@ import { path } from '../i18n/routing';
 interface Props { lang: Lang; current: 'flat' | 'room' | 'gl' | 'models' | 'bright' }
 const { lang, current } = Astro.props;
 /* The bright museum has a single hall, so its switcher has nothing to switch
-   between; it names where the visitor is and links back to the dark museum. */
-const bright = process.env.THEME === 'bright';
+   between; it names where the visitor is and links home. */
+import { bright } from '../theme';
 const OPTIONS = [
   { key: 'flat', href: path(lang), zh: '平面', en: 'Flat', dzh: '最輕量', den: 'Lightest' },
   { key: 'room', href: path(lang, 'room'), zh: '展廳', en: 'Room', dzh: 'CSS 3D 景深', den: 'CSS 3D depth' },

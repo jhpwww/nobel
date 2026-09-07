@@ -1,6 +1,7 @@
 # CLAUDE.md
 
-Conventions for this repository. Read `README.md` first for what the project is.
+Conventions for this repository — the bright museum, at https://jhpwww.github.io/nobel/.
+Read `README.md` first for what the project is.
 
 Everything here is a standing rule or a trap that has already cost a rebuild.
 Keep it that way: add a rule, not an account of the work that produced it.
@@ -15,8 +16,9 @@ function, no database, no login. If a task seems to need one, stop and say so.
 These are decided. Do not reopen them, and do not let a tidy-up quietly reverse one.
 
 - **The museum's name and its main axis do not change.**
-- **The dark museum is preserved as it is.** Bright work must never alter what the dark
-  build renders. Its ~56 text styles below AA are deliberate and stay.
+- **The dark museum is preserved as it is**, in `jhpwww/taiwan-nobel-museum` at
+  https://jhpwww.github.io/taiwan-nobel-museum/. This repository is the bright museum alone;
+  nothing here touches the dark site. Its ~56 text styles below AA are deliberate and stay.
 - **The 導讀 narration scripts are reference material only.** Their text must never
   appear on the site.
 - **Representative images are chosen for 講座 and 專訪 only.** A 導讀 keeps the frame
@@ -25,7 +27,8 @@ These are decided. Do not reopen them, and do not let a tidy-up quietly reverse 
   touches one, build the comparison and send it first — the choice is theirs to make
   while looking at it. The button kit's frame widths are not to be changed again.
 - **Do not darken the block red.** See "The bright palette's one known exception".
-- **Every change ships to both running dev servers and to GitHub Pages in the same turn**,
+- **Every change ships to the running dev server (`npm run dev`, port 4322, at
+  `/nobel/`) and to GitHub Pages in the same turn**,
   and is reported with three readings, not a claim: a clean `git status`,
   `git rev-list --left-right --count origin/main...HEAD` at 0/0, and the Pages run green
   on that SHA.
@@ -51,7 +54,7 @@ scripts/                ~29 of them; these are the ones you will touch
   facecheck.py          shared portrait/detector/threshold module for both of those
   make-backdrop-clips.py-> public/media/backdrop/ + src/data/backdrop.json
   normalise-models.mjs  the model pipeline's centre; writes both tinted and gold sets
-  subset-fonts.mjs      both museums' faces
+  subset-fonts.mjs      this museum's faces (`--theme dark` re-cuts the dark set)
   check-links.py        four kinds of reference, over dist/
   check-contrast.mjs / audit-contrast.mjs / audit-type.mjs / check-glass.mjs
   shots.mjs             serve dist/ and screenshot it with Playwright
@@ -61,6 +64,7 @@ src/
   data/stills.ts        the single poster resolver (cut still -> verified frame -> hqdefault)
   i18n/ui.ts            every user-facing string
   i18n/routing.ts       every internal URL
+  theme.ts              the one place THEME is read: bright unless THEME=dark
   scripts/              env, motion, plinth, roomfade, rotunda, study, walkin
   components/ layouts/ pages/ styles/ vendor/
 ```
@@ -109,8 +113,8 @@ src/
 - Four variants share one `HomePage.astro` via a `style` prop: `flat` (SVG, `Hall.astro`),
   `room` (CSS 3D, `Hall3D.astro`), `gl` (WebGL, `HallGL.astro`), `models` (glTF via
   `<model-viewer>`, `HallModels.astro`). A fifth, `HallBright.astro`, is not a `style` value —
-  it is selected by `process.env.THEME === 'bright'` and overrides the prop. Only the hall
-  differs; never fork the pages below it.
+  it is selected by `bright` from `src/theme.ts` and overrides the prop, so in this museum all
+  four routes open on the bright hall. Only the hall differs; never fork the pages below it.
 - `Sculpture3D.astro` EXTRUDES `Sculpture.astro` — it stacks the same SVG along Z and darkens
   the back slices. Do not rebuild the forms from CSS primitives.
 - The ROTUNDA's WebGL scene (`src/scripts/rotunda.ts`) is procedural on purpose: no model or
@@ -270,8 +274,8 @@ src/
   current `dist/`: the script serves the built site, it does not build it. The viewport default
   is 1440×900, so 390 must be asked for.
 - For a change that is meant to alter nothing visible — a clean-up, a refactor — copy `dist/`
-  aside first and run `node scripts/check-render.mjs <before> <after>` (and the bright build
-  with its base path): it compares every page's DOM and every element's computed style, and
+  aside first and run `node scripts/check-render.mjs <before> <after>` (the base path
+  defaults to `/nobel/`): it compares every page's DOM and every element's computed style, and
   "identical" is the proof. Pixels are not: the halls' own motion makes two shots of one
   build differ.
 - Keyboard-navigable, visible focus, WCAG AA contrast
@@ -375,10 +379,11 @@ name from `SUPPLIED` and from `ON_BASE`.
 
 ## Fonts are self-hosted and subset
 
-`scripts/subset-fonts.mjs` owns both museums' faces — five families. Dark: Noto
-Sans TC, Noto Serif TC, Cormorant Garamond. Bright: Noto Sans TC, Noto Serif TC,
-Source Serif 4, Source Sans 3. Self-hosting keeps a third party out of the
-request path of every visit, which the About page's privacy claim depends on.
+`scripts/subset-fonts.mjs` owns this museum's faces — four families: Noto Sans
+TC, Noto Serif TC, Source Serif 4, Source Sans 3. (The dark set — Noto Sans TC,
+Noto Serif TC, Cormorant Garamond — is still in the tree and `--theme dark`
+re-cuts it, for the preserved museum only.) Self-hosting keeps a third party out
+of the request path of every visit, which the About page's privacy claim depends on.
 
 - **Bucket by the font that will actually draw the character, not the head of
   the stack.** The script opens all 92 built pages and reads
@@ -387,13 +392,13 @@ request path of every visit, which the About page's privacy claim depends on.
   `fontFamily.split(',')[0]` gives a Latin face every ideograph and leaves the
   CJK face with none at all. The serif only draws headings, so it carries far
   fewer ideographs than the sans — that split is the whole saving.
-- **Two-pass per museum**, because the corpus comes from the rendered site and
-  the second build is what picks up the new hashes. Dark:
-  `npm run build && node scripts/subset-fonts.mjs && npm run build`. Bright: the
-  bright build, then `node scripts/subset-fonts.mjs --theme bright` (it reads
-  `dist-bright/` and writes `public/assets/fonts/bright/`), then the bright
-  build again. Re-run whenever visible text changes.
-- **Link the stylesheet, do not bundle it.** Both museums name families like
+- **Two passes**, because the corpus comes from the rendered site and the
+  second build is what picks up the new hashes:
+  `npm run build && node scripts/subset-fonts.mjs && npm run build`. The script
+  reads `dist/`, writes `public/assets/fonts/bright/` and the manifest with the
+  `/nobel/` base path baked into every URL (`BASE_PATH` overrides it), and the
+  second build links the new hashes. Re-run whenever visible text changes.
+- **Link the stylesheet, do not bundle it.** Both font sets name families like
   `Noto Serif TC`. With both stylesheets in one build the browser matches the
   other museum's `@font-face` and fetches a file that is not there. One `<link>`
   per build makes the collision impossible.
@@ -465,13 +470,15 @@ then the verified YouTube frame (`video-posters.json`), then the uploader's `hqd
 
 ## The bright museum
 
-The same site in daylight, at `/bright/`. Same routes, same data, same
-components — built a second time with `THEME=bright` and a nested `BASE_PATH`,
-then copied into `dist/bright` by the deploy workflow.
+This museum. It grew inside `jhpwww/taiwan-nobel-museum` as the same site in
+daylight — same routes, same data, same components, built a second time with
+`THEME=bright` and nested under `/bright/` — and on 2026-09-07 it moved here, to
+`https://jhpwww.github.io/nobel/`. The old `/bright/` addresses redirect here.
+`src/theme.ts` exports `bright`, true unless `THEME=dark`.
 
-- `Base.astro` emits `data-theme` only when `THEME=bright`. The dark build ships
-  the same stylesheet, and with the attribute absent no bright rule matches — so
-  what is guaranteed unchanged is what the dark museum *renders*.
+- `Base.astro` emits `data-theme="bright"` when `bright` is true. A `THEME=dark`
+  build ships the same stylesheet with the attribute absent, so no bright rule
+  matches and it renders the dark museum — a comparison build, nothing more.
 - Everything in `src/styles/bright.css` is scoped to `html[data-theme='bright']`:
   the token overrides first, then the component and layout rules the bright ground
   needs. Add a bright rule there, never a fork of a component.
@@ -519,7 +526,8 @@ reintroduce a scroll-driven mask.
 
 Run both after any palette change:
 
-- `node scripts/check-contrast.mjs [--theme bright]` — reads the tokens out of the stylesheet
+- `node scripts/check-contrast.mjs` (bright by default; `--theme dark` reads the dark tokens)
+  — reads the tokens out of the stylesheet
   and checks the pairings the site renders.
 - `node scripts/audit-contrast.mjs <origin>` — the one that finds real bugs: for every text node
   on the built pages it resolves the colour actually painted and the nearest opaque background

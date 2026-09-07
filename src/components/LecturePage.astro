@@ -32,7 +32,7 @@ const NTU_CGE = 'https://cge.ntu.edu.tw/cl_n_203079.html';
 
 /* the prize's own sculpture, in the bright museum — see GalleryPage for the
    note on why anything under public/ is fingerprinted here */
-const bright = process.env.THEME === 'bright';
+import { bright } from '../theme';
 const stampAsset = (rel: string) => {
   const hash = createHash('sha256')
     .update(readFileSync(new URL(`../../public/${rel}`, import.meta.url)))

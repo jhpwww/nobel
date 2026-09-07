@@ -13,8 +13,8 @@ import { lectures, byDateDesc, nextUpcoming, recommended, localDate, catPrizeNam
 
 interface Props { lang: Lang; style?: 'flat' | 'room' | 'gl' | 'models' }
 const { lang, style = 'flat' } = Astro.props;
-/** the bright build has one hall of its own — see the bright-museum note in astro.config.mjs */
-const bright = process.env.THEME === 'bright';
+/** the bright museum has one hall of its own — see src/theme.ts */
+import { bright } from '../theme';
 const t = useT(lang);
 
 const byDate = byDateDesc();
