@@ -274,7 +274,9 @@ src/
   outer layers are half what they were.
   Inside a frame the secondary inks take the darkened steps (`--muted: #38332e`,
   `--muted-dim: #443e38`) the half sheet gives them; `check-glass` caught a date line at 4.36:1
-  on a phone without them. `--surface` is 3.5% BLACK — a dark-museum tint that over a photograph
+  on a phone without them. And `.hall-note` — the one sentence that says what a room is, read
+  over marble at its brightest — is set in `--text`, not the caption grey: pale ink inside its
+  own white edge is what the halo wins, and mist is what comes out. `--surface` is 3.5% BLACK — a dark-museum tint that over a photograph
   darkens a block instead of lifting it.
 - A room's head — emblem, title, the three words it is read by, the sentence under them — stands
   in a box of its own OUTSIDE the box marked `[data-fade]`, and wears `room-head`. `[data-fade]`
@@ -623,7 +625,11 @@ reintroduce a scroll-driven mask.
 - A CSS box gap is not the painted gap when the background is a picture with
   transparent margin baked in. `key-plate.webp` carries 12px of its own margin;
   halving `row-gap` changes nothing a visitor can see. Measure the artwork rows,
-  not the box.
+  not the box. Its cream panel is not centred in the file either — 11.9% to
+  79.3%, so the panel's middle is at 45.6% — which is why every label in the bar
+  is lifted 1.7px off the box's middle onto the panel's. The search key's capsule
+  is inset to the same panel, and being a plain shape it is where the fault
+  showed.
 - `element.getAnimations()` keeps FINISHED animations. Test
   `playState === 'running'`, or a stillness check never passes.
 - Individual transform properties resolve `translate → rotate → scale →

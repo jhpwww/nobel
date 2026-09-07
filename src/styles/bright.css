@@ -539,7 +539,13 @@ html[data-theme='bright'] .hall-note {
   max-inline-size: none;
   font-size: var(--step-0);
   line-height: 1.75;
-  color: var(--muted);
+  /* Not the caption grey. This is the one sentence that says what the room is,
+     and it is read over marble at its brightest — pale ink inside its own
+     white edge is what the owner has twice called 白霧: the halo wins and the
+     letters go to mist. The colophon's own opening sentence has always been
+     set in the darkest ink for exactly this reason and has never been
+     reported; the other three rooms now say theirs as plainly. */
+  color: var(--text);
   /* The same field of light the museum's own labels carry over a photograph:
      these rooms are read against marble, gold and window.
 
@@ -741,6 +747,24 @@ html[data-theme='bright'] .topbar__nav :is(.topbar__key, .topbar__menu, .museum-
 html[data-theme='bright'] .topbar__nav :is(.topbar__key, .topbar__menu, .museum-glass-btn--nav):not(.ss__key)::after {
   display: none;
 }
+/* ---------- the label sits where the plate's own panel is ----------
+   The plate is a photograph of a tablet and its cream panel is not centred in
+   the file: it runs from 11.9% to 79.3% of the picture's height, so the panel's
+   middle is at 45.6% and a label centred in the BOX lands 1.7px below it. The
+   capsule the search key wears is inset to match that panel exactly, which is
+   why the fault shows there first — a capsule is a plain shape and the eye
+   reads its middle at once, where a tablet with acanthus at both ends hides it.
+
+   So the ink is lifted to the panel's middle rather than the box's, on every
+   key at once: they are one row of type, and moving one of them would trade a
+   label off its capsule for a label off the line its neighbours are on. 1.7px
+   is 4.4% of the 37.3px key and 4.4% of the phone's 41.6px is 1.8px, so one
+   length serves both. */
+html[data-theme='bright'] .topbar__nav
+:is(.topbar__key, .topbar__menu, .museum-glass-btn--nav) > * {
+  translate: 0 -1.7px;
+}
+
 /* the plate is a picture, so pressing it lifts and brightens the picture */
 html[data-theme='bright'] .topbar__nav :is(.topbar__key, .museum-glass-btn--nav):hover {
   filter: brightness(1.04);
