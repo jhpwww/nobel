@@ -205,6 +205,40 @@ const yes = (v: boolean | undefined) => (v ? '是' : '否');
 const or = (v: string | undefined) => (v ?? '').trim() || '（未填）';
 
 /**
+ * One stage of one lecture, as lines — the same lines the file prints and
+ * the panel's three copy keys put on the clipboard, so that a stage pasted
+ * into the course's form reads exactly as it does in the file. `field` is
+ * called for each written field; the file's version adds the record under
+ * it, the clipboard's does not.
+ */
+export function stageLines(
+  e: Entry, part: Part,
+  field: (k: FieldKey, label: string, text: string | undefined) => string[],
+): string[] {
+  const n = e.note ?? { summary: '', reflection: '', question: '' };
+  switch (part) {
+    case 'prepare':
+      return [`〔1 準備〕已看原版 Nobel Lecture：${yes(e.watchedNobel)}`,
+              ...field('askQuestion', '想問講者的問題', e.askQuestion)];
+    case 'attend':
+      return [`〔2 參與〕已看臺灣場次：${yes(e.watchedTaiwan)}`,
+              ...field('summary', '講者核心論點摘要', n.summary)];
+    case 'reflect':
+      return ['〔3 反思〕',
+              ...field('reflection', '個人反思', n.reflection),
+              ...field('question', '延伸問題', n.question)];
+  }
+}
+
+/** one stage of one lecture for the clipboard: headed by the lecture, no
+    record lines, no trailing blank */
+export function copyStage(id: string, part: Part, title: string): string {
+  const lines = [`── ${title}`, ...stageLines(entry(id), part, (_k, label, text) => [`【${label}】`, or(text), ''])];
+  while (lines.length && lines[lines.length - 1] === '') lines.pop();
+  return lines.join('\n');
+}
+
+/**
  * One file: the chosen lectures, the chosen stages of each, who wrote them,
  * when the file was made — and, under each field, how it came to be written
  * (see trace.ts). Chinese throughout, as the earlier exports were: the course
@@ -227,30 +261,17 @@ export function exportSelected(
     LEGEND,
     '',
   ];
-  const field = (id: string, k: FieldKey, label: string, text: string | undefined) => {
-    const v = or(text);
-    lines.push(`【${label}】`, v);
-    const how = describe(tr[id]?.[k], (text ?? '').trim().length);
-    if (how) lines.push(`　書寫紀錄：${how}`);
-    lines.push('');
-  };
   for (const id of ids) {
     const e = s[id] ?? {};
-    const n = e.note ?? { summary: '', reflection: '', question: '' };
+    const field = (k: FieldKey, label: string, text: string | undefined) => {
+      const out = [`【${label}】`, or(text)];
+      const how = describe(tr[id]?.[k], (text ?? '').trim().length);
+      if (how) out.push(`　書寫紀錄：${how}`);
+      out.push('');
+      return out;
+    };
     lines.push(`── ${titleFor(id)}`);
-    if (on.has('prepare')) {
-      lines.push(`〔1 準備〕已看原版 Nobel Lecture：${yes(e.watchedNobel)}`);
-      field(id, 'askQuestion', '想問講者的問題', e.askQuestion);
-    }
-    if (on.has('attend')) {
-      lines.push(`〔2 參與〕已看臺灣場次：${yes(e.watchedTaiwan)}`);
-      field(id, 'summary', '講者核心論點摘要', n.summary);
-    }
-    if (on.has('reflect')) {
-      lines.push('〔3 反思〕');
-      field(id, 'reflection', '個人反思', n.reflection);
-      field(id, 'question', '延伸問題', n.question);
-    }
+    for (const part of PARTS) if (on.has(part)) lines.push(...stageLines(e, part, field));
     lines.push('');
   }
   if (!ids.length) lines.push('（未選任何場次）', '');

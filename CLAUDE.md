@@ -476,7 +476,7 @@ the same order, with the same four fields as the panel on a laureate's own page
 and the summary, 反思 takes the reflection and the further question. They are one
 form written in two rooms, and a form that reorders itself between them is two
 forms. What the desk leaves out is only what belongs to a single lecture: the
-criteria under the question and the two copy keys, which this page has an export
+criteria under the question and the three copy keys — one per stage, each putting the same lines on the clipboard the file prints (`stageLines` in study.ts) — which this page has an export
 for instead.
 
 「收藏這場演講」 stands ABOVE the three stages, under the line that says where

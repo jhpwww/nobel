@@ -80,8 +80,11 @@ const t = useT(lang);
         <textarea data-field="askQuestion" rows="3" placeholder={t('study.askPh')}
                   aria-label={t('study.askTitle')} aria-describedby="sp-policy"></textarea>
         <span class="sp__count" data-count="askQuestion" data-tmpl={t('study.chars')}></span>
+        {/* Each stage has its own copy key, at the owner's word: what a
+            stage puts on the clipboard is the same lines the exported file
+            prints for it — see stageLines in study.ts. */}
         <div class="sp__actions">
-          <button class="museum-glass-btn museum-glass-btn--nav" type="button" data-copy-ask data-label={t('study.copyAsk')} data-ok={t('study.copied')} data-fail={t('study.copyFail')}><span>{t('study.copyAsk')}</span></button>
+          <button class="museum-glass-btn museum-glass-btn--nav" type="button" data-copy="prepare" data-label={t('study.copyPrepare')} data-ok={t('study.copied')} data-fail={t('study.copyFail')}><span>{t('study.copyPrepare')}</span></button>
         </div>
       </div>
     </li>
@@ -100,6 +103,9 @@ const t = useT(lang);
         <textarea data-field="summary" rows="4" placeholder={t('study.fSummaryPh')}
                   aria-label={t('study.fSummary')} aria-describedby="sp-policy"></textarea>
         <span class="sp__count" data-count="summary" data-tmpl={t('study.chars')}></span>
+        <div class="sp__actions">
+          <button class="museum-glass-btn museum-glass-btn--nav" type="button" data-copy="attend" data-label={t('study.copyAttend')} data-ok={t('study.copied')} data-fail={t('study.copyFail')}><span>{t('study.copyAttend')}</span></button>
+        </div>
       </div>
     </li>
 
@@ -124,7 +130,7 @@ const t = useT(lang);
       </div>
 
       <div class="sp__actions">
-        <button class="museum-glass-btn museum-glass-btn--nav" type="button" data-copy-note data-label={t('study.copyNote')} data-ok={t('study.copied')} data-fail={t('study.copyFail')}><span>{t('study.copyNote')}</span></button>
+        <button class="museum-glass-btn museum-glass-btn--nav" type="button" data-copy="reflect" data-label={t('study.copyReflect')} data-ok={t('study.copied')} data-fail={t('study.copyFail')}><span>{t('study.copyReflect')}</span></button>
         <span class="sp__saved" data-saved data-msg={t('study.saved')} data-fail={t('study.saveFail')}></span>
       </div>
     </li>
@@ -295,6 +301,7 @@ const t = useT(lang);
 <script>
   import {
     entry, update, updateKept, setNote, picks, noteComplete, storageAvailable, REQUIRED_PICKS,
+    copyStage, type Part,
   } from '../scripts/study';
   import { watch, type FieldKey } from '../scripts/trace';
 
@@ -399,19 +406,15 @@ const t = useT(lang);
       setTimeout(() => (label.textContent = btn.dataset.label!), 1800);
     }
 
-    $<HTMLButtonElement>('[data-copy-note]')?.addEventListener('click', (ev) => {
-      const e = entry(id);
-      const n = e.note ?? { summary: '', reflection: '', question: '' };
-      const title = document.querySelector('h1')?.textContent?.trim() ?? id;
-      copy(
-        `── ${title}\n【核心論點摘要】\n${n.summary}\n\n【個人反思】\n${n.reflection}\n\n【延伸問題】\n${n.question}`,
-        ev.currentTarget as HTMLElement,
-      );
-    });
-    $<HTMLButtonElement>('[data-copy-ask]')?.addEventListener('click', (ev) => {
-      const title = document.querySelector('h1')?.textContent?.trim() ?? id;
-      copy(`── ${title}\n${entry(id).askQuestion ?? ''}`, ev.currentTarget as HTMLElement);
-    });
+    /* one key per stage; each puts that stage's lines on the clipboard,
+       headed by the laureate and the talk as the file heads them */
+    for (const b of root.querySelectorAll<HTMLButtonElement>('[data-copy]')) {
+      b.addEventListener('click', () => {
+        const who = document.querySelector('h1')?.textContent?.trim() ?? id;
+        const talk = document.querySelector('.lec__title')?.textContent?.trim();
+        copy(copyStage(id, b.dataset.copy as Part, talk ? `${who} — ${talk}` : who), b);
+      });
+    }
 
     addEventListener('study:changed', paint);
 
