@@ -219,6 +219,22 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
           }, { passive: true });
           addEventListener('resize', sync, { passive: true });
         }
+
+        /* The flag leads to the other language's copy of THIS page, not of
+           its address. The index of films keeps its filters in the query
+           string and the learning area keeps its place in the hash, and a
+           flag that dropped both sent the reader to the top of an unfiltered
+           page — a prize chosen in one language was gone in the other.
+           Refreshed at the press rather than once at load, because the index
+           rewrites its query on every filter change; and on focus and keydown
+           too, so a keyboard or a middle button carries the same address. */
+        const flag = document.querySelector<HTMLAnchorElement>('.topbar__lang');
+        if (flag) {
+          const to = flag.getAttribute('href') ?? '';
+          const carry = () => { flag.href = to + location.search + location.hash; };
+          carry();
+          for (const ev of ['pointerdown', 'focus', 'keydown'] as const) flag.addEventListener(ev, carry);
+        }
     </script>
 
     {!bare && (

@@ -6,7 +6,7 @@ Provenance of every field:
   schedule .............. 導讀拍攝進度 PDF (IPF programme), cross-checked against YouTube titles
   yt_lecture ............ International Peace Foundation Network channel (UCCzpgpyyiGMSQE08BuXECVw)
   yt_lecture_ntu ........ 臺大演講網 channel (UCSgvLn9EzRHS7yOJqXcJ68Q) — separate upload of same event
-  yt_guide (導讀影片) ..... 臺大演講網; only the 6 NTU lectures are public
+  yt_guide (導讀影片) ..... 臺大演講網 channel; 12 published (6 NTU-hosted, 6 more on 2026-09-16)
   interviews ............ IPF channel: 天下雜誌 CommonWealth + 風傳媒 The Storm Media
   ig_reel / ntu_* ....... https://cge.ntu.edu.tw/cl_n_203079.html
   nobel_facts ........... nobelprize.org, verified by HTTP status
@@ -97,9 +97,15 @@ L = [
   "2026-05-06","NTU","Cryo-electron microscopy, a new foundation for molecular medicine and drug design","yhZhymmeaso","chemistry/2017/frank"),
 ]
 
-# 導讀影片 — 臺大演講網. Only the six NTU lectures are public.
+# 導讀影片 on 臺大演講網. The first six were filmed for the lectures NTU
+# itself hosted; the second six went up on 2026-09-16, each about ninety
+# seconds, for lectures given at other hosts. All twelve verified public and
+# playable in an embed on the day they were added.
 GUIDE = {"geim":"S2ohEFiR4u0","maskin":"ET-QoWIUjec","strickland":"5e6-gtnHV0M",
-         "meldal":"UNt_MdCz5T0","mbmoser":"vK_aNwIlqRs","frank":"FJnh2-IxXy0"}
+         "meldal":"UNt_MdCz5T0","mbmoser":"vK_aNwIlqRs","frank":"FJnh2-IxXy0",
+         # 2026-09-16
+         "thooft":"_8tHMlQr9Wo","karman":"C87eRAwvKyk","queloz":"RJs5WY4FCGE",
+         "pissarides":"u4Hn6hByR44","ciechanover":"9szPY4r18GE","engle":"J1K1ZpFP8ng"}
 
 # Second upload of the same lecture on 臺大演講網
 NTU_UPLOAD = {"geim":"1KdZldwfnT4","maskin":"hv8g3oRq7Ms","strickland":"51o9waNOWD8",

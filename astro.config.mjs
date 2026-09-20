@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
+import search from './integrations/search.mjs';
 
 /**
  * GitHub Pages project site: https://jhpwww.github.io/nobel/. When a custom
@@ -25,7 +26,9 @@ export default defineConfig({
   site: SITE,
   base: BASE,
   trailingSlash: 'always',
-  integrations: [sitemap()],
+  /* search() writes dist/search/{zh,en}.json, the full text the drawer in the
+     bar reads — see integrations/search.mjs */
+  integrations: [sitemap(), search()],
   i18n: {
     defaultLocale: 'zh',
     locales: ['zh', 'en'],

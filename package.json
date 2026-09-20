@@ -25,6 +25,7 @@
     "@gltf-transform/core": "^4.4.2",
     "@gltf-transform/extensions": "^4.4.2",
     "@gltf-transform/functions": "^4.4.2",
+    "linkedom": "^0.18.13",
     "playwright": "^1.62.1",
     "pngjs": "^7.0.0",
     "typescript": "^5.9.3"

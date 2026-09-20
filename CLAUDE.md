@@ -220,10 +220,11 @@ src/
   already about the programme. Do not put an NTU recording in `video.lecture_ntu` — that field
   means "a second upload of a Bridges lecture" and `HallRing` filters the hall's six turning
   panels on it with six-element arrays.
-- A record outside 臺灣橋樑計畫 has no `cw_hub` (天下's hub covers the programme), no 導讀 and
-  no study panel: the learning area's chooser lists the programme's 31, so a note saved against
-  anything else is a note the student can never find again. All three are guarded in
-  `LecturePage`; an unguarded `ExtLink` with no href renders as a button that does nothing.
+- A record outside 臺灣橋樑計畫 has no `cw_hub` (天下's hub covers the programme) and no 導讀;
+  both are guarded in `LecturePage`, and an unguarded `ExtLink` with no href renders as a button
+  that does nothing. The study panel is on EVERY lecture page, both collections, at the owner's
+  word — and so the learning area's chooser and export list index `allLectures()`, not
+  `lectures`, or a note saved on an NTU page could never be found again.
 - 臺大演講網 publishes these recordings, but **speech.ntu.edu.tw sits behind a bot challenge and
   answers 403 to every client** — never link it, `check-links.py` would fail on it. Link
   `cge.ntu.edu.tw` and `www.ntu.edu.tw` instead.
@@ -421,10 +422,46 @@ confirmation and loses every note on reload.
 - `storageAvailable()` probes once on load; `StudyPanel` and `StudyDesk` show a standing banner
   when it fails, before anything has been typed.
 
+## The export, and what the file records
+
+`匯出繳交` in `StudyDesk` makes one file from what the student ticks (saved lectures × the
+three stages), named for 學號 / 姓名 / minute (`fileName()` in `study.ts`), saved through
+`showSaveFilePicker` where it exists and by `<a download>` where it does not (no confirm — the
+status line says where it went). Rules:
+
+- `src/scripts/trace.ts` keeps, per lecture and field, how the text arrived — a few characters
+  at a time (typed), by paste (count and largest), or in one trusted burst of 40+ with no key
+  and no composition (auto, printed as 其他輸入) — with sittings and active time, and
+  `exportSelected()` prints it under every field after a legend. Every textarea that writes to
+  the store is passed to `watch()`; a new field that is not prints 「無書寫紀錄」. `watch()`
+  reads the field's length on `beforeinput`, never from memory: the panel hydrates AFTER
+  attaching, a restore refills, another tab may write — none of that is writing. Only trusted
+  keydown/composition events count; a script can fake either. Do not block paste or dictation.
+- What it is worth is written in README ("What the file records, and what that is worth") and
+  must stay true: the record catches the careless path only; the save dialog hands the last
+  click back to the student, it is not a gate; `navigator.webdriver` is unset for
+  `chrome.debugger` agents; the check code is a transport check. The copy on the page
+  (`study.policy`, `study.panelPolicy`) discloses the tracing and asks agents not to write —
+  the one deterrent that works on an LLM agent — and it is the `aria-describedby` of every
+  field and of the key. Keep it there and keep it a request.
+- A backup is `{ v: 2, entries, who, trace }`; `restoreJSON()` also takes the old bare map.
+  Restored traces go through `cleanTrace()` and carry `restored`; a bare-map restore clears the
+  trace. `who` lives under its own key so the notes' store keeps its shape, and
+  `clearEverything()` leaves it alone: the owner asked for the name to be typed once and kept.
+  (On a shared machine that means the next student sees it; the confirm text says it stays.)
+- `watch()` closures outlive their textareas when `paintWork` rebuilds; `flush()` therefore
+  refuses to write for a disconnected element, and every `writeTrace()` dispatches `trace:reset`
+  so live watchers drop their cache. Set `rendered = ''` before `paint()` whenever the store
+  changed under the blocks (restore, clear, delete), or a stale textarea saves over the change.
+- Laureates with several records (Ciechanover, Aspect, Robinson) are told apart by the sitting
+  (`sub`: date · host · series) in the chooser, the export list, the work cards, the records
+  table and `titleFor()`. Titles alone do not do it — the two Ciechanover titles differ by one
+  character.
+
 ## Where a visitor can actually write
 
-The learning area carries the chooser (all 31 lectures), the watch toggles and
-the note fields, so the whole task can be done on one page: `StudyDesk.astro`,
+The learning area carries the chooser (all 39 records — both collections), the watch toggles
+and the note fields, so the whole task can be done on one page: `StudyDesk.astro`,
 rendered inside `LearnPage.astro` at `/learn/#record`. `/study/` is now only a
 redirect stub, kept so old links still arrive. The lecture-page panel stays,
 with its three stages and all four fields always rendered.
@@ -451,7 +488,23 @@ takes `[data-pick]` with it and the panel dies before it hydrates.
 
 ## The search panel
 
-`src/components/SiteSearch.astro`, one `<dialog>` opened with `showModal()`.
+`src/components/SiteSearch.astro`, one `<dialog>` opened with `showModal()`. Two indexes:
+the rows built in the frontmatter (laureates, rooms, pages — in one attribute on the dialog)
+and the full text, `search/{zh,en}.json`, fetched on first open. The second is written by
+`integrations/search.mjs` on `astro:build:done` and answered on the dev server by a crawl
+through the dev server itself; `scripts/search-index.mjs` does the extraction. Rules:
+
+- Mark boilerplate a component repeats on every page with `data-search-skip` (the note panel,
+  the 延伸探索 rail, the next-three cards, the card grids that summarise other pages). The
+  indexer also drops any block found under four or more page titles of one language (Robinson's
+  three pages count once), but that net has holes.
+- Sections are joined on `\n`, not spaces: the drawer cuts the clause it links to at a line
+  break, and a text fragment that ran from one block into the next matches nothing.
+- Matching goes through `fold()` — case, width, accents, the name separator — with an offset
+  map back to the original, so what is marked and quoted is the page's own text. Query and
+  index must fold the same way; do not lower-case one side and fold the other.
+- A text hit on a page the first index already listed is shown only for a body match, never
+  for its name.
 
 - The field carries `autofocus`. That is what puts the caret there: the dialog's
   own focusing steps run inside `showModal()`, in the same turn as the press,

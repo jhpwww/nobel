@@ -30,10 +30,9 @@ const who = rec.laureate.en;
 const next = relatedTo(rec, 3);
 /* Which collection this record belongs to. A record of 臺大「諾貝爾獎得主講座」
    renders on this page exactly as a 臺灣橋樑計畫 lecture does — the two things
-   that differ are the series line in the facts list, and the three places
+   that differ are the series line in the facts list, and the two places
    below where a Bridges assumption would otherwise print something untrue:
-   a 導讀 that is not coming, 天下's programme hub, and the study panel, whose
-   chooser in the learning area lists the programme's 31. */
+   a 導讀 that is not coming, and 天下's programme hub. */
 const ntu = isNtu(rec);
 const seriesOf = seriesName(rec, lang);
 /* Stoddart's sitting had no published talk title, so the series stands in the
@@ -252,16 +251,16 @@ const piece = bright ? {
           </section>
         )}
         <CompareBlock lang={lang} rec={rec} />
-        {/* The note panel writes into the same store the learning area reads,
-            and that chooser lists the programme's 31. A note saved here on a
-            record it does not list would be a note the student could never
-            find again. */}
-        {!ntu && <StudyPanel lang={lang} rec={rec} />}
+        {/* On every laureate's page, both collections. The panel writes into
+            the store the learning area reads, and that chooser lists every
+            record the museum holds — see the index in StudyDesk — so a note
+            written here is always a note that can be found again there. */}
+        <StudyPanel lang={lang} rec={rec} />
       </div>
 
       {/* 5. go deeper — a sidebar to this laureate's page, not a conclusion
           to it */}
-      <aside class="lec__aside" aria-labelledby="h-deep">
+      <aside class="lec__aside" aria-labelledby="h-deep" data-search-skip>
         <h3 id="h-deep" class="lec__h">{t('lec.deeper')}</h3>
         <ul class="links" role="list">
           {/* The Nobel Lecture and the prize's own page for this laureate are
@@ -291,7 +290,7 @@ const piece = bright ? {
     </div>
 
     {next.length > 0 && (
-      <section class="wrap lec__next" aria-labelledby="h-next">
+      <section class="wrap lec__next" aria-labelledby="h-next" data-search-skip>
         <h3 id="h-next" class="lec__h">{t('lec.next')}</h3>
         <ul class="grid" role="list">
           {next.map((r) => <li><LectureCard lang={lang} rec={r} /></li>)}

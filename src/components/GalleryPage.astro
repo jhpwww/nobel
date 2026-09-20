@@ -339,7 +339,7 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
             <p class="empty__b">{t('cat.emptyBody')}</p>
           </div>
         ) : (
-          <ul class="grid" role="list">
+          <ul class="grid" role="list" data-search-skip>
             {recs.map((rec) => <li><LectureCard lang={lang} rec={rec} /></li>)}
           </ul>
         )}
@@ -352,7 +352,7 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
           the prize's own official pages, plus the two links at the foot of
           every laureate's list that are about the series rather than about
           one person. */}
-      <aside class="lec__aside gh__aside" aria-labelledby="h-deep">
+      <aside class="lec__aside gh__aside" aria-labelledby="h-deep" data-search-skip>
         <h3 id="h-deep" class="lec__h">{t('explore.title')}</h3>
         <ul class="links" role="list">
           {/* The prize's own pages share one rectangle, the way the two that
@@ -460,7 +460,7 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
             ? '每一個都是本館的一座展廳；年份是該獎項首次頒發的年份。'
             : 'Each one is a room in this museum. The year is when that prize was first awarded.'}
         </p>
-        <ul class="np__six" role="list">
+        <ul class="np__six" role="list" data-search-skip>
           {six.map((c) => (
             <li>
               <a href={c.href} data-cat={c.key}>

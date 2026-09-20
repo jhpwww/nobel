@@ -585,6 +585,16 @@ html[data-theme='bright'] .hall-head h1 {
   text-shadow: var(--ink-edge-h);
 }
 
+/* ---------- where a search lands ----------
+   A hit in the drawer opens its page on the very clause it quoted, by a text
+   fragment in the address, and the browser marks that clause itself. In the
+   museum's gold rather than the browser's purple, and in every browser that
+   reads the fragment; one that does not still lands on the section. */
+html[data-theme='bright'] ::target-text {
+  background: rgba(184, 134, 42, 0.30);
+  color: inherit;
+}
+
 html[data-theme='bright'] .hall-note {
   /* the figure that governs this distance is the head's own reserve above,
      not this margin */

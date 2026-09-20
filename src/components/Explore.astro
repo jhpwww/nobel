@@ -48,7 +48,7 @@ const t = useT(lang);
 const Wrap = wrap ? 'div' : Fragment;
 ---
 
-<section class="xp" aria-labelledby={heading ? 'xp-h' : undefined}
+<section class="xp" data-search-skip aria-labelledby={heading ? 'xp-h' : undefined}
          aria-label={heading ? undefined : t('explore.title')}
          data-bare={heading ? undefined : ''}>
   <Wrap class={wrap ? 'wrap' : undefined}>

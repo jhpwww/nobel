@@ -154,7 +154,7 @@ const PLATE = { w: 836, h: 470 };
       is inside it. The label's characters are split into their own elements so
       each can be turned onto the drum, and inline-block spans are a known way
       to get a name read out one letter at a time. */}
-    <nav class="bh__plinths" aria-label={t('hall.enter')} data-state="in">
+    <nav class="bh__plinths" aria-label={t('hall.enter')} data-state="in" data-search-skip>
     {cats.map((c) => (
       <a class="bh__piece" href={c.href} data-cat={c.key} aria-label={c.label}>
         <span class="bh__art">

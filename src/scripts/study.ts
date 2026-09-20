@@ -10,14 +10,19 @@
  *
  * There is no account and no server: this is a static site, and a student's
  * unsubmitted coursework has no business leaving their machine. Everything
- * lives in localStorage and is exported as plain text for pasting into the
- * course's own forms.
+ * lives in localStorage and leaves it as one plain-text file — the lectures
+ * and stages the student chose, named for them and the moment, with a record
+ * of how each field was written (trace.ts) — for keeping or for handing in.
  *
  * Storage can throw (private windows, blocked site data), so every read and
  * write is guarded and the UI must work with an empty store.
  */
+import { readTrace, setTrace, clearTrace, cleanTrace, removeTrace, describe, LEGEND, type FieldKey } from './trace';
+
 export const REQUIRED_PICKS = 6;      // 影音觀後個人筆記: 自選 6 場
 const KEY = 'nlm:study:v1';
+/** who is writing — student number and name, asked for once, kept here */
+const WHO_KEY = 'nlm:study:who:v1';
 
 export interface Note {
   summary: string;      // 講者核心論點摘要
@@ -36,10 +41,16 @@ export interface Entry {
 
 export type Store = Record<string, Entry>;
 
+const isObj = (v: unknown): v is Record<string, unknown> =>
+  typeof v === 'object' && v !== null && !Array.isArray(v);
+
 export function read(): Store {
   try {
     const raw = localStorage.getItem(KEY);
-    return raw ? (JSON.parse(raw) as Store) : {};
+    const s = raw ? JSON.parse(raw) : {};
+    /* anything that is not a map of entries — a `null` that got in through a
+       hand-edited file — reads as empty rather than throwing in every consumer */
+    return isObj(s) ? (s as Store) : {};
   } catch {
     return {};
   }
@@ -115,46 +126,6 @@ export function progress() {
   };
 }
 
-/** plain text, ready to paste into the course form */
-export function exportNotes(titleFor: (id: string) => string): string {
-  const s = read();
-  const lines: string[] = [];
-  for (const [id, e] of Object.entries(s)) {
-    if (!e.picked || !e.note) continue;
-    const n = e.note;
-    if (!n.summary.trim() && !n.reflection.trim() && !n.question.trim()) continue;
-    lines.push(`── ${titleFor(id)}`);
-    lines.push(`【核心論點摘要】\n${n.summary.trim() || '（未填）'}`);
-    lines.push(`【個人反思】\n${n.reflection.trim() || '（未填）'}`);
-    lines.push(`【延伸問題】\n${n.question.trim() || '（未填）'}`);
-    lines.push('');
-  }
-  return lines.join('\n') || '（尚未撰寫任何筆記）';
-}
-
-export function exportAll(titleFor: (id: string) => string): string {
-  const s = read();
-  const p = progress();
-  const head = [
-    '走進諾貝爾：跨域思辨與時代對話 — 我的學習紀錄',
-    `匯出時間：${new Date().toLocaleString('zh-TW')}`,
-    `自選場次：${p.picked}/${p.required}　完成筆記：${p.notesDone}　兩版本皆看完：${p.bothWatched}`,
-    '',
-  ];
-  const qs: string[] = [];
-  for (const [id, e] of Object.entries(s)) {
-    if ((e.askQuestion ?? '').trim()) qs.push(`── ${titleFor(id)}\n${e.askQuestion!.trim()}`);
-  }
-  return [
-    ...head,
-    '═══ 影音觀後個人筆記 ═══',
-    exportNotes(titleFor),
-    '',
-    '═══ 提問競賽草稿 ═══',
-    qs.join('\n\n') || '（尚未撰寫）',
-  ].join('\n');
-}
-
 /**
  * Everything the store holds for one lecture, as its own plain-text block.
  * The page can hand a single record back without the visitor having to take
@@ -193,6 +164,7 @@ export const noteParts = (e: Entry) =>
 export function remove(id: string): boolean {
   const s = read();
   delete s[id];
+  removeTrace(id);
   return write(s);
 }
 
@@ -201,16 +173,172 @@ export function clearAll() {
   dispatchEvent(new CustomEvent('study:changed', { detail: {} }));
 }
 
-/** so a student can move their work between browsers */
-export function importJSON(text: string): boolean {
+/* ---- who ------------------------------------------------------------ */
+export interface Who { id: string; name: string }
+
+export function who(): Who {
   try {
-    const parsed = JSON.parse(text);
-    if (typeof parsed !== 'object' || parsed === null) return false;
-    write(parsed as Store);
+    const raw = localStorage.getItem(WHO_KEY);
+    const w = raw ? (JSON.parse(raw) as Partial<Who>) : {};
+    return { id: (w.id ?? '').trim(), name: (w.name ?? '').trim() };
+  } catch {
+    return { id: '', name: '' };
+  }
+}
+
+/** kept the moment it is typed; reports whether the browser kept it */
+export function setWho(w: Who): boolean {
+  try {
+    localStorage.setItem(WHO_KEY, JSON.stringify({ id: w.id.trim(), name: w.name.trim() }));
     return true;
   } catch {
     return false;
   }
 }
 
-export const rawJSON = () => JSON.stringify(read(), null, 2);
+/* ---- the file for the course ------------------------------------------ */
+/** the three stages, as the export lets them be chosen */
+export type Part = 'prepare' | 'attend' | 'reflect';
+export const PARTS: Part[] = ['prepare', 'attend', 'reflect'];
+
+const yes = (v: boolean | undefined) => (v ? '是' : '否');
+const or = (v: string | undefined) => (v ?? '').trim() || '（未填）';
+
+/**
+ * One file: the chosen lectures, the chosen stages of each, who wrote them,
+ * when the file was made — and, under each field, how it came to be written
+ * (see trace.ts). Chinese throughout, as the earlier exports were: the course
+ * that reads it is taught in Chinese.
+ */
+export function exportSelected(
+  ids: string[], parts: Part[], w: Who, titleFor: (id: string) => string,
+  when = new Date(),
+): string {
+  const s = read();
+  const tr = readTrace();
+  const on = new Set(parts);
+  const partName: Record<Part, string> = { prepare: '準備', attend: '參與', reflect: '反思' };
+  const lines: string[] = [
+    '走進諾貝爾：跨域思辨與時代對話 — 學習紀錄',
+    `學號：${w.id || '（未填）'}　姓名：${w.name || '（未填）'}`,
+    `匯出時間：${when.toLocaleString('zh-TW')}`,
+    `匯出範圍：${ids.length} 場 · ${parts.map((p) => partName[p]).join('、')}`,
+    '',
+    LEGEND,
+    '',
+  ];
+  const field = (id: string, k: FieldKey, label: string, text: string | undefined) => {
+    const v = or(text);
+    lines.push(`【${label}】`, v);
+    const how = describe(tr[id]?.[k], (text ?? '').trim().length);
+    if (how) lines.push(`　書寫紀錄：${how}`);
+    lines.push('');
+  };
+  for (const id of ids) {
+    const e = s[id] ?? {};
+    const n = e.note ?? { summary: '', reflection: '', question: '' };
+    lines.push(`── ${titleFor(id)}`);
+    if (on.has('prepare')) {
+      lines.push(`〔1 準備〕已看原版 Nobel Lecture：${yes(e.watchedNobel)}`);
+      field(id, 'askQuestion', '想問講者的問題', e.askQuestion);
+    }
+    if (on.has('attend')) {
+      lines.push(`〔2 參與〕已看臺灣場次：${yes(e.watchedTaiwan)}`);
+      field(id, 'summary', '講者核心論點摘要', n.summary);
+    }
+    if (on.has('reflect')) {
+      lines.push('〔3 反思〕');
+      field(id, 'reflection', '個人反思', n.reflection);
+      field(id, 'question', '延伸問題', n.question);
+    }
+    lines.push('');
+  }
+  if (!ids.length) lines.push('（未選任何場次）', '');
+  return lines.join('\n');
+}
+
+/**
+ * The file's own check: the first ten hex digits of a SHA-256 over
+ * everything above the line that carries it. It is not a signature — anyone
+ * can recompute it — but a file whose text has been edited after export no
+ * longer matches the code at its foot, and a course that wants to know can
+ * check in a second:  sed '/^═══ 核對 ═══$/,$d' file.txt | shasum -a 256
+ */
+export async function withChecksum(text: string): Promise<string> {
+  const body = text.endsWith('\n') ? text : `${text}\n`;
+  let code = '';
+  try {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(body));
+    code = [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('').slice(0, 10);
+  } catch {
+    code = '（此瀏覽器無法計算）';
+  }
+  return `${body}═══ 核對 ═══\n核對碼：${code}（此行以上全文的 SHA-256 前十位）\n`;
+}
+
+/** a name for the file: the course, who, and when, with nothing a file
+    system would refuse — a space in a name becomes a hyphen, so 'Wang
+    Hsiao-ming' stays readable */
+export function fileName(w: Who, when = new Date(), blank = { id: '學號', name: '姓名' }): string {
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const stamp = `${when.getFullYear()}${pad(when.getMonth() + 1)}${pad(when.getDate())}-${pad(when.getHours())}${pad(when.getMinutes())}`;
+  const clean = (v: string) => v.trim().replace(/[\u0000-\u001f\\/:*?"<>|]+/g, '').replace(/\s+/g, '-').slice(0, 40);
+  return `走進諾貝爾_${clean(w.id) || blank.id}_${clean(w.name) || blank.name}_${stamp}.txt`;
+}
+
+/* ---- backup ------------------------------------------------------------ */
+/**
+ * Everything, as one file: the notes, who wrote them, and the record of how.
+ * Restore takes this shape and the older one — a bare map of notes — because
+ * a backup made before there was a record is still a backup.
+ */
+export const rawJSON = () =>
+  JSON.stringify({ v: 2, entries: read(), who: who(), trace: readTrace() }, null, 2);
+
+/** a map of entries and nothing else: every value an object, or the file
+    is refused rather than half-taken */
+function entriesOf(v: unknown): Store | null {
+  if (!isObj(v)) return null;
+  const out: Store = {};
+  for (const [id, e] of Object.entries(v)) {
+    if (!isObj(e)) return null;
+    out[id] = e as Entry;
+  }
+  return out;
+}
+
+export function restoreJSON(text: string): boolean {
+  try {
+    const parsed = JSON.parse(text);
+    if (!isObj(parsed)) return false;
+    const now = new Date().toISOString();
+    if (parsed.v === 2) {
+      const entries = entriesOf(parsed.entries);
+      if (!entries) return false;
+      if (isObj(parsed.who)) setWho({ id: String(parsed.who.id ?? ''), name: String(parsed.who.name ?? '') });
+      /* the record comes in checked and stamped — see cleanTrace; a file
+         with no record leaves none behind, so nothing from before the
+         restore is attributed to what it brought */
+      setTrace(cleanTrace(parsed.trace, now));
+      write(entries);
+      return true;
+    }
+    /* the older backup: a bare map of notes, and no record of how they were
+       written — so no record is kept for them */
+    const entries = entriesOf(parsed);
+    if (!entries) return false;
+    clearTrace();
+    write(entries);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** the notes and the record — not who. 學號 and 姓名 were asked for once and
+    are kept until the student changes them, at the owner's word; the confirm
+    that leads here says they stay. */
+export function clearEverything() {
+  clearAll();
+  clearTrace();
+}

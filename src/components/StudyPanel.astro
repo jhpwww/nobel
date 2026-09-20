@@ -18,7 +18,7 @@ const { lang, rec } = Astro.props;
 const t = useT(lang);
 ---
 
-<section class="sp" data-study={rec.id} aria-labelledby="sp-h">
+<section class="sp" data-study={rec.id} aria-labelledby="sp-h" data-search-skip>
   <header class="sp__head">
     <h3 id="sp-h" class="sp__title">{t('study.panelTitle')}</h3>
     <span class="sp__status" data-status data-done={t('study.noteDone')} data-todo={t('study.noteTodo')}></span>
@@ -38,7 +38,8 @@ const t = useT(lang);
       thing inside 準備, between a checkbox about a video and a box for a
       question, where it read as one more field to fill in — and it is not: it
       is the one mark on this page that the learning area counts, the six a
-      visitor is asked to pick out of thirty-one. So it stands above the three
+      visitor is asked to pick out of everything the museum holds. So it
+      stands above the three
       stages, under the line that says where those six are kept, and in the
       same red that line is written in, at the owner's word.
 
@@ -77,7 +78,7 @@ const t = useT(lang);
           <li>{t('study.askC3')}</li>
         </ul>
         <textarea data-field="askQuestion" rows="3" placeholder={t('study.askPh')}
-                  aria-label={t('study.askTitle')}></textarea>
+                  aria-label={t('study.askTitle')} aria-describedby="sp-policy"></textarea>
         <span class="sp__count" data-count="askQuestion" data-tmpl={t('study.chars')}></span>
         <div class="sp__actions">
           <button class="museum-glass-btn museum-glass-btn--nav" type="button" data-copy-ask data-label={t('study.copyAsk')} data-ok={t('study.copied')} data-fail={t('study.copyFail')}><span>{t('study.copyAsk')}</span></button>
@@ -97,7 +98,7 @@ const t = useT(lang);
         <span class="sp__label">{t('study.fSummary')}</span>
         <span class="sp__aid">{t('study.fSummaryAid')}</span>
         <textarea data-field="summary" rows="4" placeholder={t('study.fSummaryPh')}
-                  aria-label={t('study.fSummary')}></textarea>
+                  aria-label={t('study.fSummary')} aria-describedby="sp-policy"></textarea>
         <span class="sp__count" data-count="summary" data-tmpl={t('study.chars')}></span>
       </div>
     </li>
@@ -110,7 +111,7 @@ const t = useT(lang);
         <span class="sp__label">{t('study.fReflection')}</span>
         <span class="sp__aid">{t('study.fReflectionAid')}</span>
         <textarea data-field="reflection" rows="4" placeholder={t('study.fReflectionPh')}
-                  aria-label={t('study.fReflection')}></textarea>
+                  aria-label={t('study.fReflection')} aria-describedby="sp-policy"></textarea>
         <span class="sp__count" data-count="reflection" data-tmpl={t('study.chars')}></span>
       </div>
 
@@ -118,7 +119,7 @@ const t = useT(lang);
         <span class="sp__label">{t('study.fQuestion')}</span>
         <span class="sp__aid">{t('study.fQuestionAid')}</span>
         <textarea data-field="question" rows="3" placeholder={t('study.fQuestionPh')}
-                  aria-label={t('study.fQuestion')}></textarea>
+                  aria-label={t('study.fQuestion')} aria-describedby="sp-policy"></textarea>
         <span class="sp__count" data-count="question" data-tmpl={t('study.chars')}></span>
       </div>
 
@@ -130,6 +131,11 @@ const t = useT(lang);
   </ol>
 
   <p class="sp__privacy">{t('study.privacy')}</p>
+  {/* That the way of writing is recorded is said here, on the page where the
+      writing happens, at a size that can be read — and it is the description
+      of every field above, so whatever reads this page for the student by its
+      accessibility tree meets it before the fields. */}
+  <p class="sp__policy" id="sp-policy">{t('study.panelPolicy')}</p>
 </section>
 
 <style>
@@ -283,12 +289,14 @@ const t = useT(lang);
     background: color-mix(in srgb, var(--c-medicine) 12%, transparent);
   }
   .sp__privacy { font-size: 0.66rem; color: var(--muted-dim); border-block-start: 1px solid var(--line); padding-block-start: .6rem; }
+  .sp__policy { margin: -.3rem 0 0; font-size: var(--step--1); color: var(--muted); line-height: 1.7; max-inline-size: none; }
 </style>
 
 <script>
   import {
     entry, update, updateKept, setNote, picks, noteComplete, storageAvailable, REQUIRED_PICKS,
   } from '../scripts/study';
+  import { watch, type FieldKey } from '../scripts/trace';
 
   const root = document.querySelector<HTMLElement>('[data-study]');
   if (root) {
@@ -355,7 +363,15 @@ const t = useT(lang);
         update(id, w.dataset.watch === 'tw' ? { watchedTaiwan: w.checked } : { watchedNobel: w.checked }));
     }
 
+    /* the saved text goes into the fields BEFORE anything watches them: a
+       watcher attached to an empty field that is then filled would count the
+       whole note as having arrived at the first keystroke */
+    hydrate();
+
     for (const f of fields) {
+      /* how the field comes to be written, kept beside what is written — see
+         trace.ts; the export in the learning area prints it under each one */
+      watch(f, id, f.dataset.field as FieldKey);
       let t = 0;
       f.addEventListener('input', () => {
         countOf(f);
@@ -398,7 +414,6 @@ const t = useT(lang);
     });
 
     addEventListener('study:changed', paint);
-    hydrate();
 
     // say up front when this browser will not keep anything, rather than
     // letting the visitor find out after they have written six notes

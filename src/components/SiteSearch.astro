@@ -2,7 +2,7 @@
 /**
  * SiteSearch.astro — one field that reaches every room in the museum.
  *
- * The museum has 31 laureates, seven rooms, 63 recordings and half a dozen
+ * The museum has 39 lecture records, seven rooms, 77 recordings and half a dozen
  * pages. The index of films has a filter, but that is a filter over films: it
  * cannot take you to a room, to the learning area or to the medal on the
  * about page.
@@ -22,7 +22,16 @@
  * body — and whether it starts the field, so 'Peace' finds the peace room
  * before it finds a peace prize laureate's biography.
  *
- * A query that finds nothing here is handed to the index of films, which
+ * AND THEN THE TEXT
+ * The rows above are the museum's own list of what it holds, and they cannot
+ * answer a word that is on a page but is nobody's name and no room's —
+ * 'ubiquitin', '黑箱', 'entanglement'. For those the drawer reads the pages
+ * themselves: scripts/search-index.mjs cuts every built page into sections
+ * at its headings and writes search/{zh,en}.json beside them, and the drawer
+ * fetches the one for its language the first time it opens. A hit from there
+ * shows the sentence the word is in and leads to that part of that page.
+ *
+ * A query that finds nothing anywhere is handed to the index of films, which
  * searches the recordings' own descriptions; see ?q= in BrowsePage.
  */
 import { useT, type Lang } from '../i18n/ui';
@@ -31,7 +40,7 @@ import {
   lectureFilms, sittings,
   intro, INTRO, type CategoryKey, type GalleryKey,
 } from '../data/catalog';
-import { path, gallery, browse, about, learn, lecture as lectureUrl } from '../i18n/routing';
+import { gallery, browse, about, learn, asset, lecture as lectureUrl } from '../i18n/routing';
 
 interface Props {
   lang: Lang;
@@ -51,8 +60,10 @@ const zh = lang === 'zh';
 type Row = {
   /** what is read: the line, the line under it, and the small mark at the end */
   n: string; s: string; m: string;
-  /** where it goes, which group it belongs to, and everything it answers to */
-  h: string; g: 'l' | 'r' | 'p'; k: string;
+  /** where it goes, which group it belongs to, and everything it answers to.
+      'l' laureate, 'r' room, 'p' page — and 't', a hit in a page's own text,
+      which is built in the script from the second index and never here */
+  h: string; g: 'l' | 'r' | 'p' | 't'; k: string;
 };
 
 const rows: Row[] = [];
@@ -134,7 +145,7 @@ const suggested = [
   rows.indexOf(pages[0]), rows.indexOf(pages[1]),
 ];
 
-const groups = { l: t('search.groupLaureate'), r: t('search.groupRoom'), p: t('search.groupPage') };
+const groups = { l: t('search.groupLaureate'), r: t('search.groupRoom'), p: t('search.groupPage'), t: t('search.groupText') };
 ---
 
 {only !== 'panel' && (
@@ -155,7 +166,9 @@ const groups = { l: t('search.groupLaureate'), r: t('search.groupRoom'), p: t('s
         data-groups={JSON.stringify(groups)}
         data-all={t('search.all')}
         data-empty={t('search.empty')}
-        data-browse={browse(lang)}>
+        data-browse={browse(lang)}
+        data-loading={t('search.loading')}
+        data-text={asset(`search/${lang}.json`)}>
   <div class="ss__panel">
     <form class="ss__bar" data-ss-form role="search">
       <svg class="ss__bar-ico" viewBox="0 0 24 24" width="19" height="19" aria-hidden="true">
@@ -453,6 +466,10 @@ const groups = { l: t('search.groupLaureate'), r: t('search.groupRoom'), p: t('s
   }
   .ss__row[data-g='l'] .ss__g { background: var(--accent); }
   .ss__row[data-g='r'] .ss__g { background: var(--gold-orn, #b8862a); }
+  /* a hit in the text is a sentence, not a name: the line is set in the body
+     face, and the sentence under it is what the row is for */
+  .ss__row[data-g='t'] .ss__n { font-family: inherit; font-size: var(--step--1); }
+  .ss__row[data-g='t'] .ss__s { color: var(--text); }
   .ss__txt { display: grid; gap: 0.08rem; min-inline-size: 0; }
   .ss__n {
     font-family: var(--font-han-serif);
@@ -547,6 +564,22 @@ const groups = { l: t('search.groupLaureate'), r: t('search.groupRoom'), p: t('s
     }
     .ss__hint { display: none; }
     .ss__in { font-size: 1.05rem; }   /* 16px or more, or iOS zooms the page */
+    /* A hit in the text is its sentence, and on a phone the sentence is what
+       was being cut: the page's name on the right took a third of the row and
+       the one line left showed fourteen characters, often not the marked
+       ones. So the name goes under the sentence and the sentence has two
+       lines. */
+    .ss__row[data-g='t'] .ss__hit { grid-template-columns: 0.28rem minmax(0, 1fr); }
+    .ss__row[data-g='t'] .ss__g { grid-row: 1 / 3; }
+    .ss__row[data-g='t'] .ss__m { grid-column: 2; justify-self: start; margin-block-start: -0.1rem; }
+    .ss__row[data-g='t'] .ss__s {
+      white-space: normal;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      overflow: hidden;
+    }
   }
 </style>
 
@@ -554,12 +587,45 @@ const groups = { l: t('search.groupLaureate'), r: t('search.groupRoom'), p: t('s
   /**
    * The drawer.
    *
-   * Everything it searches is in one attribute on the dialog, so there is no
-   * fetch and no second state to keep in step. What the script does is decide
-   * an order and paint it — see the note at the head of this file for why the
-   * match is a plain substring.
+   * What the museum holds is in one attribute on the dialog, so the first
+   * keystroke needs no fetch. What the pages SAY is a second file, fetched
+   * the first time the drawer opens and folded once — see `fold` — so that a
+   * query can be matched against it as fast as against the first. What the
+   * script does is decide an order and paint it; see the note at the head of
+   * this file for why the match is a plain substring.
    */
-  type Row = { n: string; s: string; m: string; h: string; g: 'l' | 'r' | 'p'; k: string };
+  type Row = { n: string; s: string; m: string; h: string; g: 'l' | 'r' | 'p' | 't'; k: string;
+               /** a text hit carries its sentence ready-marked */ frag?: DocumentFragment };
+  type Section = { h: string; a: string; x: string };
+  type Page = { u: string; t: string; s: Section[] };
+  /** a page, folded: the text as it is matched, and where each folded
+      character came from in the text as it is shown */
+  type Folded = { s: string; map: number[] };
+  type Ready = { page: Page; title: Folded; secs: { sec: Section; head: Folded; body: Folded }[] };
+
+  /**
+   * One spelling for the match. Case is folded, width is folded (a full-width
+   * 'Ｋ' is a 'k'), the accents come off ('Südhof' answers to 'sudhof'), and
+   * the museum's own separator in a Chinese name — 布萊恩‧科比爾卡 — is struck,
+   * so that a name typed without it still finds the person. Every character
+   * of the result remembers which character of the original it came from,
+   * which is what lets a hit be cut out of the ORIGINAL and shown.
+   */
+  function fold(text: string): Folded {
+    let s = '';
+    const map: number[] = [];
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i];
+      if (c === '\u2027' || c === '\u00b7' || c === '\u30fb' || c === '\u2022') continue;
+      /* a typewriter's quotes for the typesetter's: the same word is on one
+         page with ’ and on another with ' */
+      const q = c === '\u2018' || c === '\u2019' ? "'" : c === '\u201c' || c === '\u201d' ? '"' : c;
+      const f = q.normalize('NFKC').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      for (const ch of f) { s += ch; map.push(i); }
+    }
+    return { s, map };
+  }
+  const foldQ = (q: string) => fold(q).s;
 
   const dlg = document.querySelector<HTMLDialogElement>('[data-ss]');
   const openers = [...document.querySelectorAll<HTMLButtonElement>('[data-ss-open]')];
@@ -579,17 +645,232 @@ const groups = { l: t('search.groupLaureate'), r: t('search.groupRoom'), p: t('s
     let shown: Row[] = [];
     let at = 0;
 
+    /* ── the second index ─────────────────────────────────────────────────
+       Fetched once, on the first opening, and folded once. Until it has
+       arrived the drawer answers from the first index alone; when it lands,
+       whatever is in the field is painted again. A fetch that fails leaves
+       the drawer exactly as it was before there was a second index. */
+    let ready: Ready[] | null = null;
+    let asked = false;
+    function loadText() {
+      if (asked || !dlg!.dataset.text) return;
+      asked = true;
+      fetch(dlg!.dataset.text)
+        .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+        .then((data: { pages: Page[] }) => {
+          ready = data.pages.map((page) => ({
+            page,
+            title: fold(page.t),
+            secs: page.s.map((sec) => ({ sec, head: fold(sec.h), body: fold(sec.x) })),
+          }));
+          if (dlg!.open && input.value.trim()) paint();
+        })
+        /* one more try at the next opening; until then the drawer answers
+           from what it has and says it is still waiting */
+        .catch(() => { ready = null; asked = false; });
+    }
+    const waiting = () => asked && !ready;
+
+    /**
+     * Where a query lands in the pages' own text. Every term has to be in
+     * the section — its heading, its body, or the page's title — and what
+     * decides the order is where the FIRST term lands: a title, a heading,
+     * the body. Two sections of one page at most, so that a page which says
+     * a word nine times does not fill the list nine times over.
+     */
+    function textHits(q: string, taken: Set<string>): { r: Row; sc: number }[] {
+      if (!ready) return [];
+      const terms = q.split(/\s+/).filter(Boolean).map(foldQ).filter(Boolean);
+      if (!terms.length) return [];
+      const first = terms[0];
+      const out: { r: Row; sc: number }[] = [];
+      for (const { page, title, secs } of ready) {
+        const pagePath = page.u;
+        const known = taken.has(pagePath);
+        let taken2 = 0;
+        for (const { sec, head, body } of secs) {
+          if (taken2 >= 2) break;
+          const all = terms.every((t) => title.s.includes(t) || head.s.includes(t) || body.s.includes(t));
+          if (!all) continue;
+          /* the sentence quoted is the first term's, if it is in the body at
+             all; otherwise the first term that is — 'sudhof 阿茲海默' quotes
+             the sentence about Alzheimer's, since the name is in the heading */
+          const inBody = terms.find((t) => body.s.includes(t));
+          const atBody = inBody ? body.s.indexOf(inBody) : -1;
+          const term = inBody ?? first;
+          const atHead = head.s.indexOf(first);
+          let sc: number;
+          if (atBody >= 0) {
+            let n = 0;
+            for (let i = atBody; i >= 0 && n < 6; i = body.s.indexOf(term, i + term.length)) n++;
+            sc = 24 + n * 2 + (inBody === first ? 2 : 0);
+          } else if (atHead >= 0) sc = 40;
+          else if (title.s.includes(first)) sc = 46;
+          else continue;
+          /* a page the first index has already put in the list is not put
+             in it again for its name — only for a sentence in its body */
+          if (known && atBody < 0) continue;
+          taken2++;
+
+          const { text, frag } = snippet(sec.x, body, atBody, term, terms);
+          const n = sec.h || page.t;
+          /* a hit in the body lands on its sentence; a hit in a heading lands
+             on the heading by its own words, because several headings on one
+             page can share one ancestor's anchor */
+          const fragment = atBody >= 0
+            ? textFragment(sec.x, body, atBody, term)
+            : atHead >= 0 ? textFragment(sec.h, head, atHead, first) : '';
+          out.push({
+            sc,
+            r: {
+              n, s: text, m: sec.h ? page.t : '', g: 't', k: '',
+              h: page.u + hashFor(sec.a, fragment),
+              frag,
+            },
+          });
+        }
+      }
+      return out;
+    }
+
+    /** the section's anchor, the fragment, both or neither — never a bare # */
+    const hashFor = (a: string, frag: string) => (a || frag ? `#${a}${frag}` : '');
+
+    /** the sentence around the first match, cut from the original text, with
+        every term in it marked; or the start of the section when the match
+        is in the heading or the title */
+    function snippet(x: string, body: Folded, at: number, first: string, terms: string[]) {
+      let start = 0, end = Math.min(x.length, 110);
+      let cutL = false, cutR = end < x.length;
+      if (at >= 0) {
+        /* within the block the match is in — blocks are joined on newlines
+           by the indexer — and cut short with an ellipsis only when the block
+           itself runs on further than the row can show */
+        const o1 = body.map[at];
+        const bs = x.lastIndexOf('\n', o1 - 1) + 1;
+        const beAt = x.indexOf('\n', o1);
+        let be = beAt < 0 ? x.length : beAt;
+        /* a block of a few words — a label, a date, a name on its own line —
+           is shown with the line after it, which is what it was labelling */
+        if (be - bs < 16 && beAt >= 0) {
+          const next = x.indexOf('\n', be + 1);
+          be = next < 0 ? x.length : next;
+        }
+        start = Math.max(bs, o1 - 26);
+        end = Math.min(be, o1 + first.length + 84);
+        /* not through the middle of a Latin word */
+        while (start > bs && /[A-Za-z0-9]/.test(x[start - 1]) && /[A-Za-z0-9]/.test(x[start])) start--;
+        if (start > bs && x[start] >= '\udc00' && x[start] <= '\udfff') start--;
+        cutL = start > bs;
+        cutR = end < be;
+      }
+      const raw = (cutL ? '…' : '') + x.slice(start, end) + (cutR ? '…' : '');
+      const f = fold(raw);
+      /* every term's every occurrence, as ranges in the original */
+      const ranges: [number, number][] = [];
+      for (const t of terms) {
+        for (let i = f.s.indexOf(t); i >= 0; i = f.s.indexOf(t, i + t.length)) {
+          ranges.push([f.map[i], f.map[i + t.length - 1] + 1]);
+        }
+      }
+      ranges.sort((a, b) => a[0] - b[0]);
+      const frag = document.createDocumentFragment();
+      let pos = 0;
+      for (const [a, b] of ranges) {
+        if (a < pos) continue;
+        frag.append(raw.slice(pos, a));
+        const m = document.createElement('mark');
+        m.textContent = raw.slice(a, b);
+        frag.append(m);
+        pos = b;
+      }
+      frag.append(raw.slice(pos));
+      return { text: raw, frag };
+    }
+
+    /**
+     * The URL's own way of saying 'this sentence': a text fragment. The page
+     * opens scrolled to the clause the match is in, with the clause marked,
+     * in every browser that reads them; in one that does not, the hash before
+     * it still lands the reader on the section. The clause runs between two
+     * marks of punctuation, because a boundary the browser is certain of is
+     * one it will honour in either language.
+     */
+    function textFragment(x: string, body: Folded, at: number, first: string): string {
+      if (at < 0) return '';
+      const o1 = body.map[at];
+      const o2 = body.map[at + first.length - 1] + 1;
+      const STOP = /[\n。！？；，、：「」『』（）()\[\].!?;:,"“”·‧]/;
+      let a = o1, b = o2;
+      while (a > 0 && !STOP.test(x[a - 1]) && o1 - a < 70) a--;
+      while (b < x.length && !STOP.test(x[b]) && b - o2 < 70) b++;
+      /* a fragment has to start and end on a word: where the cap fell inside
+         one, back off to the space before or after it */
+      const W = /[A-Za-z0-9]/;
+      while (a > 0 && a < o1 && W.test(x[a - 1]) && W.test(x[a])) a--;
+      while (b < x.length && b > o2 && W.test(x[b - 1]) && W.test(x[b])) b++;
+      /* and never between the two halves of one character */
+      const lo = (c: string) => c >= '\udc00' && c <= '\udfff';
+      if (a > 0 && lo(x[a])) a--;
+      if (b < x.length && lo(x[b])) b++;
+      const clause = x.slice(a, b).trim();
+      if (!clause) return '';
+      const enc = (t: string) => encodeURIComponent(t).replace(/-/g, '%2D');
+      try {
+        /* A clause of a word or two — a term in brackets, a name in quotes —
+           is on most pages more than once, and the browser lands on the
+           first. So a short one is pinned by what stands around it: up to
+           twenty characters before and after, within the same block. The
+           prefix has to end on a word and the suffix begin on one; both do,
+           because what bounded the clause was punctuation. */
+        if (clause.length >= 12) return `:~:text=${enc(clause)}`;
+        const nl = (i: number, dir: -1 | 1) => {
+          let j = i;
+          while (j > 0 && j < x.length && x[j + (dir < 0 ? -1 : 0)] !== '\n' && Math.abs(j - i) < 20) j += dir;
+          return j;
+        };
+        let pa = nl(a, -1), sb = nl(b, 1);
+        while (pa > 0 && pa < a && W.test(x[pa - 1]) && W.test(x[pa])) pa++;
+        while (sb < x.length && sb > b && W.test(x[sb - 1]) && W.test(x[sb])) sb--;
+        /* Neither may be cut inside a Han word — the browser will not take
+           「其」 for 「其後」 — and Han has no spaces to cut at, so each is
+           trimmed to the punctuation or space nearest the clause's side of
+           the window: the prefix loses its head up to the first mark, the
+           suffix its tail from the last. */
+        let prefix = x.slice(pa, a);
+        let suffix = x.slice(b, sb);
+        const cutP = prefix.search(/[\s。！？；，、：「」『』（）()\[\].!?;:,"“”·‧]/);
+        if (cutP >= 0 && cutP < prefix.length - 2) prefix = prefix.slice(cutP + 1);
+        const marks = [...suffix.matchAll(/[\s。！？；，、：「」『』（）()\[\].!?;:,"“”·‧]/g)];
+        const lastM = marks.length ? marks[marks.length - 1].index! : -1;
+        if (lastM >= 2) suffix = suffix.slice(0, lastM + 1);
+        prefix = prefix.trim();
+        suffix = suffix.trim();
+        return `:~:text=${prefix ? enc(prefix) + '-,' : ''}${enc(clause)}${suffix ? ',-' + enc(suffix) : ''}`;
+      } catch {
+        return '';
+      }
+    }
+
+    /* The first index, folded once — see fold(): 'sudhof' has to find Südhof
+       here as well as in the text */
+    const folded = new Map<Row, { n: string; s: string; k: string }>();
+    const fo = (r: Row) => {
+      let f = folded.get(r);
+      if (!f) { f = { n: fold(r.n).s, s: fold(r.s).s, k: fold(r.k).s }; folded.set(r, f); }
+      return f;
+    };
+
     /** Where the match lands is the whole ranking: a name beats a subtitle
         beats the body, and starting the field beats being inside it. */
     function score(r: Row, q: string): number {
-      const n = r.n.toLowerCase();
-      const s = r.s.toLowerCase();
+      const { n, s, k } = fo(r);
       let sc = 0;
       if (n.startsWith(q)) sc = 100;
       else if (n.includes(q)) sc = 70;
       else if (s.startsWith(q)) sc = 45;
       else if (s.includes(q)) sc = 34;
-      else if (r.k.includes(q)) sc = 18;
+      else if (k.includes(q)) sc = 18;
       else return 0;
       /* a room or a page is a bigger thing than one lecture, and a visitor
          typing three letters is usually after the bigger thing */
@@ -599,19 +880,23 @@ const groups = { l: t('search.groupLaureate'), r: t('search.groupRoom'), p: t('s
       return sc;
     }
 
+    /** the query, marked where it lands in a line — found in the folded line,
+        cut out of the original one */
     function mark(text: string, q: string): DocumentFragment {
       const frag = document.createDocumentFragment();
       if (!q) { frag.append(text); return frag; }
-      const i = text.toLowerCase().indexOf(q);
+      const f = fold(text);
+      const i = f.s.indexOf(q);
       if (i < 0) { frag.append(text); return frag; }
+      const a = f.map[i], b = f.map[i + q.length - 1] + 1;
       const m = document.createElement('mark');
-      m.textContent = text.slice(i, i + q.length);
-      frag.append(text.slice(0, i), m, text.slice(i + q.length));
+      m.textContent = text.slice(a, b);
+      frag.append(text.slice(0, a), m, text.slice(b));
       return frag;
     }
 
     function paint() {
-      const q = input.value.trim().toLowerCase();
+      const q = foldQ(input.value.trim());
       list.replaceChildren();
       none.hidden = true;
 
@@ -619,10 +904,17 @@ const groups = { l: t('search.groupLaureate'), r: t('search.groupRoom'), p: t('s
          keeps its rows together. Sorting on score alone interleaved the three
          and printed 得主 / 展廳 / 得主 down the list. */
       if (q) {
-        const hits = rows.map((r) => ({ r, sc: score(r, q) }))
+        const own = rows.map((r) => ({ r, sc: score(r, q) }))
           .filter((x) => x.sc > 0)
           .sort((a, b) => b.sc - a.sc)
           .slice(0, 24);
+        /* the pages the first index has already answered with, by address */
+        const taken = new Set(own.map((x) => x.r.h.replace(/[#?].*$/, '')));
+        /* two rows that would open the same place are one row */
+        const seenH = new Set<string>();
+        const text = textHits(q, taken).sort((a, b) => b.sc - a.sc)
+          .filter((x) => !seenH.has(x.r.h) && seenH.add(x.r.h)).slice(0, 12);
+        const hits = [...own, ...text];
         const rank = new Map<string, number>();
         hits.forEach((x) => { if (!rank.has(x.r.g)) rank.set(x.r.g, rank.size); });
         shown = hits
@@ -637,10 +929,14 @@ const groups = { l: t('search.groupLaureate'), r: t('search.groupRoom'), p: t('s
       if (q && !shown.length) {
         none.hidden = false;
         none.replaceChildren();
-        const [before, after] = (dlg!.dataset.empty ?? '{q}').split('{q}');
-        const b = document.createElement('b');
-        b.textContent = input.value.trim();
-        none.append(before, b, after ?? '');
+        if (waiting()) {
+          none.append(dlg!.dataset.loading ?? '…');
+        } else {
+          const [before, after] = (dlg!.dataset.empty ?? '{q}').split('{q}');
+          const b = document.createElement('b');
+          b.textContent = input.value.trim();
+          none.append(before, b, after ?? '');
+        }
       }
 
       let group = '';
@@ -658,7 +954,8 @@ const groups = { l: t('search.groupLaureate'), r: t('search.groupRoom'), p: t('s
         li.id = `ss-o${i}`;
         a.href = r.h;
         frag.querySelector('[data-n]')!.append(mark(r.n, q));
-        frag.querySelector('[data-s]')!.append(mark(r.s, q));
+        /* a text hit arrives with its sentence already marked, term by term */
+        frag.querySelector('[data-s]')!.append(r.frag ?? mark(r.s, q));
         frag.querySelector('[data-m]')!.textContent = r.m;
         li.addEventListener('mousemove', () => select(i, false));
         list.append(frag);
@@ -700,6 +997,7 @@ const groups = { l: t('search.groupLaureate'), r: t('search.groupRoom'), p: t('s
       if (dlg!.open) return;
       dlg!.showModal();
       input.value = '';
+      loadText();
       /* The caret, not the first row: this opens because someone means to
          type. `autofocus` on the field is what actually puts it there — the
          dialog's own focusing steps run inside showModal() above, inside the
@@ -713,6 +1011,19 @@ const groups = { l: t('search.groupLaureate'), r: t('search.groupRoom'), p: t('s
     }
 
     for (const b of openers) b.addEventListener('click', open);
+    /* A hit on the page the reader is already on is a same-document move,
+       and the browser will not make it while a modal dialog is open — the
+       row did nothing at all. So the drawer closes before the browser reads
+       the address; and where the address is the one already in the bar, the
+       hash is cleared first so there is a move to make. */
+    list.addEventListener('click', (ev) => {
+      const a = (ev.target as Element).closest<HTMLAnchorElement>('a.ss__hit');
+      if (!a) return;
+      const to = new URL(a.href, location.href);
+      if (to.origin !== location.origin || to.pathname !== location.pathname || to.search !== location.search) return;
+      dlg!.close();
+      if (to.hash && to.hash === location.hash) history.replaceState(history.state, '', location.pathname + location.search);
+    });
     dlg.querySelector('[data-ss-close]')?.addEventListener('click', () => dlg.close());
     /* the backdrop is part of the dialog's own box, so a press that lands on
        the dialog itself rather than on the plate is a press outside */

@@ -12,7 +12,7 @@
  */
 import { useT, type Lang } from '../i18n/ui';
 import { path } from '../i18n/routing';
-import { lectures, categories } from '../data/catalog';
+import { allLectures, categories, localDate, seriesName } from '../data/catalog';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
@@ -22,10 +22,26 @@ const t = useT(lang);
 const catNames = Object.fromEntries(
   (Object.keys(categories) as (keyof typeof categories)[]).map((k) => [k, categories[k][lang]]),
 );
-const index = lectures.map((l) => ({
+/* Both collections: every page that carries a note panel is a row here, or a
+   note written on it could never be found again. A laureate who gave more
+   than one lecture — Ciechanover, Aspect, Robinson — is listed once per
+   lecture, and those rows carry the sitting as a second line: the date, the
+   host, the series where there is one. The two Ciechanover titles differ by
+   one character; the two sittings are two years and a city apart. */
+const all = allLectures();
+const seen = new Map<string, number>();
+for (const l of all) seen.set(l.laureate.en, (seen.get(l.laureate.en) ?? 0) + 1);
+const sitting = (l: (typeof all)[number]) => {
+  const ser = seriesName(l, lang);
+  const host = lang === 'zh' ? l.event.host_zh : l.event.host_en;
+  return [localDate(l.event.date, lang, true), host, ser && ser !== l.title.en && ser !== l.title.zh ? ser : '']
+    .filter(Boolean).join(' · ');
+};
+const index = all.map((l) => ({
   id: l.id,
   name: lang === 'zh' ? `${l.laureate.en}（${l.laureate.zh}）` : l.laureate.en,
   title: l.title.en,
+  sub: (seen.get(l.laureate.en) ?? 0) > 1 ? sitting(l) : '',
   href: path(lang, 'lecture', l.id),
   cat: l.prize.category,
 }));
@@ -44,7 +60,7 @@ const index = lectures.map((l) => ({
        data-lang={lang}>
     <p class="study__note study__blurb">{t('study.pageBlurb')}</p>
 
-    <section class="study__stats" aria-label={t('study.progress')}>
+    <section class="study__stats" aria-label={t('study.progress')} data-search-skip>
       <div><b data-stat="picked">0</b><span>{t('study.statPicked')}</span></div>
       <div><b data-stat="both">0</b><span>{t('study.statBoth')}</span></div>
       <div><b data-stat="notes">0</b><span>{t('study.statNotes')}</span></div>
@@ -57,7 +73,7 @@ const index = lectures.map((l) => ({
       <h2>{t('study.spreadTitle')}</h2>
       <div class="study__block">
         <p class="study__note">{t('study.spreadNote')}</p>
-        <ul class="spread" data-spread role="list"></ul>
+        <ul class="spread" data-spread role="list" data-search-skip></ul>
         <p class="study__nudge" data-nudge hidden></p>
       </div>
     </section>
@@ -73,7 +89,7 @@ const index = lectures.map((l) => ({
       <div class="study__block">
       <p class="study__note">{t('study.recordsNote')}</p>
       <p class="study__empty" data-rec-empty hidden>{t('study.recordsEmpty')}</p>
-      <table class="recs" data-recs hidden>
+      <table class="recs" data-recs hidden data-search-skip>
         <thead>
           <tr>
             <th scope="col">{t('study.colLecture')}</th>
@@ -97,7 +113,7 @@ const index = lectures.map((l) => ({
 
     <template data-rec-template>
       <tr class="recs__row">
-        <td class="recs__name"><a data-rec-name href="#"></a></td>
+        <td class="recs__name"><a data-rec-name href="#"></a><span class="recs__sub" data-rec-sub hidden></span></td>
         <td class="recs__tags" data-rec-tags></td>
         <td class="recs__when" data-rec-when></td>
         <td class="recs__do">
@@ -111,8 +127,8 @@ const index = lectures.map((l) => ({
       <h2>{t('study.myPicks')}</h2>
       <p class="study__note">{t('study.addNote')}</p>
 
-      <details class="chooser" data-chooser>
-        <summary>{t('study.addOpen').replace('{n}', String(lectures.length))}</summary>
+      <details class="chooser" data-chooser data-search-skip>
+        <summary>{t('study.addOpen').replace('{n}', String(all.length))}</summary>
         <div class="chooser__grid" data-chooser-list></div>
       </details>
 
@@ -120,13 +136,13 @@ const index = lectures.map((l) => ({
 
       {/* one editable block per chosen lecture: the reason this page exists is
           to be the one place a student can sit and write all six */}
-      <div class="work" data-work></div>
+      <div class="work" data-work data-search-skip></div>
     </section>
 
     <template data-work-template>
       <article class="work__item">
         <header class="work__head">
-          <a class="work__name" data-work-name href="#"></a>
+          <span class="work__who"><a class="work__name" data-work-name href="#"></a><span class="work__sub" data-work-sub hidden></span></span>
           <a class="work__go museum-glass-btn museum-glass-btn--nav" data-work-go href="#"><span>{t('study.openLecture')} →</span></a>
         </header>
         {/* The same three stages, in the same order, carrying the same four
@@ -147,7 +163,7 @@ const index = lectures.map((l) => ({
             <label class="work__field">
               <span class="work__label">{t('study.askTitle')}</span>
               <span class="work__aid">{t('study.askHint')}</span>
-              <textarea data-wfield="askQuestion" rows="3" placeholder={t('study.askPh')}></textarea>
+              <textarea data-wfield="askQuestion" rows="3" placeholder={t('study.askPh')} aria-describedby="exp-policy"></textarea>
             </label>
           </li>
 
@@ -160,7 +176,7 @@ const index = lectures.map((l) => ({
             <label class="work__field">
               <span class="work__label">{t('study.fSummary')}</span>
               <span class="work__aid">{t('study.fSummaryAid')}</span>
-              <textarea data-wfield="summary" rows="3" placeholder={t('study.fSummaryPh')}></textarea>
+              <textarea data-wfield="summary" rows="3" placeholder={t('study.fSummaryPh')} aria-describedby="exp-policy"></textarea>
             </label>
           </li>
 
@@ -170,12 +186,12 @@ const index = lectures.map((l) => ({
             <label class="work__field">
               <span class="work__label">{t('study.fReflection')}</span>
               <span class="work__aid">{t('study.fReflectionAid')}</span>
-              <textarea data-wfield="reflection" rows="3" placeholder={t('study.fReflectionPh')}></textarea>
+              <textarea data-wfield="reflection" rows="3" placeholder={t('study.fReflectionPh')} aria-describedby="exp-policy"></textarea>
             </label>
             <label class="work__field">
               <span class="work__label">{t('study.fQuestion')}</span>
               <span class="work__aid">{t('study.fQuestionAid')}</span>
-              <textarea data-wfield="question" rows="2" placeholder={t('study.fQuestionPh')}></textarea>
+              <textarea data-wfield="question" rows="2" placeholder={t('study.fQuestionPh')} aria-describedby="exp-policy"></textarea>
             </label>
           </li>
         </ol>
@@ -187,27 +203,106 @@ const index = lectures.map((l) => ({
     <template data-choose-template>
       <label class="chooser__row">
         <input type="checkbox" data-choose />
-        <span class="chooser__name" data-choose-name></span>
+        <span class="chooser__txt">
+          <span class="chooser__name" data-choose-name></span>
+          <span class="chooser__sub" data-choose-sub hidden></span>
+        </span>
       </label>
     </template>
 
-    <section class="study__sec">
-      <h2>{t('study.exportTitle')}</h2>
-      <p class="study__note">{t('study.exportNote')}</p>
-      <div class="study__actions">
-        <button class="museum-glass-btn museum-glass-btn--nav" type="button" data-export-notes><span>{t('study.exportNotes')}</span></button>
-        <button class="museum-glass-btn museum-glass-btn--nav" type="button" data-export-all><span>{t('study.exportAll')}</span></button>
-        <button class="museum-glass-btn museum-glass-btn--primary" type="button" data-download><span>{t('study.download')}</span></button>
-        <span data-msg class="study__msg"></span>
+    {/* ---------- the file ----------
+        One file, and the student says what goes in it: which of the lectures
+        they saved, which of the three stages of each. The two keys that used
+        to stand here — six notes, everything — were two fixed answers to
+        that question; the lists are the question itself. What does not
+        change is that the file is theirs: made in the browser, named for
+        them and the minute, and saved where they choose. */}
+    <section class="study__sec" aria-labelledby="h-exp">
+      <h2 id="h-exp">{t('study.exportTitle')}</h2>
+      <div class="study__block exp">
+        <p class="study__note">{t('study.exportNote')}</p>
+
+        {/* who — asked for once, kept the moment it is typed, and free to be
+            changed; the file and its name both carry it */}
+        <div class="who" role="group" aria-label={t('study.whoGroup')} data-search-skip>
+          <label class="who__f">
+            <span class="who__l">{t('study.whoId')}</span>
+            <input type="text" data-who="id" autocomplete="off" autocapitalize="characters"
+                   spellcheck="false" maxlength="24" placeholder={t('study.whoIdPh')} />
+          </label>
+          <label class="who__f">
+            <span class="who__l">{t('study.whoName')}</span>
+            <input type="text" data-who="name" autocomplete="off" maxlength="40" placeholder={t('study.whoNamePh')} />
+          </label>
+          <span class="who__saved" data-who-saved role="status" data-ok={t('study.saved')} data-fail={t('study.saveFail')}></span>
+        </div>
+        <p class="exp__aid">{t('study.whoNote')}</p>
+
+        {/* which lectures — the saved ones, each with a mark of how much of
+            it is written, all chosen to begin with */}
+        <fieldset class="exp__set" data-search-skip>
+          <legend>{t('study.exportWhich')}</legend>
+          <div class="exp__bar">
+            <span class="exp__aid" data-exp-count data-tmpl={t('study.exportCount')}></span>
+            <button class="exp__link" type="button" data-exp-all="on">{t('study.exportAllOn')}</button>
+            <button class="exp__link" type="button" data-exp-all="off">{t('study.exportAllOff')}</button>
+          </div>
+          <p class="study__empty exp__none" data-exp-none hidden>{t('study.exportNone')}</p>
+          <div class="exp__list" data-exp-list></div>
+        </fieldset>
+
+        {/* which parts — the three stages a note is written in */}
+        <fieldset class="exp__set" data-search-skip>
+          <legend>{t('study.exportParts')}</legend>
+          <div class="exp__parts">
+            <label class="exp__row"><input type="checkbox" data-exp-part="prepare" checked /><span>{t('study.partPrepare')}</span></label>
+            <label class="exp__row"><input type="checkbox" data-exp-part="attend" checked /><span>{t('study.partAttend')}</span></label>
+            <label class="exp__row"><input type="checkbox" data-exp-part="reflect" checked /><span>{t('study.partReflect')}</span></label>
+          </div>
+        </fieldset>
+
+        <div class="study__actions" data-search-skip>
+          <button class="museum-glass-btn museum-glass-btn--primary" type="button" data-download
+                  aria-describedby="exp-policy"
+                  data-missing={t('study.whoMissing')} data-nothing={t('study.exportNothing')}
+                  data-ok={t('study.exportSaved')} data-fail={t('study.saveFail')}
+                  data-auto={t('study.autoRefused')} data-default={t('study.downloadDefault')}
+                  data-blank-id={t('study.whoId')} data-blank-name={t('study.whoName')}>
+            <span>{t('study.download')}</span>
+          </button>
+          <span data-msg class="study__msg" role="status"></span>
+        </div>
+        <p class="exp__aid exp__file" data-exp-file data-tmpl={t('study.fileNameNote')} data-search-skip></p>
+
+        <details class="exp__preview" data-search-skip>
+          <summary>{t('study.exportPreview')}</summary>
+          <textarea data-out rows="14" readonly aria-label={t('study.exportPreview')}></textarea>
+        </details>
+
+        {/* said in the open, to the student and to anything reading the page
+            for them: what the file records, and whose hand it is for. It is
+            the description of the key and of every field on this page, so a
+            reader that goes by the accessibility tree meets it there too. */}
+        <p class="exp__policy" id="exp-policy">{t('study.policy')}</p>
       </div>
-      <textarea data-out rows="12" readonly aria-label={t('study.exportTitle')}></textarea>
     </section>
+
+    <template data-exp-row>
+      <label class="exp__row">
+        <input type="checkbox" data-exp-id checked />
+        <span class="exp__txt">
+          <span class="exp__name" data-exp-name></span>
+          <span class="exp__sub" data-exp-sub hidden></span>
+        </span>
+        <span class="exp__state" data-exp-state></span>
+      </label>
+    </template>
 
     <section class="study__sec">
       <h2>{t('study.manageTitle')}</h2>
       <div class="study__block">
         <p class="study__note">{t('study.manageNote')}</p>
-        <div class="study__actions">
+        <div class="study__actions" data-search-skip>
           <button class="museum-glass-btn museum-glass-btn--nav" type="button" data-backup><span>{t('study.backup')}</span></button>
           <label class="study__file">
             <input type="file" accept="application/json,.json" data-restore hidden />
@@ -355,6 +450,9 @@ const index = lectures.map((l) => ({
   }
   .chooser__row:hover { color: var(--cream); }
   .chooser__row input { accent-color: var(--gold); inline-size: 1rem; block-size: 1rem; flex: none; }
+  .chooser__txt { display: grid; gap: 0.05rem; min-inline-size: 0; }
+  /* the talk's title, only where one laureate has more than one row */
+  .chooser__sub { font-size: var(--step--2); color: var(--muted-dim); line-height: 1.4; }
 
   .work { display: grid; gap: 1rem; margin-block-start: 1.2rem; }
   .work__item {
@@ -368,7 +466,10 @@ const index = lectures.map((l) => ({
     display: flex; align-items: baseline; justify-content: space-between;
     gap: 1rem; flex-wrap: wrap;
   }
+  .work__who { display: grid; gap: .05rem; min-inline-size: 0; }
   .work__name { color: var(--cream); text-decoration: none; font-size: var(--step-0); }
+  /* the sitting, where one laureate has more than one — see `sub` above */
+  .work__sub, .recs__sub { display: block; font-size: var(--step--2); color: var(--muted-dim); line-height: 1.4; }
   .work__name:hover { color: var(--gold-bright); }
   .work__go { color: var(--gold); text-decoration: none; font-size: var(--step--1); white-space: nowrap; }
   .work__go:hover { color: var(--gold-bright); }
@@ -439,6 +540,65 @@ const index = lectures.map((l) => ({
     padding: .8rem .9rem; font: inherit; font-size: var(--step--1); line-height: 1.8;
   }
 
+  /* ---------- the file ---------- */
+  .exp { gap: .9rem; }
+  .who { display: flex; flex-wrap: wrap; gap: .7rem 1.2rem; align-items: end; margin-block-start: .2rem; }
+  .who__f { display: grid; gap: .25rem; }
+  .who__l { font-size: var(--step--2); letter-spacing: .1em; color: var(--muted-dim); }
+  .who input {
+    font: inherit; font-size: var(--step--1); color: var(--text);
+    background: var(--bg-1); border: 1px solid var(--line); border-radius: var(--radius-control);
+    padding: .42rem .7rem; inline-size: 12rem; max-inline-size: 100%;
+  }
+  .who input:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: 1px; border-color: transparent; }
+  .who__saved { font-size: var(--step--1); color: var(--muted-dim); padding-block-end: .5rem; min-inline-size: 4ch; }
+  .who__saved.is-fail { color: var(--c-medicine); }
+  .exp__aid { margin: 0; font-size: var(--step--1); color: var(--muted); line-height: 1.7; max-inline-size: none; }
+  .exp__set { border: 0; padding: 0; margin: .3rem 0 0; display: grid; gap: .45rem; }
+  .exp__set legend { font-size: var(--step-0); color: var(--cream); padding: 0; margin-block-end: .3rem; }
+  .exp__bar { display: flex; flex-wrap: wrap; gap: .3rem 1rem; align-items: baseline; }
+  /* the same gold text-key the chooser's summary and the preview's are, and
+     a box a finger can find: 24px tall at the least */
+  .exp__link {
+    background: none; border: 0; padding: .25rem .4rem; margin-inline: -.4rem 0;
+    min-block-size: 24px; font: inherit; font-size: var(--step--1);
+    color: var(--gold); cursor: pointer;
+    text-decoration: underline; text-underline-offset: .2em;
+    text-decoration-color: color-mix(in srgb, var(--gold) 45%, transparent);
+  }
+  .exp__link:hover { color: var(--gold-bright); text-decoration-color: currentColor; }
+  .exp__link + .exp__link { margin-inline-start: .4rem; }
+  .exp__none { margin: 0; }
+  .exp__list, .exp__parts { display: grid; gap: .15rem; }
+  .exp__row {
+    display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: .6rem;
+    padding: .32rem 0; cursor: pointer; font-size: var(--step--1); color: var(--muted);
+  }
+  .exp__row:hover { color: var(--cream); }
+  /* gold, as the chooser's and the watch toggles' are on this page */
+  .exp__row input { accent-color: var(--gold); inline-size: 1rem; block-size: 1rem; margin: 0; }
+  .exp__row input:checked ~ span { color: var(--text); }
+  .exp__txt { display: grid; gap: .05rem; min-inline-size: 0; }
+  .exp__sub { font-size: var(--step--2); color: var(--muted-dim); line-height: 1.4; }
+  .exp__state { font-size: var(--step--2); letter-spacing: .04em; color: var(--muted-dim); white-space: nowrap; }
+  .exp__file { font-variant-numeric: lining-nums tabular-nums; overflow-wrap: anywhere; }
+  /* On a phone the bar's keys open into a column down the right-hand edge
+     once the page has scrolled — see the fold in Base — and anything set
+     against that edge goes under them. So the state of a row moves under
+     its name, and the saved-mark under the two fields. */
+  @media (max-width: 48rem) {
+    .exp__row { grid-template-columns: auto minmax(0, 1fr); }
+    .exp__state { grid-column: 2; justify-self: start; margin-block-start: -.1rem; }
+    .who__saved { flex-basis: 100%; padding-block-end: 0; }
+  }
+  .exp__preview > summary { font-size: var(--step--1); color: var(--gold); cursor: pointer; }
+  .exp__preview > summary:hover { color: var(--gold-bright); }
+  .exp__preview textarea { margin-block-start: .6rem; }
+  .exp__policy {
+    margin: .2rem 0 0; padding-block-start: .7rem; border-block-start: 1px solid var(--line);
+    font-size: var(--step--2); color: var(--muted-dim); line-height: 1.7; max-inline-size: none;
+  }
+
   /* ---------- read over the room ----------
      The record sits in the middle of the learning area, and that page is read
      in front of a photograph — see the note at the foot of LearnPage, which
@@ -481,6 +641,9 @@ const index = lectures.map((l) => ({
   :global(html[data-theme='bright']) .work__field textarea {
     background: rgba(255, 255, 255, 0.78);
   }
+  :global(html[data-theme='bright']) :is(.who input, .exp__preview textarea) {
+    background: rgba(255, 255, 255, 0.78);
+  }
   :global(html[data-theme='bright']) .study__sec h2 {
     text-shadow: var(--ink-edge-h);
   }
@@ -498,19 +661,21 @@ const index = lectures.map((l) => ({
 
 <script>
   import {
-    read, progress, exportNotes, exportAll, exportOne, clearAll, importJSON, rawJSON,
+    read, progress, exportOne, exportSelected, withChecksum, fileName, clearEverything,
+    restoreJSON, rawJSON, who, setWho, PARTS, type Part,
     entry, update, updateKept, setNote, remove, hasWork, noteParts,
     storageAvailable, REQUIRED_PICKS,
   } from '../scripts/study';
+  import { watch, type FieldKey } from '../scripts/trace';
 
   const root = document.querySelector<HTMLElement>('[data-study-page]');
   if (root) {
-    type Row = { id: string; name: string; title: string; href: string; cat: string };
+    type Row = { id: string; name: string; title: string; sub: string; href: string; cat: string };
     const index: Row[] = JSON.parse(root.dataset.index ?? '[]');
     const byId = new Map(index.map((r) => [r.id, r]));
     const titleFor = (id: string) => {
       const r = byId.get(id);
-      return r ? `${r.name} — ${r.title}` : id;
+      return r ? `${r.name} — ${r.title}${r.sub ? `（${r.sub}）` : ''}` : id;
     };
 
     const $ = <T extends Element>(s: string) => root.querySelector<T>(s)!;
@@ -538,11 +703,12 @@ const index = lectures.map((l) => ({
       const row = frag.querySelector<HTMLElement>('.chooser__row')!;
       const box = frag.querySelector<HTMLInputElement>('[data-choose]')!;
       frag.querySelector<HTMLElement>('[data-choose-name]')!.textContent = r.name;
+      const sub = frag.querySelector<HTMLElement>('[data-choose-sub]')!;
+      sub.textContent = r.sub;
+      sub.hidden = !r.sub;
       row.title = r.title;
-      box.addEventListener('change', () => {
-        update(r.id, { picked: box.checked });
-        paint();
-      });
+      /* update() writes through the store, and the store's own event paints */
+      box.addEventListener('change', () => update(r.id, { picked: box.checked }));
       boxes.set(r.id, box);
       chooserList.append(frag);
     }
@@ -568,6 +734,9 @@ const index = lectures.map((l) => ({
         name.textContent = r ? r.name : id;
         name.href = r?.href ?? '#';
         go.href = r?.href ?? '#';
+        const wsub = frag.querySelector<HTMLElement>('[data-work-sub]')!;
+        wsub.textContent = r?.sub ?? '';
+        wsub.hidden = !r?.sub;
 
         const e = entry(id);
         for (const w of frag.querySelectorAll<HTMLInputElement>('[data-wwatch]')) {
@@ -580,8 +749,10 @@ const index = lectures.map((l) => ({
         }
 
         for (const f of frag.querySelectorAll<HTMLTextAreaElement>('[data-wfield]')) {
-          const k = f.dataset.wfield as 'summary' | 'reflection' | 'question' | 'askQuestion';
+          const k = f.dataset.wfield as FieldKey;
           f.value = k === 'askQuestion' ? (e.askQuestion ?? '') : (e.note?.[k] ?? '');
+          /* and how it comes to be written — see trace.ts */
+          watch(f, id, k);
 
           let timer = 0;
           f.addEventListener('input', () => {
@@ -621,7 +792,9 @@ const index = lectures.map((l) => ({
       a.href = URL.createObjectURL(blob);
       a.download = name;
       a.click();
-      URL.revokeObjectURL(a.href);
+      /* not at once: a browser that starts the save on the next turn would
+         find the address already gone */
+      setTimeout(() => URL.revokeObjectURL(a.href), 2000);
     }
 
     function paintRecords() {
@@ -639,6 +812,9 @@ const index = lectures.map((l) => ({
         name.textContent = r ? r.name : id;
         name.href = r?.href ?? '#';
         name.title = r?.title ?? '';
+        const rsub = frag.querySelector<HTMLElement>('[data-rec-sub]')!;
+        rsub.textContent = r?.sub ?? '';
+        rsub.hidden = !r?.sub;
 
         const tags = frag.querySelector<HTMLElement>('[data-rec-tags]')!;
         const add = (text: string, kind: string) => {
@@ -662,8 +838,10 @@ const index = lectures.map((l) => ({
           download(exportOne(id, titleFor), `${(r?.name ?? id).replace(/[\\/:*?"<>|]/g, '')}.txt`));
         frag.querySelector('[data-rec-del]')!.addEventListener('click', () => {
           if (!confirm(root!.dataset.delConfirm!.replace('{name}', r?.name ?? id))) return;
+          /* the block for it, if it has one, goes with it: a textarea left
+             standing would save its old text back over the deletion */
+          rendered = '';
           remove(id);
-          paint();
         });
         recBody.append(frag);
       }
@@ -701,6 +879,7 @@ const index = lectures.map((l) => ({
         `${Math.min(100, (p.notesDone / REQUIRED_PICKS) * 100)}%`;
 
       paintRecords();
+      paintExport();
       const picked = Object.entries(s).filter(([, e]) => e.picked);
       empty.hidden = picked.length > 0;
       for (const [id, box] of boxes) box.checked = !!s[id]?.picked;
@@ -734,10 +913,150 @@ const index = lectures.map((l) => ({
       if (show) nudge.textContent = root!.dataset.nudgeTmpl!.replace('{cats}', missing.join('、'));
     }
 
-    $('[data-export-notes]').addEventListener('click', () => { out.value = exportNotes(titleFor); out.select(); });
-    $('[data-export-all]').addEventListener('click', () => { out.value = exportAll(titleFor); out.select(); });
-    $('[data-download]').addEventListener('click', () =>
-      download(exportAll(titleFor), '走進諾貝爾-學習紀錄.txt'));
+    /* ── the file ──────────────────────────────────────────────────────────
+       Who, which lectures, which parts; then one key. */
+    const whoId = $<HTMLInputElement>('[data-who="id"]');
+    const whoName = $<HTMLInputElement>('[data-who="name"]');
+    const whoSaved = $<HTMLElement>('[data-who-saved]');
+    const expList = $<HTMLElement>('[data-exp-list]');
+    const expNone = $<HTMLElement>('[data-exp-none]');
+    const expCount = $<HTMLElement>('[data-exp-count]');
+    const expRow = $<HTMLTemplateElement>('[data-exp-row]');
+    const expFile = $<HTMLElement>('[data-exp-file]');
+    const dl = $<HTMLButtonElement>('[data-download]');
+    const partBoxes = [...root.querySelectorAll<HTMLInputElement>('[data-exp-part]')];
+    /* which saved lectures the student has un-ticked — for this visit only;
+       the list starts with everything in */
+    const left = new Set<string>();
+    let expBoxes = new Map<string, HTMLInputElement>();
+
+    {
+      const w = who();
+      whoId.value = w.id;
+      whoName.value = w.name;
+    }
+    let whoTimer = 0;
+    for (const el of [whoId, whoName]) {
+      el.addEventListener('input', () => {
+        const kept = setWho({ id: whoId.value, name: whoName.value });
+        whoSaved.textContent = kept ? whoSaved.dataset.ok! : whoSaved.dataset.fail!;
+        whoSaved.classList.toggle('is-fail', !kept);
+        clearTimeout(whoTimer);
+        whoTimer = window.setTimeout(() => (whoSaved.textContent = ''), kept ? 1600 : 4000);
+        paintFile();
+      });
+    }
+
+    const chosen = () => [...expBoxes].filter(([, b]) => b.checked).map(([id]) => id);
+    const parts = () => partBoxes.filter((b) => b.checked).map((b) => b.dataset.expPart as Part)
+      .sort((a, b) => PARTS.indexOf(a) - PARTS.indexOf(b));
+
+    /** the preview and the name, from whatever is ticked now */
+    function paintFile() {
+      const ids = chosen();
+      out.value = exportSelected(ids, parts(), who(), titleFor);
+      expFile.textContent = expFile.dataset.tmpl!.replace('{name}',
+        fileName(who(), new Date(), { id: dl.dataset.blankId!, name: dl.dataset.blankName! }));
+      expCount.textContent = expCount.dataset.tmpl!.replace('{n}', String(ids.length));
+    }
+
+    /** the saved lectures, one row each, in the order they were saved */
+    function paintExport() {
+      const s = read();
+      const ids = Object.keys(s).filter((id) => s[id].picked);
+      /* a lecture un-picked and picked again is a new decision */
+      for (const id of left) if (!ids.includes(id)) left.delete(id);
+      expList.replaceChildren();
+      expBoxes = new Map();
+      for (const id of ids) {
+        const r = byId.get(id);
+        const frag = expRow.content.cloneNode(true) as DocumentFragment;
+        const box = frag.querySelector<HTMLInputElement>('[data-exp-id]')!;
+        box.checked = !left.has(id);
+        box.addEventListener('change', () => {
+          box.checked ? left.delete(id) : left.add(id);
+          paintFile();
+        });
+        frag.querySelector<HTMLElement>('[data-exp-name]')!.textContent = r?.name ?? id;
+        const sub = frag.querySelector<HTMLElement>('[data-exp-sub]')!;
+        sub.textContent = r?.sub ?? '';
+        sub.hidden = !r?.sub;
+        const e = s[id];
+        const state = [
+          root!.dataset.tagNote!.replace('{n}', String(noteParts(e))),
+          (e.askQuestion ?? '').trim() ? root!.dataset.tagAsk! : '',
+        ].filter(Boolean).join(' · ');
+        frag.querySelector<HTMLElement>('[data-exp-state]')!.textContent = state;
+        expBoxes.set(id, box);
+        expList.append(frag);
+      }
+      expNone.hidden = ids.length > 0;
+      paintFile();
+    }
+
+    for (const b of root.querySelectorAll<HTMLButtonElement>('[data-exp-all]')) {
+      b.addEventListener('click', () => {
+        const on = b.dataset.expAll === 'on';
+        for (const [id, box] of expBoxes) { box.checked = on; on ? left.delete(id) : left.add(id); }
+        paintFile();
+      });
+    }
+    for (const b of partBoxes) b.addEventListener('change', paintFile);
+
+    /**
+     * The key. Three things stand between a press and a file, and each is
+     * said aloud when it stops one:
+     *   · the press has to be a real one — a trusted event, in a browser that
+     *     does not declare itself driven by automation;
+     *   · who and what have to be filled in;
+     *   · where the browser can ask, the student is asked where to put it —
+     *     a native dialog, which nothing on the page can see or press. Where
+     *     it cannot, the file goes to the downloads folder, and the line under
+     *     the key says so.
+     * The record of how each field was written travels inside the file
+     * whichever way it leaves — see trace.ts and exportSelected().
+     */
+    dl.addEventListener('click', async (ev) => {
+      if (!ev.isTrusted || navigator.webdriver) { say(dl.dataset.auto!); return; }
+      const w = who();
+      if (!w.id || !w.name) {
+        say(dl.dataset.missing!);
+        (!w.id ? whoId : whoName).focus();
+        return;
+      }
+      const ids = chosen();
+      const ps = parts();
+      if (!ids.length || !ps.length) { say(dl.dataset.nothing!); return; }
+
+      const when = new Date();
+      const text = await withChecksum(exportSelected(ids, ps, w, titleFor, when));
+      const name = fileName(w, when);
+      const picker = (window as any).showSaveFilePicker as
+        undefined | ((o: object) => Promise<{ createWritable(): Promise<{ write(d: string): Promise<void>; close(): Promise<void> }> }>);
+      if (picker) {
+        try {
+          const handle = await picker.call(window, {
+            suggestedName: name,
+            types: [{ description: 'Text', accept: { 'text/plain': ['.txt'] } }],
+          });
+          const out = await handle.createWritable();
+          await out.write(text);
+          await out.close();
+          say(dl.dataset.ok!);
+          return;
+        } catch (err) {
+          /* the student closed the dialog: nothing to say */
+          if ((err as { name?: string })?.name === 'AbortError') return;
+          /* anything else — a browser that has the function but will not run
+             it here — falls through to the plain download below */
+        }
+      }
+      /* no dialog to ask with: the file goes where this browser puts its
+         downloads, and the line under the key says so */
+      download(text, name);
+      say(dl.dataset.default!);
+    });
+
     $('[data-backup]').addEventListener('click', () => {
       const blob = new Blob([rawJSON()], { type: 'application/json' });
       const a = document.createElement('a');
@@ -749,11 +1068,21 @@ const index = lectures.map((l) => ({
     $<HTMLInputElement>('[data-restore]').addEventListener('change', async (ev) => {
       const f = (ev.target as HTMLInputElement).files?.[0];
       if (!f) return;
-      say(importJSON(await f.text()) ? root.dataset.okRestore! : root.dataset.badRestore!);
+      say(restoreJSON(await f.text()) ? root.dataset.okRestore! : root.dataset.badRestore!);
+      const w = who();
+      whoId.value = w.id;
+      whoName.value = w.name;
+      /* the blocks are rebuilt even when the same lectures are picked: a
+         textarea still showing the old text would save it back over the
+         restored one at the first keystroke */
+      rendered = '';
       paint();
     });
     $('[data-clear]').addEventListener('click', () => {
-      if (confirm(root.dataset.confirmClear!)) { clearAll(); paint(); out.value = ''; }
+      if (!confirm(root.dataset.confirmClear!)) return;
+      clearEverything();
+      rendered = '';
+      paint();
     });
 
     addEventListener('study:changed', paint);

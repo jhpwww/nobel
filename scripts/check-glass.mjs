@@ -180,6 +180,13 @@ for (const v of VIEWS) {
            sample whatever the strip uncovered behind it. `visibility`
            inherits, so this one test catches the children too. */
         if (getComputedStyle(el).visibility === 'hidden') continue;
+        /* The rows of a closed <details> are not on the screen, but Chromium
+           still answers for their boxes — the chooser's thirty-nine names
+           in the learning area read 1.64:1 against whatever pixels happened
+           to be where they would have been. What is folded away is not a
+           contrast question; the summary that folds it is. */
+        const det = el.closest('details:not([open])');
+        if (det && !(el.closest('summary')?.parentElement === det)) continue;
         const b = el.getBoundingClientRect();
         if (b.width < 8 || b.height < 8 || b.bottom < 0 || b.top > innerHeight) continue;
         out.push({ x: b.left, y: b.top, w: b.width, h: b.height,

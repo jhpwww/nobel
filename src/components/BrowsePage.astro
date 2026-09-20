@@ -46,7 +46,7 @@ import { bright } from '../theme';
     <p class="browse__lede hall-note"><span>{t('learn.toolAllD', { n: lectureFilms() })}</span></p>
   </div>
   <div class="wrap browse browse--body" data-fade>
-    <form class="filters" id="filters" aria-label={t('browse.title')}>
+    <form class="filters" id="filters" aria-label={t('browse.title')} data-search-skip>
       <label class="search">
         <span class="visually-hidden">{t('browse.search')}</span>
         <svg class="search__icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
@@ -93,7 +93,7 @@ import { bright } from '../theme';
     <p class="count" id="count" aria-live="polite">{t('browse.results', { n: videos.length })}</p>
     <p class="empty" id="empty" hidden>{t('browse.empty')}</p>
 
-    <ul class="grid" id="results" role="list">
+    <ul class="grid" id="results" role="list" data-search-skip>
       {videos.map((v) => (
         <li
           data-kind={v.kind}

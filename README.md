@@ -22,11 +22,11 @@ Audience: high-school students, undergraduates, and the general public. Not spec
 | | |
 |---|---|
 | 31 lectures | Given in 32 sittings — Südhof's was delivered twice. Nov 2025 – May 2026, 31 Nobel laureates, 12 host institutions |
-| 導讀影片 | 6 published so far; the schema carries all 31 as they are released |
+| 導讀影片 | 12 published so far (six more went up on 臺大演講網 on 2026-09-16); the schema carries all 31 as they are released |
 | 專訪 | 25 — 天下雜誌 CommonWealth Magazine and 風傳媒 The Storm Media |
 | Special events | Launch ceremony, two 北一女中 outreach lectures, a laureate panel, the 對話諾貝爾特展 |
 | 臺大「諾貝爾獎得主講座」 | 8 recordings, 5 laureates, 2019–2025, all at NTU: 我的學思歷程 (Mourou, Stoddart), 臺大椰林講座 (Ciechanover), 宋恭源先生頂尖研究講座 (Aspect ×2, Robinson), and two SPE class lectures (Robinson) |
-| 71 videos | what `/lectures/` lists: 導讀 6 · 講座 40 · 專訪 25 |
+| 77 videos | what `/lectures/` lists: 導讀 12 · 講座 40 · 專訪 25 |
 
 Prize categories, in museum order, as the plinths and the room headings print them —
 **sittings** across both collections: Physics 12 · Chemistry 10 · Medicine 8 · Peace 2 ·
@@ -132,7 +132,7 @@ npm run check      # astro check
 THEME=dark npm run build   # the dark museum from this tree, for comparison only
 ```
 
-A build produces 92 HTML pages.
+A build produces 108 HTML pages, plus `search/zh.json` and `search/en.json`.
 
 Node 20+ required. **On WSL, keep this repo in the Linux filesystem** (`~/…`), not under
 `/mnt/c/…` — npm on the Windows mount is roughly 50× slower and will appear to hang.
@@ -209,6 +209,45 @@ the record section at `/learn/#record` aggregates it with export, backup and res
 and no server — it all lives in `localStorage`, and the page says so. (`/study/` is a redirect
 stub kept so older links still arrive.)
 
+**Export** (匯出繳交) makes one plain-text file: the student's number and name (typed once, kept
+in the browser, editable any time), the saved lectures they tick, the stages (準備 / 參與 / 反思)
+they tick, named `走進諾貝爾_學號_姓名_YYYYMMDD-HHMM.txt`. Where the browser can ask
+(Chrome / Edge on desktop) the student chooses where to save it; elsewhere (Firefox, Safari,
+every phone) it goes to the downloads folder and the line under the key says so.
+
+**What the file records, and what that is worth.** Under every field the file prints how it
+was written — `src/scripts/trace.ts` counts characters that arrived a few at a time (keyboard,
+input method, predictive word, spelling fix, a sentence moved within the field), by paste (with
+the number of pastes and the largest), and in one trusted burst of forty or more with no key and
+no composition behind it (an automation tool's `insertText`, a script — but also dictation and
+handwriting panels), plus sittings and active minutes; the file opens with a legend saying
+exactly that, and ends with a SHA-256 check code over everything above it. Read it as context,
+not as evidence:
+
+- 貼上 800 字 in one sitting is what pasting ChatGPT looks like — and also what pasting one's own
+  Word draft looks like. Nothing in the record tells them apart.
+- The record catches the careless path only. A tool that owns the browser can type one
+  character at a time with key events, pace itself, and shift the clock; the file then reads
+  like a person's. A student can retype what a machine wrote.
+- The download key refuses an untrusted event or a browser that declares `navigator.webdriver`,
+  and on Chrome/Edge the save-as dialog is native, so a page-driving agent cannot finish the
+  export itself — it hands the last click back to the student. An agent driving Chrome through
+  `chrome.debugger` sets no `webdriver` flag, and on browsers without the dialog the plain
+  download is automatable. The one thing that reliably deters an LLM agent is the visible
+  request on the page (`study.policy`), which is also in the accessibility tree of every field
+  and of the key; keep it.
+- The check code is a transport check — it catches a file edited or truncated after export
+  until someone recomputes it, and the recipe is printed in the file. It says nothing about
+  authorship. Reproduce it on any system with
+  `sed '/^═══ 核對 ═══$/,$d' file.txt | shasum -a 256` (GNU: `sha256sum`).
+- Records restored from a backup file are re-validated and stamped 自備份還原 in the file, and a
+  backup made before there was a record (a bare map of notes) restores with no record; notes
+  written before 2026-09-21 print 無書寫紀錄. The preview textarea holds the same text the file
+  will, minus the check code.
+
+The tracing is disclosed on the page, on the panel where the writing happens
+(`study.panelPolicy`) and above the download key (`study.policy`).
+
 One NTU course, 走進諾貝爾 (LibEdu1140), is built around this collection. It appears as a
 subordinate aside at the foot of `/learn/` and as short parenthetical notes in the tools. **Keep
 it subordinate**: the museum is not a course tool, and a visitor who is not enrolled should never
@@ -216,11 +255,33 @@ feel they have wandered into someone's classroom.
 
 ## Browsing
 
-`/lectures/` lists every video the museum holds — 71 of them, both collections — with a search
-box and three independent filter groups: **影片類別** (導讀 6 · 講座 40 · 專訪 25),
+`/lectures/` lists every video the museum holds — 77 of them, both collections — with a search
+box and three independent filter groups: **影片類別** (導讀 12 · 講座 40 · 專訪 25),
 **獎項類別**, and **主題**. A card out of the NTU collection prints its series beside its date;
 the filters sort by kind, not by collection, because these are all 講座.
-Filter state lives in the URL, so a filtered view can be shared and survives a reload.
+Filter state lives in the URL, so a filtered view can be shared and survives a reload — and
+survives the language switch: the flag in the bar carries the page's query and hash across.
+
+## Searching
+
+The 搜尋 key in the bar opens one drawer that searches the whole museum, in two layers:
+
+1. **What the museum holds** — laureates, rooms, the museum's own pages — is a small index
+   built into the page (`SiteSearch.astro`), so the first keystroke needs no fetch.
+2. **What the pages say** — every sentence of every page — is `dist/search/{zh,en}.json`,
+   written at build time by `integrations/search.mjs` from the built HTML
+   (`scripts/search-index.mjs` does the cutting: one section per heading, boilerplate that
+   repeats under four or more page titles left out, anything under `data-search-skip` left out). The
+   drawer fetches the file for its language the first time it opens (about 45 KB each, less
+   over the wire). A hit
+   shows the sentence the word is in and opens the page on that sentence, by a text fragment
+   in the URL, with the section's own anchor before it as the fallback.
+
+Matching folds case, width, accents and the museum's name separator, so `sudhof` finds Südhof
+and 科比爾卡 finds 布萊恩‧科比爾卡. On the dev server the same address is answered by a crawl
+of the museum through the dev server itself (first ask a second or two, cached until a source file
+changes). Rebuild the index from an existing `dist/` with `node scripts/search-index.mjs dist`;
+`SHOW_DROPPED=1` prints what the boilerplate net caught.
 
 ## Checking links
 
