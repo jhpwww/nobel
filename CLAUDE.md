@@ -453,6 +453,17 @@ status line says where it went). Rules:
   refuses to write for a disconnected element, and every `writeTrace()` dispatches `trace:reset`
   so live watchers drop their cache. Set `rendered = ''` before `paint()` whenever the store
   changed under the blocks (restore, clear, delete), or a stale textarea saves over the change.
+- `繳交給課程` exists only when `PUBLIC_SUBMIT_URL` was set at build time (repo variable →
+  deploy.yml → `import.meta.env`); with it unset the export block renders as it did before
+  (only the hashed script names differ), no string mentions it, and the privacy line stands as
+  written. The server end is `apps-script/submit.gs` and is the owner's to deploy. The client
+  asks for the save location BEFORE the send (a gesture's grace runs out), keeps the send apart
+  from the write so a write failure after a good send still delivers the receipt, and when no
+  receipt comes back writes the unsigned copy and says 「請視為尚未繳交」 — never 「沒有送出」,
+  because it cannot know. One `inFlight` flag covers both keys from the moment the gate is
+  passed. The receipt is an HMAC the browser never computes — do not move it client-side — and
+  the copy is honest about its limits (README, "What a row proves"): it cannot tell the page's
+  send from a curl, so do not write anywhere that it can.
 - Laureates with several records (Ciechanover, Aspect, Robinson) are told apart by the sitting
   (`sub`: date · host · series) in the chooser, the export list, the work cards, the records
   table and `titleFor()`. Titles alone do not do it — the two Ciechanover titles differ by one

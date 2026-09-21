@@ -18,6 +18,12 @@ interface Props { lang: Lang }
 const { lang } = Astro.props;
 const t = useT(lang);
 
+/* Where 「繳交給課程」 sends the file: the course's own Apps Script, deployed by
+   the course and named in the PUBLIC_SUBMIT_URL variable at build time — see
+   apps-script/submit.gs. With no URL there is no key, no sending and no
+   sentence about it; the export is exactly what it was. */
+const submitUrl = (import.meta.env.PUBLIC_SUBMIT_URL ?? '').trim();
+
 /** the script needs id → title and id → url without refetching the catalogue */
 const catNames = Object.fromEntries(
   (Object.keys(categories) as (keyof typeof categories)[]).map((k) => [k, categories[k][lang]]),
@@ -262,7 +268,21 @@ const index = all.map((l) => ({
         </fieldset>
 
         <div class="study__actions" data-search-skip>
-          <button class="museum-glass-btn museum-glass-btn--primary" type="button" data-download
+          {/* The course's key, when the course has an end to send to. It is
+              the primary then, and 下載 steps back to a plain key: handing in
+              is what the file is for; keeping a copy is what happens as
+              well. See the handler for what is sent and what comes back. */}
+          {submitUrl && (
+            <button class="museum-glass-btn museum-glass-btn--primary" type="button" data-submit
+                    data-url={submitUrl} aria-describedby="exp-submit-note exp-policy"
+                    data-sending={t('study.submitting')} data-ok={t('study.submitOk')}
+                    data-fail={t('study.submitFail')} data-where={t('study.downloadWhere')}
+                    data-e-net={t('study.errNet')} data-e-time={t('study.errTime')} data-e-server={t('study.errServer')}>
+              <span>{t('study.submit')}</span>
+            </button>
+          )}
+          <button class:list={['museum-glass-btn', submitUrl ? 'museum-glass-btn--nav' : 'museum-glass-btn--primary']}
+                  type="button" data-download
                   aria-describedby="exp-policy"
                   data-missing={t('study.whoMissing')} data-nothing={t('study.exportNothing')}
                   data-ok={t('study.exportSaved')} data-fail={t('study.saveFail')}
@@ -272,6 +292,7 @@ const index = all.map((l) => ({
           </button>
           <span data-msg class="study__msg" role="status"></span>
         </div>
+        {submitUrl && <p class="exp__aid" id="exp-submit-note" data-search-skip>{t('study.submitNote')}</p>}
         <p class="exp__aid exp__file" data-exp-file data-tmpl={t('study.fileNameNote')} data-search-skip></p>
 
         <details class="exp__preview" data-search-skip>
@@ -661,8 +682,8 @@ const index = all.map((l) => ({
 
 <script>
   import {
-    read, progress, exportOne, exportSelected, withChecksum, fileName, clearEverything,
-    restoreJSON, rawJSON, who, setWho, PARTS, type Part,
+    read, progress, exportOne, exportSelected, withChecksum, fileName, receiptBlock, clearEverything,
+    restoreJSON, rawJSON, who, setWho, PARTS, type Part, type Who,
     entry, update, updateKept, setNote, remove, hasWork, noteParts,
     storageAvailable, REQUIRED_PICKS,
   } from '../scripts/study';
@@ -852,9 +873,13 @@ const index = all.map((l) => ({
       recCount.textContent = root!.dataset.recCountTmpl!.replace('{n}', String(ids.length));
     }
 
-    function say(text: string) {
+    /* one line of status, and one timer for it: a second message must not be
+       wiped by the first one's clock. hold 0 keeps it until the next one. */
+    let msgTimer = 0;
+    function say(text: string, hold = 2200) {
       msg.textContent = text;
-      setTimeout(() => (msg.textContent = ''), 2200);
+      clearTimeout(msgTimer);
+      if (hold) msgTimer = window.setTimeout(() => (msg.textContent = ''), hold);
     }
 
     /** counters only — safe to call while someone is typing */
@@ -1016,45 +1041,150 @@ const index = all.map((l) => ({
      * The record of how each field was written travels inside the file
      * whichever way it leaves — see trace.ts and exportSelected().
      */
-    dl.addEventListener('click', async (ev) => {
-      if (!ev.isTrusted || navigator.webdriver) { say(dl.dataset.auto!); return; }
+    type Handle = { createWritable(): Promise<{ write(d: string): Promise<void>; close(): Promise<void> }> };
+    const picker = (window as any).showSaveFilePicker as undefined | ((o: object) => Promise<Handle>);
+    /* the course's key — present only when the build was given an address */
+    const sub = root.querySelector<HTMLButtonElement>('[data-submit]');
+
+    /** the three things that stand between a press and a file, each said
+        aloud when it stops one; what the press may go on with, or null */
+    function gate(ev: Event): { w: Who; ids: string[]; ps: Part[] } | null {
+      if (!ev.isTrusted || navigator.webdriver) { say(dl.dataset.auto!); return null; }
       const w = who();
       if (!w.id || !w.name) {
         say(dl.dataset.missing!);
         (!w.id ? whoId : whoName).focus();
-        return;
+        return null;
       }
       const ids = chosen();
       const ps = parts();
-      if (!ids.length || !ps.length) { say(dl.dataset.nothing!); return; }
+      if (!ids.length || !ps.length) { say(dl.dataset.nothing!); return null; }
+      return { w, ids, ps };
+    }
 
-      const when = new Date();
-      const text = await withChecksum(exportSelected(ids, ps, w, titleFor, when));
-      const name = fileName(w, when);
-      const picker = (window as any).showSaveFilePicker as
-        undefined | ((o: object) => Promise<{ createWritable(): Promise<{ write(d: string): Promise<void>; close(): Promise<void> }> }>);
-      if (picker) {
+    /** where the file goes: asked of the student while the press is still
+        fresh, because the browser only opens its dialog inside a gesture.
+        Null where there is no dialog to ask with, or the student closed it
+        ('closed'). */
+    async function place(name: string): Promise<Handle | null | 'closed'> {
+      if (!picker) return null;
+      try {
+        return await picker.call(window, {
+          suggestedName: name,
+          types: [{ description: 'Text', accept: { 'text/plain': ['.txt'] } }],
+        });
+      } catch (err) {
+        /* the student closed the dialog: nothing to say. Anything else — a
+           browser that has the function but will not run it here — means the
+           plain download below */
+        return (err as { name?: string })?.name === 'AbortError' ? 'closed' : null;
+      }
+    }
+
+    /** write the file where place() said — or, if that place cannot be
+        written after all (a locked file, a browser that changed its mind),
+        where the browser puts its downloads — and say which. `hold` is how
+        long the word stays: an outcome the student must read stays put. */
+    async function keep(handle: Handle | null, text: string, name: string, said?: string, hold = 2200) {
+      if (handle) {
         try {
-          const handle = await picker.call(window, {
-            suggestedName: name,
-            types: [{ description: 'Text', accept: { 'text/plain': ['.txt'] } }],
-          });
           const out = await handle.createWritable();
           await out.write(text);
           await out.close();
-          say(dl.dataset.ok!);
+          say(said ?? dl.dataset.ok!, hold);
           return;
         } catch (err) {
-          /* the student closed the dialog: nothing to say */
-          if ((err as { name?: string })?.name === 'AbortError') return;
-          /* anything else — a browser that has the function but will not run
-             it here — falls through to the plain download below */
+          console.error(err);
         }
       }
-      /* no dialog to ask with: the file goes where this browser puts its
-         downloads, and the line under the key says so */
       download(text, name);
-      say(dl.dataset.default!);
+      say(said ? `${said}${sep}${sub?.dataset.where ?? ''}` : dl.dataset.default!, hold);
+    }
+    /* between two sentences: a space in English, nothing in Chinese */
+    const sep = root.dataset.lang === 'zh' ? '' : ' ';
+
+    /* one press at a time, from the moment the gate is passed — the second
+       click of a double-click lands before a native dialog has opened */
+    let inFlight = false;
+
+    dl.addEventListener('click', async (ev) => {
+      if (inFlight) return;
+      const g = gate(ev);
+      if (!g) return;
+      inFlight = true;
+      try {
+        const when = new Date();
+        const name = fileName(g.w, when);
+        const handle = await place(name);
+        if (handle === 'closed') return;
+        const text = await withChecksum(exportSelected(g.ids, g.ps, g.w, titleFor, when));
+        await keep(handle, text, name);
+      } finally {
+        inFlight = false;
+      }
+    });
+
+    /**
+     * 繳交給課程. The same file, but before it is written it goes to the
+     * course's end (apps-script/submit.gs), which stamps it with its own
+     * clock, signs it with a secret the course alone holds, keeps it, and
+     * answers with a receipt. The copy written here then carries that receipt
+     * at its foot. Nothing about the record can be edited afterwards that the
+     * course will not see, because the course already has the file.
+     *
+     * The dialog is asked for FIRST, inside the press, and the send happens
+     * after — a gesture's grace runs out in a few seconds and a slow server
+     * would otherwise cost the student the choice of where to save. If the
+     * send fails, the unsigned copy is still written and the student is told
+     * to try again: nothing they wrote is lost, and nothing was handed in.
+     */
+    sub?.addEventListener('click', async (ev) => {
+      if (inFlight) return;
+      const g = gate(ev);
+      if (!g) return;
+      inFlight = true;
+      sub.setAttribute('aria-busy', 'true');
+      try {
+        const when = new Date();
+        const name = fileName(g.w, when);
+        const handle = await place(name);
+        if (handle === 'closed') return;
+        const text = await withChecksum(exportSelected(g.ids, g.ps, g.w, titleFor, when));
+        say(sub.dataset.sending!, 0);
+        /* the send, kept apart from the write: whatever the send comes to,
+           the student gets a file — signed if a receipt came back, unsigned
+           with a plain word if not — and a write that fails falls back to the
+           downloads folder inside keep() */
+        let foot = '';
+        let word: string;
+        try {
+          const res = await fetch(sub.dataset.url!, {
+            method: 'POST',
+            /* text/plain, not JSON: a JSON content type would make the browser
+               ask the server first, and Apps Script does not answer that ask */
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ id: g.w.id, name: g.w.name, lectures: g.ids.length, parts: g.ps.join(','), text }),
+            signal: AbortSignal.timeout(30000),
+          });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const reply = (await res.json()) as { ok: boolean; at?: string; receipt?: string; error?: string };
+          if (!reply.ok || !reply.receipt || !reply.at) throw new Error(reply.error || 'no receipt');
+          foot = receiptBlock(reply.at, reply.receipt);
+          word = sub.dataset.ok!.replace('{r}', reply.receipt);
+        } catch (err) {
+          /* said in the student's language and in plain terms; the detail
+             goes to the console, where someone who can act on it will look */
+          console.error(err);
+          const why = err instanceof DOMException && err.name === 'TimeoutError' ? sub.dataset.eTime!
+            : err instanceof TypeError ? sub.dataset.eNet!
+            : sub.dataset.eServer!;
+          word = sub.dataset.fail!.replace('{e}', why);
+        }
+        await keep(handle, text + foot, name, word, 0);
+      } finally {
+        inFlight = false;
+        sub.removeAttribute('aria-busy');
+      }
     });
 
     $('[data-backup]').addEventListener('click', () => {

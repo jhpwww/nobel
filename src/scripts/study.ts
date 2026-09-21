@@ -307,6 +307,22 @@ export function fileName(w: Who, when = new Date(), blank = { id: '學號', name
   return `走進諾貝爾_${clean(w.id) || blank.id}_${clean(w.name) || blank.name}_${stamp}.txt`;
 }
 
+/**
+ * What the course's end says when it has the file — printed at the foot of
+ * the copy the student keeps, after the check code, so the code still covers
+ * what it says it covers. See apps-script/submit.gs.
+ */
+export function receiptBlock(atIso: string, receipt: string): string {
+  const at = new Date(atIso);
+  const when = Number.isNaN(at.getTime()) ? atIso : at.toLocaleString('zh-TW');
+  return [
+    '═══ 繳交 ═══',
+    `已於 ${when}（伺服器時間）繳交至課程，收據：${receipt}`,
+    '課程端保有此檔案在繳交當下的原始副本，核對以該副本為準；此後對本檔的任何更動都不影響它。',
+    '',
+  ].join('\n');
+}
+
 /* ---- backup ------------------------------------------------------------ */
 /**
  * Everything, as one file: the notes, who wrote them, and the record of how.

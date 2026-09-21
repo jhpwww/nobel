@@ -248,10 +248,50 @@ not as evidence:
 The tracing is disclosed on the page, on the panel where the writing happens
 (`study.panelPolicy`) and above the download key (`study.policy`).
 
-One NTU course, 走進諾貝爾 (LibEdu1140), is built around this collection. It appears as a
-subordinate aside at the foot of `/learn/` and as short parenthetical notes in the tools. **Keep
-it subordinate**: the museum is not a course tool, and a visitor who is not enrolled should never
-feel they have wandered into someone's classroom.
+### Handing in without a file to edit: 繳交給課程
+
+Everything above is made in the browser, so everything above is the student's to edit before
+it is handed in — the record lines included. No code on a static page can prevent that. What
+closes the *quiet* edit is a copy the course takes at the moment of export, and that needs one
+small piece the course runs itself: `apps-script/submit.gs`, a Google Apps Script bound to a
+Sheet the course owns. Once it is deployed and its URL is set as the `PUBLIC_SUBMIT_URL`
+repository variable, the export block grows a **繳交給課程** key (and 下載 steps back to a plain
+key):
+
+1. The student chooses where to save, as with 下載 (asked first, while the press is fresh).
+2. The same file is POSTed to the script, which stamps it with the server's clock, signs the
+   whole text with a secret only the script holds (HMAC‑SHA256, first 16 hex = the **收據**),
+   appends a row to the `submissions` tab (time, 學號, 姓名, 核對碼, 收據, length, Drive link or
+   text) and keeps the full text in Drive when a `FOLDER_ID` is set. The 核對碼 column is the
+   SHA‑256 of the text above the file's own 核對 line — the same figure the file prints.
+3. The student's copy is written with a 繳交 block at its foot carrying the receipt. If no
+   receipt comes back — no connection, a timeout, an odd answer — the unsigned copy is still
+   written and the student is told to treat it as not handed in and press again later. (The
+   page cannot know whether the row was written before the answer was lost; a second press
+   then makes a second row, which is harmless: rows are read side by side.)
+
+**What a row proves, and what it does not.** It proves that *this exact text* reached the
+course at *that time* and has not changed since. It does not prove how the text was made or
+who sent it: the script cannot tell the page's own send from a hand-made one — a student who
+edits an export and re-posts it with `curl` (the URL is in the page) gets a row and a receipt
+like anyone else's — and a student number typed in is a claim, not a login. What the channel
+removes is the edit nobody sees: the file the course grades is the one it received, not the
+one handed over later. Rules that follow from this, for the course: the Drive copy (or the
+sheet cell) is the submission and a `.txt` need not be asked for; when one 學號 has several
+rows, read them side by side and let the receipt printed in the student's copy name theirs;
+read the sheet against the roster. Closing the remaining door — a forged record posted from
+outside the page, or forged in the browser's storage before export — would take a log of
+writing activity sent to the course *as it happens*, so that a record with sittings the course
+never saw stands out; that is a different promise to students about where their work goes, and
+it is not built.
+
+Setup is written at the head of `apps-script/submit.gs` (five minutes: new Sheet → Apps
+Script → paste → run `setup` → Deploy as web app, anyone → check the URL answers
+`configured: true` → set the variable → press the key once yourself). Until the variable exists
+the site sends nothing anywhere and the privacy line stands as written; when it exists, the note
+panel's privacy line names the one press that is the exception, and where it goes (a Google
+Sheet the course owns). To try it locally, put `PUBLIC_SUBMIT_URL=…` in `.env` before
+`npm run dev` or `npm run build`.
 
 ## Browsing
 

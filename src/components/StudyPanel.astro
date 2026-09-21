@@ -16,6 +16,9 @@ import { path } from '../i18n/routing';
 interface Props { lang: Lang; rec: Lecture }
 const { lang, rec } = Astro.props;
 const t = useT(lang);
+/* the privacy line promises nothing leaves the browser; when the course has
+   an end to submit to, it names the one press that is the exception */
+const canSubmit = !!(import.meta.env.PUBLIC_SUBMIT_URL ?? '').trim();
 ---
 
 <section class="sp" data-study={rec.id} aria-labelledby="sp-h" data-search-skip>
@@ -136,7 +139,7 @@ const t = useT(lang);
     </li>
   </ol>
 
-  <p class="sp__privacy">{t('study.privacy')}</p>
+  <p class="sp__privacy">{t('study.privacy')}{canSubmit && `${lang === 'zh' ? '' : ' '}${t('study.privacySubmit')}`}</p>
   {/* That the way of writing is recorded is said here, on the page where the
       writing happens, at a size that can be read — and it is the description
       of every field above, so whatever reads this page for the student by its
