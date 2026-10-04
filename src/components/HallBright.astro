@@ -144,7 +144,8 @@ const PLATE = { w: 836, h: 470 };
       stage stands behind. */}
   <header class="bh__lockup">
     <span class="bh__lock-rule" aria-hidden="true"></span>
-    <span class="bh__uni">{t('site.university')}</span>
+    {/* the university's name used to stand above the title; the owner had it
+        taken off on 2026-10-04 — the footer and the bar still carry it */}
     <h1 id="hall-title" class="bh__title">{t('site.tagline')}</h1>
     <span class="bh__title-en" lang="en">{lang === 'zh' ? 'Nobel Lecture Museum' : '諾貝爾講座博物館'}</span>
   </header>
@@ -354,7 +355,7 @@ const PLATE = { w: 836, h: 470 };
   /* the halo belongs to the inscription and goes out as the plate comes in —
      the two are a cross-fade, over the same half second the name shrinks in */
   .bh__lockup::before { transition: opacity var(--swap) var(--ease); }
-  .bh__lock-rule, .bh__uni, .bh__title-en, .bh__title {
+  .bh__lock-rule, .bh__title-en, .bh__title {
     transition: opacity var(--swap) var(--ease),
                 block-size var(--swap) var(--ease),
                 margin var(--swap) var(--ease),
@@ -395,7 +396,7 @@ const PLATE = { w: 836, h: 470 };
   /* less motion: the mark is simply there */
   :global(html[data-motion='off']) .bh__lockup { --swap: 0s; }
   :global(html[data-motion='off']) .bh__lockup,
-  :global(html[data-motion='off']) .bh__lockup :is(.bh__lock-rule, .bh__uni, .bh__title-en, .bh__title) {
+  :global(html[data-motion='off']) .bh__lockup :is(.bh__lock-rule, .bh__title-en, .bh__title) {
     transition: none;
   }
 
@@ -418,7 +419,7 @@ const PLATE = { w: 836, h: 470 };
     padding: 0.34rem 0.85rem;
   }
   .bh__lockup[data-small]::before { opacity: 0; }
-  .bh__lockup[data-small] :is(.bh__lock-rule, .bh__uni, .bh__title-en) {
+  .bh__lockup[data-small] :is(.bh__lock-rule, .bh__title-en) {
     block-size: 0; opacity: 0; margin-block: 0; overflow: hidden;
   }
   .bh__lockup[data-small] .bh__title {
@@ -442,13 +443,6 @@ const PLATE = { w: 836, h: 470 };
     block-size: 2px;
     margin-block-end: 0.5rem;
     background: linear-gradient(to right, var(--gold-orn, #b8862a), rgba(184, 134, 42, 0.15));
-  }
-  .bh__uni {
-    font-size: var(--step--2);
-    letter-spacing: 0.34em;
-    text-indent: 0.34em;          /* letter-spacing pads the right; give it back */
-    color: var(--gold-orn, #b8862a);
-    text-transform: uppercase;
   }
   .bh__title {
     font-family: var(--font-han-serif);

@@ -27,6 +27,11 @@ These are decided. Do not reopen them, and do not let a tidy-up quietly reverse 
   touches one, build the comparison and send it first — the choice is theirs to make
   while looking at it. The button kit's frame widths are not to be changed again.
 - **Do not darken the block red.** See "The bright palette's one known exception".
+- **The hall's title lockup carries no university line** (removed 2026-10-04 at the owner's
+  word; the bar's brand and the footer still name the university), and **the footer carries
+  the university's centenary mark** — `public/ntu-logo-100.png` (+ `@2x`), cut from the
+  owner's `assets-src/marks/NTU-logo_100.png` — in place of the round crest, at a width that
+  keeps its lettering legible (`.foot__crest--wide`). The bar keeps the round crest.
 - **Every change ships to the running dev server (`npm run dev`, port 4322, at
   `/nobel/`) and to GitHub Pages in the same turn**,
   and is reported with three readings, not a claim: a clean `git status`,

@@ -293,7 +293,12 @@ const portable = process.env.PORTABLE === '1';
 
     <footer class="foot">
       <div class="wrap foot__in">
-        <img class="foot__crest" src={asset('ntu-logo.png')} alt="" width="56" height="56" />
+        {/* the university's centenary mark, at the owner's word (2026-10-04),
+            in place of the round crest; the source file is assets-src/marks/ */}
+        <img class="foot__crest foot__crest--wide" src={asset('ntu-logo-100.png')}
+             srcset={`${asset('ntu-logo-100@2x.png')} 2x`}
+             alt={lang === 'zh' ? '國立臺灣大學百年校慶' : 'National Taiwan University centenary'}
+             width="81" height="64" />
         <div class="foot__lines">
           <p class="foot__copy foot__copy--zh" lang="zh-Hant-TW"><span class="foot__uni">國立臺灣大學</span>&nbsp;&nbsp;版權所有，禁止擅自轉貼節錄。本站為教育用途之獨立專案，與諾貝爾基金會無隸屬關係。</p>
           <p class="foot__copy">Copyright &copy; 2026 National Taiwan University - All rights reserved.</p>
@@ -419,6 +424,12 @@ const portable = process.env.PORTABLE === '1';
         block-size: auto;
         opacity: 0.92;
       }
+      /* the centenary mark is wide and carries small lettering; the round
+         crest's width would make it a smudge */
+      .foot__crest--wide {
+        inline-size: clamp(84px, 8vw, 112px);
+        opacity: 1;
+      }
       .foot__lines { display: grid; gap: 0.2rem; min-inline-size: 0; }
       /* On a desktop the copyright stays on one line at every width, so it
          scales with the viewport rather than wrapping. */
@@ -452,6 +463,7 @@ const portable = process.env.PORTABLE === '1';
         .foot .wrap { width: min(100% - 0.75rem, 76rem); }
         .foot__in { gap: 0.5rem; }
         .foot__crest { inline-size: 26px; }
+        .foot__crest--wide { inline-size: 72px; }
       }
     </style>
   </body>

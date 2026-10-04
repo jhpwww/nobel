@@ -1900,7 +1900,7 @@ html[data-motion='off'] .roomfade { display: none; }
 
 /* Han labels: enough to letterspace, not enough to break the word */
 html[data-theme='bright'] :lang(zh) :is(
-  .eyebrow, .bh__uni, .bh__cue-txt,
+  .eyebrow, .bh__cue-txt,
   .stats dd, .gr__n, .lec__prize a
 ) {
   letter-spacing: 0.1em;
