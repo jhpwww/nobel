@@ -162,26 +162,34 @@ HOST_UPLOAD = {
 # Extra same-event sessions
 EXTRA_SESSIONS = {"sudhof":[("6sh75WDdREs","Day 2 · 2026-01-06")]}
 
+# (source, the media's OWN upload the page plays, the IPF channel's copy).
+# The interviews were made by 天下雜誌 and 風傳媒; the IPF channel re-posted
+# them, and until 2026-10-04 the site played the re-posts. At the owner's
+# word each now plays the original on the medium's own channel — 風傳媒
+# @TheStormMedia (《重磅專訪》 / Exclusive Interview), 天下雜誌 video
+# UCoS753iLrVE-1PZrsUak6Qg (【與頂尖對話：諾貝爾獎得主系列】Ep.1–10) — found
+# by title and matched on duration to the second, public and embeddable; the
+# IPF id stays as `id_ipf` for provenance, unrendered.
 INTERVIEWS = {
- "roth":[("cw","lhgrxypspsU"),("storm","6E5szZDmbI4")],
- "rice":[("cw","QwE4TN8Hmlo")],
- "nurse":[("cw","9IyVEq0LHBM"),("storm","2AQFCYlhqFY")],
- "roberts":[("cw","yAL6mkgehbg"),("storm","GoVWwoxZZ2A")],
- "strickland":[("cw","yzuzWHUBRF4"),("storm","mfKzYae44F0")],
- "ciechanover":[("cw","Spc1R-6Qhhs")],
- "sudhof":[("cw","85quwK-splA")],
- "maskin":[("cw","KALrpOE4kfs"),("storm","-BB6eP51GeQ")],
- "queloz":[("cw","ishzcLcC-Bc")],
- "frank":[("storm","7m_c74EtA1w")],
- "kajita":[("storm","0r0eBO35vEc")],
- "wuthrich":[("storm","LpPpUHwFdaw")],
- "emoser":[("storm","mD7Hz7KVIVM")],
- "winter":[("storm","FpUEzPKrlBY")],
- "meldal":[("storm","T3nEqnPrXEM")],
- "engle":[("storm","UJDJJV67shY")],
- "mayor":[("storm","TewD-AbmUQw")],
- "haroche":[("storm","pJoT3EBR1us")],
- "kornberg":[("storm","sWcdQVzpkQA")],
+ "roth":[("cw","aa3FRMIPBZQ","lhgrxypspsU"),("storm","UXT37ygxNdQ","6E5szZDmbI4")],
+ "rice":[("cw","y1Mu_i4SpXc","QwE4TN8Hmlo")],
+ "nurse":[("cw","G-hJzrmdWus","9IyVEq0LHBM"),("storm","oZTgMbuTNGg","2AQFCYlhqFY")],
+ "roberts":[("cw","qYp8NUcoMzg","yAL6mkgehbg"),("storm","jvt-Kmiru-A","GoVWwoxZZ2A")],
+ "strickland":[("cw","86n7s3L4wnM","yzuzWHUBRF4"),("storm","FOVKf19GLOE","mfKzYae44F0")],
+ "ciechanover":[("cw","yoKxk0u_20c","Spc1R-6Qhhs")],
+ "sudhof":[("cw","pPmyA_Ilyko","85quwK-splA")],
+ "maskin":[("cw","SuTzQ_qYkLs","KALrpOE4kfs"),("storm","izxn4dwzvbo","-BB6eP51GeQ")],
+ "queloz":[("cw","fBPVWY0DP5c","ishzcLcC-Bc")],
+ "frank":[("storm","fXGBEDNViro","7m_c74EtA1w")],
+ "kajita":[("storm","-hDZfsBNM4I","0r0eBO35vEc")],
+ "wuthrich":[("storm","SWrcbEufjy8","LpPpUHwFdaw")],
+ "emoser":[("storm","RQ3o_r_DehI","mD7Hz7KVIVM")],
+ "winter":[("storm","BJnJBsHzMtw","FpUEzPKrlBY")],
+ "meldal":[("storm","kM88PyMTTNs","T3nEqnPrXEM")],
+ "engle":[("storm","6iLI6W71I_M","UJDJJV67shY")],
+ "mayor":[("storm","3XqxAdklNbQ","TewD-AbmUQw")],
+ "haroche":[("storm","QCxpL80neSg","pJoT3EBR1us")],
+ "kornberg":[("storm","7AmbaSVi1vc","sWcdQVzpkQA")],
 }
 INTERVIEW_SRC = {"cw":{"en":"CommonWealth Magazine","zh":"天下雜誌"},
                  "storm":{"en":"The Storm Media","zh":"風傳媒"}}
@@ -224,12 +232,19 @@ SPECIAL = [
       note_zh="展期 2026/5/4–5/28，臺大校總區綜合教學館2樓，獲瑞典駐臺辦事處特別授權"),
 ]
 
-# 專訪 that belong to the programme rather than to a single laureate
+# 專訪 that belong to the programme rather than to a single laureate. `yt` is
+# the medium's own upload, `yt_ipf` the IPF channel's copy where one exists.
 STANDALONE_RECORDS = [
-    dict(id="morawetz-storm", source="storm", yt="fxqhag7i8zE",
+    dict(id="morawetz-storm", source="storm", yt="nnW86BSQlUU", yt_ipf="fxqhag7i8zE",
          person_en="Uwe Morawetz", person_zh="烏維‧莫拉維茨",
          role_en="Chairman, International Peace Foundation",
          role_zh="世界和平基金會主席", date="2026-06-25"),
+    # 天下's tenth film in the series is about the programme itself, not one
+    # laureate; added 2026-10-04 at the owner's word. Never on the IPF channel.
+    dict(id="cw-ep5", source="cw", yt="4vU0-2qcLRI", yt_ipf=None,
+         person_en="TAIWAN BRIDGES — the programme", person_zh="臺灣橋樑計畫（計畫總覽）",
+         role_en="What 31 Nobel laureates leave Taiwan: how the programme connects higher education to the world",
+         role_zh="31 位諾獎得主為臺灣留住什麼？看臺灣橋樑計畫如何讓高教連結世界", date="2026-06-13"),
 ]
 
 # ---------------------------------------------------------------------------
@@ -377,8 +392,9 @@ def build():
                 "extra_sessions": [{"id": v, "label": lab} for v, lab in EXTRA_SESSIONS.get(lid, [])],
             },
             "interviews": [
-                {"source": s, "source_en": INTERVIEW_SRC[s]["en"], "source_zh": INTERVIEW_SRC[s]["zh"], "id": v}
-                for s, v in INTERVIEWS.get(lid, [])
+                {"source": s, "source_en": INTERVIEW_SRC[s]["en"], "source_zh": INTERVIEW_SRC[s]["zh"],
+                 "id": v, "id_ipf": ipf}
+                for s, v, ipf in INTERVIEWS.get(lid, [])
             ],
             "links": {
                 "nobel_facts": f"https://www.nobelprize.org/prizes/{nslug}/facts/",

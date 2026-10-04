@@ -41,7 +41,9 @@ export interface Lecture {
     guide: string | null;
     extra_sessions: { id: string; label: string }[];
   };
-  interviews: { source: string; source_en: string; source_zh: string; id: string }[];
+  /** `id` is the medium's own upload (天下雜誌 / 風傳媒); `id_ipf` the IPF channel's
+      copy the site played until 2026-10-04, kept for provenance, not rendered */
+  interviews: { source: string; source_en: string; source_zh: string; id: string; id_ipf?: string | null }[];
   links: {
     nobel_facts: string;
     nobel_lecture: string;
@@ -72,13 +74,13 @@ export interface CategoryMeta extends Bilingual {
 }
 
 export interface StandaloneRecord {
-  id: string; source: string; yt: string;
+  id: string; source: string; yt: string; yt_ipf?: string | null;
   person_en: string; person_zh: string;
   role_en: string; role_zh: string; date: string;
 }
 
 export interface SpecialEvent {
-  id: string; kind: string; date: string; yt: string;
+  id: string; kind: string; date: string; yt: string; yt_ipf?: string | null;
   title_en: string; title_zh: string;
   host?: string | null; host_en?: string; host_zh?: string;
   laureate?: string; note_zh?: string;

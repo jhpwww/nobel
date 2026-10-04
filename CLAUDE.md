@@ -228,7 +228,14 @@ src/
   own upload where the host published one** (`HOST_UPLOAD` in `scripts/seed-catalog.py`: 22 of
   the 31 as of 2026-10-04, at the owner's word), otherwise the IPF channel's. The IPF id always
   stays in `video.lecture_ipf` (null for the NTU collection) and the channel's name in
-  `video.lecture_channel`; neither is rendered. There is no `lecture_ntu` any more: `HallRing`
+  `video.lecture_channel`; neither is rendered. The same for the interviews and the
+  programme-level films: they were made by 天下雜誌 and 風傳媒, the IPF channel re-posted
+  them, and since 2026-10-04 each plays the medium's own upload (`interviews[].id`,
+  `standalone_records[].yt`) with the IPF copy kept as `id_ipf` / `yt_ipf`. Special events
+  carry `yt_ipf` the same way where a non-IPF upload exists. Replacing an id does NOT mean
+  re-running recognition when the owner says so: re-point the existing stills and frame picks
+  to the new id in `local-posters.json` / `video-posters.json` (same film, same frames). There
+  is no `lecture_ntu` any more: `HallRing`
   picks the hall's six turning panels by `event.host_key === 'NTU'`, not by a field. Every
   change of a lecture id is a change of poster frame — run `scripts/pick-posters.py` and, for
   any id it cannot verify, `scripts/cut-poster-frames.py --only`, both locally.
