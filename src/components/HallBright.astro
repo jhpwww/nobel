@@ -143,10 +143,12 @@ const PLATE = { w: 836, h: 470 };
       thing that is never obscured by what is on show. Everything else on the
       stage stands behind. */}
   <header class="bh__lockup">
-    <span class="bh__lock-rule" aria-hidden="true"></span>
-    {/* the university's name used to stand above the title; the owner had it
-        taken off on 2026-10-04 — the footer and the bar still carry it */}
+    {/* The university's name used to stand above the title with a short gold
+        accent over it; the owner had both taken off on 2026-10-04 — the
+        footer and the bar still carry the name — and asked for a gold rule
+        UNDER the Han title instead, the width of the title. */}
     <h1 id="hall-title" class="bh__title">{t('site.tagline')}</h1>
+    <span class="bh__lock-rule" aria-hidden="true"></span>
     <span class="bh__title-en" lang="en">{lang === 'zh' ? 'Nobel Lecture Museum' : '諾貝爾講座博物館'}</span>
   </header>
 
@@ -339,9 +341,9 @@ const PLATE = { w: 836, h: 470 };
     inset-inline-start: clamp(1.1rem, 4.2vw, 3.4rem);
     display: grid;
     justify-items: start;
-    /* Tight. The university above and the English below belong to the name,
-       not beside it — an inscription sets its lines close and lets the space
-       fall outside the block. */
+    /* Tight. The rule and the English below belong to the name, not beside
+       it — an inscription sets its lines close and lets the space fall
+       outside the block. */
     gap: 0.08rem;
     padding: 0.7rem 1.5rem 0.9rem 0;
     isolation: isolate;
@@ -438,11 +440,15 @@ const PLATE = { w: 836, h: 470 };
       rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.5) 46%, transparent 78%);
   }
   /* the rule the inscription hangs from */
+  /* The rule under the Han title: as wide as the title (the grid track is the
+     widest line, which is that one), three pixels — a 2px hairline under a
+     3rem face reads as a scratch, 4px as a bar — and gold fading toward the
+     end, as the old accent did. The owner asked for it on 2026-10-04. */
   .bh__lock-rule {
-    inline-size: clamp(2.6rem, 7vw, 4.4rem);
-    block-size: 2px;
-    margin-block-end: 0.5rem;
-    background: linear-gradient(to right, var(--gold-orn, #b8862a), rgba(184, 134, 42, 0.15));
+    inline-size: 100%;
+    block-size: 3px;
+    margin-block: 0.34rem 0.6rem;
+    background: linear-gradient(to right, var(--gold-orn, #b8862a) 55%, rgba(184, 134, 42, 0.25));
   }
   .bh__title {
     font-family: var(--font-han-serif);
@@ -762,7 +768,7 @@ const PLATE = { w: 836, h: 470 };
       inset-inline-start: 0.85rem;
       padding-block: 0.4rem 0.5rem;
     }
-    .bh__lock-rule { margin-block-end: 0.28rem; }
+    .bh__lock-rule { block-size: 2px; margin-block: 0.2rem 0.42rem; }
     /* the English line sits under the name, not beside it — at this size the
        gap the desktop can afford reads as a paragraph break */
     .bh__lockup { gap: 0.02rem; }
