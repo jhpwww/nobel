@@ -52,24 +52,42 @@ const current = (key: 'lectures' | 'learn' | 'about' | 'gallery' | 'home') =>
 const pageTitle = title ? `${title} — ${t('site.title')}` : t('site.title');
 const desc = description ?? t('site.description');
 const canonical = new URL(Astro.url.pathname, Astro.site);
+/** a copy packaged for an address not yet known carries no fully-qualified
+    links — see astro.config.mjs and scripts/package.mjs */
+const portable = process.env.PORTABLE === '1';
+/*
+ * <html data-root> is where the site root is from this page: the base here
+ * and on the dev server; in the built copy integrations/relative.mjs rewrites
+ * it, like every other address, to './' or '../../…'. It is the one thing a
+ * client script reads when it has to build a URL of its own.
+ *
+ * The glass rim and the plates used to be handed to bright.css from here as
+ * custom properties holding url()s. They are not any more: a url() that
+ * reaches a rule through var() is resolved against the stylesheet that uses
+ * it in Chromium and against the declaring document elsewhere, and once every
+ * address is relative those two are different places. bright.css names the
+ * pictures itself, from public/, and the build makes them relative to the
+ * stylesheet, where there is only one reading.
+ */
 ---
 
 <!doctype html>
-<!-- The glass rim is a picture and bright.css is a plain stylesheet, so the
-     one thing in it that needs to know where the site is mounted is handed in
-     here rather than hard-coded. See scripts/build-glass-frame.py. -->
 <html lang={HTML_LANG[lang]} data-theme={bright ? 'bright' : undefined}
-      data-home={segments.length === 0 ? '' : undefined}
-      style={bright ? `--glass-frame: url('${asset('assets/ui/glass-frame.webp')}');`
-                    + ` --plate: url('${asset('assets/ui/name-plate.webp')}');`
-                    + ` --key-plate: url('${asset('assets/ui/key-plate.webp')}');`
-                    + ` --key-plate-on: url('${asset('assets/ui/key-plate-on.webp')}')` : undefined}>
+      data-root={asset('')}
+      data-home={segments.length === 0 ? '' : undefined}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {/* every address below is relative to this page's directory. A server
+        that answers …/lecture/geim without the slash (nginx try_files, some
+        proxies) would resolve them all one level up; move to the slash form
+        before the first one is fetched. No-op on every well-behaved host. */}
+    <script is:inline>
+      if (!/\/$|\.[a-z0-9]+$/i.test(location.pathname)) location.replace(location.pathname + '/' + location.search + location.hash);
+    </script>
     <title>{pageTitle}</title>
     <meta name="description" content={desc} />
-    <link rel="canonical" href={canonical} />
+    {!portable && <link rel="canonical" href={canonical} />}
     <link rel="icon" href={asset('favicon.svg')} type="image/svg+xml" />
     <meta name="theme-color" content="#120c06" />
 
@@ -79,8 +97,12 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <meta property="og:locale" content={lang === 'zh' ? 'zh_TW' : 'en_US'} />
     <meta name="twitter:card" content="summary_large_image" />
 
-    <link rel="alternate" hreflang="zh-Hant" href={new URL(otherLang('en', ...segments).href, Astro.site)} />
-    <link rel="alternate" hreflang="en" href={new URL(otherLang('zh', ...segments).href, Astro.site)} />
+    {!portable && (
+      <link rel="alternate" hreflang="zh-Hant" href={new URL(otherLang('en', ...segments).href, Astro.site)} />
+    )}
+    {!portable && (
+      <link rel="alternate" hreflang="en" href={new URL(otherLang('zh', ...segments).href, Astro.site)} />
+    )}
 
     <link rel="preconnect" href="https://i.ytimg.com" />
     {/* The three faces are self-hosted, subset to the glyphs this site renders
@@ -92,11 +114,13 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
         so the stylesheets are linked rather than bundled — bundling both let
         the browser match the other museum's declaration and fetch a file that
         is not there. */}
-    <link rel="stylesheet" href={face._stylesheet} />
+    {/* the manifest holds paths under the root; asset() adds the base, and the
+        build makes them relative like every other address */}
+    <link rel="stylesheet" href={asset(face._stylesheet)} />
     <link rel="preload" as="font" type="font/woff2" crossorigin
-          href={bright ? face['source-sans-3'] : face['noto-sans-tc']} />
+          href={asset(bright ? face['source-sans-3'] : face['noto-sans-tc'])} />
     {bright && (
-      <link rel="preload" as="font" type="font/woff2" crossorigin href={face['noto-sans-tc']} />
+      <link rel="preload" as="font" type="font/woff2" crossorigin href={asset(face['noto-sans-tc'])} />
     )}
 
     <!-- decide motion before first paint, so nothing flashes on either setting -->

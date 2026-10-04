@@ -110,7 +110,8 @@ likewise here and on no bright page; the clip pipeline behind it (`scripts/make-
 ## Stack
 
 Astro 5 + TypeScript, no UI framework, no runtime database, no CMS, no login.
-Plain CSS with custom properties. Deployed to GitHub Pages by GitHub Actions.
+Plain CSS with custom properties. Deployed to GitHub Pages by GitHub Actions, and packaged by
+`npm run package` for any static server at any path — the build is relative throughout.
 
 JavaScript is kept small and local: the shared modules in `src/scripts/` (env, motion, plinth,
 roomfade, rotunda, study, walkin) come to a few KB gzipped on an ordinary page. The one heavy
@@ -126,8 +127,10 @@ path of a visit.
 ```bash
 npm install
 npm run dev        # http://localhost:4322/nobel/  (port 4322 leaves 4321 to the dark museum's checkout)
-npm run build      # -> dist/, base path /nobel/
+npm run build      # -> dist/; every address in it is relative, so the folder works at any path
 npm run check      # astro check
+npm run relocatable -- dist --prefix /any/path/   # serve dist/ there and walk all of it
+npm run package    # the zip handed to another server's administrator — see below
 
 THEME=dark npm run build   # the dark museum from this tree, for comparison only
 ```
@@ -136,6 +139,63 @@ A build produces 108 HTML pages, plus `search/zh.json` and `search/en.json`.
 
 Node 20+ required. **On WSL, keep this repo in the Linux filesystem** (`~/…`), not under
 `/mnt/c/…` — npm on the Windows mount is roughly 50× slower and will appear to hang.
+
+## Handing the site to another server
+
+The museum is also deployed by other people, on servers of their own, at an address that is
+not known when the copy is made. So the build is **relocatable**: after Astro has written
+`dist/`, `integrations/relative.mjs` turns every internal address in every page and stylesheet
+into a path relative to the file that holds it — `../../_astro/x.css` from a laureate's page,
+`./_astro/x.css` from the hall, `../media/x.webp` from inside a stylesheet. Put the folder at
+`/`, at `/nobel/` or at `/a/b/c/` and nothing in it changes. GitHub Pages serves the same
+output.
+
+```bash
+npm run package                                    # address not yet known
+npm run package -- --site https://host/path/       # address known
+```
+
+writes `packages/nobel-site-YYYYMMDD-HHMM.zip`: `site/` (the build, plus `.nojekyll`),
+`README.md` (`scripts/package-readme.md` with the blanks filled — what the person deploying
+it needs: static server, `index.html` as the directory index, the trailing-slash redirect,
+MIME types, no non-UTF-8 charset header, Range support, HTTPS recommended, what to click
+afterwards; an ASCII file name because Info-ZIP does not flag UTF-8 names and Windows
+Explorer garbles an unflagged one) and `VERSION.txt`. Before
+the zip is written the build is served at `/` and at a random nested path and walked end to
+end by `scripts/check-relocatable.mjs`; one address that climbs out of the mount or answers
+anything but 200 and no package is produced.
+
+What the two forms differ in: canonical links, the hreflang pairs and the sitemap must be
+fully qualified, so they are written only when the address is known (`--site` sets `SITE_URL`
+and `BASE_PATH`); without it the build runs with `PORTABLE=1` and leaves them out, which costs
+nothing but search-engine hints. `PUBLIC_SUBMIT_URL` in the environment is honoured as in a
+deploy.
+
+The rules that keep the output relocatable, for anyone changing client code:
+
+- **A bundled script never carries the base.** It is shared by pages at every depth, so no
+  relative path can be right inside it and an absolute one is what the rewrite removes.
+  A script that must build a URL reads `<html data-root>` (`./`, `../`, `../../…`; `/nobel/`
+  on the dev server) and resolves against the page. `relative.mjs` fails the build if a base
+  path reaches a bundle.
+- **The search index records pages as paths under the root** (`lecture/geim/`, `''` for the
+  hall); the drawer puts `data-root` in front when it builds a link.
+- **No `url()` inside a custom property.** Chromium resolves it against the stylesheet that
+  consumes the `var()`, other engines against where it was declared; with relative paths those
+  are different depths. The glass rim and the plates were handed to `bright.css` that way and
+  broke on relocation in Chromium; `bright.css` now names them itself. The walker flags any
+  such declaration.
+- **`@font-face` `src` is relative to the stylesheet** (`noto-sans-tc.woff2?v=…`), which is
+  always right; the manifest holds paths under the root with no base (`assets/fonts/bright/…`),
+  and `Base.astro` passes them through `asset()` like every other address. A base baked into
+  the manifest was right for exactly one address, and a build for any other failed its own
+  walk.
+- **Every page's first script moves a slash-less URL to the slash form** before any relative
+  address is fetched, for servers that answer `…/lecture/geim` with the directory's index
+  instead of redirecting (nginx `try_files`, some proxies). It is a no-op everywhere else.
+- Plain `http://` loses three browser features, not the site: the save-location dialog falls
+  back to a download, the checksum line says it could not be computed, and the copy keys use
+  the old command. The deploy notes say so.
 
 ## Content backend
 
@@ -341,6 +401,13 @@ needs attention:
 
 Note what it does **not** cover: a video being public is not the same as it being embeddable.
 The script calls oEmbed only, so the embed endpoint is a manual check for every new id.
+
+`scripts/check-relocatable.mjs` is the other half: it serves `dist/` at a path of your
+choosing on a local port, as a plain static server would, and follows every address a browser
+would — attributes, `srcset`, JSON in attributes, `url()` in styles and stylesheets, the
+refresh stub, the search index and what it points at, the bundles — insisting each resolves
+inside the mount and answers 200. `--serve` keeps the server up instead, for a look or a
+browser probe. `npm run package` runs it at `/` and at a random nested path.
 
 ## Editorial copy
 

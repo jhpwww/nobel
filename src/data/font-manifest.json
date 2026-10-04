@@ -1,6 +1,6 @@
 {
-  "noto-sans-tc": "/taiwan-nobel-museum/assets/fonts/noto-sans-tc.woff2?v=cba9acd5",
-  "noto-serif-tc": "/taiwan-nobel-museum/assets/fonts/noto-serif-tc.woff2?v=42f49001",
-  "cormorant-garamond": "/taiwan-nobel-museum/assets/fonts/cormorant-garamond.woff2?v=145722dd",
-  "_stylesheet": "/taiwan-nobel-museum/assets/fonts/fonts.css"
+  "noto-sans-tc": "assets/fonts/noto-sans-tc.woff2?v=cba9acd5",
+  "noto-serif-tc": "assets/fonts/noto-serif-tc.woff2?v=42f49001",
+  "cormorant-garamond": "assets/fonts/cormorant-garamond.woff2?v=145722dd",
+  "_stylesheet": "assets/fonts/fonts.css?v=cbe53433"
 }

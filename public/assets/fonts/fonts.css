@@ -4,7 +4,7 @@
 
 @font-face {
   font-family: 'Noto Sans TC';
-  src: url('/taiwan-nobel-museum/assets/fonts/noto-sans-tc.woff2?v=cba9acd5') format('woff2-variations');
+  src: url('noto-sans-tc.woff2?v=cba9acd5') format('woff2-variations');
   font-weight: 300 500;
   font-style: normal;
   font-display: swap;
@@ -12,7 +12,7 @@
 
 @font-face {
   font-family: 'Noto Serif TC';
-  src: url('/taiwan-nobel-museum/assets/fonts/noto-serif-tc.woff2?v=42f49001') format('woff2-variations');
+  src: url('noto-serif-tc.woff2?v=42f49001') format('woff2-variations');
   font-weight: 400 600;
   font-style: normal;
   font-display: swap;
@@ -20,7 +20,7 @@
 
 @font-face {
   font-family: 'Cormorant Garamond';
-  src: url('/taiwan-nobel-museum/assets/fonts/cormorant-garamond.woff2?v=145722dd') format('woff2-variations');
+  src: url('cormorant-garamond.woff2?v=145722dd') format('woff2-variations');
   font-weight: 400 600;
   font-style: normal;
   font-display: swap;

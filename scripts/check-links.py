@@ -60,14 +60,30 @@ for f in root.rglob("*.html"):
     for m in re.finditer(r'i\.ytimg\.com/vi(?:_webp)?/([\w-]{11})/', src):
         ytids.add(m.group(1))
 
-def to_path(u: str):
-    p = urllib.parse.urlsplit(u).path
-    if not p.startswith(BASE):
-        return None
-    rel = p[len(BASE):]
-    if rel == "" or rel.endswith("/"):
-        rel += "index.html"
-    return root / rel
+def to_path(u: str, page: pathlib.Path):
+    """The file a reference points at. The built site is relative
+    (integrations/relative.mjs): ../../lecture/x/ is resolved from the page
+    that holds it, and must not climb out of the output. A root path is still
+    read through BASE for anything that kept one."""
+    p = urllib.parse.unquote(urllib.parse.urlsplit(u).path)
+    if p.startswith("/"):
+        if not p.startswith(BASE):
+            return None
+        target = root / p[len(BASE):]
+    else:
+        target = (page.parent / p) if p else page
+        try:
+            target.resolve().relative_to(root.resolve())
+        except ValueError:
+            return None
+    # p == "" is a query-only or hash-only reference: the page itself
+    if p.endswith("/") or target.is_dir():
+        target = target / "index.html"
+    return target
+
+def broken(u: str, page: pathlib.Path) -> bool:
+    t = to_path(u, page)
+    return t is None or not t.exists()
 
 def get(u):
     try:
@@ -109,7 +125,7 @@ def oembed(vid):
 bad = []
 
 print(f"── internal ({len(internal)} refs)")
-missing = sorted({u for u, f in internal if (to_path(u) is None or not to_path(u).exists())})
+missing = sorted({u for u, f in internal if broken(u, f)})
 for u in missing:
     bad.append(("internal", u, "target file not found"))
 print(f"   {len(internal) - len(missing)} resolve, {len(missing)} broken")
@@ -117,13 +133,9 @@ for u in missing[:20]:
     print(f"   BROKEN {u}")
 
 print(f"\n── assets ({len({u for u, _ in assets})} refs)")
-amiss = []
-for u in sorted({u for u, _ in assets}):
-    if u.startswith("http"):
-        continue
-    p = to_path(u)
-    if p is None or not p.exists():
-        amiss.append(u); bad.append(("asset", u, "file not found"))
+amiss = sorted({u for u, f in assets if not u.startswith("http") and broken(u, f)})
+for u in amiss:
+    bad.append(("asset", u, "file not found"))
 print(f"   {len({u for u,_ in assets if not u.startswith('http')}) - len(amiss)} local assets present, {len(amiss)} missing")
 for u in amiss[:20]:
     print(f"   MISSING {u}")

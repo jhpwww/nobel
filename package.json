@@ -12,7 +12,9 @@
     "content": "python3 scripts/build-catalog.py",
     "sheet": "python3 scripts/export-sheet-csv.py",
     "shots": "node scripts/shots.mjs",
-    "glass": "node scripts/check-glass.mjs"
+    "glass": "node scripts/check-glass.mjs",
+    "package": "node scripts/package.mjs",
+    "relocatable": "node scripts/check-relocatable.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",

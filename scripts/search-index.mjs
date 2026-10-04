@@ -237,9 +237,13 @@ export function dedupe(pages) {
  */
 export function build(pages, base = '/', built = new Date().toISOString()) {
   const under = (url) => `/${url.startsWith(base) ? url.slice(base.length) : url.replace(/^\/+/, '')}`;
+  /* a page is recorded as its path under the site root — 'lecture/geim/',
+     '' for the home page — with no base in front: the file is read by pages
+     at every depth and by copies of the site mounted anywhere, so the drawer
+     puts <html data-root> in front at the moment it builds a link */
   const extracted = pages
     .filter(({ url }) => !SKIP_PAGES.test(under(url)))
-    .map(({ url, html }) => extract(html, url));
+    .map(({ url, html }) => extract(html, under(url).slice(1)));
   const { out, dropped } = dedupe(extracted);
   const file = (lang) => ({ v: 1, built, pages: out[lang] });
   return { zh: file('zh'), en: file('en'), dropped };

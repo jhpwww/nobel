@@ -15,3 +15,4 @@ assets-src/posters/
 assets-src/portraits/
 .venv-cv/
 dist-bright/
+packages/

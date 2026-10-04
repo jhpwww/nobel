@@ -338,9 +338,55 @@ src/
   `objectBoundingBox`, a perfectly straight line has a zero-area box and renders **invisible**.
   Do not reintroduce it.
 
+## The build is relocatable
+
+The site is handed to other people to deploy at addresses nobody here knows in advance, so
+`dist/` must work wherever it is put down. `integrations/relative.mjs` runs last in the build
+and rewrites every internal address in every page and stylesheet to one relative to the file
+that holds it, then fails the build if anything absolute is left. GitHub Pages serves the
+same output. The rules that follow from that:
+
+- **Never put the base in client code.** No `import.meta.env.BASE_URL`, no `asset()` result,
+  no `/nobel/` string inside a `<script>` that is bundled: the bundle is shared by pages at
+  every depth, so no fixed path can be right in it. A script that must build a URL reads
+  `document.documentElement.dataset.root` (`./`, `../`, `../../…`; `/nobel/` on the dev
+  server) and resolves against `location.href`. Everything else goes in an attribute, which
+  the rewrite handles like any `href`.
+- **Compare addresses by resolving them**, never by string: a row's `href` is relative to the
+  page, the text index's `u` is relative to the root. `SiteSearch` does
+  `new URL(h, location.href).pathname` for both.
+- **No `url()` inside a custom property**, anywhere — not in a `style` attribute, not in a
+  stylesheet. Chromium resolves it against the stylesheet that consumes the `var()`, other
+  engines against where it was declared, and with relative paths those are different depths.
+  This is how the glass rim and the plates broke on relocation. Name the picture in the rule.
+- **Stylesheet `url()`s point at `public/` by root path** (`url('/assets/ui/x.webp')`) or at
+  `src/assets/` by relative import; Vite prefixes the base, the rewrite makes it relative to
+  the stylesheet, and a stylesheet-relative URL has one reading in every browser.
+- **The search index's `u` is a path under the root** with no base and no leading slash;
+  `build()` in `scripts/search-index.mjs` strips it, for the dev middleware and the build
+  alike.
+- **canonical, hreflang and the sitemap stay absolute** and come from `SITE_URL`/`BASE_PATH`;
+  `PORTABLE=1` (set by `npm run package` when no `--site` is given) leaves them out rather
+  than point them at the wrong host.
+- **Nothing in `src/data/` or `public/` may carry a base path** (the font manifests did; see
+  the fonts section). `relative.mjs` now flags any root path into a top-level output name or
+  into the base's first segment whatever base the build has, so a stale `/nobel/…` fails a
+  build for `/` or `/other/` instead of slipping through to the walker.
+- **No `404.html`.** A root 404 page would get `./` addresses and be served at every depth.
+  If one is ever wanted it needs its own treatment (inline styles, root found at runtime).
+- **The first script in `<head>` moves a slash-less URL to the slash form** before any
+  relative address is fetched — for servers that answer `…/lecture/geim` with the index
+  instead of redirecting. Keep it first and inline; `check-relocatable.mjs --slashless
+  --serve` is the server that needs it.
+- `npm run relocatable -- dist --prefix /any/path/` is the proof, and a real browser is the
+  second proof — the crawler reads addresses as the HTML states them, and the `var()` case
+  above was only visible in Chromium. `.probe/probe-reloc.mjs` against `--serve` is that run.
+
 ## Definition of done
 
 - `npm run check` (astro check; there is no separate tsc step) and `npm run build` both clean
+- `npm run relocatable -- dist --prefix /` and again with a nested prefix, both clean — the
+  build is also someone else's deployment
 - `npm run shots -- '[{"name":"home","path":"/","w":390}]'` — the script takes a JSON array and
   captures nothing without one — then actually look at the PNGs in `shots/`. Shots need a
   current `dist/`: the script serves the built site, it does not build it. The viewport default
@@ -591,9 +637,14 @@ of the request path of every visit, which the About page's privacy claim depends
 - **Two passes**, because the corpus comes from the rendered site and the
   second build is what picks up the new hashes:
   `npm run build && node scripts/subset-fonts.mjs && npm run build`. The script
-  reads `dist/`, writes `public/assets/fonts/bright/` and the manifest with the
-  `/nobel/` base path baked into every URL (`BASE_PATH` overrides it), and the
-  second build links the new hashes. Re-run whenever visible text changes.
+  reads `dist/`, writes `public/assets/fonts/bright/` — its `@font-face` `src`
+  relative to the stylesheet (`noto-sans-tc.woff2?v=…`), right wherever the site
+  is put — and the manifest with paths under the root and **no base**
+  (`assets/fonts/bright/…`, the stylesheet versioned with `?v=`); `Base.astro`
+  passes them through `asset()`, and `relative.mjs` rewrites the `<link>`s at
+  build. The second build links the new hashes. Re-run whenever visible text
+  changes. Never bake a base into the manifest again: it was right for one
+  address and made `npm run package -- --site` fail for every other.
 - **Link the stylesheet, do not bundle it.** Both font sets name families like
   `Noto Serif TC`. With both stylesheets in one build the browser matches the
   other museum's `@font-face` and fetches a file that is not there. One `<link>`

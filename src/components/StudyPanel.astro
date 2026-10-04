@@ -404,9 +404,28 @@ const canSubmit = !!(import.meta.env.PUBLIC_SUBMIT_URL ?? '').trim();
          Writing to btn.textContent would delete that span and the word would
          go pale on the next press. */
       const label = btn.querySelector('span') ?? btn;
-      try { await navigator.clipboard.writeText(text); label.textContent = btn.dataset.ok!; }
+      try { await toClipboard(text); label.textContent = btn.dataset.ok!; }
       catch { label.textContent = btn.dataset.fail!; }
+      if (document.activeElement !== btn) btn.focus({ preventScroll: true });
       setTimeout(() => (label.textContent = btn.dataset.label!), 1800);
+    }
+
+    /* The clipboard API exists only on https (and localhost). A copy of the
+       site served over plain http still has the old command, which works on
+       a selection, so the key does not go dead there. */
+    async function toClipboard(text: string) {
+      if (navigator.clipboard) {
+        try { await navigator.clipboard.writeText(text); return; } catch { /* try the old way */ }
+      }
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none';
+      document.body.append(ta);
+      ta.select();
+      let ok = false;
+      try { ok = document.execCommand('copy'); } finally { ta.remove(); }
+      if (!ok) throw new Error('copy');
     }
 
     /* one key per stage; each puts that stage's lines on the clipboard,

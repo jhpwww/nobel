@@ -628,6 +628,13 @@ const groups = { l: t('search.groupLaureate'), r: t('search.groupRoom'), p: t('s
   const foldQ = (q: string) => fold(q).s;
 
   const dlg = document.querySelector<HTMLDialogElement>('[data-ss]');
+  /* where the site root is from this page: the base on the dev server, './'
+     or '../../' in the built copy (integrations/relative.mjs). The text index
+     records pages as paths under the root, so this goes in front of them. */
+  const root = document.documentElement.dataset.root ?? '/';
+  /* one address, however it was written: the row index links relative to
+     the page, the text index relative to the root */
+  const abs = (h: string) => new URL(h, location.href).pathname;
   const openers = [...document.querySelectorAll<HTMLButtonElement>('[data-ss-open]')];
 
   if (dlg && openers.length) {
@@ -685,8 +692,7 @@ const groups = { l: t('search.groupLaureate'), r: t('search.groupRoom'), p: t('s
       const first = terms[0];
       const out: { r: Row; sc: number }[] = [];
       for (const { page, title, secs } of ready) {
-        const pagePath = page.u;
-        const known = taken.has(pagePath);
+        const known = taken.has(abs(root + page.u));
         let taken2 = 0;
         for (const { sec, head, body } of secs) {
           if (taken2 >= 2) break;
@@ -724,7 +730,7 @@ const groups = { l: t('search.groupLaureate'), r: t('search.groupRoom'), p: t('s
             sc,
             r: {
               n, s: text, m: sec.h ? page.t : '', g: 't', k: '',
-              h: page.u + hashFor(sec.a, fragment),
+              h: root + page.u + hashFor(sec.a, fragment),
               frag,
             },
           });
@@ -909,7 +915,7 @@ const groups = { l: t('search.groupLaureate'), r: t('search.groupRoom'), p: t('s
           .sort((a, b) => b.sc - a.sc)
           .slice(0, 24);
         /* the pages the first index has already answered with, by address */
-        const taken = new Set(own.map((x) => x.r.h.replace(/[#?].*$/, '')));
+        const taken = new Set(own.map((x) => abs(x.r.h)));
         /* two rows that would open the same place are one row */
         const seenH = new Set<string>();
         const text = textHits(q, taken).sort((a, b) => b.sc - a.sc)
