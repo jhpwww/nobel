@@ -412,6 +412,8 @@ const portable = process.env.PORTABLE === '1';
         border-block-start: 1px solid var(--line);
         background: var(--bg-1);
         padding-block: 2.5rem 3rem;
+        /* so the mark below can measure the band it sits in */
+        container-type: inline-size;
       }
       .foot__in {
         display: flex;
@@ -429,6 +431,11 @@ const portable = process.env.PORTABLE === '1';
       .foot__crest--wide {
         inline-size: clamp(84px, 8vw, 112px);
         opacity: 1;
+        /* The owner asked for 1.5× the left margin (2026-10-04). The margin
+           is the wrap's gutter — (band − min(band − 2.5rem, 76rem)) / 2 — so
+           half of it again is added here, and the ratio holds at every width:
+           112 → 168px on a 1440 screen, 20 → 30px on a phone. */
+        margin-inline-start: calc((100cqi - min(100cqi - 2.5rem, 76rem)) / 4);
       }
       .foot__lines { display: grid; gap: 0.2rem; min-inline-size: 0; }
       /* On a desktop the copyright stays on one line at every width, so it
@@ -463,7 +470,11 @@ const portable = process.env.PORTABLE === '1';
         .foot .wrap { width: min(100% - 0.75rem, 76rem); }
         .foot__in { gap: 0.5rem; }
         .foot__crest { inline-size: 26px; }
-        .foot__crest--wide { inline-size: 72px; }
+        .foot__crest--wide {
+          inline-size: 72px;
+          /* the same half-gutter again, against the narrower wrap above */
+          margin-inline-start: calc((100cqi - min(100cqi - 0.75rem, 76rem)) / 4);
+        }
       }
     </style>
   </body>
