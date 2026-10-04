@@ -24,6 +24,7 @@ const KINDS = [
   { key: 'guide',   label: t('browse.kindGuide'),   n: counts.guide },
   { key: 'lecture', label: t('browse.kindLecture'), n: counts.lecture },
   { key: 'record',  label: t('browse.kindRecord'),  n: counts.record },
+  { key: 'event',   label: t('browse.kindEvent'),   n: counts.event },
 ] as const;
 
 /* the museum's own room behind this page too — see GalleryPage */
@@ -107,6 +108,7 @@ import { bright } from '../theme';
             v.lecture?.affiliation.institution, v.lecture?.affiliation.country,
             v.lecture?.event.host_zh, v.lecture?.event.host_en,
             v.sourceZh, v.sourceEn,
+            v.roleZh, v.roleEn,
             v.lecture?.prize.year,
           ].filter(Boolean).join(' ').toLowerCase()}>
           <VideoCard lang={lang} v={v} />

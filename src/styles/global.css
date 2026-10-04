@@ -63,6 +63,7 @@ a, button, label, summary, input, select, textarea, [role='button'] {
   --kind-guide:   #e8c07d;
   --kind-lecture: #d9a441;
   --kind-record:  #cf9d7a;
+  --kind-event:   #c8b48e;
 
   --accent: var(--gold);
   /* --accent paints strokes, text and borders; --accent-block paints solid

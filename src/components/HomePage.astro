@@ -32,13 +32,13 @@ const featuredDate = localDate(featured.event.date, lang, true);
 const featuredHost = lang === 'zh' ? featured.event.host_zh : featured.event.host_en;
 
 /* The number of films is the number the index of films lists — 導讀 + 講座 +
-   專訪, the three figures standing next to it in this very row — never a
-   grand total that also counts second uploads and opening-ceremony clips,
-   which are not rows in the index: a total here that disagrees with the index
-   is a contradiction, not a richer count. Six figures, each counted rather
-   than repeated: laureates are distinct people — a laureate who came twice is
-   one laureate — and the three kinds of film are what the browse page
-   filters by. */
+   專訪 + 特別活動, the four figures standing next to it in this very row —
+   never a grand total that also counts second uploads, which are not rows in
+   the index: a total here that disagrees with the index is a contradiction,
+   not a richer count. Seven figures, each counted rather than repeated:
+   laureates are distinct people — a laureate who came twice is one laureate —
+   and the four kinds of film are what the browse page filters by. The
+   special events joined the index on 2026-10-04 at the owner's word. */
 /* Both collections, because this row stands for the museum's holdings and
    the index of films lists both. A laureate who came twice — or who came once
    under each programme, as Ciechanover did — is still one laureate. */
@@ -56,6 +56,7 @@ const figures = [
   { n: lectureFilms(),  label: t('hall.stat.lectures') },
   { n: kinds.guide,     label: t('hall.stat.guide') },
   { n: kinds.record,    label: t('hall.stat.interview') },
+  { n: kinds.event,     label: t('hall.stat.event') },
   { n: nHosts,          label: t('hall.stat.hosts') },
 ];
 ---

@@ -26,7 +26,7 @@ Audience: high-school students, undergraduates, and the general public. Not spec
 | 專訪 | 25 — 天下雜誌 CommonWealth Magazine and 風傳媒 The Storm Media |
 | Special events | Launch ceremony, two 北一女中 outreach lectures, a laureate panel, the 對話諾貝爾特展 |
 | 臺大「諾貝爾獎得主講座」 | 8 recordings, 5 laureates, 2019–2025, all at NTU: 我的學思歷程 (Mourou, Stoddart), 臺大椰林講座 (Ciechanover), 宋恭源先生頂尖研究講座 (Aspect ×2, Robinson), and two SPE class lectures (Robinson) |
-| 80 videos | what `/lectures/` lists: 導讀 15 · 講座 40 · 專訪 25 |
+| 86 videos | what `/lectures/` lists: 導讀 15 · 講座 40 · 專訪 26 · 特別活動 5 |
 
 Prize categories, in museum order, as the plinths and the room headings print them —
 **sittings** across both collections: Physics 12 · Chemistry 10 · Medicine 8 · Peace 2 ·
@@ -362,8 +362,9 @@ Sheet the course owns). To try it locally, put `PUBLIC_SUBMIT_URL=…` in `.env`
 
 ## Browsing
 
-`/lectures/` lists every video the museum holds — 80 of them, both collections — with a search
-box and three independent filter groups: **影片類別** (導讀 15 · 講座 40 · 專訪 25),
+`/lectures/` lists every video the museum holds — 86 of them, both collections and the
+programme's special events — with a search box and three independent filter groups:
+**影片類別** (導讀 15 · 講座 40 · 專訪 26 · 特別活動 5),
 **獎項類別**, and **主題**. A card out of the NTU collection prints its series beside its date;
 the filters sort by kind, not by collection, because these are all 講座.
 Filter state lives in the URL, so a filtered view can be shared and survives a reload — and

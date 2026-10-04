@@ -19,6 +19,7 @@ const KIND_LABEL = {
   guide: t('browse.kindGuide'),
   lecture: t('browse.kindLecture'),
   record: t('browse.kindRecord'),
+  event: t('browse.kindEvent'),
 }[v.kind];
 
 /* The picture that stands for this recording, in the museum's own order: a
@@ -134,6 +135,7 @@ const seriesLine = lang === 'zh' ? v.seriesZh : v.seriesEn;
   .vc[data-kind='guide']   .vc__kind { background: var(--kind-guide); }
   .vc[data-kind='lecture'] .vc__kind { background: var(--kind-lecture); }
   .vc[data-kind='record']  .vc__kind { background: var(--kind-record); }
+  .vc[data-kind='event']   .vc__kind { background: var(--kind-event); }
 
   .vc__play {
     position: absolute; inset-block-end: .55rem; inset-inline-end: .6rem;

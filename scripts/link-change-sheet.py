@@ -158,7 +158,7 @@ for s in cat["standalone_records"]:
         "本次新增（天下「與頂尖對話」Ep.5，計畫總覽）" if new else (f"改播{src}自家頻道的原始上傳" if s.get("yt_ipf") else s.get("role_zh", "")), new)
 
 for s in cat["special_events"]:
-    add("特別活動（關於本館頁）", s.get("title_zh", ""), s.get("title_en", ""), s.get("title_en", ""), s.get("date", ""),
+    add("特別活動", s.get("title_zh", ""), s.get("title_en", ""), s.get("title_en", ""), s.get("date", ""),
         s.get("host_zh") or s.get("host") or "", s["yt"], s.get("yt_ipf"),
         (f"改播{m(s['yt'], 'channel')}的上傳" if s.get("yt_ipf") and s["yt"] != s["yt_ipf"] else
          (f"維持 IPF 版：{EVENT_NOTE[s['id']]}" if s["id"] in EVENT_NOTE else s.get("note_zh", ""))))
@@ -234,7 +234,7 @@ n_lec = sum(1 for r in replaced if r[0].startswith("講座")); n_itv = len(repla
 for line in [
     "本檔由 scripts/link-change-sheet.py 從網站資料與 YouTube 影片資料產生。",
     "",
-    f"「全部影片」：網站目前播放的每一支影片，共 {len(rows)} 列——導讀、講座、第二天場次、專訪、臺大講座（非橋樑計畫）、計畫層級的專訪與影片，以及「關於本館」頁的特別活動影片。",
+    f"「全部影片」：網站「所有影片」列出的每一支，共 {len(rows)} 列——導讀、講座、第二天場次、專訪、臺大講座（非橋樑計畫）、計畫層級的專訪與影片，以及特別活動（啟動儀式、北一女中兩場、羅斯與科比爾卡對談、對話諾貝爾特展；「關於本館」頁也列出）。",
     f"  黃底 {n_upd} 列＝連結已更新（{n_lec} 場講座改播主辦單位自家頻道；{n_itv} 支專訪與影片改播天下雜誌、風傳媒自家頻道的原始上傳），「更新前連結」欄附上原本的 IPF 頻道連結與片長；綠底 {n_new} 列＝本次新增。其餘列未更動。",
     f"「已更換連結（核檢用）」：同樣的 {len(rows2)} 列，附兩版標題、片長、頻道性質、由影片資料算出的備註與建議核檢重點；「人工核檢結果」請填 正確／有疑問／錯誤（下拉選單），有疑問時在最右欄之後加註。",
     "「頻道性質」：校級／院級官方＝機構主頻道；校內單位＝該校錄影、直播或教學單位的頻道；媒體自家頻道＝天下雜誌 video、風傳媒 The Storm Media 的原始上傳。四個校內單位頻道（清大學習科技組、成大國際事務處、東海網路直播、興大通識中心）的歸屬是依頻道名稱與內容判斷，若要百分之百確定，可向該校求證。",

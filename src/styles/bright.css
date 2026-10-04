@@ -1409,6 +1409,7 @@ html[data-theme='bright'] {
   --kind-guide:   #6f5111;
   --kind-lecture: #8a5a10;
   --kind-record:  #7a4a2c;
+  --kind-event:   #5c4a2a;   /* the fourth, 2026-10-04: an umber beside the three golds */
 }
 html[data-theme='bright'] [data-cat] { --accent-block: var(--red); }
 
@@ -1821,12 +1822,14 @@ html[data-theme='bright'] .after .strip { padding-block-start: 0; }
    held to less than the width of the six drums. */
 html[data-theme='bright'] .after .stats {
   padding-block: 0 0.5rem;
-  max-inline-size: 25.3rem;
+  /* seven panes since 2026-10-05 (特別活動 joined the index): the row grew by
+     one pane's width, so each pane is the size it was */
+  max-inline-size: 29.5rem;
   gap: 0.4rem;
-  /* Six across, always. The component's auto-fit has a 6.6rem minimum, and
-     inside 38rem that only fits five — the sixth dropped to a second row and
+  /* Seven across, always. The component's auto-fit has a 6.6rem minimum, and
+     inside 38rem that only fits five — the rest dropped to a second row and
      the strip doubled in height. */
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(7, minmax(0, 1fr));
 }
 html[data-theme='bright'] .after .stats div {
   padding: 0.36rem 0.4rem 0.34rem;
@@ -1915,17 +1918,19 @@ html[data-theme='bright'] .bh__cue-txt { letter-spacing: 0.2em; text-indent: 0.2
 html[data-theme='bright'] :lang(zh) :is(h1, h2, h3) { line-height: 1.28; }
 html[data-theme='bright'] .bh__title { line-height: 1.12; }
 
-/* A phone gets one row of six, never two of three: the strip has to be in
-   the first screenful with the pieces, and a second row would push it out.
+/* A phone gets one row of seven, never two: the strip has to be in the
+   first screenful with the pieces, and a second row would push it out.
    Fixed columns rather than auto-fit, because auto-fit's minimum is what
-   wrapped it; the type is small enough that six fit at 320px. */
+   wrapped it; the type is small enough that seven fit at 320px — which is
+   why the seventh pane's label is 活動, two characters like 機構, and not the
+   filter chip's 特別活動. */
 @media (max-width: 48rem) {
   html[data-theme='bright'] .after .stats {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-columns: repeat(7, minmax(0, 1fr));
     gap: 0.18rem;
     padding-block: 0 0.4rem;
     /* two thirds, plus what the larger figures need back */
-    max-inline-size: min(100%, 21rem);
+    max-inline-size: min(100%, 24.5rem);
   }
   html[data-theme='bright'] .after .stats div {
     padding: 0.26rem 0.1rem 0.24rem;

@@ -215,7 +215,10 @@ src/
   「接著看」 are statements about the programme. `videoList` reads BOTH, because the index of
   films must list every film the museum holds or its own total contradicts its own grid; so
   `lectureFilms()` (40), not `totalSittings()` (32), is what stands beside that index and in the
-  home page's figure row, where 導讀 + 講座 + 專訪 has to come out at the total.
+  home page's figure row, where 導讀 + 講座 + 專訪 + 特別活動 has to come out at the total.
+  The five special events are rows of the index since 2026-10-05 (kind `event`, filter chip
+  特別活動, badge `--kind-event`); their cards name the event and its host and open on
+  YouTube, as a record with no page does. The About page lists them as well.
   **A prize room holds both**, at the owner's word: its lectures are not limited to the
   programme, so `byCategory` returns both collections in one grid with no second heading, and
   「N 場講座」 counts them — Physics 12, Chemistry 10, Economics 8. The figure appears in three

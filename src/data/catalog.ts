@@ -305,7 +305,10 @@ export function recommended(): Lecture {
  *   lecture 講座     — the lecture itself
  *   record  專訪     — the interviews by 天下雜誌 and 風傳媒
  * ------------------------------------------------------------------ */
-export type VideoKind = 'guide' | 'lecture' | 'record';
+/** 'event' is a special event of the programme — the launch, a school visit,
+    a panel, the exhibition — listed in the index of films at the owner's word
+    (2026-10-04); it has no lecture page, so its card goes to YouTube */
+export type VideoKind = 'guide' | 'lecture' | 'record' | 'event';
 
 export interface VideoItem {
   key: string;                 // unique within the list
@@ -387,6 +390,20 @@ export function videoList(): VideoItem[] {
       roleZh: r.role_zh, roleEn: r.role_en,
     });
   }
+
+  /* The programme's special events, last: they are about the programme
+     rather than about a laureate, and the About page tells their story. The
+     card prints the event's name where a laureate's would stand and the host
+     under it; it opens on YouTube, as a record not tied to a page does. */
+  for (const s of specialEvents) {
+    const h = s.host ? catalog.hosts[s.host] : null;
+    out.push({
+      key: s.id, yt: s.yt, kind: 'event', lecture: null,
+      personZh: s.title_zh, personEn: s.title_en,
+      category: null, topics: [], date: s.date,
+      roleZh: s.host_zh ?? h?.zh ?? '', roleEn: s.host_en ?? h?.en ?? '',
+    });
+  }
   return out;
 }
 
@@ -397,6 +414,7 @@ export const videoCounts = () => {
     guide: v.filter((x) => x.kind === 'guide').length,
     lecture: v.filter((x) => x.kind === 'lecture').length,
     record: v.filter((x) => x.kind === 'record').length,
+    event: v.filter((x) => x.kind === 'event').length,
   };
 };
 
