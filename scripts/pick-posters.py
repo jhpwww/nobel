@@ -104,7 +104,9 @@ def main() -> None:
             continue
 
         # Every other recording this laureate appears in, verified the same
-        # way. Their own page shows all of them.
+        # way. Their own page shows all of them. (Not `lecture_ipf`: the IPF
+        # channel's upload is kept in the record for provenance and no page
+        # renders it, so no frame is picked for it.)
         #
         # Except the 導讀. The owner asked for the lectures and the interviews
         # and named neither the guide videos nor anything else; a 導讀 is the
@@ -114,7 +116,6 @@ def main() -> None:
         # uploader's pick, which is what stills.ts falls back to when nothing
         # is recorded here.
         others = [v for v in (
-            lec['video'].get('lecture_ntu'),
             *[s.get('id') for s in lec['video'].get('extra_sessions', [])],
             *[i.get('id') for i in lec.get('interviews', [])],
         ) if v]

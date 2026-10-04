@@ -32,7 +32,12 @@ export interface Lecture {
   hook: Bilingual;
   video: {
     lecture: string | null;
-    lecture_ntu: string | null;
+    /** the name of the channel `lecture` was taken from — the host's own where it has one */
+    lecture_channel?: string | null;
+    /** the International Peace BRIDGES Network channel's upload of the same
+        lecture, kept for provenance; `lecture` is the host's own upload where
+        the host published one. Not rendered. Null for the NTU collection. */
+    lecture_ipf: string | null;
     guide: string | null;
     extra_sessions: { id: string; label: string }[];
   };
@@ -240,7 +245,7 @@ export const lectureFilms = () => videoList().filter((v) => v.kind === 'lecture'
 /** Every video this lecture offers, for the "n videos" badge. */
 export function videoCount(l: Lecture) {
   return (l.video.lecture ? 1 : 0) + (l.video.guide ? 1 : 0) +
-         (l.video.lecture_ntu ? 1 : 0) + l.interviews.length + l.video.extra_sessions.length;
+         l.interviews.length + l.video.extra_sessions.length;
 }
 
 /** Onward viewing: same prize category first, then shared topics. */

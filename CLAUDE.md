@@ -217,9 +217,14 @@ src/
   drifted the day the rooms began holding both. `totalSittings()` (32) stays the programme's
   own figure and is what the colophon's story counts.
   The NTU records carry `series_zh` / `series_en`; the 31 do not, because every page is
-  already about the programme. Do not put an NTU recording in `video.lecture_ntu` — that field
-  means "a second upload of a Bridges lecture" and `HallRing` filters the hall's six turning
-  panels on it with six-element arrays.
+  already about the programme. `video.lecture` is the recording the page plays — **the host's
+  own upload where the host published one** (`HOST_UPLOAD` in `scripts/seed-catalog.py`: 22 of
+  the 31 as of 2026-10-04, at the owner's word), otherwise the IPF channel's. The IPF id always
+  stays in `video.lecture_ipf` (null for the NTU collection) and the channel's name in
+  `video.lecture_channel`; neither is rendered. There is no `lecture_ntu` any more: `HallRing`
+  picks the hall's six turning panels by `event.host_key === 'NTU'`, not by a field. Every
+  change of a lecture id is a change of poster frame — run `scripts/pick-posters.py` and, for
+  any id it cannot verify, `scripts/cut-poster-frames.py --only`, both locally.
 - A record outside 臺灣橋樑計畫 has no `cw_hub` (天下's hub covers the programme) and no 導讀;
   both are guarded in `LecturePage`, and an unguarded `ExtLink` with no href renders as a button
   that does nothing. The study panel is on EVERY lecture page, both collections, at the owner's
@@ -359,9 +364,12 @@ same output. The rules that follow from that:
   stylesheet. Chromium resolves it against the stylesheet that consumes the `var()`, other
   engines against where it was declared, and with relative paths those are different depths.
   This is how the glass rim and the plates broke on relocation. Name the picture in the rule.
-- **Stylesheet `url()`s point at `public/` by root path** (`url('/assets/ui/x.webp')`) or at
-  `src/assets/` by relative import; Vite prefixes the base, the rewrite makes it relative to
-  the stylesheet, and a stylesheet-relative URL has one reading in every browser.
+- **A stylesheet names a picture by relative import from `src/assets/`**
+  (`url('../assets/ui/glass-frame.webp')`), never by a root path into `public/`: the build
+  would prefix the base and the rewrite make it stylesheet-relative, but the **dev server does
+  not rebase a root path in CSS** — `url('/assets/ui/x.webp')` answered 404 on 4322 while the
+  live build was fine, and the owner reads every change on the dev server first. A bundled
+  asset is hashed into `_astro/` and right in both places.
 - **The search index's `u` is a path under the root** with no base and no leading slash;
   `build()` in `scripts/search-index.mjs` strips it, for the dev middleware and the build
   alike.
@@ -711,6 +719,15 @@ then the verified YouTube frame (`video-posters.json`), then the uploader's `hqd
   confirm you're not a bot" on every player client; `.github/workflows/poster-frames.yml` is
   kept as a fallback that does not currently work.
 - Re-run after changing which video a lecture points at.
+- **Look at every still the cutter writes.** It can be fooled twice over: by the laureate's own
+  portrait projected large on the screen behind the host (Winter's AS recording), and by a
+  small speaker window on a slide that just clears `NEAR` (Roberts's and Semenza's). Neither
+  is a picture of the laureate. Where the host's upload never shows them properly — Academia
+  Sinica's are slides with a speaker window, Tunghai's a wide live stream — the still cut from
+  the **IPF recording of the same event** stands in: it is the same Taiwan lecture, so the rule
+  holds. `scripts/cut-still-from.py <lecture id> <source youtube id>` cuts it the same way and
+  writes `posters/<source id>.webp`; then map the id the page plays to that file by hand in
+  `local-posters.json`, so the choice shows in the diff.
 - `scripts/facecheck.py` is the shared module both scripts import for the portrait, the
   detector and the threshold; it names the models to fetch, which live in `.tools/`
   (gitignored).

@@ -98,7 +98,7 @@ body.forEach((cells, n) => {
   if (date && !/^\d{4}-\d{2}-\d{2}$/.test(date)) errors.push(`${where}: date "${date}" is not YYYY-MM-DD`);
   const year = Number(g('prize_year'));
   if (g('prize_year') && !Number.isInteger(year)) errors.push(`${where}: prize_year "${g('prize_year')}" is not a number`);
-  for (const [k, v] of [['yt_lecture', g('yt_lecture')], ['yt_guide', g('yt_guide')], ['yt_lecture_ntu', g('yt_lecture_ntu')]]) {
+  for (const [k, v] of [['yt_lecture', g('yt_lecture')], ['yt_guide', g('yt_guide')], ['yt_lecture_ipf', g('yt_lecture_ipf')]]) {
     if (v && !/^[\w-]{11}$/.test(v)) errors.push(`${where}: ${k} "${v}" is not an 11-character YouTube id`);
   }
 
@@ -122,7 +122,8 @@ body.forEach((cells, n) => {
     hook: { zh: g('hook_zh'), en: g('hook_en') },
     video: {
       lecture: g('yt_lecture') || null,
-      lecture_ntu: g('yt_lecture_ntu') || null,
+      lecture_channel: g('lecture_channel') || null,
+      lecture_ipf: g('yt_lecture_ipf') || null,
       guide: g('yt_guide') || null,
       extra_sessions: list(g('extra_sessions')).map((s) => { const [i2, label] = pair(s); return { id: i2, label }; }),
     },

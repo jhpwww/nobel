@@ -22,11 +22,11 @@ Audience: high-school students, undergraduates, and the general public. Not spec
 | | |
 |---|---|
 | 31 lectures | Given in 32 sittings — Südhof's was delivered twice. Nov 2025 – May 2026, 31 Nobel laureates, 12 host institutions |
-| 導讀影片 | 12 published so far (six more went up on 臺大演講網 on 2026-09-16); the schema carries all 31 as they are released |
+| 導讀影片 | 15 published so far (six more went up on 臺大演講網 on 2026-09-16, three on 2026-10-01); the schema carries all 31 as they are released |
 | 專訪 | 25 — 天下雜誌 CommonWealth Magazine and 風傳媒 The Storm Media |
 | Special events | Launch ceremony, two 北一女中 outreach lectures, a laureate panel, the 對話諾貝爾特展 |
 | 臺大「諾貝爾獎得主講座」 | 8 recordings, 5 laureates, 2019–2025, all at NTU: 我的學思歷程 (Mourou, Stoddart), 臺大椰林講座 (Ciechanover), 宋恭源先生頂尖研究講座 (Aspect ×2, Robinson), and two SPE class lectures (Robinson) |
-| 77 videos | what `/lectures/` lists: 導讀 12 · 講座 40 · 專訪 25 |
+| 80 videos | what `/lectures/` lists: 導讀 15 · 講座 40 · 專訪 25 |
 
 Prize categories, in museum order, as the plinths and the room headings print them —
 **sittings** across both collections: Physics 12 · Chemistry 10 · Medicine 8 · Peace 2 ·
@@ -212,7 +212,11 @@ scripts/copy-galleries.py + prize-facts.json ┘
 `scripts/seed-catalog.py` (facts), run `npm run content`, and commit. Pushing to `main` deploys.
 There is no schedule — nothing publishes until someone decides to publish it.
 
-A published Google Sheet is wired up as the eventual backend but **has never been switched on**:
+A published Google Sheet is wired up as the eventual backend but **has never been switched on**.
+If it ever is, seed it from the *current* `data/sheet-seed.csv` first: on 2026-10-04 the
+lecture ids moved to the hosts' own uploads and the columns changed (`lecture_channel`,
+`yt_lecture_ipf` in place of `yt_lecture_ntu`), and a Sheet seeded from an older CSV would
+rebuild `lectures.json` with the IPF ids and no error:
 
 ```
 Google Sheet ──(publish tab as CSV)──> SHEET_CSV_URL ──> scripts/sync-sheet.mjs ──> src/data/lectures.json
@@ -242,8 +246,11 @@ Google Sheet ──(publish tab as CSV)──> SHEET_CSV_URL ──> scripts/syn
 Everything in `data/catalog.json` is traceable. See the header of `scripts/seed-catalog.py`.
 
 - Schedule — the IPF 導讀拍攝進度 programme sheet
-- Lecture videos — the International Peace Foundation channel
-- 導讀影片 and the NTU uploads — 臺大演講網
+- Lecture videos — the host institution's own channel where it published one (22 of 31 on
+  2026-10-04: 臺大演講網, 中央研究院, 清大學習科技組, 成大, 東海; `HOST_UPLOAD` in the seed
+  script), otherwise the International Peace BRIDGES Network channel. The IPF id is kept in
+  `video.lecture_ipf` for every lecture, unrendered, so the pairing is always on record
+- 導讀影片 — 臺大演講網
 - Per-lecture NTU material — https://cge.ntu.edu.tw/cl_n_203079.html
 - Nobel citations — nobelprize.org, two per lecture: `nobel_facts` (the prize page) and
   `nobel_lecture` (the Stockholm lecture page)
@@ -355,8 +362,8 @@ Sheet the course owns). To try it locally, put `PUBLIC_SUBMIT_URL=…` in `.env`
 
 ## Browsing
 
-`/lectures/` lists every video the museum holds — 77 of them, both collections — with a search
-box and three independent filter groups: **影片類別** (導讀 12 · 講座 40 · 專訪 25),
+`/lectures/` lists every video the museum holds — 80 of them, both collections — with a search
+box and three independent filter groups: **影片類別** (導讀 15 · 講座 40 · 專訪 25),
 **獎項類別**, and **主題**. A card out of the NTU collection prints its series beside its date;
 the filters sort by kind, not by collection, because these are all 講座.
 Filter state lives in the URL, so a filtered view can be shared and survives a reload — and

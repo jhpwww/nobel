@@ -4,9 +4,14 @@ seed-catalog.py — builds data/catalog.json from hand-verified source data.
 
 Provenance of every field:
   schedule .............. 導讀拍攝進度 PDF (IPF programme), cross-checked against YouTube titles
-  yt_lecture ............ International Peace Foundation Network channel (UCCzpgpyyiGMSQE08BuXECVw)
-  yt_lecture_ntu ........ 臺大演講網 channel (UCSgvLn9EzRHS7yOJqXcJ68Q) — separate upload of same event
-  yt_guide (導讀影片) ..... 臺大演講網 channel; 12 published (6 NTU-hosted, 6 more on 2026-09-16)
+  yt_lecture ............ the recording the page plays: the HOST's own upload where the host
+                          published one (HOST_UPLOAD, 22 of 31 as of 2026-10-04 — 臺大演講網,
+                          中央研究院, 清大學習科技組, 成大, 東海), otherwise the International
+                          Peace BRIDGES Network channel (UCCzpgpyyiGMSQE08BuXECVw)
+  yt_lecture_ipf ........ the IPF channel's upload, always, for provenance — not rendered
+  lecture_channel ....... the name of the channel yt_lecture came from
+  yt_guide (導讀影片) ..... 臺大演講網 channel; 15 published (6 NTU-hosted, 6 more on 2026-09-16,
+                          3 more on 2026-10-01)
   interviews ............ IPF channel: 天下雜誌 CommonWealth + 風傳媒 The Storm Media
   ig_reel / ntu_* ....... https://cge.ntu.edu.tw/cl_n_203079.html
   nobel_facts ........... nobelprize.org, verified by HTTP status
@@ -98,18 +103,61 @@ L = [
 ]
 
 # 導讀影片 on 臺大演講網. The first six were filmed for the lectures NTU
-# itself hosted; the second six went up on 2026-09-16, each about ninety
-# seconds, for lectures given at other hosts. All twelve verified public and
-# playable in an embed on the day they were added.
+# itself hosted; the second six went up on 2026-09-16 and the next three on
+# 2026-10-01, each about ninety seconds, for lectures given at other hosts.
+# All fifteen verified public and playable in an embed on the day they were
+# added.
 GUIDE = {"geim":"S2ohEFiR4u0","maskin":"ET-QoWIUjec","strickland":"5e6-gtnHV0M",
          "meldal":"UNt_MdCz5T0","mbmoser":"vK_aNwIlqRs","frank":"FJnh2-IxXy0",
          # 2026-09-16
          "thooft":"_8tHMlQr9Wo","karman":"C87eRAwvKyk","queloz":"RJs5WY4FCGE",
-         "pissarides":"u4Hn6hByR44","ciechanover":"9szPY4r18GE","engle":"J1K1ZpFP8ng"}
+         "pissarides":"u4Hn6hByR44","ciechanover":"9szPY4r18GE","engle":"J1K1ZpFP8ng",
+         # 2026-10-01
+         "noyori":"wtv7oprRdkQ","mcdonald":"nprHwUKKGjU","stiglitz":"QNsGUf8cWRc"}
 
-# Second upload of the same lecture on 臺大演講網
-NTU_UPLOAD = {"geim":"1KdZldwfnT4","maskin":"hv8g3oRq7Ms","strickland":"51o9waNOWD8",
-              "meldal":"XhOCuaxqSHY","mbmoser":"cRu-6W0kQKs","frank":"pfNkuYxhgfM"}
+# The host's own upload of the lecture, where the host published one. At the
+# owner's word (2026-10-04) this is the recording the page plays, in place of
+# the IPF channel's; the IPF id stays in the record as `lecture_ipf`. Each
+# was found on the institution's channel, checked public and embeddable, and
+# listed with its IPF counterpart in a sheet for the course's own check. Eight
+# lectures have no such upload (TKU ×3, NTNU, AU, CMU, YKH, TCU — searched on
+# the institutions' official and unit channels) and keep the IPF recording.
+# Durations differ from the IPF cut for several — the host's edit, usually
+# without the Q&A, not a different event; the sheet shows both.
+CHANNEL = {   # channel names as YouTube prints them; handles in the comments
+ "IPF":  "International Peace BRIDGES Network",        # @peace-bridges-network
+ "NTU":  "臺大演講網",                                   # @NTUSpeech
+ "AS":   "中央研究院Academia Sinica",                    # @academiasinica_tw
+ "NTHU": "國立清華大學計算機與通訊中心學習科技組",          # @NTHUCCCLT
+ "NCKU": "National Cheng Kung University OIA,",         # @nationalchengkunguniversit1691 — the comma is in the name
+ "THU":  "東海大學網路直播",                              # @LiveTHU
+ "NCHU": "興大通識中心",                                  # @興大通識中心 — NCHU Center for General Education, 惠蓀講座 series
+}
+HOST_UPLOAD = {
+ "geim":       ("1KdZldwfnT4", "NTU"),
+ "maskin":     ("hv8g3oRq7Ms", "NTU"),
+ "strickland": ("51o9waNOWD8", "NTU"),
+ "meldal":     ("XhOCuaxqSHY", "NTU"),
+ "mbmoser":    ("cRu-6W0kQKs", "NTU"),
+ "frank":      ("pfNkuYxhgfM", "NTU"),
+ "kornberg":   ("MuKipONTn-E", "AS"),
+ "murad":      ("1rPkaODYmDE", "AS"),
+ "haroche":    ("SYVcxcAWH78", "AS"),
+ "mayor":      ("q9IjENh587o", "AS"),
+ "roberts":    ("XhpZtAGdhNo", "AS"),
+ "nurse":      ("BtrXjKm4X2A", "AS"),
+ "winter":     ("Xd09m8G2SjQ", "AS"),
+ "emoser":     ("RwQimHKJH30", "AS"),
+ "wuthrich":   ("Y-7jRxRbzlM", "AS"),
+ "kajita":     ("dSsy8tUJjpc", "AS"),
+ "karman":     ("-BoYdq1hu7Q", "NTHU"),
+ "roth":       ("MfkIKIrPad8", "NTHU"),
+ "kobilka":    ("TEUP0edx1Q0", "NTHU"),
+ "pissarides": ("5N4JXSQdejo", "NCKU"),
+ "semenza":    ("A-iaC-Eodm4", "NCKU"),
+ "engle":      ("-LsWML_Rtw0", "THU"),
+ "schmidt":    ("MPtbINlLeDc", "NCHU"),   # 惠蓀講座 176, description dates it 115年1月19日
+}
 
 # Extra same-event sessions
 EXTRA_SESSIONS = {"sudhof":[("6sh75WDdREs","Day 2 · 2026-01-06")]}
@@ -288,12 +336,10 @@ def build_ntu():
             "title": {"en": title, "zh": None},
             "description": {"en": None, "zh": None},
             "video": {
-                # The 臺大演講網 upload IS the recording here, so it belongs in
-                # `lecture`. Never in `lecture_ntu`: that field means "a second
-                # upload of a Bridges lecture", and HallRing filters the hall's
-                # six turning panels on it with six-element arrays.
-                "lecture": yt, "lecture_ntu": None, "guide": None,
-                "extra_sessions": [],
+                # 臺大演講網's upload is the only recording of these; nothing
+                # of IPF's exists for them, so `lecture_ipf` is null.
+                "lecture": yt, "lecture_channel": CHANNEL["NTU"], "lecture_ipf": None,
+                "guide": None, "extra_sessions": [],
             },
             "interviews": [],
             "links": {
@@ -324,8 +370,9 @@ def build():
             "title": {"en": title, "zh": None},
             "description": {"en": None, "zh": None},
             "video": {
-                "lecture": yt,
-                "lecture_ntu": NTU_UPLOAD.get(lid),
+                "lecture": HOST_UPLOAD[lid][0] if lid in HOST_UPLOAD else yt,
+                "lecture_channel": CHANNEL[HOST_UPLOAD[lid][1] if lid in HOST_UPLOAD else "IPF"],
+                "lecture_ipf": yt,
                 "guide": GUIDE.get(lid),
                 "extra_sessions": [{"id": v, "label": lab} for v, lab in EXTRA_SESSIONS.get(lid, [])],
             },

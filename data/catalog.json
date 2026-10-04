@@ -32,8 +32,9 @@
         "zh": null
       },
       "video": {
-        "lecture": "rcE23c82xUc",
-        "lecture_ntu": "1KdZldwfnT4",
+        "lecture": "1KdZldwfnT4",
+        "lecture_channel": "臺大演講網",
+        "lecture_ipf": "rcE23c82xUc",
         "guide": "S2ohEFiR4u0",
         "extra_sessions": []
       },
@@ -81,7 +82,8 @@
       },
       "video": {
         "lecture": "OHIoN7OcMTM",
-        "lecture_ntu": null,
+        "lecture_channel": "International Peace BRIDGES Network",
+        "lecture_ipf": "OHIoN7OcMTM",
         "guide": "_8tHMlQr9Wo",
         "extra_sessions": []
       },
@@ -125,8 +127,9 @@
         "zh": null
       },
       "video": {
-        "lecture": "q3V6sN0zE7c",
-        "lecture_ntu": null,
+        "lecture": "-BoYdq1hu7Q",
+        "lecture_channel": "國立清華大學計算機與通訊中心學習科技組",
+        "lecture_ipf": "q3V6sN0zE7c",
         "guide": "C87eRAwvKyk",
         "extra_sessions": []
       },
@@ -170,8 +173,9 @@
         "zh": null
       },
       "video": {
-        "lecture": "zBzFC9ODs1M",
-        "lecture_ntu": null,
+        "lecture": "MuKipONTn-E",
+        "lecture_channel": "中央研究院Academia Sinica",
+        "lecture_ipf": "zBzFC9ODs1M",
         "guide": null,
         "extra_sessions": []
       },
@@ -223,7 +227,8 @@
       },
       "video": {
         "lecture": "awXleH-HVEI",
-        "lecture_ntu": null,
+        "lecture_channel": "International Peace BRIDGES Network",
+        "lecture_ipf": "awXleH-HVEI",
         "guide": "RJs5WY4FCGE",
         "extra_sessions": []
       },
@@ -274,8 +279,9 @@
         "zh": null
       },
       "video": {
-        "lecture": "K86pQuvw144",
-        "lecture_ntu": null,
+        "lecture": "1rPkaODYmDE",
+        "lecture_channel": "中央研究院Academia Sinica",
+        "lecture_ipf": "K86pQuvw144",
         "guide": null,
         "extra_sessions": []
       },
@@ -319,8 +325,9 @@
         "zh": null
       },
       "video": {
-        "lecture": "mDPup-8ozT4",
-        "lecture_ntu": null,
+        "lecture": "5N4JXSQdejo",
+        "lecture_channel": "National Cheng Kung University OIA,",
+        "lecture_ipf": "mDPup-8ozT4",
         "guide": "u4Hn6hByR44",
         "extra_sessions": []
       },
@@ -364,8 +371,9 @@
         "zh": null
       },
       "video": {
-        "lecture": "Vaftz_NrTww",
-        "lecture_ntu": "hv8g3oRq7Ms",
+        "lecture": "hv8g3oRq7Ms",
+        "lecture_channel": "臺大演講網",
+        "lecture_ipf": "Vaftz_NrTww",
         "guide": "ET-QoWIUjec",
         "extra_sessions": []
       },
@@ -426,7 +434,8 @@
       },
       "video": {
         "lecture": "BaeZY-6cwDk",
-        "lecture_ntu": null,
+        "lecture_channel": "International Peace BRIDGES Network",
+        "lecture_ipf": "BaeZY-6cwDk",
         "guide": null,
         "extra_sessions": [
           {
@@ -483,7 +492,8 @@
       },
       "video": {
         "lecture": "m14M1uLkFFU",
-        "lecture_ntu": null,
+        "lecture_channel": "International Peace BRIDGES Network",
+        "lecture_ipf": "m14M1uLkFFU",
         "guide": "9szPY4r18GE",
         "extra_sessions": []
       },
@@ -534,8 +544,9 @@
         "zh": null
       },
       "video": {
-        "lecture": "C7PAOAEOczU",
-        "lecture_ntu": "51o9waNOWD8",
+        "lecture": "51o9waNOWD8",
+        "lecture_channel": "臺大演講網",
+        "lecture_ipf": "C7PAOAEOczU",
         "guide": "5e6-gtnHV0M",
         "extra_sessions": []
       },
@@ -596,8 +607,9 @@
       },
       "video": {
         "lecture": "WlxbaXqWXAs",
-        "lecture_ntu": null,
-        "guide": null,
+        "lecture_channel": "International Peace BRIDGES Network",
+        "lecture_ipf": "WlxbaXqWXAs",
+        "guide": "QNsGUf8cWRc",
         "extra_sessions": []
       },
       "interviews": [],
@@ -640,8 +652,9 @@
         "zh": null
       },
       "video": {
-        "lecture": "JrkyzmChFjI",
-        "lecture_ntu": null,
+        "lecture": "SYVcxcAWH78",
+        "lecture_channel": "中央研究院Academia Sinica",
+        "lecture_ipf": "JrkyzmChFjI",
         "guide": null,
         "extra_sessions": []
       },
@@ -692,8 +705,9 @@
         "zh": null
       },
       "video": {
-        "lecture": "il_Wkv2Maaw",
-        "lecture_ntu": null,
+        "lecture": "MPtbINlLeDc",
+        "lecture_channel": "興大通識中心",
+        "lecture_ipf": "il_Wkv2Maaw",
         "guide": null,
         "extra_sessions": []
       },
@@ -737,8 +751,9 @@
         "zh": null
       },
       "video": {
-        "lecture": "tj8OSXJRV0A",
-        "lecture_ntu": null,
+        "lecture": "q9IjENh587o",
+        "lecture_channel": "中央研究院Academia Sinica",
+        "lecture_ipf": "tj8OSXJRV0A",
         "guide": null,
         "extra_sessions": []
       },
@@ -789,8 +804,9 @@
         "zh": null
       },
       "video": {
-        "lecture": "lTZP1kxTwSM",
-        "lecture_ntu": "XhOCuaxqSHY",
+        "lecture": "XhOCuaxqSHY",
+        "lecture_channel": "臺大演講網",
+        "lecture_ipf": "lTZP1kxTwSM",
         "guide": "UNt_MdCz5T0",
         "extra_sessions": []
       },
@@ -844,8 +860,9 @@
         "zh": null
       },
       "video": {
-        "lecture": "EJVC6_gZc5o",
-        "lecture_ntu": null,
+        "lecture": "-LsWML_Rtw0",
+        "lecture_channel": "東海大學網路直播",
+        "lecture_ipf": "EJVC6_gZc5o",
         "guide": "J1K1ZpFP8ng",
         "extra_sessions": []
       },
@@ -896,8 +913,9 @@
         "zh": null
       },
       "video": {
-        "lecture": "VmpL2HPJ_g8",
-        "lecture_ntu": null,
+        "lecture": "XhpZtAGdhNo",
+        "lecture_channel": "中央研究院Academia Sinica",
+        "lecture_ipf": "VmpL2HPJ_g8",
         "guide": null,
         "extra_sessions": []
       },
@@ -954,8 +972,9 @@
         "zh": null
       },
       "video": {
-        "lecture": "JnBkvRgjA9I",
-        "lecture_ntu": "cRu-6W0kQKs",
+        "lecture": "cRu-6W0kQKs",
+        "lecture_channel": "臺大演講網",
+        "lecture_ipf": "JnBkvRgjA9I",
         "guide": "vK_aNwIlqRs",
         "extra_sessions": []
       },
@@ -1002,8 +1021,9 @@
         "zh": null
       },
       "video": {
-        "lecture": "TN0GNDKL6mY",
-        "lecture_ntu": null,
+        "lecture": "BtrXjKm4X2A",
+        "lecture_channel": "中央研究院Academia Sinica",
+        "lecture_ipf": "TN0GNDKL6mY",
         "guide": null,
         "extra_sessions": []
       },
@@ -1060,8 +1080,9 @@
         "zh": null
       },
       "video": {
-        "lecture": "KTHc6qF3mo0",
-        "lecture_ntu": null,
+        "lecture": "Xd09m8G2SjQ",
+        "lecture_channel": "中央研究院Academia Sinica",
+        "lecture_ipf": "KTHc6qF3mo0",
         "guide": null,
         "extra_sessions": []
       },
@@ -1113,8 +1134,9 @@
       },
       "video": {
         "lecture": "io3z9LwxM34",
-        "lecture_ntu": null,
-        "guide": null,
+        "lecture_channel": "International Peace BRIDGES Network",
+        "lecture_ipf": "io3z9LwxM34",
+        "guide": "nprHwUKKGjU",
         "extra_sessions": []
       },
       "interviews": [],
@@ -1158,8 +1180,9 @@
       },
       "video": {
         "lecture": "zAM1_fhu6kY",
-        "lecture_ntu": null,
-        "guide": null,
+        "lecture_channel": "International Peace BRIDGES Network",
+        "lecture_ipf": "zAM1_fhu6kY",
+        "guide": "wtv7oprRdkQ",
         "extra_sessions": []
       },
       "interviews": [],
@@ -1202,8 +1225,9 @@
         "zh": null
       },
       "video": {
-        "lecture": "QOvGspShTQU",
-        "lecture_ntu": null,
+        "lecture": "RwQimHKJH30",
+        "lecture_channel": "中央研究院Academia Sinica",
+        "lecture_ipf": "QOvGspShTQU",
         "guide": null,
         "extra_sessions": []
       },
@@ -1255,7 +1279,8 @@
       },
       "video": {
         "lecture": "NJXpq2nSyTY",
-        "lecture_ntu": null,
+        "lecture_channel": "International Peace BRIDGES Network",
+        "lecture_ipf": "NJXpq2nSyTY",
         "guide": null,
         "extra_sessions": []
       },
@@ -1306,8 +1331,9 @@
         "zh": null
       },
       "video": {
-        "lecture": "xVOW7dzgRyM",
-        "lecture_ntu": null,
+        "lecture": "Y-7jRxRbzlM",
+        "lecture_channel": "中央研究院Academia Sinica",
+        "lecture_ipf": "xVOW7dzgRyM",
         "guide": null,
         "extra_sessions": []
       },
@@ -1358,8 +1384,9 @@
         "zh": null
       },
       "video": {
-        "lecture": "ZEFnMve_8ig",
-        "lecture_ntu": null,
+        "lecture": "A-iaC-Eodm4",
+        "lecture_channel": "National Cheng Kung University OIA,",
+        "lecture_ipf": "ZEFnMve_8ig",
         "guide": null,
         "extra_sessions": []
       },
@@ -1403,8 +1430,9 @@
         "zh": null
       },
       "video": {
-        "lecture": "f1ib7S3mJpE",
-        "lecture_ntu": null,
+        "lecture": "MfkIKIrPad8",
+        "lecture_channel": "國立清華大學計算機與通訊中心學習科技組",
+        "lecture_ipf": "f1ib7S3mJpE",
         "guide": null,
         "extra_sessions": []
       },
@@ -1461,8 +1489,9 @@
         "zh": null
       },
       "video": {
-        "lecture": "DEURLJp2AUI",
-        "lecture_ntu": null,
+        "lecture": "TEUP0edx1Q0",
+        "lecture_channel": "國立清華大學計算機與通訊中心學習科技組",
+        "lecture_ipf": "DEURLJp2AUI",
         "guide": null,
         "extra_sessions": []
       },
@@ -1506,8 +1535,9 @@
         "zh": null
       },
       "video": {
-        "lecture": "uWHIUdjWnGc",
-        "lecture_ntu": null,
+        "lecture": "dSsy8tUJjpc",
+        "lecture_channel": "中央研究院Academia Sinica",
+        "lecture_ipf": "uWHIUdjWnGc",
         "guide": null,
         "extra_sessions": []
       },
@@ -1558,8 +1588,9 @@
         "zh": null
       },
       "video": {
-        "lecture": "yhZhymmeaso",
-        "lecture_ntu": "pfNkuYxhgfM",
+        "lecture": "pfNkuYxhgfM",
+        "lecture_channel": "臺大演講網",
+        "lecture_ipf": "yhZhymmeaso",
         "guide": "FJnh2-IxXy0",
         "extra_sessions": []
       },
@@ -1618,7 +1649,8 @@
       },
       "video": {
         "lecture": "f_93MRC_cOQ",
-        "lecture_ntu": null,
+        "lecture_channel": "臺大演講網",
+        "lecture_ipf": null,
         "guide": null,
         "extra_sessions": []
       },
@@ -1666,7 +1698,8 @@
       },
       "video": {
         "lecture": "BclmeWfaM8Q",
-        "lecture_ntu": null,
+        "lecture_channel": "臺大演講網",
+        "lecture_ipf": null,
         "guide": null,
         "extra_sessions": []
       },
@@ -1713,7 +1746,8 @@
       },
       "video": {
         "lecture": "h0S66RZon2Y",
-        "lecture_ntu": null,
+        "lecture_channel": "臺大演講網",
+        "lecture_ipf": null,
         "guide": null,
         "extra_sessions": []
       },
@@ -1762,7 +1796,8 @@
       },
       "video": {
         "lecture": "bnjb7Y98D1k",
-        "lecture_ntu": null,
+        "lecture_channel": "臺大演講網",
+        "lecture_ipf": null,
         "guide": null,
         "extra_sessions": []
       },
@@ -1809,7 +1844,8 @@
       },
       "video": {
         "lecture": "VQ_QQD3BDkU",
-        "lecture_ntu": null,
+        "lecture_channel": "臺大演講網",
+        "lecture_ipf": null,
         "guide": null,
         "extra_sessions": []
       },
@@ -1856,7 +1892,8 @@
       },
       "video": {
         "lecture": "BHLS1ogT6tE",
-        "lecture_ntu": null,
+        "lecture_channel": "臺大演講網",
+        "lecture_ipf": null,
         "guide": null,
         "extra_sessions": []
       },
@@ -1905,7 +1942,8 @@
       },
       "video": {
         "lecture": "qgfcB-rGOcg",
-        "lecture_ntu": null,
+        "lecture_channel": "臺大演講網",
+        "lecture_ipf": null,
         "guide": null,
         "extra_sessions": []
       },
@@ -1952,7 +1990,8 @@
       },
       "video": {
         "lecture": "sO6UQ214N88",
-        "lecture_ntu": null,
+        "lecture_channel": "臺大演講網",
+        "lecture_ipf": null,
         "guide": null,
         "extra_sessions": []
       },

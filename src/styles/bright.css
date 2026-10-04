@@ -448,7 +448,7 @@ html[data-theme='bright'] :is(.bh__lockup .bh__title, .gr__lock-name)::before {
   translate: -50% -54.3%;
   inline-size: 150%;
   aspect-ratio: 2136 / 342;
-  background: url('/assets/ui/name-plate.webp') center / 100% 100% no-repeat;
+  background: url('../assets/ui/name-plate.webp') center / 100% 100% no-repeat;
   pointer-events: none;
 }
 /* A phone has no gutter to spare: at 150% a quarter of the name hangs past
@@ -802,7 +802,7 @@ html[data-theme='bright'] .topbar--ghost .topbar__nav::before {
    across and 11.9% to 79.3% down, so at 100% 100% a key's own padding lands
    inside the rule at every width the five labels take in either language. */
 html[data-theme='bright'] .topbar__nav :is(.topbar__key, .topbar__menu, .museum-glass-btn--nav):not(.ss__key) {
-  background: url('/assets/ui/key-plate.webp') center / 100% 100% no-repeat;
+  background: url('../assets/ui/key-plate.webp') center / 100% 100% no-repeat;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   box-shadow: none;
@@ -933,7 +933,7 @@ html[data-theme='bright'] .topbar__nav :is(.topbar__key, .museum-glass-btn--nav)
      the plate is the element's own background. The plate is warm gold rather
      than dark, so the label stays the museum's own red — measured on the new
      artwork, not assumed. */
-  background: url('/assets/ui/key-plate-on.webp') center / 100% 100% no-repeat;
+  background: url('../assets/ui/key-plate-on.webp') center / 100% 100% no-repeat;
   color: var(--red-deep);
 }
 /* It stays the current key under a finger. The bar's hover is a single
@@ -1543,7 +1543,7 @@ html[data-theme='bright'] .vf {
      26px radius, and `border-image-width: 1` scales the whole thing off
      border-width, which is why the radius below is that ratio and not a
      number. */
-  border-image: url('/assets/ui/glass-frame.webp') 30 / 1 / 0 stretch;
+  border-image: url('../assets/ui/glass-frame.webp') 30 / 1 / 0 stretch;
   border-radius: calc(var(--rim) * 0.867);
   background: rgba(255, 255, 255, 0.10);
   /* Liquid glass is not frosted glass: what is behind it stays legible. Two
@@ -1671,7 +1671,7 @@ html[data-theme='bright'] .after .feature__text {
   --rim: clamp(14px, 1.9vw, 22px);
   padding: 0;
   border: var(--rim) solid rgba(255, 255, 255, 0.55);
-  border-image: url('/assets/ui/glass-frame.webp') 30 / 1 / 0 stretch;
+  border-image: url('../assets/ui/glass-frame.webp') 30 / 1 / 0 stretch;
   border-radius: calc(var(--rim) * 0.867);
   background: rgba(255, 255, 255, 0.72);
   backdrop-filter: blur(3px) saturate(1.5);
@@ -1720,7 +1720,7 @@ html[data-theme='bright'] .after .feature__grid {
   --rim: clamp(2px, 0.24vw, 3px);
   padding: clamp(0.85rem, 2vw, 1.5rem);
   border: var(--rim) solid rgba(255, 255, 255, 0.6);
-  border-image: url('/assets/ui/glass-frame.webp') 30 / 1 / 0 stretch;
+  border-image: url('../assets/ui/glass-frame.webp') 30 / 1 / 0 stretch;
   border-radius: 1.15rem;
   background: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(3px) saturate(1.6);

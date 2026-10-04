@@ -20,7 +20,7 @@ COLUMNS = [
     "id", "status", "series", "laureate_en", "laureate_zh", "category", "prize_year",
     "affiliation", "country", "date", "host_key", "title_en", "title_zh",
     "hook_zh", "hook_en", "summary_zh", "summary_en", "topic_tags",
-    "yt_lecture", "yt_lecture_ntu", "yt_guide", "extra_sessions", "interviews",
+    "yt_lecture", "lecture_channel", "yt_lecture_ipf", "yt_guide", "extra_sessions", "interviews",
     "nobel_facts", "instagram", "ntu_epaper", "ntu_spotlight",
 ]
 
@@ -46,7 +46,8 @@ def rows():
             "summary_en": r["description"]["en"],
             "topic_tags": " | ".join(r["topic_tags"]),
             "yt_lecture": r["video"]["lecture"] or "",
-            "yt_lecture_ntu": r["video"]["lecture_ntu"] or "",
+            "lecture_channel": r["video"].get("lecture_channel") or "",
+            "yt_lecture_ipf": r["video"].get("lecture_ipf") or "",
             "yt_guide": r["video"]["guide"] or "",
             "extra_sessions": " | ".join(f'{s["id"]}::{s["label"]}' for s in r["video"]["extra_sessions"]),
             "interviews": " | ".join(f'{i["source"]}::{i["id"]}' for i in r["interviews"]),

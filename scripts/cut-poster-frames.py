@@ -64,10 +64,10 @@ YTDLP = shutil.which('yt-dlp') or 'yt-dlp'
 #: better picture of the session than the best of four thumbnails either way,
 #: so these are done as well as the ones with nothing at all.
 FLAGGED = {
-    'WlxbaXqWXAs',   # Stiglitz — the lecture
+    'WlxbaXqWXAs',   # Stiglitz — the lecture (IPF; still what the page plays, no host upload)
     'yAL6mkgehbg',   # Roberts — the CommonWealth interview
     'GoVWwoxZZ2A',   # Roberts — the Storm interview
-    'yhZhymmeaso',   # Frank — the lecture
+    'yhZhymmeaso',   # Frank — the IPF upload; dormant since 2026-10-04, the page plays pfNkuYxhgfM
 }
 
 #: Where in the recording to look. Not the opening, which is the host and the

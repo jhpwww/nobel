@@ -33,7 +33,7 @@ import pathlib
 from PIL import Image
 
 HERE = pathlib.Path(__file__).resolve().parent.parent
-OUT = HERE / 'public/assets/ui'
+OUT = HERE / 'src/assets/ui'   # bundled by Vite and named in bright.css by relative url(); not public/, whose root paths the dev server does not rebase
 
 #: the rim at its design size, in CSS px, and the corner radius that goes with
 #: it. Everything scales together off border-width, so these are a ratio as
