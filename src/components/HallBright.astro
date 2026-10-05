@@ -859,25 +859,16 @@ const PLATE = { w: 836, h: 470 };
 </style>
 
 <script>
-  import { motionOn } from '../scripts/motion';
   import { dressPlinths } from '../scripts/plinth';
   import '../../vendor/model-viewer.min.js';
 
-  /* The turn is an animation in the model now, not auto-rotate — auto-rotate
-     moves the camera, which swings the plinth round with the piece. So the
-     motion switch plays and pauses rather than adding and removing it. */
-  const viewers = [...document.querySelectorAll<HTMLElement & {
-    play?: () => void; pause?: () => void;
-  }>('.bh__mv')];
-  function applyRotation() {
-    const on = motionOn();
-    for (const v of viewers) {
-      if (on) { v.setAttribute('autoplay', ''); v.play?.(); }
-      else { v.removeAttribute('autoplay'); v.pause?.(); }
-    }
-  }
-  applyRotation();
-  addEventListener('motionpref', applyRotation);
+  /* The turn is an animation in the model, not auto-rotate — auto-rotate
+     moves the camera, which swings the plinth round with the piece — and it
+     plays from the `autoplay` in the markup. It used to be paused here when
+     the visitor's system asked for reduced motion; the prize rooms and the
+     laureates' pages never paused theirs, so the six stood still in the hall
+     and turned one door further in. At the owner's word (2026-10-05) they
+     turn everywhere, whatever the setting. */
 
   /**
    * The pieces step back, once.

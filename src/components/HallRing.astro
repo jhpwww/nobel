@@ -170,7 +170,17 @@ const still = (id: string, yt: string) =>
     50%  { opacity: 0.32; }
     100% { opacity: 0.96; }
   }
-  :global(html[data-motion='off']) .hr__pane { animation: none; opacity: 0.7; }
+  /* No reduced-motion exception, for the panes or the ring: at the owner's
+     word (2026-10-05) the hall turns whatever the visitor's system setting,
+     as the gold pieces do on every page. global.css stops every animation
+     under data-motion='off' with !important, so the ring and its panes take
+     their duration and repeat back here, more specifically and also
+     !important. */
+  :global(html[data-motion='off']) .hr__ring,
+  :global(html[data-motion='off']) .hr__pane {
+    animation-duration: var(--dur) !important;
+    animation-iteration-count: infinite !important;
+  }
 
   /* ---------- and it withdraws with the pieces ----------
      The room is fixed for the whole document, so without this the ring goes on
@@ -197,9 +207,6 @@ const still = (id: string, yt: string) =>
        left to lighten. */
     opacity: 0.92;
   }
-
-  /* Someone who has asked for less motion gets the ring standing still. */
-  :global(html[data-motion='off']) .hr__ring { animation: none; }
 
   /* ---------- the phone ----------
      The plate is a 220px band and the pieces already fill it, so the ring goes
