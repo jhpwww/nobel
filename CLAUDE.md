@@ -34,6 +34,11 @@ These are decided. Do not reopen them, and do not let a tidy-up quietly reverse 
   the university's centenary mark** — `public/ntu-logo-100.png` (+ `@2x`), cut from the
   owner's `assets-src/marks/NTU-logo_100.png` — in place of the round crest, at a width that
   keeps its lettering legible (`.foot__crest--wide`). The bar keeps the round crest.
+- **The site's icon is the university's crest** (2026-10-05): `public/favicon.svg` (what
+  every page links — an SVG wrapping a 128px palette PNG, so no page had to change),
+  `public/favicon.ico` (16/32/48/64) and `public/apple-touch-icon.png` (180, on white), all
+  made by `scripts/make-favicon.py` from the owner's `assets-src/marks/NTU_logo-ch_1200.png`.
+  Regenerate with the script; do not hand-edit the three.
 - **Every change ships to the running dev server (`npm run dev`, port 4322, at
   `/nobel/`) and to GitHub Pages in the same turn**,
   and is reported with three readings, not a claim: a clean `git status`,
