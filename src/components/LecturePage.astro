@@ -231,9 +231,12 @@ const piece = bright ? {
             <div class="lec__sessions">
               <h4 class="lec__h4">{t('lec.session')}</h4>
               <div class="lec__row">
+                {/* a sitting with a subject of its own names it over the
+                    frame: Südhof's second day was a panel on drug
+                    development, not the keynote this page is titled for */}
                 {rec.video.extra_sessions.map((s) => (
-                  <VideoFacade id={s.id} title={`${rec.title.en} — ${s.label}`} label={s.label}
-                               playHint={t('lec.playHint')} />
+                  <VideoFacade id={s.id} title={`${s.title?.en ?? rec.title.en} — ${s.label}`} label={s.label}
+                               note={s.title?.[lang]} playHint={t('lec.playHint')} />
                 ))}
               </div>
             </div>

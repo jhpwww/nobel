@@ -126,6 +126,14 @@ def add(kind, who_zh, who_en, title, date, where, cur, old, note, new=False):
     fills.append(upd_fill if updated else new_fill if new else None)
     if updated: replaced.append((kind, who_zh, who_en, title, date, where, cur, old))
 
+# Titles corrected on 2026-10-05 after the assistant's check against the
+# recordings (see seed-catalog.py, title_en): what the sheet showed before.
+TITLE_FIXED = {
+    "sudhof": "講題已更正：原列「Drug development for neurodegenerative diseases…」是 1/6 座談的題目（見下一列）；1/5 主題演講依 IPF 影片說明",
+    "haroche": "講題已更正：原列「New developments and applications in laser science and quantum optics, electronics and computing」，改依中研院影片的講題",
+    "kajita": "講題已更正：原列「The importance of science for peacebuilding」，改依中研院影片的講題",
+}
+
 for r in cat["lectures"]:
     v = r["video"]; who = (r["laureate"]["zh"], r["laureate"]["en"]); host = r["event"]["host_zh"]; date = r["event"]["date"]
     if v.get("guide"):
@@ -138,9 +146,13 @@ for r in cat["lectures"]:
         kind, handle = kind_of(v["lecture"]); note = f"改播主辦單位頻道（{kind}，{handle}）；細節見「已更換連結」頁"
     elif r["id"] in NO_UPLOAD:
         note = f"維持 IPF 版：{NO_UPLOAD[r['id']]}"
+    if r["id"] in TITLE_FIXED:
+        note = "；".join(x for x in (note, TITLE_FIXED[r["id"]]) if x)
     add("講座", *who, r["title"]["en"], date, host, v["lecture"], v.get("lecture_ipf"), note)
     for s in v.get("extra_sessions", []):
-        add("講座（第二天）", *who, f"{r['title']['en']}（{s['label']}）", date, host, s["id"], None, "維持 IPF 版（主辦單位無上傳）")
+        t = s.get("title", {}).get("en") or r["title"]["en"]
+        add("講座（第二天）", *who, f"{t}（{s['label']}）", s.get("date", date), host, s["id"], None,
+            "維持 IPF 版（主辦單位無上傳）" + ("；講題為當天座談自己的題目（IPF 影片說明）" if s.get("title") else ""))
     for iv in r["interviews"]:
         kind, handle = kind_of(iv["id"])
         add(f"專訪（{iv['source_zh']}）", *who, m(iv["id"], "title"), date, f"{iv['source_zh']}（{handle}）", iv["id"], iv.get("id_ipf"),

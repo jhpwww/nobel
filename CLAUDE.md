@@ -249,6 +249,16 @@ src/
   picks the hall's six turning panels by `event.host_key === 'NTU'`, not by a field. Every
   change of a lecture id is a change of poster frame — run `scripts/pick-posters.py` and, for
   any id it cannot verify, `scripts/cut-poster-frames.py --only`, both locally.
+- **A lecture's title is the talk as delivered**, not as the programme book announced it:
+  the host's own page or upload (title or "Topic:" line), else the IPF upload's description
+  ("keynote speech on ..."). Three were wrong until 2026-10-05 (the owner's assistant found
+  them): Südhof's 5 Jan keynote carried the title of the 6 Jan panel, Haroche's and Kajita's
+  the programme's. A second sitting with its own subject carries `title` {en, zh} and `date`
+  on its `extra_sessions` entry (English in `EXTRA_SESSIONS`, Chinese in `SESSION_ZH` in
+  `copy-zh-en.py`); the page shows it over the frame and its card in 「所有影片」 uses it in
+  place of the lecture's. When a title changes, the summary in `copy-zh-en.py` must still
+  describe THAT talk — check it — and `scripts/link-change-sheet.py` notes the change in
+  `TITLE_FIXED`. A shortened form of the same title (thooft) is not a different talk.
 - A record outside 臺灣橋樑計畫 has no `cw_hub` (天下's hub covers the programme) and no 導讀;
   both are guarded in `LecturePage`, and an unguarded `ExtLink` with no href renders as a button
   that does nothing. The study panel is on EVERY lecture page, both collections, at the owner's

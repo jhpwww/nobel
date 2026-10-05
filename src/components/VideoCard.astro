@@ -38,9 +38,10 @@ const source = lang === 'zh' ? v.sourceZh : v.sourceEn;
    one person's job title written into this file, which meant every future
    record would have printed it — and with the NTU collection arriving that
    would have put 「世界和平基金會主席」 under four Nobel laureates. */
-const sub = v.lecture
+/* a sitting with a subject of its own says so, not the lecture's title */
+const sub = (lang === 'zh' ? v.titleZh : v.titleEn) ?? (v.lecture
   ? (v.lecture.title[lang === 'zh' ? 'zh' : 'en'] ?? v.lecture.title.en)
-  : (lang === 'zh' ? v.roleZh : v.roleEn) ?? '';
+  : (lang === 'zh' ? v.roleZh : v.roleEn) ?? '');
 /* The series a recording was given in, where it belongs to the NTU collection
    rather than to 臺灣橋樑計畫 — the card's own way of saying which of the
    museum's two collections it came out of. */

@@ -429,7 +429,7 @@
         "city": "Taichung"
       },
       "title": {
-        "en": "Drug development for neurodegenerative diseases: towards cheaper and more sustainable treatment",
+        "en": "Scientific excellence and scientific integrity: A personal journey",
         "zh": null
       },
       "description": {
@@ -444,7 +444,12 @@
         "extra_sessions": [
           {
             "id": "6sh75WDdREs",
-            "label": "Day 2 · 2026-01-06"
+            "label": "Day 2 · 2026-01-06",
+            "date": "2026-01-06",
+            "title": {
+              "en": "Drug development for neurodegenerative diseases: towards cheaper and more sustainable treatment",
+              "zh": null
+            }
           }
         ]
       },
@@ -652,7 +657,7 @@
         "city": "Taipei"
       },
       "title": {
-        "en": "New developments and applications in laser science and quantum optics, electronics and computing",
+        "en": "The Laser and Quantum Physics",
         "zh": null
       },
       "description": {
@@ -1549,7 +1554,7 @@
         "city": "Taipei"
       },
       "title": {
-        "en": "The importance of science for peacebuilding",
+        "en": "International Collaboration in Basic Science – From My Experience",
         "zh": null
       },
       "description": {

@@ -49,7 +49,11 @@ def rows():
             "lecture_channel": r["video"].get("lecture_channel") or "",
             "yt_lecture_ipf": r["video"].get("lecture_ipf") or "",
             "yt_guide": r["video"]["guide"] or "",
-            "extra_sessions": " | ".join(f'{s["id"]}::{s["label"]}' for s in r["video"]["extra_sessions"]),
+            # id::label::date, and ::title_en::title_zh where the sitting had its own subject
+            "extra_sessions": " | ".join(
+                "::".join([s["id"], s["label"], s.get("date", "")]
+                          + ([s["title"]["en"], s["title"]["zh"]] if s.get("title") else []))
+                for s in r["video"]["extra_sessions"]),
             "interviews": " | ".join(f'{i["source"]}::{i["id"]}' for i in r["interviews"]),
             "nobel_facts": r["links"]["nobel_facts"],
             "instagram": r["links"].get("instagram", ""),

@@ -50,6 +50,16 @@ def merge_copy(records, table, what):
 
 
 merge_copy(cat["lectures"], copy.COPY, "lecture")
+
+# A session with a subject of its own takes its Chinese from SESSION_ZH.
+for rec in cat["lectures"] + cat.get("ntu_lectures", []):
+    for s in rec["video"]["extra_sessions"]:
+        if "title" not in s:
+            continue
+        zh = copy.SESSION_ZH.get(s["id"])
+        if not zh:
+            errors.append(f"session {rec['id']}/{s['id']}: no SESSION_ZH")
+        s["title"]["zh"] = zh
 merge_copy(cat.get("ntu_lectures", []), copy.NTU_COPY, "ntu")
 
 # Two collections, one museum, and the ids must never collide: a lecture page

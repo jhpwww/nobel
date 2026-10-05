@@ -125,7 +125,11 @@ body.forEach((cells, n) => {
       lecture_channel: g('lecture_channel') || null,
       lecture_ipf: g('yt_lecture_ipf') || null,
       guide: g('yt_guide') || null,
-      extra_sessions: list(g('extra_sessions')).map((s) => { const [i2, label] = pair(s); return { id: i2, label }; }),
+      /* id::label::date, then ::title_en::title_zh where the sitting had its own subject */
+      extra_sessions: list(g('extra_sessions')).map((s) => {
+        const [i2, label, date, en, zh] = s.split('::').map((x) => x.trim());
+        return { id: i2, label, ...(date ? { date } : {}), ...(en && zh ? { title: { en, zh } } : {}) };
+      }),
     },
     interviews: list(g('interviews')).map((s) => {
       const [src, vid] = pair(s);

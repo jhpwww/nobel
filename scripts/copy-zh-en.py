@@ -100,11 +100,11 @@ COPY = {
   tags=["economics", "education-career"]),
 
 "sudhof": dict(
-  title_zh="神經退化性疾病的藥物開發：邁向更便宜、更可持續的治療",
+  title_zh="科學卓越與科學誠信：一段個人歷程",
   hook_zh="神經之間傳遞訊號，只有千分之一秒的餘裕。",
   hook_en="Nerve cells pass a signal with a millisecond to spare.",
-  summary_zh="聚德霍夫解開了神經細胞之間精確傳遞訊號（synaptic transmission）的機制。這場演講談的是阿茲海默症（Alzheimer's disease）與帕金森氏症（Parkinson's disease）等神經退化疾病（neurodegenerative diseases）的用藥困境：藥要開發得出來，也要負擔得起、供得上。",
-  summary_en="Südhof worked out how nerve cells pass signals to one another with millisecond precision. This lecture concerns the harder part of treating neurodegenerative diseases such as Alzheimer's and Parkinson's: a drug must not only exist but be affordable and sustainable to supply.",
+  summary_zh="聚德霍夫解開了神經細胞之間精確傳遞訊號（synaptic transmission）的機制。這場主題演講從他自己的研究歷程出發，談科學上的卓越（scientific excellence）與研究誠信（scientific integrity）。翌日的座談則轉向阿茲海默症（Alzheimer's disease）與帕金森氏症（Parkinson's disease）等神經退化疾病的用藥：藥要開發得出來，也要負擔得起、供得上。",
+  summary_en="Südhof worked out how nerve cells pass signals to one another with millisecond precision. In this keynote he speaks from his own career about scientific excellence and scientific integrity. The next day's panel turned to drugs for neurodegenerative diseases such as Alzheimer's and Parkinson's, which must not only exist but be affordable and sustainable to supply.",
   tags=["life-science", "medicine-clinical", "ethics-responsibility"]),
 
 "ciechanover": dict(
@@ -132,11 +132,11 @@ COPY = {
   tags=["economics", "ethics-responsibility", "peace-society"]),
 
 "haroche": dict(
-  title_zh="雷射科學與量子光學、電子學及運算的新發展與應用",
+  title_zh="雷射與量子物理",
   hook_zh="看見單顆光子，而沒有毀掉它。",
   hook_en="Seeing a single photon without destroying it.",
-  summary_zh="測量量子系統通常會摧毀它。阿羅什設計出方法，能反覆觀測被困住的單顆光子（photon）而不將其破壞，量子世界的行為因此第一次被直接看見。他由此談雷射（laser）、量子光學（quantum optics）與量子運算（quantum computing）的走向。",
-  summary_en="Measuring a quantum system usually destroys it. Haroche devised a way to observe a single trapped photon repeatedly without wrecking it, making quantum behaviour directly visible for the first time. From there he looks at lasers, quantum optics and quantum computing.",
+  summary_zh="測量量子系統通常會摧毀它。阿羅什設計出方法，能反覆觀測被困住的單顆光子（photon）而不將其破壞，量子世界的行為因此第一次被直接看見。在量子物理誕生一百年之際，他回顧雷射（laser）的來歷，從愛因斯坦的受激輻射（stimulated emission）談到原子冷卻、重力波偵測與量子運算（quantum computing）。",
+  summary_en="Measuring a quantum system usually destroys it. Haroche devised a way to observe a single trapped photon repeatedly without wrecking it, making quantum behaviour directly visible for the first time. A century after quantum physics began, he traces the laser from Einstein's stimulated emission to the cooling of atoms, the detection of gravitational waves and quantum computing.",
   tags=["physics-fundamental", "ai-computation", "method-discovery"]),
 
 "schmidt": dict(
@@ -268,7 +268,7 @@ COPY = {
   tags=["chemistry-molecular", "medicine-clinical", "method-discovery"]),
 
 "kajita": dict(
-  title_zh="科學對建立和平的重要性",
+  title_zh="基礎科學的國際合作：從我的經驗談起",
   hook_zh="每一秒，數以兆計的微中子穿過人體。",
   hook_en="Trillions of neutrinos pass through a body every second.",
   summary_zh="梶田隆章證明微中子（neutrino）在飛行途中會改變身分（neutrino oscillation，微中子振盪），這代表它們具有質量，而粒子物理原先假設沒有。這項結果需要跨國、跨世代的合作才可能完成，也是他在此談論的主題。",
@@ -283,6 +283,14 @@ COPY = {
   summary_en="Frank developed the image processing that combines thousands of blurred electron-microscope pictures into one sharp three-dimensional structure. With flash-freezing — cryo-electron microscopy — proteins could be seen close to their natural state for the first time.",
   tags=["chemistry-molecular", "medicine-clinical", "method-discovery"]),
 }
+# Chinese for a same-event session that had its own subject, keyed by its
+# YouTube id — seed-catalog.py EXTRA_SESSIONS carries the English. Südhof's
+# second day was a panel on drug development; the page's title is the 5th's
+# keynote. build-catalog.py fails on a titled session with no entry here.
+SESSION_ZH = {
+  "6sh75WDdREs": "神經退化性疾病的藥物開發：邁向更便宜、更可持續的治療",
+}
+
 # ---------------------------------------------------------------------------
 # 臺大「諾貝爾獎得主講座」 — copy for the museum's second collection.
 #

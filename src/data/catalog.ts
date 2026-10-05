@@ -39,7 +39,10 @@ export interface Lecture {
         the host published one. Not rendered. Null for the NTU collection. */
     lecture_ipf: string | null;
     guide: string | null;
-    extra_sessions: { id: string; label: string }[];
+    /** a second sitting of the same event; `title` where it had a subject of
+        its own — Südhof's second day was a panel on drug development, not
+        the 5th's keynote the page is titled for */
+    extra_sessions: { id: string; label: string; date?: string; title?: { en: string; zh: string } }[];
   };
   /** `id` is the medium's own upload (天下雜誌 / 風傳媒); `id_ipf` the IPF channel's
       copy the site played until 2026-10-04, kept for provenance, not rendered */
@@ -333,6 +336,9 @@ export interface VideoItem {
   altOf?: string;
   /** which sitting this is, where a lecture was given more than once */
   sessionLabel?: string;
+  /** the sitting's own subject, where it is not the lecture's */
+  titleZh?: string;
+  titleEn?: string;
 }
 
 export function videoList(): VideoItem[] {
@@ -352,7 +358,12 @@ export function videoList(): VideoItem[] {
        watch — see 'A lecture, and a sitting' above. */
     if (l.video.lecture) out.push({ key: `${l.id}-lecture`, yt: l.video.lecture, kind: 'lecture', ...base });
     for (const s of l.video.extra_sessions) {
-      out.push({ key: `${l.id}-${s.id}`, yt: s.id, kind: 'lecture', sessionLabel: s.label, ...base });
+      out.push({
+        key: `${l.id}-${s.id}`, yt: s.id, kind: 'lecture', sessionLabel: s.label, ...base,
+        /* its own day, not the lecture's: Südhof's panel was the 6th */
+        ...(s.date ? { date: s.date } : {}),
+        ...(s.title ? { titleZh: s.title.zh, titleEn: s.title.en } : {}),
+      });
     }
     for (const iv of l.interviews) {
       out.push({

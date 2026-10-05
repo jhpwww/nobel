@@ -4,6 +4,16 @@ seed-catalog.py — builds data/catalog.json from hand-verified source data.
 
 Provenance of every field:
   schedule .............. 導讀拍攝進度 PDF (IPF programme), cross-checked against YouTube titles
+  title_en .............. the talk as DELIVERED: the host's own page or upload (its title or
+                          "Topic:" line), else the IPF upload's description ("keynote speech
+                          on ..."), over the programme book's announced title where they name a
+                          different talk. Corrected 2026-10-05 from the owner's assistant's
+                          check: sudhof (the programme's title was the next day's panel),
+                          haroche, kajita. Checked the same day against all 63 recordings:
+                          thooft's IPF description shortens the title ("Fundamental science as
+                          bridges between nations") — same talk, kept; semenza's IPF
+                          description differs but NCKU's own upload, which the page plays,
+                          gives the title used here — the host wins
   yt_lecture ............ the recording the page plays: the HOST's own upload where the host
                           published one (HOST_UPLOAD, 22 of 31 as of 2026-10-04 — 臺大演講網,
                           中央研究院, 清大學習科技組, 成大, 東海), otherwise the International
@@ -55,7 +65,7 @@ L = [
  (8,"maskin","Prof. Eric S. Maskin","艾瑞克‧馬斯金","economics",2007,"Harvard University","USA",
   "2025-12-15","NTU","Why globalization has failed to reduce inequality","Vaftz_NrTww","economic-sciences/2007/maskin"),
  (9,"sudhof","Prof. Thomas C. Südhof","湯瑪斯‧聚德霍夫","medicine",2013,"Stanford University","USA",
-  "2026-01-05","AU","Drug development for neurodegenerative diseases: towards cheaper and more sustainable treatment","BaeZY-6cwDk","medicine/2013/sudhof"),
+  "2026-01-05","AU","Scientific excellence and scientific integrity: A personal journey","BaeZY-6cwDk","medicine/2013/sudhof"),
  (10,"ciechanover","Prof. Aaron Ciechanover","亞倫‧切哈諾沃","chemistry",2004,"Israel Institute of Technology","Israel",
   "2026-01-09","CMU","Personalized medicine revolution: Are we going to cure all diseases and at what price?","m14M1uLkFFU","chemistry/2004/ciechanover"),
  (11,"strickland","Prof. Donna Strickland","唐娜‧史崔克蘭","physics",2018,"University of Waterloo","Canada",
@@ -63,7 +73,7 @@ L = [
  (12,"stiglitz","Prof. Joseph E. Stiglitz","約瑟夫‧史迪格里茲","economics",2001,"Columbia University","USA",
   "2026-01-13","YKH","The road to freedom: economics and the good society","WlxbaXqWXAs","economic-sciences/2001/stiglitz"),
  (13,"haroche","Prof. Serge Haroche","塞爾日‧阿羅什","physics",2012,"Collège de France","France",
-  "2026-01-16","AS","New developments and applications in laser science and quantum optics, electronics and computing","JrkyzmChFjI","physics/2012/haroche"),
+  "2026-01-16","AS","The Laser and Quantum Physics","JrkyzmChFjI","physics/2012/haroche"),
  (14,"schmidt","Prof. Brian P. Schmidt","布萊恩‧施密特","physics",2011,"Australian National University","Australia",
   "2026-01-19","NCHU","Science: Humanity's universal bridge","il_Wkv2Maaw","physics/2011/schmidt"),
  (15,"mayor","Prof. Michel Mayor","米歇爾‧麥耶","physics",2019,"University of Geneva","Switzerland",
@@ -97,7 +107,7 @@ L = [
  (29,"kobilka","Prof. Brian K. Kobilka","布萊恩‧科比爾卡","chemistry",2012,"Stanford University","USA",
   "2026-04-21","NTHU","The new era in drug development","DEURLJp2AUI","chemistry/2012/kobilka"),
  (30,"kajita","Prof. Takaaki Kajita","梶田隆章","physics",2015,"University of Tokyo","Japan",
-  "2026-04-23","AS","The importance of science for peacebuilding","uWHIUdjWnGc","physics/2015/kajita"),
+  "2026-04-23","AS","International Collaboration in Basic Science – From My Experience","uWHIUdjWnGc","physics/2015/kajita"),
  (31,"frank","Prof. Joachim Frank","約阿希姆‧法蘭克","chemistry",2017,"Columbia University","USA",
   "2026-05-06","NTU","Cryo-electron microscopy, a new foundation for molecular medicine and drug design","yhZhymmeaso","chemistry/2017/frank"),
 ]
@@ -159,8 +169,13 @@ HOST_UPLOAD = {
  "schmidt":    ("MPtbINlLeDc", "NCHU"),   # 惠蓀講座 176, description dates it 115年1月19日
 }
 
-# Extra same-event sessions
-EXTRA_SESSIONS = {"sudhof":[("6sh75WDdREs","Day 2 · 2026-01-06")]}
+# Extra same-event sessions: the youtube id, the label, the day it was held,
+# and the session's own title where it had one. Südhof's second day was a
+# panel with its own subject — the IPF upload's description names it — and the
+# title the page carries is the 5th's keynote, so the panel names itself and
+# its card carries its own day. Chinese in copy-zh-en.py SESSION_ZH.
+EXTRA_SESSIONS = {"sudhof":[dict(id="6sh75WDdREs", label="Day 2 · 2026-01-06", date="2026-01-06",
+    title_en="Drug development for neurodegenerative diseases: towards cheaper and more sustainable treatment")]}
 
 # (source, the media's OWN upload the page plays, the IPF channel's copy).
 # The interviews were made by 天下雜誌 and 風傳媒; the IPF channel re-posted
@@ -389,7 +404,9 @@ def build():
                 "lecture_channel": CHANNEL[HOST_UPLOAD[lid][1] if lid in HOST_UPLOAD else "IPF"],
                 "lecture_ipf": yt,
                 "guide": GUIDE.get(lid),
-                "extra_sessions": [{"id": v, "label": lab} for v, lab in EXTRA_SESSIONS.get(lid, [])],
+                "extra_sessions": [{"id": x["id"], "label": x["label"], "date": x["date"],
+                                    **({"title": {"en": x["title_en"], "zh": None}} if x.get("title_en") else {})}
+                                   for x in EXTRA_SESSIONS.get(lid, [])],
             },
             "interviews": [
                 {"source": s, "source_en": INTERVIEW_SRC[s]["en"], "source_zh": INTERVIEW_SRC[s]["zh"],
