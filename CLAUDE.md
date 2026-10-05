@@ -38,7 +38,9 @@ These are decided. Do not reopen them, and do not let a tidy-up quietly reverse 
   every page links — an SVG wrapping a 128px palette PNG, so no page had to change),
   `public/favicon.ico` (16/32/48/64) and `public/apple-touch-icon.png` (180, on white), all
   made by `scripts/make-favicon.py` from the owner's `assets-src/marks/NTU_logo-ch_1200.png`.
-  Regenerate with the script; do not hand-edit the three.
+  Regenerate with the script; do not hand-edit the three. `favicon.svg` must stay ASCII:
+  it declares no encoding and the server sends none, and a Han comment in it once showed as
+  an XML "Encoding error" in a browser that had decoded a cached copy as Big5.
 - **Every change ships to the running dev server (`npm run dev`, port 4322, at
   `/nobel/`) and to GitHub Pages in the same turn**,
   and is reported with three readings, not a claim: a clean `git status`,
