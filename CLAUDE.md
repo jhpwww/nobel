@@ -505,7 +505,8 @@ confirmation and loses every note on reload.
 `匯出繳交` in `StudyDesk` makes one file from what the student ticks (saved lectures × the
 three stages), named for 學號 / 姓名 / minute (`fileName()` in `study.ts`), saved through
 `showSaveFilePicker` where it exists and by `<a download>` where it does not (no confirm — the
-status line says where it went). Rules:
+status line says where it went). The dialog opens at `startIn: 'downloads'`, with no `id`, so
+every file the study pages give starts in the same folder (owner's request, 2026-10-05). Rules:
 
 - `src/scripts/trace.ts` keeps, per lecture and field, how the text arrived — a few characters
   at a time (typed), by paste (count and largest), or in one trusted burst of 40+ with no key

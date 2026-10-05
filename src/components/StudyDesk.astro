@@ -1071,6 +1071,12 @@ const index = all.map((l) => ({
       try {
         return await picker.call(window, {
           suggestedName: name,
+          /* opened at the downloads folder, where every other file this page
+             gives — a lecture's .txt, the backup — already lands; left to
+             itself Chrome opens at Documents. No `id` with it: an id's
+             remembered folder would win over this, and the point is the
+             same place every time. The student can still go elsewhere. */
+          startIn: 'downloads',
           types: [{ description: 'Text', accept: { 'text/plain': ['.txt'] } }],
         });
       } catch (err) {
