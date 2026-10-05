@@ -153,6 +153,14 @@ export function extract(html, url) {
   const visit = (el) => {
     const tag = el.tagName?.toLowerCase();
     if (!tag) return;
+    /* a page may say where a new part begins without a heading to say it:
+       a laureate's page lists every talk at its head, and without this the
+       description below would read as part of the LAST talk — Südhof's
+       keynote described under his next day's panel */
+    if (el.hasAttribute?.('data-search-section')) {
+      push();
+      cur = { h: '', a: el.id || nearestAnchor(el, main), x: [] };
+    }
     if (HEADING.has(tag)) {
       push();
       cur = { h: tidy(textOf(el)).replace(/\n/g, ' '), a: el.id || nearestAnchor(el, main), x: [] };

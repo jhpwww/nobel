@@ -41,6 +41,15 @@ These are decided. Do not reopen them, and do not let a tidy-up quietly reverse 
   Regenerate with the script; do not hand-edit the three. `favicon.svg` must stay ASCII:
   it declares no encoding and the server sends none, and a Han comment in it once showed as
   an XML "Encoding error" in a browser that had decoded a cached copy as Big5.
+- **A laureate's page heads itself with everything about its talks, unlabelled**
+  (2026-10-05): the English name, then (Chinese page) the Chinese name, then the institution
+  with no 所屬機構 label, the hook, then every talk — the lecture and any sitting with a
+  subject of its own — each as English title, Chinese title (Chinese page), and one line of
+  day · place (· series) with no 演講日期 / 演講地點 labels. Under 完整講座 every recording
+  is headed by its talk (`heading` on `VideoFacade`): English, plus Chinese on the Chinese
+  page. The English page shows no Chinese, as everywhere else on it. The body below the head
+  is its own search section (`data-search-section`), or the description reads as part of
+  the last talk listed.
 - **Every change ships to the running dev server (`npm run dev`, port 4322, at
   `/nobel/`) and to GitHub Pages in the same turn**,
   and is reported with three readings, not a claim: a clean `git status`,

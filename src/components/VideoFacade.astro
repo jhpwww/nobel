@@ -17,11 +17,15 @@ interface Props {
   title: string;              // accessible label — what will play
   kind?: 'guide' | 'lecture' | 'interview' | 'plain';
   label?: string;             // small caption over the frame
+  /** the talk this recording is, over the frame: English, and the Chinese
+      under it where the page gives one (the 完整講座 videos, the owner's
+      word 2026-10-05) */
+  heading?: { en: string; zh?: string };
   note?: string;
   playHint: string;
   eager?: boolean;
 }
-const { id, title, kind = 'plain', label, note, playHint, eager = false } = Astro.props;
+const { id, title, kind = 'plain', label, heading, note, playHint, eager = false } = Astro.props;
 /*
  * The frame this recording is represented by.
  *
@@ -44,7 +48,16 @@ const { src: poster, hi: posterHi } = still(id);
 ---
 
 <figure class="vf" data-kind={kind}>
-  {note && <figcaption class="vf__note">{note}</figcaption>}
+  {/* One caption, over the frame and on the glass: the talk's title where
+      there is one, and the note under it. A note alone keeps the caption it
+      always had. */}
+  {(heading || note) && (
+    <figcaption class:list={['vf__note', heading && 'vf__note--titled']}>
+      {heading && <span class="vf__title">{heading.en}</span>}
+      {heading?.zh && <span class="gloss vf__title-zh">{heading.zh}</span>}
+      {heading && note ? <span class="vf__aside">{note}</span> : note}
+    </figcaption>
+  )}
   <button
     class="vf__btn"
     type="button"
@@ -198,6 +211,11 @@ const { src: poster, hi: posterHi } = still(id);
     font-size: var(--step--1);
     color: var(--text);
   }
+  /* headed by its talk: the title, its Chinese, then the note, smaller */
+  .vf__note--titled { display: grid; gap: 0.12rem; }
+  .vf__title { font-size: var(--step-0); line-height: 1.4; color: var(--cream); font-weight: 500; }
+  .vf__title-zh { font-size: var(--step--1); }
+  .vf__aside { margin-block-start: 0.2rem; font-size: var(--step--2); color: var(--muted); }
 
   /* the player, built on pointerdown and hidden until the tap completes */
   .vf :global(.vf__frame.is-waiting) {

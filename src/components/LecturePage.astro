@@ -20,7 +20,6 @@ const t = useT(lang);
 
 const cat: CategoryKey = rec.prize.category;
 const catPrize = catPrizeName(cat, lang);
-const date = localDate(rec.event.date, lang, true);
 const host = lang === 'zh' ? rec.event.host_zh : rec.event.host_en;
 /* English is primary for names, as it is for the lecture titles; the Chinese
    rendering sits under it as a gloss. `who` is the plain-text form used for
@@ -39,6 +38,20 @@ const seriesOf = seriesName(rec, lang);
    title's place. Printing it again as a fact would say the same words twice
    on one card. */
 const series = seriesOf === rec.title.en || seriesOf === rec.title.zh ? null : seriesOf;
+
+/* Every talk this page holds, for the head of the page: the lecture itself,
+   then any sitting that had a subject of its own — Südhof's panel the day
+   after his keynote — each with its title in both languages, its day and its
+   place, read as one line and with no labels over them (the owner,
+   2026-10-05). A sitting that was the same talk again adds its day to the
+   lecture's line instead of repeating the title. */
+type Talk = { en: string; zh: string; days: string[] };
+const talks: Talk[] = [{ en: rec.title.en, zh: rec.title.zh, days: [rec.event.date] }];
+for (const s of rec.video.extra_sessions) {
+  if (s.title) talks.push({ en: s.title.en, zh: s.title.zh, days: [s.date ?? rec.event.date] });
+  else if (s.date) talks[0].days.push(s.date);
+}
+const daySep = lang === 'zh' ? '、' : ', ';
 /** NTU 共同教育中心 collects all six NTU lectures and their material */
 const NTU_CGE = 'https://cge.ntu.edu.tw/cl_n_203079.html';
 
@@ -176,16 +189,26 @@ const piece = bright ? {
             <a href={gallery(lang, cat)}>{t('lec.prize', { year: rec.prize.year, category: catPrize })}</a>
           </p>
           <h1 class="lec__who">{rec.laureate.en}</h1>
+          {/* who, then where they work — under the name, after the Chinese
+              rendering of it on the Chinese page, and with no label: a line
+              under a person's name is read as their institution */}
           {lang === 'zh' && <p class="gloss lec__who-zh">{rec.laureate.zh}</p>}
+          <p class="lec__aff">{rec.affiliation.institution}, {rec.affiliation.country}</p>
           <p class="lec__hook">{rec.hook[lang]}</p>
-          <h2 class="lec__title">{rec.title.en}</h2>
-          {lang === 'zh' && <p class="gloss lec__title-zh">{rec.title.zh}</p>}
-          <dl class="lec__facts">
-            <div><dt>{t('lec.date')}</dt><dd>{date}</dd></div>
-            <div><dt>{t('lec.at')}</dt><dd>{host}</dd></div>
-            <div><dt>{t('lec.affiliation')}</dt><dd>{rec.affiliation.institution}, {rec.affiliation.country}</dd></div>
-            {series && <div><dt>{t('lec.series')}</dt><dd>{series}</dd></div>}
-          </dl>
+          {/* every talk, its title, its day and its place, together */}
+          <div class="lec__talks">
+            {talks.map((tk) => (
+              <div class="lec__talk">
+                <h2 class="lec__title">{tk.en}</h2>
+                {lang === 'zh' && <p class="gloss lec__title-zh">{tk.zh}</p>}
+                <p class="lec__when">
+                  {tk.days.map((d, i) => <>{i > 0 && daySep}<time datetime={d}>{localDate(d, lang, true)}</time></>)}
+                  <span class="lec__sep"> · </span>{host}
+                  {series && <><span class="lec__sep"> · </span>{series}</>}
+                </p>
+              </div>
+            ))}
+          </div>
           <ul class="tags" role="list">
             {rec.topic_tags.map((tg) => <li>{tagName(tg, lang)}</li>)}
           </ul>
@@ -195,7 +218,7 @@ const piece = bright ? {
 
     {/* the page's own ground, so the fixed room is wiped by the page rising
         over it rather than showing through the words — see .gr__sheet */}
-    <div class="lec__sheet" data-fade>
+    <div class="lec__sheet" data-fade data-search-section>
     <span id="lec-body" class="gr__anchor"></span>
     <div class="wrap lec__body">
       <div class="lec__main stack" style="--gap:2.5rem">
@@ -223,6 +246,7 @@ const piece = bright ? {
           <h3 id="h-lec" class="lec__h">{t('lec.lecture')}</h3>
           {rec.video.lecture ? (
             <VideoFacade id={rec.video.lecture} title={`${rec.title.en} — ${who}`} kind="lecture"
+                         heading={{ en: rec.title.en, zh: lang === 'zh' ? rec.title.zh : undefined }}
                          note={t('lec.lectureNote')} playHint={t('lec.playHint')} />
           ) : (
             <p class="lec__soon">{t('lec.noVideo')}</p>
@@ -231,13 +255,19 @@ const piece = bright ? {
             <div class="lec__sessions">
               <h4 class="lec__h4">{t('lec.session')}</h4>
               <div class="lec__row">
-                {/* a sitting with a subject of its own names it over the
-                    frame: Südhof's second day was a panel on drug
-                    development, not the keynote this page is titled for */}
-                {rec.video.extra_sessions.map((s) => (
-                  <VideoFacade id={s.id} title={`${s.title?.en ?? rec.title.en} — ${s.label}`} label={s.label}
-                               note={s.title?.[lang]} playHint={t('lec.playHint')} />
-                ))}
+                {/* every recording under 完整講座 is headed by its talk, in
+                    both languages on the Chinese page — a sitting with a
+                    subject of its own by that subject: Südhof's second day was
+                    a panel on drug development, not the keynote this page is
+                    titled for */}
+                {rec.video.extra_sessions.map((s) => {
+                  const tt = s.title ?? rec.title;
+                  return (
+                    <VideoFacade id={s.id} title={`${tt.en} — ${s.label}`} label={s.label}
+                                 heading={{ en: tt.en, zh: lang === 'zh' ? tt.zh : undefined }}
+                                 playHint={t('lec.playHint')} />
+                  );
+                })}
               </div>
             </div>
           )}
@@ -436,18 +466,21 @@ const piece = bright ? {
     font-size: var(--step-3); color: var(--cream); margin-block-start: 0.35rem;
   }
   .lec__who-zh { margin-block-start: 0.1rem; }
+  .lec__aff { margin-block-start: 0.3rem; font-size: var(--step--1); color: var(--muted); }
   .lec__hook {
     font-family: var(--font-hook); font-size: var(--step-1);
     color: var(--accent); line-height: 1.55; margin-block-start: 0.9rem; max-inline-size: 34ch;
   }
-  .lec__title { font-size: var(--step-1); color: var(--text); margin-block-start: 1.1rem; max-inline-size: 46ch; font-weight: 400; }
-  .lec__title-zh { margin-block-start: 0.2rem; max-inline-size: 46ch; }
+  .lec__talks { display: grid; gap: 1.05rem; margin-block-start: 1.1rem; }
+  .lec__title { font-size: var(--step-1); color: var(--text); max-inline-size: 46ch; font-weight: 400; }
+  /* The same measure as the English over it, in rem: 46ch of the gloss's
+     smaller face was two thirds of the title's width, and a long Chinese
+     title broke a line early and left two characters on the next. */
+  .lec__title-zh { margin-block-start: 0.2rem; max-inline-size: min(100%, 34rem); }
+  .lec__when { margin-block-start: 0.35rem; font-size: var(--step--1); color: var(--text); }
+  .lec__sep { color: var(--muted-dim); }
 
-  .lec__facts { display: flex; flex-wrap: wrap; gap: 0 2.5rem; margin-block-start: 1.4rem; }
-  .lec__facts dt { font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted-dim); }
-  .lec__facts dd { margin: 0.1rem 0 0.7rem; font-size: var(--step--1); color: var(--text); }
-
-  .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.4rem 0 0; padding: 0; }
+  .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 1.15rem 0 0; padding: 0; }
   .tags li {
     font-size: 0.7rem; letter-spacing: 0.06em; color: var(--muted);
     border: 1px solid var(--line); border-radius: var(--radius-control); padding: 0.14rem 0.7rem;
