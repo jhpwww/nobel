@@ -124,7 +124,7 @@ export const SKIP_PAGES = /^\/(?:[a-z]{2}\/)?(?:models|room|rotunda|study)\/$/;
  * One page's reading, as sections.
  * @param {string} html
  * @param {string} url  the page's address, as the drawer should link it
- * @returns {{ u: string, t: string, l: string, s: { h: string, a: string, x: string[] }[] } | null}
+ * @returns {{ u: string, t: string, k: string, l: string, s: { h: string, a: string, x: string[] }[] } | null}
  */
 export function extract(html, url) {
   const { document } = parseHTML(html);
@@ -132,8 +132,17 @@ export function extract(html, url) {
   if (!main) return null;
   const l = (document.documentElement.getAttribute('lang') ?? '').toLowerCase().startsWith('en') ? 'en' : 'zh';
   /* the page's own name: the <title> less the museum's, which every page ends
-     with and no search should have to wade through */
-  const t = tidy(document.querySelector('title')?.textContent ?? '').split(' — ')[0];
+     with and no search should have to wade through — or, where the page names
+     itself for the drawer (a laureate's page: data-search-name and -sub on
+     its <article>), that name and the talk on a second line. The name alone
+     is not enough there: Aspect has two pages, Robinson three, Ciechanover
+     two, and every hit on any of them read 'Prof. James A. Robinson'.
+     `k` is whose page it is, which dedupe() counts by. */
+  const named = document.querySelector('[data-search-name]');
+  const k = tidy(named?.getAttribute('data-search-name') ?? '') ||
+    tidy(document.querySelector('title')?.textContent ?? '').split(' — ')[0];
+  const sub = tidy(named?.getAttribute('data-search-sub') ?? '').replace(/\n/g, ' ');
+  const t = sub ? `${k}\n${sub}` : k;
 
   for (const el of main.querySelectorAll(DROP)) el.remove();
 
@@ -168,7 +177,7 @@ export function extract(html, url) {
   };
   for (const child of main.children) visit(child);
   push();
-  return { u: url, t, l, s: sections };
+  return { u: url, t, k, l, s: sections };
 }
 const BLOCKSEL = [...BLOCK].join(',');
 
@@ -195,16 +204,16 @@ export function dedupe(pages) {
   for (const lang of ['zh', 'en']) {
     const mine = pages.filter((p) => p && p.l === lang);
     /* Headings count too, or 'The full lecture' survives on every page as a
-       section with nothing under it. Counted by page TITLE rather than by
-       page: Robinson's three pages carry his name, his prize and his
-       university three times over, and a fourth lecture of his would
+       section with nothing under it. Counted by whose page it is (`k`)
+       rather than by page: Robinson's three pages carry his name, his prize
+       and his university three times over, and a fourth lecture of his would
        otherwise strike all of it off every one of them as boilerplate. */
     const seen = new Map();
     for (const p of mine) {
       const once = new Set(p.s.flatMap((s) => [s.h, ...s.x]).filter(Boolean));
       for (const x of once) {
         if (!seen.has(x)) seen.set(x, new Set());
-        seen.get(x).add(p.t);
+        seen.get(x).add(p.k);
       }
     }
     const count = (x) => seen.get(x)?.size ?? 0;

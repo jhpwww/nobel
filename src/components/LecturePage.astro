@@ -84,7 +84,14 @@ const piece = bright ? {
   segments={['lecture', rec.id]}
   bare={bright}
 >
-  <article class="lec" data-cat={cat}>
+  {/* what the search drawer calls this page: whose talk and which, in the
+      page's language. The <title> carries the English name and title on both
+      museums, and a laureate with more than one record (Aspect, Robinson,
+      Ciechanover) would read as one page several times over without the talk.
+      See extract() in scripts/search-index.mjs. */}
+  <article class="lec" data-cat={cat}
+           data-search-name={lang === 'zh' ? rec.laureate.zh : rec.laureate.en}
+           data-search-sub={rec.title[lang] || rec.title.en}>
     {/* Outside the header, not inside it. .lec__head used to carry
       isolation:isolate — it had to, or the room behind it at z-index:-1 would
       have sunk through the page — and an isolated ancestor caps everything

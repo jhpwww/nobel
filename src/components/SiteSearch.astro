@@ -80,7 +80,11 @@ for (const l of allLectures()) {
   rows.push({
     n: zh ? `${l.laureate.zh}` : l.laureate.en,
     s: zh ? l.title.zh : l.title.en,
-    m: ser ? `${l.prize.year} · ${cat} · ${ser}` : `${l.prize.year} · ${cat}`,
+    /* the series on a line of its own, which the drawer may cut short: in
+       English it runs to 'Raymond Soong Chair Professorship of Distinguished
+       Research', and on one line it took the row and left Aspect's two
+       pages reading 'Prof. Alain As…' and 'From Einstein a…' */
+    m: ser ? `${l.prize.year} · ${cat}\n${ser}` : `${l.prize.year} · ${cat}`,
     h: lectureUrl(lang, l.id),
     g: 'l',
     k: [
@@ -492,6 +496,15 @@ const groups = { l: t('search.groupLaureate'), r: t('search.groupRoom'), p: t('s
     white-space: nowrap;
     letter-spacing: 0.06em;
   }
+  /* The mark may come in two lines — a laureate's year and prize over the
+     series, or a hit's page as whose over which talk — and either second
+     line can be long: Südhof's title, 'Raymond Soong Chair Professorship of
+     Distinguished Research'. On one line it took the row from the name and
+     the talk, which are what tell Aspect's two pages and Robinson's three
+     apart; so the column is held to a width and each line is cut short on
+     its own. */
+  .ss__m { max-inline-size: 15rem; }
+  .ss__m :global(.ss__m-part) { display: block; text-align: end; overflow: hidden; text-overflow: ellipsis; }
   /* One highlight, and the keyboard and the mouse share it: two different
      'current' rows is how a list like this stops being usable. */
   .ss__row[data-on] .ss__hit {
@@ -569,9 +582,19 @@ const groups = { l: t('search.groupLaureate'), r: t('search.groupRoom'), p: t('s
        the one line left showed fourteen characters, often not the marked
        ones. So the name goes under the sentence and the sentence has two
        lines. */
-    .ss__row[data-g='t'] .ss__hit { grid-template-columns: 0.28rem minmax(0, 1fr); }
-    .ss__row[data-g='t'] .ss__g { grid-row: 1 / 3; }
-    .ss__row[data-g='t'] .ss__m { grid-column: 2; justify-self: start; margin-block-start: -0.1rem; }
+    .ss__row:is([data-g='t'], [data-g='l']) .ss__hit { grid-template-columns: 0.28rem minmax(0, 1fr); }
+    .ss__row:is([data-g='t'], [data-g='l']) .ss__g { grid-row: 1 / 3; }
+    /* A laureate's row the same way, and for the same reason: its year,
+       prize and series beside the name left 'Prof. Ja…' over 'Why Natio…',
+       and Robinson's three rows could not be told apart. Under the talk,
+       they have the row's width. */
+    .ss__row:is([data-g='t'], [data-g='l']) .ss__m {
+      grid-column: 2; justify-self: start; margin-block-start: -0.1rem;
+      max-inline-size: 100%; overflow: hidden; text-overflow: ellipsis;
+    }
+    /* under the sentence, the two lines are one: name · talk */
+    .ss__row:is([data-g='t'], [data-g='l']) .ss__m :global(.ss__m-part) { display: inline; text-align: start; }
+    .ss__row:is([data-g='t'], [data-g='l']) .ss__m :global(.ss__m-part + .ss__m-part)::before { content: ' · '; }
     .ss__row[data-g='t'] .ss__s {
       white-space: normal;
       display: -webkit-box;
@@ -719,7 +742,9 @@ const groups = { l: t('search.groupLaureate'), r: t('search.groupRoom'), p: t('s
           taken2++;
 
           const { text, frag } = snippet(sec.x, body, atBody, term, terms);
-          const n = sec.h || page.t;
+          /* a page's name may come in two lines — whose, and which talk —
+             and a row's own line is one */
+          const n = sec.h || page.t.replace('\n', ' · ');
           /* a hit in the body lands on its sentence; a hit in a heading lands
              on the heading by its own words, because several headings on one
              page can share one ancestor's anchor */
@@ -962,7 +987,15 @@ const groups = { l: t('search.groupLaureate'), r: t('search.groupRoom'), p: t('s
         frag.querySelector('[data-n]')!.append(mark(r.n, q));
         /* a text hit arrives with its sentence already marked, term by term */
         frag.querySelector('[data-s]')!.append(r.frag ?? mark(r.s, q));
-        frag.querySelector('[data-m]')!.textContent = r.m;
+        /* a page's name in two lines, whose and which talk: each its own
+           line, so the talk can be cut short without the name */
+        const m = frag.querySelector<HTMLElement>('[data-m]')!;
+        for (const part of r.m.split('\n')) {
+          const span = document.createElement('span');
+          span.className = 'ss__m-part';
+          span.textContent = part;
+          m.append(span);
+        }
         li.addEventListener('mousemove', () => select(i, false));
         list.append(frag);
       });

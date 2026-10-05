@@ -586,8 +586,9 @@ through the dev server itself; `scripts/search-index.mjs` does the extraction. R
 
 - Mark boilerplate a component repeats on every page with `data-search-skip` (the note panel,
   the 延伸探索 rail, the next-three cards, the card grids that summarise other pages). The
-  indexer also drops any block found under four or more page titles of one language (Robinson's
-  three pages count once), but that net has holes.
+  indexer also drops any block found under four or more laureates' pages of one language
+  (counted by `k`, whose page it is, so Robinson's three pages count once), but that net has
+  holes.
 - Sections are joined on `\n`, not spaces: the drawer cuts the clause it links to at a line
   break, and a text fragment that ran from one block into the next matches nothing.
 - Matching goes through `fold()` — case, width, accents, the name separator — with an offset
@@ -595,6 +596,16 @@ through the dev server itself; `scripts/search-index.mjs` does the extraction. R
   index must fold the same way; do not lower-case one side and fold the other.
 - A text hit on a page the first index already listed is shown only for a body match, never
   for its name.
+- **No two pages may read alike in the drawer** (owner, 2026-10-05: Aspect ×2, Robinson ×3,
+  Ciechanover ×2 all came back under one name). A page's name in the text index is the
+  `<title>` less the museum's, unless it names itself: a laureate's `<article>` carries
+  `data-search-name` (the laureate, in the page's language) and `data-search-sub` (the talk),
+  and the index stores them as two lines. The drawer shows that as the mark — two lines on a
+  desktop, one joined by「·」on a phone — and a laureate row's mark as year · prize over the
+  series. Each line is cut short on its own within `max-inline-size: 15rem`; a one-line mark
+  with no cap took the row from the name and the talk. `scripts/check-search-names.mjs <url>`
+  searches a list of names and words in both languages and counts rows that read the same
+  but open different pages; it must print 0.
 
 - The field carries `autofocus`. That is what puts the caret there: the dialog's
   own focusing steps run inside `showModal()`, in the same turn as the press,
