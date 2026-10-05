@@ -52,6 +52,11 @@ for (const s of rec.video.extra_sessions) {
   else if (s.date) talks[0].days.push(s.date);
 }
 const daySep = lang === 'zh' ? '、' : ', ';
+/* a recording's own day and place, for the line over its frame under 完整講座 —
+   its own day: Südhof's panel was the 6th */
+const whenOf = (iso: string) => ({
+  iso, text: [localDate(iso, lang, true), host, series].filter(Boolean).join(' · '),
+});
 /** NTU 共同教育中心 collects all six NTU lectures and their material */
 const NTU_CGE = 'https://cge.ntu.edu.tw/cl_n_203079.html';
 
@@ -246,8 +251,9 @@ const piece = bright ? {
           <h3 id="h-lec" class="lec__h">{t('lec.lecture')}</h3>
           {rec.video.lecture ? (
             <VideoFacade id={rec.video.lecture} title={`${rec.title.en} — ${who}`} kind="lecture"
-                         heading={{ en: rec.title.en, zh: lang === 'zh' ? rec.title.zh : undefined }}
-                         note={t('lec.lectureNote')} playHint={t('lec.playHint')} />
+                         heading={{ en: rec.title.en, zh: lang === 'zh' ? rec.title.zh : undefined,
+                                    when: whenOf(rec.event.date) }}
+                         playHint={t('lec.playHint')} />
           ) : (
             <p class="lec__soon">{t('lec.noVideo')}</p>
           )}
@@ -264,7 +270,8 @@ const piece = bright ? {
                   const tt = s.title ?? rec.title;
                   return (
                     <VideoFacade id={s.id} title={`${tt.en} — ${s.label}`} label={s.label}
-                                 heading={{ en: tt.en, zh: lang === 'zh' ? tt.zh : undefined }}
+                                 heading={{ en: tt.en, zh: lang === 'zh' ? tt.zh : undefined,
+                                            when: whenOf(s.date ?? rec.event.date) }}
                                  playHint={t('lec.playHint')} />
                   );
                 })}

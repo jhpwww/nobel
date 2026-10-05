@@ -47,7 +47,9 @@ These are decided. Do not reopen them, and do not let a tidy-up quietly reverse 
   subject of its own — each as English title, Chinese title (Chinese page), and one line of
   day · place (· series) with no 演講日期 / 演講地點 labels. Under 完整講座 every recording
   is headed by its talk (`heading` on `VideoFacade`): English, plus Chinese on the Chinese
-  page. The English page shows no Chinese, as everywhere else on it. The body below the head
+  page, then its OWN day · place (a sitting's day, not the lecture's), and no note — 「演講全長，
+  英語發音」 was removed at the owner's word. The English page shows no Chinese, as everywhere
+  else on it. The body below the head
   is its own search section (`data-search-section`), or the description reads as part of
   the last talk listed.
 - **Every change ships to the running dev server (`npm run dev`, port 4322, at
