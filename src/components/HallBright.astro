@@ -1086,7 +1086,10 @@ const PLATE = { w: 836, h: 470 };
      pages, so they are drawn by one module — see src/scripts/plinth.ts. */
   dressPlinths();
 
-  /* model-viewer has no animation to play until the GLB is in */
-  for (const v of viewers) v.addEventListener('load', applyRotation);
+  /* model-viewer has no animation to play until the GLB is in; `autoplay`
+     starts it, and this makes sure, whatever the motion setting (2026-10-05) */
+  for (const v of document.querySelectorAll<HTMLElement & { play?: () => void }>('.bh__mv')) {
+    v.addEventListener('load', () => v.play?.());
+  }
 
 </script>
