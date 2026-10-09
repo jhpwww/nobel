@@ -1,7 +1,7 @@
 {
-  "noto-sans-tc": "assets/fonts/bright/noto-sans-tc.woff2?v=5c9b032d",
-  "noto-serif-tc": "assets/fonts/bright/noto-serif-tc.woff2?v=06417f06",
-  "source-serif-4": "assets/fonts/bright/source-serif-4.woff2?v=db79fdeb",
-  "source-sans-3": "assets/fonts/bright/source-sans-3.woff2?v=31405434",
-  "_stylesheet": "assets/fonts/bright/fonts.css?v=7cbee1a2"
+  "noto-sans-tc": "assets/fonts/bright/noto-sans-tc.woff2?v=90daa3c5",
+  "noto-serif-tc": "assets/fonts/bright/noto-serif-tc.woff2?v=facd50b2",
+  "source-serif-4": "assets/fonts/bright/source-serif-4.woff2?v=15ee638c",
+  "source-sans-3": "assets/fonts/bright/source-sans-3.woff2?v=f5700af9",
+  "_stylesheet": "assets/fonts/bright/fonts.css?v=f10113c7"
 }

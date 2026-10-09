@@ -4,7 +4,7 @@
 
 @font-face {
   font-family: 'Noto Sans TC';
-  src: url('noto-sans-tc.woff2?v=5c9b032d') format('woff2-variations');
+  src: url('noto-sans-tc.woff2?v=90daa3c5') format('woff2-variations');
   font-weight: 350 600;
   font-style: normal;
   font-display: swap;
@@ -12,7 +12,7 @@
 
 @font-face {
   font-family: 'Noto Serif TC';
-  src: url('noto-serif-tc.woff2?v=06417f06') format('woff2-variations');
+  src: url('noto-serif-tc.woff2?v=facd50b2') format('woff2-variations');
   font-weight: 400 700;
   font-style: normal;
   font-display: swap;
@@ -20,7 +20,7 @@
 
 @font-face {
   font-family: 'Source Serif 4';
-  src: url('source-serif-4.woff2?v=db79fdeb') format('woff2-variations');
+  src: url('source-serif-4.woff2?v=15ee638c') format('woff2-variations');
   font-weight: 400 700;
   font-style: normal;
   font-display: swap;
@@ -28,7 +28,7 @@
 
 @font-face {
   font-family: 'Source Sans 3';
-  src: url('source-sans-3.woff2?v=31405434') format('woff2-variations');
+  src: url('source-sans-3.woff2?v=f5700af9') format('woff2-variations');
   font-weight: 400 600;
   font-style: normal;
   font-display: swap;
