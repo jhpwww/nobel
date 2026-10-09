@@ -893,11 +893,22 @@ reintroduce a scroll-driven mask.
 - The museum's name plate is cut at a share of the name's LAYOUT width (`::before`,
   136% / 150%), so enlarging the name by `font-size` enlarges the plate — the owner wants
   the plate fixed and only the letters larger. Enlarge with `scale` on the letters:
-  `.gr__lock-txt` in a room, the h1 in the hall (whose `::before` then takes the inverse).
-  A transform on `.gr__lock-name` itself does nothing: it is an inline box.
-- The hall's plate fades in over the last 45% of the fold and out over the first 40% of
-  the unfold. Faded with the name from the start, it is still cut for the inscription's
-  size and hangs off the left edge of a phone while half visible.
+  `.gr__lock-txt` in a room, `.bh__title-txt` in the hall (there it is part of the fold
+  transform, handed over as `--mark-sx/--mark-sy`). A transform on `.gr__lock-name`
+  itself does nothing: it is an inline box.
+- **The hall's fold animates transform and opacity only** (2026-10-09). The name is drawn
+  twice — `.bh__inscr` (decorative, aria-hidden) and the h1 mark, each laid out at its own
+  place and never moved — and `data-small` crosses them: the inscription scales onto the
+  mark's letters and fades, the letters make the same journey the other way, and the plate
+  (the h1's `::before`, cut for the mark alone) comes up where it stands. `measureFold()` in
+  HallBright writes the figures (`--fold-*`) from offsets, which transforms do not touch.
+  The first version shrank the type itself and cut the plate from the shrinking name: on a
+  busy phone the fold stuttered, and the plate, cut for the inscription, was seen hanging off
+  the left of the screen before sliding into place. Do not go back to animating
+  `font-size`, `letter-spacing`, `inset` or anything else the page lays out.
+- A theme rule for `:lang(zh) :is(h1, h2, h3)` outweighs a component's rule on the hall's
+  h1: the Han mark's 0.07em is restated in bright.css, and the inscription span is named in
+  the two Han heading rules (0.012em, 1.28) so that it reads exactly as the h1 it replaced.
 
 ## Colour is measured, not eyeballed
 

@@ -428,14 +428,13 @@ html[data-theme='bright'] {
    100% 100% rather than `contain`, which would letterbox the ornaments and
    leave the panel off-centre inside it.
    ============================================================ */
-/* In the hall the plate is cut for the name at every size and simply carried
-   at zero opacity until the mark is what the name is. It has to be there all
-   along: the plate is sized off the name, the name shrinks continuously into
-   the mark, and a ground that only appears at the end would be a ground
-   arriving at one size rather than growing into it. See 'one movement, in
-   both directions' in HallBright. */
+/* In the hall the plate is the mark's own, cut for the mark at its one size
+   and in its one place, and it comes up with the mark: the h1 fades in as a
+   whole, plate and letters, while the inscription folds onto it — see 'one
+   movement, in both directions' in HallBright. The hall's h1 is positioned
+   there; a room's name is positioned here. */
+html[data-theme='bright'] .gr__lock-name { position: relative; }
 html[data-theme='bright'] :is(.bh__lockup .bh__title, .gr__lock-name) {
-  position: relative;
   isolation: isolate;
 }
 html[data-theme='bright'] :is(.bh__lockup .bh__title, .gr__lock-name)::before {
@@ -466,30 +465,6 @@ html[data-theme='bright'] :is(.bh__lockup .bh__title, .gr__lock-name)::before {
     inline-size: 136%;
   }
 }
-/* The hall's plate: cut for the name at every size, and crossed in as the
-   inscription's own halo goes out — see 'one movement, in both directions' in
-   HallBright. It is drawn at 150% of the name's width, and the name is
-   shrinking under it the whole way, so it is the right size for whatever the
-   name measures at each frame. */
-html[data-theme='bright'] .bh__lockup .bh__title::before {
-  opacity: 0;
-  /* going back up: the plate is gone in the first two fifths, before the
-     name it is cut for has grown past the edge of the screen */
-  transition: opacity calc(var(--swap, 0s) * 0.4) var(--ease),
-              scale var(--swap, 0s) var(--ease);
-}
-/* Coming down, the plate arrives in the last 45% of the fold. It is cut at a
-   share of the name's width and the name starts at the inscription's size, so
-   at the first frame the plate is 425px across with its left end 43px off
-   the screen; faded in from the start, it was half there and still hanging
-   off the edge a tenth of a second in, and was seen to slide back into place
-   (the owner, on a phone, in English). From 55% on it is within a pixel of
-   where it stops. */
-html[data-theme='bright'] .bh__lockup[data-small] .bh__title::before {
-  opacity: 1;
-  transition: opacity calc(var(--swap, 0s) * 0.45) var(--ease) calc(var(--swap, 0s) * 0.55),
-              scale var(--swap, 0s) var(--ease);
-}
 /* English runs longer than the Han name, and the plate is sized off it — at
    the Han name's step the plate came out 90px tall and its crown went off
    the top of the window, so English is set a step down. Since the name became
@@ -515,20 +490,18 @@ html[data-theme='bright'] .bh__lockup[data-small] .bh__title::before {
    In a room the name is an inline box, which a transform does not reach, so
    the letters there stand in a box of their own, .gr__lock-txt, and that is
    what is scaled; the plate on .gr__lock-name is not touched at all. */
-html[lang='en'][data-theme='bright'] :is(.bh__lockup[data-small] .bh__title, .gr__lock-name) {
+html[lang='en'][data-theme='bright'] :is(.bh__lockup .bh__title, .gr__lock-name) {
   font-size: var(--step--1);
   font-weight: 700;
   letter-spacing: 0.04em;
   text-indent: 0.04em;
 }
-html[lang='en'][data-theme='bright'] :is(.bh__lockup[data-small] .bh__title, .gr__lock-txt) {
-  scale: 1.05 1.155;
-}
+html[lang='en'][data-theme='bright'] .gr__lock-txt { scale: 1.05 1.155; }
+/* in the hall the same enlargement is part of the letters' fold transform,
+   so it is handed over as two figures — see .bh__title-txt in HallBright */
+html[lang='en'][data-theme='bright'] .bh__lockup { --mark-sx: 1.05; --mark-sy: 1.155; }
 html[lang='en'][data-theme='bright'] :is(.bh__lockup .bh__title, .gr__lock-name)::before {
   inline-size: 136%;
-}
-html[lang='en'][data-theme='bright'] .bh__lockup[data-small] .bh__title::before {
-  scale: 0.95238 0.86580;
 }
 /* the letters' own box: no indent of its own (an inline name never had one),
    so it is exactly as wide as the letters were and the plate is unchanged */
@@ -545,7 +518,7 @@ html[data-theme='bright'] .gr__lock-txt {
   html[lang='en'][data-theme='bright'] {
     --mark-x: clamp(1.5rem, calc(8.8vw - 0.5rem), 2rem);
   }
-  html[lang='en'][data-theme='bright'] :is(.bh__lockup[data-small] .bh__title, .gr__lock-name) {
+  html[lang='en'][data-theme='bright'] :is(.bh__lockup .bh__title, .gr__lock-name) {
     font-size: clamp(0.67rem, 3.1vw, 0.88rem);
   }
 }
@@ -554,8 +527,10 @@ html[data-theme='bright'] .gr__lock-txt {
    and Windows do not), the hall's name, shrinking through every size between
    the inscription and the mark, lost a pixel on all ten characters at once
    every few frames — and its plate, cut at a share of the name's width and
-   centred on it, jumped 14px each time. Where advances are fractional
-   already this changes nothing. */
+   centred on it, jumped 14px each time. The fold no longer re-sizes type,
+   so this is kept for the mark's own sake: a name laid out at fractional
+   advances is the same width in both languages' rooms. Where advances are
+   fractional already this changes nothing. */
 html[data-theme='bright'] :is(.bh__lockup .bh__title, .gr__lock-name):lang(zh) {
   text-rendering: geometricPrecision;
 }
@@ -1528,7 +1503,7 @@ html[data-theme='bright'] :is(h1, h2, h3, h4) {
   font-weight: 600;
   letter-spacing: 0.004em;
 }
-html[data-theme='bright'] :lang(zh) :is(h1, h2, h3) {
+html[data-theme='bright'] :lang(zh) :is(h1, h2, h3, .bh__inscr-name) {
   letter-spacing: 0.012em;
 }
 
@@ -1576,7 +1551,7 @@ html[data-theme='bright'] :is(.card__meta, .vc__meta, .cmp__when) {
    carries less colour than the serif did at the same number, and a title has
    to hold the top of a page on its own. */
 html[data-theme='bright'] :is(
-  .bh__title, .section-h, .lec__h,
+  .bh__title, .bh__inscr-name, .section-h, .lec__h,
   .lec__who, .feature__who, .card__who, .vc__who, .marks__pct
 ) {
   font-weight: 600;
@@ -1936,9 +1911,14 @@ html[data-theme='bright'] .after .stats div {
    above — and a background written here would put the frosted rectangle
    back, from further down the file where source order beats an earlier rule
    of the same weight. */
-html[data-theme='bright'] .bh__lockup[data-small] .bh__title {
+html[data-theme='bright'] .bh__lockup .bh__title {
   color: #2b2008;
   text-shadow: 0 1px 0 rgba(255, 246, 222, 0.5);
+  /* the mark's own tracking, stated here as well as in the component: the
+     Han heading rule above (0.012em) outweighs a component's rule, and the
+     Han mark is set at 0.07em — English at 0.04em, in its own rule */
+  letter-spacing: 0.07em;
+  text-indent: 0.07em;
 }
 
 
@@ -1997,8 +1977,10 @@ html[data-theme='bright'] .bh__cue-txt { letter-spacing: 0.2em; text-indent: 0.2
    full-height body, so a heading set at 1.2 floats; 1.28 with the block's own
    optical centre reads level. Two lines of a long prize name — 生理學或醫學 —
    is where it shows. */
-html[data-theme='bright'] :lang(zh) :is(h1, h2, h3) { line-height: 1.28; }
-html[data-theme='bright'] .bh__title { line-height: 1.12; }
+/* .bh__inscr-name is the hall's inscription, a span since 2026-10-09 that
+   has to read exactly as the h1 it replaced did under these two rules */
+html[data-theme='bright'] :lang(zh) :is(h1, h2, h3, .bh__inscr-name) { line-height: 1.28; }
+html[data-theme='bright'] :is(.bh__title, .bh__inscr-name) { line-height: 1.12; }
 
 /* A phone gets one row of seven, never two: the strip has to be in the
    first screenful with the pieces, and a second row would push it out.

@@ -148,11 +148,20 @@ const PLATE = { w: 836, h: 470 };
         accent over it; the owner had both taken off on 2026-10-04 — the
         footer and the bar still carry the name — and asked for a gold rule
         UNDER the Han title instead, the width of the title. */}
-    <h1 id="hall-title" class="bh__title">{t('site.tagline')}</h1>
-    <span class="bh__lock-rule" aria-hidden="true"></span>
-    {/* the name in the other language, from the same key, so the two lines
-        cannot fall out of step when the name changes (it did, 2026-10-09) */}
-    <span class="bh__title-en" lang={HTML_LANG[other]}>{useT(other)('site.tagline')}</span>
+    {/* The inscription is decoration: the h1 below it carries the name for
+        readers and machines, and the two are one name drawn twice — see
+        'one movement, in both directions'. */}
+    <div class="bh__inscr" aria-hidden="true" data-search-skip>
+      <span class="bh__inscr-name">{t('site.tagline')}</span>
+      <span class="bh__lock-rule"></span>
+      {/* the name in the other language, from the same key, so the two lines
+          cannot fall out of step when the name changes (it did, 2026-10-09) */}
+      <span class="bh__title-en" lang={HTML_LANG[other]}>{useT(other)('site.tagline')}</span>
+    </div>
+    {/* The letters stand in a box of their own inside the h1, because the
+        plate is the h1's ::before and must not move: the fold carries the
+        letters, and only the letters, between the two names. */}
+    <h1 id="hall-title" class="bh__title"><span class="bh__title-txt">{t('site.tagline')}</span></h1>
   </header>
 
   <div class="bh__stage">
@@ -338,8 +347,37 @@ const PLATE = { w: 836, h: 470 };
    * paragraph is passing. The halo is light rather than a panel — a panel in
    * the corner of a photograph reads as a sticker. */
   .bh__lockup {
+    /* Two objects at their own places, and a box that has no size of its own:
+       the inscription in the corner of the room and the mark in the corner
+       of the window. The fold between them is a transform and an opacity on
+       each — nothing the page lays out changes during it. */
     position: fixed;
     z-index: 2;
+    inset-block-start: 0;
+    inset-inline: 0;
+    block-size: 0;
+    --swap: 0.55s;
+    /* the letters' own enlargement on the mark, where the theme sets one
+       (English, in bright.css); 1 is the letters as laid out */
+    --mark-sx: 1;
+    --mark-sy: 1;
+    /* the fold's figures, written by measureFold() in the script below:
+       where the mark's letters are from the inscription's, as a move of the
+       centres, and how the two boxes compare in size — and the inverse, for
+       the letters making the same journey the other way */
+    --fold-dx: 0px;
+    --fold-dy: 0px;
+    --fold-kx: 1;
+    --fold-ky: 1;
+    --fold-ikx: 1;
+    --fold-iky: 1;
+    --fold-ox: 50%;
+    --fold-oy: 50%;
+  }
+
+  /* ---------- the inscription ---------- */
+  .bh__inscr {
+    position: absolute;
     inset-block-start: clamp(4.6rem, 9vh, 7rem);
     inset-inline-start: clamp(1.1rem, 4.2vw, 3.4rem);
     display: grid;
@@ -350,99 +388,19 @@ const PLATE = { w: 836, h: 470 };
     gap: 0.08rem;
     padding: 0.7rem 1.5rem 0.9rem 0;
     isolation: isolate;
-    border-radius: 0.42rem;
-    transition: inset-block-start var(--swap) var(--ease),
-                inset-inline-start var(--swap) var(--ease),
-                padding var(--swap) var(--ease),
-                background var(--swap) var(--ease),
-                box-shadow var(--swap) var(--ease);
+    /* about the name's own centre, so that scaling the block scales the name
+       onto the mark and the rule and the English line fold away under it */
+    transform-origin: var(--fold-ox) var(--fold-oy);
+    will-change: transform, opacity;
+    transition: transform var(--swap) var(--ease), opacity var(--swap) var(--ease);
   }
-  /* the halo belongs to the inscription and goes out as the plate comes in —
-     the two are a cross-fade, over the same half second the name shrinks in */
-  .bh__lockup::before { transition: opacity calc(var(--swap) * 0.4) var(--ease); }
-  /* and crossed with the plate where the plate now comes in: the last 45% of
-     the fold — see the plate's own rule in bright.css */
-  .bh__lockup[data-small]::before {
-    transition: opacity calc(var(--swap) * 0.45) var(--ease) calc(var(--swap) * 0.55);
+  .bh__lockup[data-small] .bh__inscr {
+    opacity: 0;
+    transform: translate(var(--fold-dx), var(--fold-dy)) scale(var(--fold-kx), var(--fold-ky));
+    pointer-events: none;
   }
-  .bh__lock-rule, .bh__title-en, .bh__title {
-    transition: opacity var(--swap) var(--ease),
-                block-size var(--swap) var(--ease),
-                margin var(--swap) var(--ease),
-                font-size var(--swap) var(--ease),
-                /* English is bolder on its plate than in the hall, and
-                   drawn a tenth taller there */
-                font-weight var(--swap) var(--ease),
-                scale var(--swap) var(--ease),
-                letter-spacing var(--swap) var(--ease),
-                text-indent var(--swap) var(--ease),
-                /* the ink travels with the rest of it: gold-on-marble to
-                   brown-on-plate is a colour that can be interpolated, so it
-                   is, rather than being swapped at some instant */
-                color var(--swap) var(--ease),
-                text-shadow var(--swap) var(--ease);
-  }
-
-  /* ---------- one movement, in both directions ----------
-   *
-   * Two things happen when the hall is left behind: the inscription becomes
-   * small, and it becomes a different object — a name on a plate rather than
-   * four lines cut into a wall. They are one movement, at the owner's word:
-   * it shrinks INTO the mark and grows back OUT of it, and every property
-   * that differs between the two states travels the same half second on the
-   * same curve.
-   *
-   * That means all of it is interpolated and none of it is switched. The
-   * block travels to the corner and closes to one line; the type comes down
-   * from 48px to 17 and tightens its tracking as it goes; the ink walks from
-   * the marble's near-black to the plate's brown; and the halo the
-   * inscription stands in fades out over exactly the crossing where the plate
-   * fades in, so at every frame between the two there is one ground under the
-   * name rather than none or two. The plate is drawn at 150% of the name's
-   * own width, and the name is shrinking, so the plate shrinks with it and is
-   * the right size for whatever the name measures at that instant.
-   *
-   * Nothing here is scripted and nothing waits for anything: the script sets
-   * one attribute and the stylesheet does the rest, in whichever direction
-   * the attribute went.
-   */
-  .bh__lockup { --swap: 0.55s; }
-  /* less motion: the mark is simply there */
-  :global(html[data-motion='off']) .bh__lockup { --swap: 0s; }
-  :global(html[data-motion='off']) .bh__lockup,
-  :global(html[data-motion='off']) .bh__lockup :is(.bh__lock-rule, .bh__title-en, .bh__title) {
-    transition: none;
-  }
-
-  /* Condensed, once the hall has been left behind.
-   *
-   * It does not scroll — it never moves with the page — but it cannot stay a
-   * display headline either: the page below carries no ground of its own, so
-   * everything that comes up passes straight under it, and 本館推薦 was landing
-   * inside 諾貝爾講座臺灣博物館. So the inscription becomes a mark: the rule, the
-   * university and the English line fold away, the name shrinks, and it takes
-   * the same frosted tablet the bar's keys wear, level with them. Coming back
-   * up the page opens it out again. */
-  .bh__lockup[data-small] {
-    /* 1.5rem, not the keys' 0.62rem: a plate is a taller object than a key,
-       and any nearer the top its ornament is cut off by the edge of the
-       window. Its top edge lands on the keys' instead, which is the line the
-       eye reads across a corner anyway. */
-    inset-block-start: 1.5rem;
-    inset-inline-start: var(--mark-x);
-    padding: 0.34rem 0.85rem;
-  }
-  .bh__lockup[data-small]::before { opacity: 0; }
-  .bh__lockup[data-small] :is(.bh__lock-rule, .bh__title-en) {
-    block-size: 0; opacity: 0; margin-block: 0; overflow: hidden;
-  }
-  .bh__lockup[data-small] .bh__title {
-    font-size: var(--step-0);
-    letter-spacing: 0.07em;
-    text-indent: 0.07em;
-    text-shadow: none;
-  }
-  .bh__lockup::before {
+  /* the halo the inscription stands in; it goes with the inscription */
+  .bh__inscr::before {
     content: '';
     position: absolute;
     inset: -1.4rem -3rem -1.6rem -2.4rem;
@@ -450,6 +408,90 @@ const PLATE = { w: 836, h: 470 };
     pointer-events: none;
     background: radial-gradient(58% 62% at 34% 50%,
       rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.5) 46%, transparent 78%);
+  }
+  .bh__inscr-name {
+    font-family: var(--font-han-serif);
+    font-size: clamp(1.72rem, 3.5vw, 3rem);
+    line-height: 1.12;
+    color: var(--cream);
+    /* Wide for a display line, because the name is the one place the hall can
+       afford the air — and because letterspaced Han is what a carved lintel
+       looks like. */
+    letter-spacing: 0.1em;
+    text-indent: 0.1em;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9);
+  }
+
+  /* ---------- the mark ----------
+     The name on its plate, in the corner of the window, laid out at its own
+     size and in its own place from the first frame — the plate is cut for it
+     here, at this size, and never for any other. What the fold does to it is
+     an opacity, and a transform on its letters. */
+  .bh__title {
+    position: absolute;
+    /* 1.5rem, not the keys' 0.62rem: a plate is a taller object than a key,
+       and any nearer the top its ornament is cut off by the edge of the
+       window. Its top edge lands on the keys' instead, which is the line the
+       eye reads across a corner anyway. 0.34rem and 0.85rem are the air the
+       mark kept inside its box when it was a box. */
+    inset-block-start: calc(1.5rem + 0.34rem);
+    inset-inline-start: calc(var(--mark-x) + 0.85rem);
+    margin: 0;
+    font-family: var(--font-han-serif);
+    font-size: var(--step-0);
+    line-height: 1.12;
+    letter-spacing: 0.07em;
+    text-indent: 0.07em;
+    white-space: nowrap;
+    opacity: 0;
+    will-change: opacity;
+    transition: opacity var(--swap) var(--ease);
+  }
+  .bh__lockup[data-small] .bh__title { opacity: 1; }
+  .bh__lockup:not([data-small]) .bh__title { pointer-events: none; }
+  .bh__title-txt {
+    display: inline-block;
+    text-indent: 0;
+    transform-origin: 50% 50%;
+    /* while the inscription is up, the letters stand on it, at its size */
+    transform: translate(calc(-1 * var(--fold-dx)), calc(-1 * var(--fold-dy)))
+               scale(var(--fold-ikx), var(--fold-iky));
+    will-change: transform;
+    transition: transform var(--swap) var(--ease);
+  }
+  .bh__lockup[data-small] .bh__title-txt {
+    transform: translate(0px, 0px) scale(var(--mark-sx), var(--mark-sy));
+  }
+
+  /* ---------- one movement, in both directions ----------
+   *
+   * Two things happen when the hall is left behind: the inscription becomes
+   * small, and it becomes a different object — a name on a plate rather than
+   * three lines cut into a wall. They are one movement, at the owner's word:
+   * it shrinks INTO the mark and grows back OUT of it, over the same half
+   * second on the same curve in either direction.
+   *
+   * The name is drawn twice, and the fold is a crossing between the two: the
+   * inscription scales down onto the mark's letters and fades; the mark's
+   * letters, which were standing on the inscription at its size, scale down
+   * to their own place as the mark fades in; the plate, cut for the mark and
+   * for nothing else, simply comes up under them where it stands. Four
+   * properties travel — transform and opacity, twice — and the compositor
+   * can run all four whatever the page is doing: a swipe that keeps the main
+   * thread busy does not drop a frame of it, which the first version of this
+   * fold did. That one shrank the type itself, re-laying it out on every
+   * frame, and cut the plate from the name at each size as it went — so on a
+   * busy phone the fold stuttered, and the plate, wide for the big name, was
+   * seen hanging off the left of the screen before sliding into place.
+   *
+   * Nothing waits for anything: the script sets one attribute (and, once per
+   * layout, the figures the transform needs), and the stylesheet does the
+   * rest in whichever direction the attribute went.
+   */
+  /* less motion: the mark is simply there */
+  :global(html[data-motion='off']) .bh__lockup { --swap: 0s; }
+  :global(html[data-motion='off']) .bh__lockup :is(.bh__inscr, .bh__title, .bh__title-txt) {
+    transition: none;
   }
   /* the rule the inscription hangs from */
   /* The rule under the Han title: as wide as the title (the grid track is the
@@ -461,18 +503,6 @@ const PLATE = { w: 836, h: 470 };
     block-size: 3px;
     margin-block: 0.34rem 0.6rem;
     background: linear-gradient(to right, var(--gold-orn, #b8862a) 55%, rgba(184, 134, 42, 0.25));
-  }
-  .bh__title {
-    font-family: var(--font-han-serif);
-    font-size: clamp(1.72rem, 3.5vw, 3rem);
-    line-height: 1.12;
-    color: var(--cream);
-    /* Wide for a display line, because the name is the one place the hall can
-       afford the air — and because letterspaced Han is what a carved lintel
-       looks like. */
-    letter-spacing: 0.1em;
-    text-indent: 0.1em;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9);
   }
   .bh__title-en {
     font-size: var(--step--1);
@@ -775,7 +805,7 @@ const PLATE = { w: 836, h: 470 };
 
     /* the name sits over the picture's top-left corner, where the room is
        empty wall; the bar's keys stack down the opposite corner */
-    .bh__lockup {
+    .bh__inscr {
       inset-block-start: 0.7rem;
       inset-inline-start: 0.85rem;
       padding-block: 0.4rem 0.5rem;
@@ -783,11 +813,11 @@ const PLATE = { w: 836, h: 470 };
     .bh__lock-rule { block-size: 2px; margin-block: 0.2rem 0.42rem; }
     /* the English line sits under the name, not beside it — at this size the
        gap the desktop can afford reads as a paragraph break */
-    .bh__lockup { gap: 0.02rem; }
+    .bh__inscr { gap: 0.02rem; }
     /* the same three quarters, measured at 390: 9.75px of ink gap, 2.44px off */
     .bh__title-en { margin-block-start: -0.098rem; line-height: 1.05; }
-    .bh__title { line-height: 1.06; }
-    .bh__title { font-size: clamp(1.32rem, 7.4vw, 1.9rem); }
+    .bh__inscr-name, .bh__title { line-height: 1.06; }
+    .bh__inscr-name { font-size: clamp(1.32rem, 7.4vw, 1.9rem); }
     /* The English name is half as long again as the Han one — 16em of
        letterspaced type to 11 — and at the Han name's size it ran under the
        menu key: its last letter as 'Nobel Lecture Museum', and wrapped, with
@@ -795,9 +825,8 @@ const PLATE = { w: 836, h: 470 };
        to end before the key in one line: 4.5rem is the lockup's own inset,
        the key, and the air either side of it; 16.4em the name's measure as
        rendered, which hinting widens at small sizes (15.9em at 414px, 16.4
-       at 320). Open state only — folded into the mark it takes the mark's
-       size. */
-    .bh__lockup:not([data-small]) .bh__title:lang(en) {
+       at 320). The inscription only — the mark has its own size. */
+    .bh__inscr-name:lang(en) {
       font-size: min(clamp(1.32rem, 7.4vw, 1.9rem), calc((100vw - 4.5rem) / 16.4));
     }
     .bh__title-en { font-size: 0.62rem; letter-spacing: 0.16em; text-indent: 0.16em; }
@@ -947,6 +976,43 @@ const PLATE = { w: 836, h: 470 };
 
   const plinths = document.querySelector<HTMLElement>('.bh__plinths');
   const lockup = document.querySelector<HTMLElement>('.bh__lockup');
+  const inscrName = document.querySelector<HTMLElement>('.bh__inscr-name');
+  const markText = document.querySelector<HTMLElement>('.bh__title-txt');
+
+  /* ---- the fold's figures ----
+     The inscription and the mark are laid out at their own places and never
+     move; the fold is a transform that carries each onto the other (see 'one
+     movement, in both directions'). A transform needs to know where the two
+     names' boxes are and how their sizes compare, which only layout knows, so
+     it is measured here — off the offsets, which a transform does not touch,
+     so this can run mid-fold — and written to the lockup for the stylesheet
+     to read. Taken with gauge(), so it is re-taken when the faces arrive and
+     when the window changes. */
+  function measureFold() {
+    if (!lockup || !inscrName || !markText) return;
+    const at = (el: HTMLElement) => {
+      let x = 0, y = 0;
+      for (let e: HTMLElement | null = el; e && e !== lockup; e = e.offsetParent as HTMLElement | null) {
+        x += e.offsetLeft; y += e.offsetTop;
+      }
+      return { x, y, w: el.offsetWidth, h: el.offsetHeight };
+    };
+    const I = at(inscrName), M = at(markText);
+    if (!I.w || !I.h || !M.w || !M.h) return;
+    const cs = getComputedStyle(lockup);
+    const sx = parseFloat(cs.getPropertyValue('--mark-sx')) || 1;
+    const sy = parseFloat(cs.getPropertyValue('--mark-sy')) || 1;
+    const kx = (M.w * sx) / I.w, ky = (M.h * sy) / I.h;
+    const set = (k: string, v: string) => lockup.style.setProperty(k, v);
+    set('--fold-ox', `${(inscrName.offsetLeft + I.w / 2).toFixed(1)}px`);
+    set('--fold-oy', `${(inscrName.offsetTop + I.h / 2).toFixed(1)}px`);
+    set('--fold-dx', `${(M.x + M.w / 2 - (I.x + I.w / 2)).toFixed(1)}px`);
+    set('--fold-dy', `${(M.y + M.h / 2 - (I.y + I.h / 2)).toFixed(1)}px`);
+    set('--fold-kx', kx.toFixed(4));
+    set('--fold-ky', ky.toFixed(4));
+    set('--fold-ikx', (1 / kx).toFixed(4));
+    set('--fold-iky', (1 / ky).toFixed(4));
+  }
   const ring = document.querySelector<HTMLElement>('[data-hall-ring]');
   const pieces = [...document.querySelectorAll<HTMLElement>('.bh__piece')];
 
@@ -958,6 +1024,7 @@ const PLATE = { w: 836, h: 470 };
   let ringCue = 0;            // and where the ring of stills goes out
 
   function gauge() {
+    measureFold();
     /* Only while they are standing where they stand, and only while they are
        standing still.
      *
