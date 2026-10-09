@@ -22,9 +22,11 @@
  * The 導讀 are not in either file and are not meant to be. What was asked for
  * was the lectures and the interviews — the recordings where the picture
  * standing for the session was the person who introduced it rather than the
- * laureate. A guide video is the museum's own ninety seconds on a session and
- * its cover was made for it, so all six fall straight through to (3), which
- * is the uploader's pick and in their case the right one.
+ * laureate. A guide video is the museum's own ninety seconds on a session, so
+ * every one of them falls straight through to (3): the frame YouTube gives
+ * it, which is the uploader's to choose — the owner's rule (CLAUDE.md,
+ * "Representative images are chosen for 講座 and 專訪 only"). Because it is
+ * read from YouTube, a cover the uploader sets later shows here unbidden.
  */
 import videoFrames from './video-posters.json';
 import localStills from './local-posters.json';

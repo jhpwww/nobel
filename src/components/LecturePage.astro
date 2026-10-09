@@ -237,8 +237,12 @@ const piece = bright ? {
         ) : ntu ? null : (
           /* 「製作中，敬請期待」 is a promise about the programme's own 導讀
              films. Nothing was ever filmed for the NTU collection, so the
-             line would be a promise the museum cannot keep. */
-          <p class="lec__soon">{t('lec.guideSoon')}</p>
+             line would be a promise the museum cannot keep.
+             Kept out of search at the source: it stands on fewer pages with
+             every batch of guides the course publishes, and once three or
+             fewer lectures wait for theirs, the repeat net in
+             scripts/search-index.mjs would let it through as a hit. */
+          <p class="lec__soon" data-search-skip>{t('lec.guideSoon')}</p>
         )}
 
         {/* 2. why this matters */}

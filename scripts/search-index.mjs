@@ -23,10 +23,13 @@
  *     aria-hidden, and anything visually hidden — none of it is the page's
  *     reading
  *   · any block whose text turns up on REPEAT_LIMIT or more pages of one
- *     language. That is the second net under the first: a line like
- *     「本場導讀影片製作中」 is on twenty-seven laureate pages and belongs to
- *     none of them, and a search for 製作中 that returned twenty-seven rows
- *     would be a search that returned nothing.
+ *     language. That is the second net under the first: a line that many
+ *     pages carry belongs to none of them, and a search that returned a row
+ *     for each would be a search that returned nothing. It only catches a
+ *     line while enough pages carry it, so a line whose pages SHRINK is
+ *     marked data-search-skip at the source instead — 「本場導讀影片製作中」
+ *     stands on each lecture still waiting for its guide, fewer with every
+ *     batch the course publishes.
  *
  * Run on its own:  node scripts/search-index.mjs dist
  * Run by the build: see integrations/search.mjs, which calls build() on

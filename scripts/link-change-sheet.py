@@ -2,7 +2,7 @@
 """
 link-change-sheet.py — every video the museum plays, and what changed.
 
-  python3 scripts/link-change-sheet.py <meta.json> <out.xlsx>
+  python3 scripts/link-change-sheet.py <meta.json> <out.xlsx> [previous-edition.xlsx]
 
 `meta.json` is a map of YouTube id → {title, channel, channel_url, upload_date,
 duration, availability, embed, was_live, desc} as yt-dlp reports them (the
@@ -18,6 +18,12 @@ full, for the course's own check by hand, with per-row notes computed from
 the metadata — the duration gap and its direction, whether the host's own
 description names the event date, whether the file is a raw live stream —
 never asserted. Sheet 3 explains.
+
+Given the previous edition, sheet 3 also says what changed since it — rows
+added and removed by link, and rows whose YouTube details (title, channel,
+duration) now read differently — computed by comparing the two, not written
+by hand. Green marks what THIS edition adds; what earlier editions added is
+named in the note instead, so each edition shows at a glance what is new.
 """
 import json, pathlib, re, sys
 from openpyxl import Workbook
@@ -30,8 +36,17 @@ meta = json.load(open(sys.argv[1], encoding="utf-8"))
 out = pathlib.Path(sys.argv[2])
 cat = json.load(open(ROOT / "data" / "catalog.json", encoding="utf-8"))
 MISSING = "未查得"
-NEW_GUIDES = {"noyori", "mcdonald", "stiglitz"}       # 臺大演講網 2026-10-01
-NEW_RECORDS = {"cw-ep5"}                              # 天下 Ep.5, added 2026-10-04
+prev_path = pathlib.Path(sys.argv[3]) if len(sys.argv) > 3 else None
+EDITION = "2026-10-09"
+# 臺大演講網 2026-10-08, added to the site 2026-10-09: green in this edition
+NEW_GUIDES = {"murad", "semenza", "winter", "kornberg", "wuthrich", "nurse", "roberts", "sudhof"}
+NEW_GUIDES_UP = "2026-10-08"
+NEW_RECORDS = {}
+# what the 2026-10-05 edition added: named in the note, no longer green
+EARLIER = {"noyori": "2026-10-05 版新增（臺大演講網 2026-10-01 上線）",
+           "mcdonald": "2026-10-05 版新增（臺大演講網 2026-10-01 上線）",
+           "stiglitz": "2026-10-05 版新增（臺大演講網 2026-10-01 上線）",
+           "cw-ep5": "2026-10-05 版新增（天下「與頂尖對話」Ep.5，計畫總覽）"}
 
 def hms(s):
     if not s: return MISSING
@@ -119,6 +134,8 @@ rows, fills = [], []
 replaced = []   # (kind, who_zh, who_en, title, date, where, new, old) for sheet 2
 def add(kind, who_zh, who_en, title, date, where, cur, old, note, new=False):
     updated = bool(old) and old != cur
+    if updated and m(old, "availability", None) == "private":
+        note = "；".join(x for x in (note, "更新前連結（IPF 頻道）現已設為私人影片，無法播放") if x)
     rows.append([kind, who_zh, who_en, title, date, where,
                  url(cur), m(cur, "channel"), hms(m(cur, "duration", None)), ymd(m(cur, "upload_date")),
                  "是" if updated else "否", url(old) if updated else "", hms(m(old, "duration", None)) if updated else "",
@@ -139,7 +156,7 @@ for r in cat["lectures"]:
     if v.get("guide"):
         new = r["id"] in NEW_GUIDES
         add("導讀", *who, f"臺灣橋樑計畫導讀 — {r['laureate']['en']}", date, "臺大演講網（製作：臺灣大學）", v["guide"], None,
-            "本次新增（臺大演講網 2026-10-01 上線）" if new else "", new)
+            f"本版新增（臺大演講網 {NEW_GUIDES_UP} 上線）" if new else EARLIER.get(r["id"], ""), new)
     updated = bool(v.get("lecture_ipf")) and v["lecture"] != v["lecture_ipf"]
     note = ""
     if updated:
@@ -167,7 +184,7 @@ for s in cat["standalone_records"]:
     new = s["id"] in NEW_RECORDS
     add(f"專訪／影片（{src}，計畫層級）", s.get("person_zh", ""), s.get("person_en", ""), m(s["yt"], "title"), s.get("date", ""),
         f"{src}（{kind_of(s['yt'])[1]}）", s["yt"], s.get("yt_ipf"),
-        "本次新增（天下「與頂尖對話」Ep.5，計畫總覽）" if new else (f"改播{src}自家頻道的原始上傳" if s.get("yt_ipf") else s.get("role_zh", "")), new)
+        NEW_RECORDS[s["id"]] if new else EARLIER.get(s["id"]) or (f"改播{src}自家頻道的原始上傳" if s.get("yt_ipf") else s.get("role_zh", "")), new)
 
 for s in cat["special_events"]:
     add("特別活動", s.get("title_zh", ""), s.get("title_en", ""), s.get("title_en", ""), s.get("date", ""),
@@ -243,11 +260,37 @@ dv.prompt = "正確／有疑問／錯誤"; ws2.add_data_validation(dv); dv.add(f
 ws3 = wb.create_sheet("說明")
 n_upd = sum(1 for f in fills if f is upd_fill); n_new = sum(1 for f in fills if f is new_fill)
 n_lec = sum(1 for r in replaced if r[0].startswith("講座")); n_itv = len(replaced) - n_lec
+def since_previous():
+    """what changed since the previous edition, by link — computed, not written"""
+    if not prev_path: return []
+    from openpyxl import load_workbook
+    prev = list(load_workbook(prev_path, read_only=True)["全部影片"].iter_rows(min_row=2, values_only=True))
+    before = {r[6]: r for r in prev if r and r[6]}
+    now = {r[6]: r for r in rows}
+    added = [now[u] for u in now if u not in before]
+    removed = [before[u] for u in before if u not in now]
+    # columns: 3 講題／影片標題, 7 目前頻道, 8 目前片長, 11 更新前連結
+    drift = [(now[u], before[u]) for u in now if u in before
+             and tuple(now[u][i] or "" for i in (3, 7, 8, 11)) != tuple(before[u][i] or "" for i in (3, 7, 8, 11))]
+    name = lambda r: f"{r[0]}：{r[1]}"
+    out = [f"與上一版（{prev_path.name}）相比——依「目前連結」比對："]
+    out.append(f"  新增 {len(added)} 列" + (f"：{'、'.join(name(r) for r in added)}" if added else "") + "（綠底）。")
+    out.append(f"  移除 {len(removed)} 列" + (f"：{'、'.join(name(r) for r in removed)}" if removed else "") + "。")
+    out.append(f"  其餘 {len(now) - len(added)} 列的連結與上一版相同" +
+               ("，影片資料（標題、頻道、片長）也相同。" if not drift else "；其中下列影片資料與上一版不同："))
+    labels = {3: "標題", 7: "頻道", 8: "片長", 11: "更新前連結"}
+    for a, b in drift:
+        diffs = "；".join(f"{labels[i]}「{b[i] or ''}」→「{a[i] or ''}」" for i in (3, 7, 8, 11) if (a[i] or "") != (b[i] or ""))
+        out.append(f"    {name(a)}：{diffs}")
+    return out + [""]
+
 for line in [
     "本檔由 scripts/link-change-sheet.py 從網站資料與 YouTube 影片資料產生。",
+    f"版本：{EDITION}" + (f"，取代 {prev_path.name}。" if prev_path else "。"),
     "",
+    *since_previous(),
     f"「全部影片」：網站「所有影片」列出的每一支，共 {len(rows)} 列——導讀、講座、第二天場次、專訪、臺大講座（非橋樑計畫）、計畫層級的專訪與影片，以及特別活動（啟動儀式、北一女中兩場、羅斯與科比爾卡對談、對話諾貝爾特展；「關於本館」頁也列出）。",
-    f"  黃底 {n_upd} 列＝連結已更新（{n_lec} 場講座改播主辦單位自家頻道；{n_itv} 支專訪與影片改播天下雜誌、風傳媒自家頻道的原始上傳），「更新前連結」欄附上原本的 IPF 頻道連結與片長；綠底 {n_new} 列＝本次新增。其餘列未更動。",
+    f"  黃底 {n_upd} 列＝連結已更新（{n_lec} 場講座改播主辦單位自家頻道；{n_itv} 支專訪與影片改播天下雜誌、風傳媒自家頻道的原始上傳），「更新前連結」欄附上原本的 IPF 頻道連結與片長；綠底 {n_new} 列＝本版新增。",
     f"「已更換連結（核檢用）」：同樣的 {len(rows2)} 列，附兩版標題、片長、頻道性質、由影片資料算出的備註與建議核檢重點；「人工核檢結果」請填 正確／有疑問／錯誤（下拉選單），有疑問時在最右欄之後加註。",
     "「頻道性質」：校級／院級官方＝機構主頻道；校內單位＝該校錄影、直播或教學單位的頻道；媒體自家頻道＝天下雜誌 video、風傳媒 The Storm Media 的原始上傳。四個校內單位頻道（清大學習科技組、成大國際事務處、東海網路直播、興大通識中心）的歸屬是依頻道名稱與內容判斷，若要百分之百確定，可向該校求證。",
     "「說明載明日期」（講座列）：主辦單位影片的標題或說明文字中有寫出與本場相同的演講日期。專訪列不適用，標「—」。",
@@ -255,7 +298,7 @@ for line in [
     "",
     "維持 IPF 版的：8 場講座（淡江 3、師大、亞大、中國醫大、俞國華、慈濟）、聚德霍夫第二天，以及 4 支特別活動（啟動儀式、北一女中 2 場、羅斯與科比爾卡對談）；「備註」欄列出已找過的頻道，免得重複找。",
     "",
-    "另請注意：有三場的本站講題（節目表）與兩版影片實際使用的講題不同——梶田隆章（影片：International Collaboration in Basic Science – From My Experience）、阿羅什（影片：The Laser and Quantum Physics）、聚德霍夫第一天（IPF 說明：Scientific excellence and scientific integrity: A personal journey）。影片是同一場無誤，講題要不要改成實際講題，由課程決定。",
+    "講題更正（2026-10-05）：梶田隆章、阿羅什、聚德霍夫第一天的本站講題，已改為影片實際使用的講題；原列講題見各列「備註」。聚德霍夫第二天的座談另有自己的題目，也已列出。",
 ]:
     ws3.append([line])
 ws3.column_dimensions["A"].width = 140

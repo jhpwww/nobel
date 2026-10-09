@@ -29,8 +29,9 @@ Writes two files.
 
   · src/data/posters.json — lecture id → frame suffix, for the card in a grid.
   · src/data/video-posters.json — YOUTUBE id → frame suffix, for every facade
-    on a laureate's page: the Taiwan lecture, NTU's own recording of it, the
-    導讀, the extra sittings and each interview.
+    on a laureate's page but the 導讀: the Taiwan lecture, NTU's own recording
+    of it, the extra sittings and each interview. A 導讀 keeps the cover
+    YouTube gives it, on purpose — see "Except the 導讀" below.
 
 Anything unmatched is omitted, and the reader falls back to the recording's
 default thumbnail.

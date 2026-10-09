@@ -20,8 +20,8 @@ Provenance of every field:
                           Peace BRIDGES Network channel (UCCzpgpyyiGMSQE08BuXECVw)
   yt_lecture_ipf ........ the IPF channel's upload, always, for provenance — not rendered
   lecture_channel ....... the name of the channel yt_lecture came from
-  yt_guide (導讀影片) ..... 臺大演講網 channel; 15 published (6 NTU-hosted, 6 more on 2026-09-16,
-                          3 more on 2026-10-01)
+  yt_guide (導讀影片) ..... 臺大演講網 channel; 23 published (6 NTU-hosted, 6 more on 2026-09-16,
+                          3 more on 2026-10-01, 8 more on 2026-10-08)
   interviews ............ IPF channel: 天下雜誌 CommonWealth + 風傳媒 The Storm Media
   ig_reel / ntu_* ....... https://cge.ntu.edu.tw/cl_n_203079.html
   nobel_facts ........... nobelprize.org, verified by HTTP status
@@ -113,17 +113,23 @@ L = [
 ]
 
 # 導讀影片 on 臺大演講網. The first six were filmed for the lectures NTU
-# itself hosted; the second six went up on 2026-09-16 and the next three on
-# 2026-10-01, each about ninety seconds, for lectures given at other hosts.
-# All fifteen verified public and playable in an embed on the day they were
-# added.
+# itself hosted; the second six went up on 2026-09-16, the next three on
+# 2026-10-01 and eight more on 2026-10-08 (given to the owner that week),
+# each about ninety seconds, for lectures given at other hosts. All
+# twenty-three verified public and playable in an embed on the day they were
+# added. Eight lectures have none yet: haroche, schmidt, mayor, emoser, rice,
+# roth, kobilka, kajita — their pages say the guide is in production.
 GUIDE = {"geim":"S2ohEFiR4u0","maskin":"ET-QoWIUjec","strickland":"5e6-gtnHV0M",
          "meldal":"UNt_MdCz5T0","mbmoser":"vK_aNwIlqRs","frank":"FJnh2-IxXy0",
          # 2026-09-16
          "thooft":"_8tHMlQr9Wo","karman":"C87eRAwvKyk","queloz":"RJs5WY4FCGE",
          "pissarides":"u4Hn6hByR44","ciechanover":"9szPY4r18GE","engle":"J1K1ZpFP8ng",
          # 2026-10-01
-         "noyori":"wtv7oprRdkQ","mcdonald":"nprHwUKKGjU","stiglitz":"QNsGUf8cWRc"}
+         "noyori":"wtv7oprRdkQ","mcdonald":"nprHwUKKGjU","stiglitz":"QNsGUf8cWRc",
+         # 2026-10-08
+         "murad":"15icZfRDhVs","semenza":"il_xg-85Fgc","winter":"bkDjJpwuyYQ",
+         "kornberg":"j7THjl8u8-c","wuthrich":"KwcLWTTo38I","nurse":"LWenDTbda2E",
+         "roberts":"-TyhiVcvrdk","sudhof":"8IkT52CIWGE"}
 
 # The host's own upload of the lecture, where the host published one. At the
 # owner's word (2026-10-04) this is the recording the page plays, in place of
