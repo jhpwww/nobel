@@ -5,8 +5,8 @@
  * the gallery's own colour rises, then navigation happens. Transform and
  * opacity only, so it stays on the compositor.
  *
- * Skipped entirely under reduced motion, and for modified clicks (open in a
- * new tab must keep working).
+ * Skipped entirely when the visitor has turned motion off (motionOn()), and
+ * for modified clicks (open in a new tab must keep working).
  */
 import { motionOn } from './motion';
 

@@ -123,15 +123,15 @@ const portable = process.env.PORTABLE === '1';
       <link rel="preload" as="font" type="font/woff2" crossorigin href={asset(face['noto-sans-tc'])} />
     )}
 
-    <!-- decide motion before first paint, so nothing flashes on either setting -->
+    <!-- decide motion before first paint, so nothing flashes. The museum
+         animates unless the visitor's own toggle has said off; the OS's
+         reduce-motion signal is not consulted — the same decision, in the
+         same words, as src/scripts/motion.ts -->
     <script is:inline>
       (function () {
         var p = 'auto';
         try { p = localStorage.getItem('nlm:motion') || 'auto'; } catch (e) {}
-        var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-        document.documentElement.setAttribute(
-          'data-motion', p === 'auto' ? (reduce ? 'off' : 'on') : p
-        );
+        document.documentElement.setAttribute('data-motion', p === 'off' ? 'off' : 'on');
       })();
     </script>
   </head>

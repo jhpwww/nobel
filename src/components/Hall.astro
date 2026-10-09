@@ -369,7 +369,7 @@ const cats = ORDER.map((key, i) => ({
   const plinthLinks = document.querySelectorAll<HTMLAnchorElement>('.plinth[data-cat]');
   if (hallEl && veilEl && plinthLinks.length) wireWalkIn({ scene: hallEl, veil: veilEl, links: plinthLinks });
 
-  // Pointer parallax. Cheap: one rAF, transform only, disabled for reduced motion.
+  // Pointer parallax. Cheap: one rAF, transform only, off when the visitor has turned motion off.
   const scene = document.querySelector<HTMLElement>('[data-parallax]');
   if (scene && motionOn() && window.matchMedia('(pointer: fine)').matches) {
     const layers = [...scene.querySelectorAll<HTMLElement>('.layer[data-depth]')];

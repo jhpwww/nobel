@@ -1,17 +1,26 @@
 /**
  * motion.ts — one place that decides whether this site animates.
  *
- * `prefers-reduced-motion` is respected by default, as it must be. But it is a
- * blunt OS-wide switch — on Windows, turning off "Animation effects" (which
- * people do for performance) silently kills every effect here, with no way
- * back. So the visitor gets the final say, stored per browser.
+ * The museum animates. Its only switch is its own: the visitor can turn motion
+ * off with MotionToggle, per browser, and back on the same way.
  *
- *   auto (default) — follow the operating system
- *   on             — animate regardless
- *   off            — never animate
+ *   on  (default) — animate; a stored 'auto' from before reads as this
+ *   off           — never animate
  *
- * The chosen value lands on <html data-motion="…"> before first paint, so CSS
- * and JS agree and nothing flashes.
+ * The operating system's `prefers-reduced-motion` is NOT consulted, at the
+ * owner's word (2026-10-10). On Windows that signal is the same switch as
+ * "Animation effects" in Settings › Accessibility › Visual effects, which
+ * people turn off for performance — and while this file followed it ('auto'
+ * meant "follow the OS") the official site stood still for them: the logo
+ * no longer rose and shrank as a page scrolled, the halls stopped turning.
+ * The owner's own browser saw everything move, because it had once pressed
+ * the toggle on the GitHub origin and carried `nlm:motion=on` in that
+ * origin's localStorage — a per-origin override the official host never had.
+ * So the OS is out of the decision, and the default is on.
+ *
+ * The chosen value lands on <html data-motion="…"> before first paint — the
+ * inline script in Base.astro makes the same decision in the same words — so
+ * CSS and JS agree and nothing flashes.
  */
 export type MotionPref = 'auto' | 'on' | 'off';
 const KEY = 'nlm:motion';
@@ -24,16 +33,9 @@ export function readPref(): MotionPref {
   return 'auto';
 }
 
-function systemReduces(): boolean {
-  return matchMedia('(prefers-reduced-motion: reduce)').matches;
-}
-
 /** the single question every animation should ask */
 export function motionOn(): boolean {
-  const p = readPref();
-  if (p === 'on') return true;
-  if (p === 'off') return false;
-  return !systemReduces();
+  return readPref() !== 'off';
 }
 
 /**
@@ -47,18 +49,17 @@ export function motionOn(): boolean {
  * setting is there to prevent, arrived at from the other side.
  *
  * So a journey is smooth unless the visitor has said, in this museum, that
- * they want no motion. The operating system's own switch is not enough on its
- * own: it is system-wide and blunt, people turn it on for performance — on
- * Windows it is the same switch as "Animation effects" — and this museum has
- * always held that the visitor's own choice is the one that counts. That is
- * what MotionToggle is for, and setting it to off stops these too.
+ * they want no motion. Today the two questions have the same answer, since
+ * the OS is consulted for neither; they stay two questions because they were
+ * not always the same — when motionOn() still followed the OS, this one never
+ * did — and a journey must never again be gated on anything but the toggle.
  */
 export function journeysAnimate(): boolean {
   return readPref() !== 'off';
 }
 
 export function applyPref(p: MotionPref = readPref()) {
-  document.documentElement.setAttribute('data-motion', p === 'auto' ? (systemReduces() ? 'off' : 'on') : p);
+  document.documentElement.setAttribute('data-motion', p === 'off' ? 'off' : 'on');
 }
 
 export function setPref(p: MotionPref) {
@@ -66,6 +67,3 @@ export function setPref(p: MotionPref) {
   applyPref(p);
   dispatchEvent(new CustomEvent('motionpref', { detail: { on: motionOn(), pref: p } }));
 }
-
-/** true when the OS asked for less motion and the visitor has not overridden it */
-export const isSuppressedBySystem = () => systemReduces() && readPref() === 'auto';

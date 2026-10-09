@@ -66,9 +66,23 @@
    itself and no forwarding is needed at all. */
 .chip:has(> .museum-glass-btn--chip) input { z-index: 1; }
 
-/* ---------- 5. reduced motion ----------
-   The kit drops the transition; the transform is what actually moves. */
+/* ---------- 5. motion is the museum's decision, not the OS's ----------
+   The kit answers `prefers-reduced-motion` on its own: under that signal it
+   drops the glass's transition. This site does not follow the signal (see
+   src/scripts/motion.ts — on Windows it is the "Animation effects" switch,
+   turned off for performance, and it stilled the whole official site), so the
+   kit's transition is given back here under the same media query, in the
+   kit's own figures, untouched. The kit file itself is as supplied. Motion
+   stops only when the visitor's own toggle says off: global.css takes the
+   duration then, and the transform — which is what actually moves — is held
+   here. */
 @media (prefers-reduced-motion: reduce) {
-  .museum-glass-btn:hover,
-  .museum-glass-btn:active { transform: none; }
+  html:not([data-motion='off']) .museum-glass-btn {
+    transition:
+      transform 160ms var(--museum-ease),
+      filter 160ms var(--museum-ease),
+      box-shadow 160ms var(--museum-ease);
+  }
 }
+html[data-motion='off'] .museum-glass-btn:hover,
+html[data-motion='off'] .museum-glass-btn:active { transform: none; }

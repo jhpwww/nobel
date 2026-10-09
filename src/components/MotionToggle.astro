@@ -1,23 +1,24 @@
 ---
 /**
- * MotionToggle.astro — lets the visitor turn the museum's motion back on.
+ * MotionToggle.astro — lets a visitor turn the museum's motion off, and back on.
  *
- * Shown only when motion is actually off, so it never nags anyone who is
- * already seeing the animation. Rendered hidden and revealed by script, since
- * the answer depends on an OS setting and on localStorage.
+ * The museum animates by default and does not consult the OS's reduce-motion
+ * signal (see src/scripts/motion.ts), so there is nothing to show a new
+ * visitor: the button is rendered hidden and revealed by script only for a
+ * visitor who has already pressed it once in this browser — to let them turn
+ * it back, either way — and never nags anyone else.
  */
 import { type Lang } from '../i18n/ui';
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const t = {
-  zh: { on: '開啟動態效果', off: '關閉動態效果', why: '系統設定為減少動態' },
-  en: { on: 'Turn on motion', off: 'Turn off motion', why: 'Your system asks for reduced motion' },
+  zh: { on: '開啟動態效果', off: '關閉動態效果' },
+  en: { on: 'Turn on motion', off: 'Turn off motion' },
 }[lang];
 ---
 <button class="mt" data-motion-toggle hidden type="button" aria-live="polite">
   <span class="mt__dot" aria-hidden="true"></span>
   <span class="mt__label" data-on-label={t.on} data-off-label={t.off}>{t.on}</span>
-  <span class="mt__why" data-why={t.why}></span>
 </button>
 
 <style>
@@ -50,8 +51,6 @@ const t = {
     box-shadow: 0 0 8px var(--gold);
   }
   :global(html[data-motion='on']) .mt__dot { background: #7fd18a; box-shadow: 0 0 8px #7fd18a; }
-  .mt__why { font-size: 0.62rem; color: var(--muted-dim); }
-  @media (max-width: 62rem) { .mt__why { display: none; } }
   /* the style switcher already sits top-left; drop below it when cramped */
   @media (max-width: 62rem) { .mt { inset-block-start: 3.6rem; } }
   @media (max-width: 34rem) {
@@ -60,19 +59,18 @@ const t = {
 </style>
 
 <script>
-  import { motionOn, setPref, applyPref, isSuppressedBySystem, readPref } from '../scripts/motion';
+  import { motionOn, setPref, applyPref, readPref } from '../scripts/motion';
 
   applyPref();
   const btn = document.querySelector<HTMLButtonElement>('[data-motion-toggle]');
   if (btn) {
     const label = btn.querySelector<HTMLElement>('.mt__label')!;
-    const why = btn.querySelector<HTMLElement>('.mt__why')!;
 
     const paint = () => {
       const on = motionOn();
       label.textContent = on ? label.dataset.offLabel! : label.dataset.onLabel!;
-      why.textContent = isSuppressedBySystem() ? why.dataset.why! : '';
-      // only worth showing when motion is off, or when the visitor forced it on
+      // only for a visitor who has already chosen, either way; a new visitor
+      // sees the museum move and no switch
       btn.hidden = on && readPref() === 'auto';
       btn.setAttribute('aria-pressed', String(on));
     };

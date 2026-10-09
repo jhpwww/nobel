@@ -3,8 +3,9 @@
  * AmbientVideo.astro — the drifting light-and-ember loop behind the hall.
  *
  * 12 seconds, seamless (every motion period divides the clip length). It is
- * pure decoration: muted, inert, and replaced by its own poster frame under
- * reduced-motion or Save-Data, where the video never downloads.
+ * pure decoration: muted, inert, and replaced by its own poster frame when
+ * the visitor has turned motion off, or under Save-Data, where the video
+ * never downloads.
  */
 import { asset } from '../i18n/routing';
 interface Props { opacity?: number }

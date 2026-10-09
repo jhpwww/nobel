@@ -199,10 +199,12 @@ const still = (id: string, yt: string) =>
   }
   /* No reduced-motion exception, for the panes or the ring: at the owner's
      word (2026-10-05) the hall turns whatever the visitor's system setting,
-     as the gold pieces do on every page. global.css stops every animation
-     under data-motion='off' with !important, so the ring and its panes take
-     their duration and repeat back here, more specifically and also
-     !important. */
+     as the gold pieces do on every page. Since 2026-10-10 nothing on the site
+     consults that setting (see motion.ts), so data-motion='off' now means only
+     that the visitor pressed the museum's own toggle — and the ring turns
+     through that too. global.css stops every animation under it with
+     !important, so the ring and its panes take their duration and repeat back
+     here, more specifically and also !important. */
   :global(html[data-motion='off']) .hr__ring,
   :global(html[data-motion='off']) .hr__pane {
     animation-duration: var(--dur) !important;

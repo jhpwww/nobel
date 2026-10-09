@@ -152,11 +152,18 @@ src/
   IntersectionObserver and visibilitychange. The objects hall is the deliberate exception:
   real glTF drawn by the vendored `model-viewer` (`vendor/model-viewer.min.js`), not three.js.
 - Anything drawn on the canvas is decoration. Every link must exist in the markup underneath.
-- NEVER gate an animation on `@media (prefers-reduced-motion: reduce)` or on
-  `matchMedia(...).matches` alone. Ask `motionOn()` (`src/scripts/motion.ts`) in JS and key CSS
-  off `html[data-motion='off']`, which is set before first paint and which the visitor's own
-  MotionToggle always wins. The OS switch is system-wide and unoverridable; used raw it leaves
-  visitors with a completely static museum and no way back.
+- **The OS's `prefers-reduced-motion` is not consulted, anywhere** (owner, 2026-10-10). On
+  Windows it is the "Animation effects" switch in Settings › Accessibility › Visual effects,
+  which people turn off for performance, and following it left the official site standing
+  still — no logo rising and shrinking as a page scrolled — while the owner's own browser saw
+  everything move: it had once pressed the toggle on the GitHub origin and carried
+  `nlm:motion=on` in that origin's localStorage, an override the official host never had.
+  `data-motion` on `<html>` is set before first paint from the visitor's own toggle alone:
+  `on` unless they have said `off` (a stored `auto` reads as on). NEVER gate an animation on
+  `@media (prefers-reduced-motion: reduce)` or on `matchMedia(...).matches`. Ask `motionOn()`
+  (`src/scripts/motion.ts`) in JS and key CSS off `html[data-motion='off']`. The button kit's
+  own reduced-motion rule is given back in `buttons.css` under the same media query, in the
+  kit's own figures; the kit file is not edited.
 - A JOURNEY is not an animation and asks a different question: `journeysAnimate()`, which is
   false only when the visitor's own toggle says off. The way on and the key that returns to the
   top move the page from here to there, and the movement between the two IS the answer — it is
@@ -525,9 +532,11 @@ something below its opening screen.
 - The carried target is released the moment the reader moves the page themselves — a wheel, a
   touch, an arrow key — but NOT when the press lands on the cue, which arrives as a `mousedown`
   or a `keydown` a moment before the click it belongs to.
-- Smooth unless the visitor's own toggle says off — `journeysAnimate()`, not `motionOn()`. On a
-  desktop with the OS "reduce motion" switch on (on Windows the same switch as "Animation
-  effects", which people turn off for performance) the old test made every press a teleport.
+- Smooth unless the visitor's own toggle says off — `journeysAnimate()`. Before 2026-10-10
+  `motionOn()` still followed the OS "reduce motion" switch (on Windows the same switch as
+  "Animation effects", which people turn off for performance) and the old test made every
+  press a teleport; now neither question consults the OS, but a journey must never again be
+  gated on anything but the toggle, which is why it keeps its own question.
 - It is still an `<a href="#…">`. The anchor is the fallback for a visitor whose scripts have
   not run, and the three `<span class="gr__anchor">` marker spans exist for it.
 

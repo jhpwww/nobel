@@ -90,12 +90,13 @@ Three standing controls sit in the lower right (top, back, forward), the way on 
 the window travels one screen per press, and the key in the bar for the room you are in is
 marked in red, so a page scrolled a long way still says where you are.
 
-**Motion is a visitor preference, not just an OS one.** `prefers-reduced-motion` is honoured by
-default, but on Windows turning off "Animation effects" — which people do for performance — sets
-it system-wide and silently kills every effect here. So a toggle appears in the hall whenever
-motion is off, the choice is stored per browser, and `data-motion` on `<html>` is set before
-first paint. Everything, CSS and JS alike, asks `motionOn()` in `src/scripts/motion.ts`; nothing
-gates on the media query alone. A journey asks a different question — the way on and the key
+**Motion is the museum's decision, not the OS's.** The site animates by default and does not
+consult `prefers-reduced-motion`: on Windows that signal is the "Animation effects" switch, which
+people turn off for performance, and following it left the official site standing still (since
+2026-10-10, at the owner's word). The visitor's own toggle — stored per browser, under
+`nlm:motion` — is the only switch, and `data-motion` on `<html>` is set from it before first
+paint. Everything, CSS and JS alike, asks `motionOn()` in `src/scripts/motion.ts`; nothing gates
+on the media query. A journey asks a different question — the way on and the key
 that returns to the top glide unless the visitor's own toggle says otherwise, because the
 movement between here and there is what tells a reader the page moved rather than that another
 page arrived.

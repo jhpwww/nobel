@@ -191,10 +191,12 @@ a:hover { color: var(--gold-bright); text-decoration-color: currentColor; }
 [data-cat='nobel']      { --accent: var(--c-nobel);      --accent-block: var(--c-nobel); }
 
 /* ---------- motion ----------
-   The OS preference is honoured by default, but `data-motion` (set from
-   localStorage before first paint) always wins. Never gate an animation on the
-   media query alone — an OS-wide switch the visitor cannot override is how the
-   whole museum ends up standing still. */
+   `data-motion` is set before first paint from the visitor's own choice alone
+   (src/scripts/motion.ts). The OS's reduce-motion signal is not consulted: on
+   Windows it is the "Animation effects" switch, turned off for performance,
+   and following it left the whole official site standing still. Never gate an
+   animation on the media query — key it off html[data-motion='off'], which
+   only the museum's own toggle sets. */
 html[data-motion='off'] *,
 html[data-motion='off'] *::before,
 html[data-motion='off'] *::after {
