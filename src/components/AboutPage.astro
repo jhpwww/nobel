@@ -336,6 +336,14 @@ const hostList = Object.entries(hosts);
   /* two boxes, one page: the opening padding belongs to the head, and nothing
      belongs between them — see the note beside the head above */
   .about--top { padding-block-end: 0; }
+  /* And never shorter than the share of the room's picture its sculpture
+     stands in — see --room-focus in bright.css: the rule that opens the
+     reading, and the frame under it, begin under the film and the books
+     rather than over them on every shape of window. Border-box, so the
+     3.4rem the head opens with is inside the figure. */
+  :global(html[data-theme='bright']) .about--top {
+    min-block-size: calc(var(--room-fit-h) * var(--room-focus));
+  }
   .about--body { padding-block-start: 0; }
   :global(html[data-theme='bright']) .about--body { padding-block-start: 0; }
   .about h1 { font-size: var(--step-3); color: var(--cream); }

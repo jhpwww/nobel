@@ -658,6 +658,13 @@ through the dev server itself; `scripts/search-index.mjs` does the extraction. R
   with no cap took the row from the name and the talk. `scripts/check-search-names.mjs <url>`
   searches a list of names and words in both languages and counts rows that read the same
   but open different pages; it must print 0.
+- **A row answers in the language it was found by** (owner, 2026-10-10: 'geim' found the
+  laureate and the row read 安德烈‧蓋姆 alone). A laureate row carries both names — `n2` is
+  the other language's, always shown after the first, a step smaller — and the other
+  language's title in `s2`, shown after its own when the query landed there. A page's `n2`
+  (its name in the other language) is shown only when it is what matched. `score()` treats
+  `n2` as a name and `s2` as a subtitle, so a surname typed in English ranks the laureate as a
+  name hit, not as a word in `k`.
 
 - The field carries `autofocus`. That is what puts the caret there: the dialog's
   own focusing steps run inside `showModal()`, in the same turn as the press,
@@ -876,6 +883,15 @@ reintroduce a scroll-driven mask.
   one was half dissolved by then. It wraps rather than being cut: the room beside the mark is
   measured every frame (`--pin-max`) because that row is five labels in one of two languages and
   folds into a column on a phone.
+- **The introduction room and the colophon keep the sculpture clear** (owner, 2026-10-10). Both
+  are read over a whole photograph (`--room-fit-h`: the picture's 1672:941 across the width,
+  capped by `100svh` and 62rem, `contain` inside), and their first frosted block — the will;
+  the rule over 諾貝爾獎在臺灣的回響 — opened ~290px down, a figure in rem that knew nothing of the
+  picture, so on a window wide for its height it stood over the globe and the film reel. The
+  head's box (`.np--top`, `.about--top`) now has `min-block-size: --room-fit-h × --room-focus`
+  (0.70, the sculptures' foot), so the block begins under the sculpture whatever the window's
+  shape, and the clearance follows the aspect ratio because the picture's height does. A phone
+  is untouched: its head is taller than that share already.
 
 **Traps in the bright layout that have already cost a rebuild:**
 - A CSS box gap is not the painted gap when the background is a picture with

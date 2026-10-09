@@ -793,6 +793,13 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
   /* two boxes, one room: the opening padding belongs to the head, which
      stands outside the sheet, and nothing belongs between them */
   .np--top { padding-block-end: 0; }
+  /* And never shorter than the share of the room's picture its globe stands
+     in — see --room-focus in bright.css: the will, which opens the reading,
+     begins under the sculpture rather than over it on every shape of window.
+     Border-box, so the 3.4rem the head opens with is inside the figure. */
+  :global(html[data-theme='bright']) .np--top {
+    min-block-size: calc(var(--room-fit-h) * var(--room-focus));
+  }
   .np--body { padding-block-start: 0; }
   .np__n { margin-block-start: 0; color: var(--gold); letter-spacing: 0.16em; text-indent: 0.16em; }
   :global(html[data-theme='bright']) .np__n { display: none; }

@@ -60,6 +60,14 @@ const zh = lang === 'zh';
 type Row = {
   /** what is read: the line, the line under it, and the small mark at the end */
   n: string; s: string; m: string;
+  /** The same name and the same line in the OTHER language, where there is
+      one. A laureate has two names and the row shows both, the way the
+      museum writes a laureate everywhere — so that a name typed in English
+      is answered with that name and not only with its Chinese rendering,
+      which is what the drawer did until 2026-10-10 (the English was in `k`,
+      matched, and never shown). A page's other name, and a talk's other
+      title, are shown when they are what the query found. */
+  n2?: string; s2?: string;
   /** where it goes, which group it belongs to, and everything it answers to.
       'l' laureate, 'r' room, 'p' page — and 't', a hit in a page's own text,
       which is built in the script from the second index and never here */
@@ -80,6 +88,8 @@ for (const l of allLectures()) {
   rows.push({
     n: zh ? `${l.laureate.zh}` : l.laureate.en,
     s: zh ? l.title.zh : l.title.en,
+    n2: zh ? l.laureate.en : l.laureate.zh,
+    s2: zh ? l.title.en : l.title.zh,
     /* the series on a line of its own, which the drawer may cut short: in
        English it runs to 'Raymond Soong Chair Professorship of Distinguished
        Research', and on one line it took the row and left Aspect's two
@@ -128,17 +138,20 @@ for (const key of rooms) {
 }
 
 /* ---- the museum's own pages ------------------------------------------- */
+/* each page's name in the other language as well, shown when that is the
+   name the query found — see n2 on Row */
+const t2 = useT(zh ? 'en' : 'zh');
 const pages: Row[] = [
-  { n: t('nav.all'), s: t('learn.toolAllD', { n: lectureFilms() }), m: '',
-    h: browse(lang), g: 'p', k: `${t('nav.all')} videos lectures 影片 講座 導讀 專訪 index`.toLowerCase() },
-  { n: t('nav.learn'), s: t('learn.blurb'), m: '',
-    h: learn(lang), g: 'p', k: `${t('nav.learn')} learn study course 學習 課程 走進諾貝爾 libedu1140`.toLowerCase() },
-  { n: t('study.pageTitle'), s: t('study.pageBlurb'), m: '',
-    h: `${learn(lang)}#record`, g: 'p', k: `${t('study.pageTitle')} notes progress 筆記 紀錄 匯出 備份`.toLowerCase() },
-  { n: t('about.title'), s: t('site.description'), m: '',
-    h: about(lang), g: 'p', k: `${t('about.title')} about copyright privacy 版權 隱私 臺灣橋樑計畫 taiwan bridges`.toLowerCase() },
-  { n: t('search.guides'), s: t('learn.toolGuidesD'), m: '',
-    h: `${browse(lang)}?kind=guide`, g: 'p', k: `${t('search.guides')} guide 導讀 introduction`.toLowerCase() },
+  { n: t('nav.all'), n2: t2('nav.all'), s: t('learn.toolAllD', { n: lectureFilms() }), m: '',
+    h: browse(lang), g: 'p', k: `${t('nav.all')} ${t2('nav.all')} videos lectures 影片 講座 導讀 專訪 index`.toLowerCase() },
+  { n: t('nav.learn'), n2: t2('nav.learn'), s: t('learn.blurb'), m: '',
+    h: learn(lang), g: 'p', k: `${t('nav.learn')} ${t2('nav.learn')} learn study course 學習 課程 走進諾貝爾 libedu1140`.toLowerCase() },
+  { n: t('study.pageTitle'), n2: t2('study.pageTitle'), s: t('study.pageBlurb'), m: '',
+    h: `${learn(lang)}#record`, g: 'p', k: `${t('study.pageTitle')} ${t2('study.pageTitle')} notes progress 筆記 紀錄 匯出 備份`.toLowerCase() },
+  { n: t('about.title'), n2: t2('about.title'), s: t('site.description'), m: '',
+    h: about(lang), g: 'p', k: `${t('about.title')} ${t2('about.title')} about copyright privacy 版權 隱私 臺灣橋樑計畫 taiwan bridges`.toLowerCase() },
+  { n: t('search.guides'), n2: t2('search.guides'), s: t('learn.toolGuidesD'), m: '',
+    h: `${browse(lang)}?kind=guide`, g: 'p', k: `${t('search.guides')} ${t2('search.guides')} guide 導讀 introduction`.toLowerCase() },
 ];
 rows.push(...pages);
 
@@ -224,7 +237,9 @@ const groups = { l: t('search.groupLaureate'), r: t('search.groupRoom'), p: t('s
       <a class="ss__hit" href="#">
         <span class="ss__g" data-g></span>
         <span class="ss__txt">
-          <span class="ss__n" data-n></span>
+          {/* the name, and after it the same name in the other language
+              where the row has one — see n2 on Row */}
+          <span class="ss__n"><span data-n></span><span class="ss__n2" data-n2 hidden></span></span>
           <span class="ss__s" data-s></span>
         </span>
         <span class="ss__m" data-m></span>
@@ -483,6 +498,18 @@ const groups = { l: t('search.groupLaureate'), r: t('search.groupRoom'), p: t('s
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+  /* the other name, after the first — a laureate's English after the
+     Chinese, or the Chinese after the English — a step smaller and in the
+     body face, the way the six doors of the introduction room carry theirs;
+     it keeps its own grey when the row is the current one */
+  .ss__n2 {
+    margin-inline-start: 0.55em;
+    font-family: var(--font-body);
+    font-size: var(--step--1);
+    font-weight: 400;
+    color: var(--muted);
+  }
+  .ss__row[data-on] .ss__n2 { color: var(--muted); }
   .ss__s {
     font-size: var(--step--1);
     color: var(--muted);
@@ -618,6 +645,8 @@ const groups = { l: t('search.groupLaureate'), r: t('search.groupRoom'), p: t('s
    * this file for why the match is a plain substring.
    */
   type Row = { n: string; s: string; m: string; h: string; g: 'l' | 'r' | 'p' | 't'; k: string;
+               /** the name and the line in the other language, where there is one */
+               n2?: string; s2?: string;
                /** a text hit carries its sentence ready-marked */ frag?: DocumentFragment };
   type Section = { h: string; a: string; x: string };
   type Page = { u: string; t: string; s: Section[] };
@@ -885,22 +914,28 @@ const groups = { l: t('search.groupLaureate'), r: t('search.groupRoom'), p: t('s
 
     /* The first index, folded once — see fold(): 'sudhof' has to find Südhof
        here as well as in the text */
-    const folded = new Map<Row, { n: string; s: string; k: string }>();
+    const folded = new Map<Row, { n: string; s: string; k: string; n2: string; s2: string }>();
     const fo = (r: Row) => {
       let f = folded.get(r);
-      if (!f) { f = { n: fold(r.n).s, s: fold(r.s).s, k: fold(r.k).s }; folded.set(r, f); }
+      if (!f) {
+        f = { n: fold(r.n).s, s: fold(r.s).s, k: fold(r.k).s,
+              n2: r.n2 ? fold(r.n2).s : '', s2: r.s2 ? fold(r.s2).s : '' };
+        folded.set(r, f);
+      }
       return f;
     };
 
     /** Where the match lands is the whole ranking: a name beats a subtitle
-        beats the body, and starting the field beats being inside it. */
+        beats the body, and starting the field beats being inside it. A name
+        in either language is the name: 'geim' lands on the laureate's row as
+        a name, not as a word somewhere in its keys. */
     function score(r: Row, q: string): number {
-      const { n, s, k } = fo(r);
+      const { n, s, k, n2, s2 } = fo(r);
       let sc = 0;
-      if (n.startsWith(q)) sc = 100;
-      else if (n.includes(q)) sc = 70;
-      else if (s.startsWith(q)) sc = 45;
-      else if (s.includes(q)) sc = 34;
+      if (n.startsWith(q) || n2.startsWith(q)) sc = 100;
+      else if (n.includes(q) || n2.includes(q)) sc = 70;
+      else if (s.startsWith(q) || s2.startsWith(q)) sc = 45;
+      else if (s.includes(q) || s2.includes(q)) sc = 34;
       else if (k.includes(q)) sc = 18;
       else return 0;
       /* a room or a page is a bigger thing than one lecture, and a visitor
@@ -985,8 +1020,21 @@ const groups = { l: t('search.groupLaureate'), r: t('search.groupRoom'), p: t('s
         li.id = `ss-o${i}`;
         a.href = r.h;
         frag.querySelector('[data-n]')!.append(mark(r.n, q));
-        /* a text hit arrives with its sentence already marked, term by term */
-        frag.querySelector('[data-s]')!.append(r.frag ?? mark(r.s, q));
+        /* The other name: a laureate's always — the museum writes a laureate
+           with both names wherever it writes one — and a page's when it is
+           the name the query found rather than the one already shown. */
+        const f = fo(r);
+        const n2 = frag.querySelector<HTMLElement>('[data-n2]')!;
+        if (r.n2 && (r.g === 'l' || (q && f.n2.includes(q) && !f.n.includes(q)))) {
+          n2.hidden = false;
+          n2.append(mark(r.n2, q));
+        }
+        /* a text hit arrives with its sentence already marked, term by term;
+           a talk's title in the other language follows its own when that is
+           where the query landed, so the row shows what it was found by */
+        const sEl = frag.querySelector('[data-s]')!;
+        sEl.append(r.frag ?? mark(r.s, q));
+        if (r.s2 && q && f.s2.includes(q) && !f.s.includes(q)) sEl.append(' · ', mark(r.s2, q));
         /* a page's name in two lines, whose and which talk: each its own
            line, so the talk can be cut short without the name */
         const m = frag.querySelector<HTMLElement>('[data-m]')!;

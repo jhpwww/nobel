@@ -314,6 +314,30 @@ html[data-theme='bright'] {
      seam. */
   --gr-room-h: var(--gr-head-h);
 
+  /* ---- the whole room, where a page is read over the whole of it ----
+     The introduction room and the colophon stand on a photograph shown whole
+     rather than banded. RoomBack and the introduction room's .gr__room size
+     their box with this same expression — the picture's own 1672:941 across
+     the width, capped by the window's height and by 62rem, `contain` inside
+     it — so the picture's rendered height IS the box's. Mirrored here so a
+     page can measure where it may begin against the picture it is read over;
+     change one and change the other. */
+  --room-fit-h: min(calc(100vw * 941 / 1672), 100svh, 62rem);
+  /* The share of that height a page's head keeps clear: its first frosted
+     block begins no higher than this. 0.70 is the foot of the sculpture that
+     stands in the middle of nobel-hall (the globe) and of about-hall (the
+     film and the books) — both end a little past it, where the veil the room
+     ends in has already begun. At the owner's word (2026-10-10): the block
+     opened some 290px down, a figure in rem that knew nothing of the picture,
+     and on a window wide for its height — where the whole picture is held to
+     the window's height and so comes down small — it stood over the
+     sculpture. Measured against the picture, the clearance follows the
+     window's shape: whatever the picture's height, which the aspect ratio
+     sets, the sculpture is seen and the reading starts under it. A phone is
+     untouched — the head alone is taller than this share of a picture a
+     phone's width across. */
+  --room-focus: 0.70;
+
   /* ---- the emblem a page hangs beside its title ----
      The about page's medal, the introduction room's laurel, the learning
      area's device and the index of films' reel. All four do the same thing —
