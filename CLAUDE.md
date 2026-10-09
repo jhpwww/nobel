@@ -906,6 +906,12 @@ reintroduce a scroll-driven mask.
   busy phone the fold stuttered, and the plate, cut for the inscription, was seen hanging off
   the left of the screen before sliding into place. Do not go back to animating
   `font-size`, `letter-spacing`, `inset` or anything else the page lays out.
+- **The two plates are the same width** (owner, 2026-10-09): the English mark's size is
+  not a step of the scale but a share of the Han mark's — `--step-0 × 0.816` on a desktop
+  (plates cut at 136% and 150%), `× 0.740` on a phone (both at 136%) — derived from the
+  two names' em measures at fractional advances (`text-rendering: geometricPrecision` on
+  both marks; hinted, the English name runs 6–15% wider and the derivation is wrong). If
+  either name changes, re-measure both names' widths and re-derive the two factors.
 - A theme rule for `:lang(zh) :is(h1, h2, h3)` outweighs a component's rule on the hall's
   h1: the Han mark's 0.07em is restated in bright.css, and the inscription span is named in
   the two Han heading rules (0.012em, 1.28) so that it reads exactly as the h1 it replaced.

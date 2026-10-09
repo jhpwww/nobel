@@ -490,8 +490,19 @@ html[data-theme='bright'] :is(.bh__lockup .bh__title, .gr__lock-name)::before {
    In a room the name is an inline box, which a transform does not reach, so
    the letters there stand in a box of their own, .gr__lock-txt, and that is
    what is scaled; the plate on .gr__lock-name is not touched at all. */
+/* And the plate the same width as the Han plate, at the owner's word
+   (2026-10-09, after the bold English plate came out 5% wider than the Han
+   one on a desktop and 12% on a phone — "遠大於"). Both plates are cut from
+   their names: the Han name is 10.69em at 0.07em, cut at 150%; the English
+   14.48em at 0.04em, cut at 136% — both measured at fractional advances,
+   see below; hinted, the English runs to 16.6em, which is the "far larger"
+   a phone that hints showed. Equal plates therefore put the English face at
+   10.69 x 1.5 / (14.48 x 1.36) = 0.816 of the Han's, which is 14.1px at
+   1440, and because both are shares of --step-0 the two plates stay equal
+   at every width. The letters keep their 1.05 x 1.155 and the same 7px of
+   panel either side of them. */
 html[lang='en'][data-theme='bright'] :is(.bh__lockup .bh__title, .gr__lock-name) {
-  font-size: var(--step--1);
+  font-size: calc(var(--step-0) * 0.816);
   font-weight: 700;
   letter-spacing: 0.04em;
   text-indent: 0.04em;
@@ -509,29 +520,27 @@ html[data-theme='bright'] .gr__lock-txt {
   display: inline-block;
   text-indent: 0;
 }
-/* On a phone the plate shares one row with the emblem caught beside it and
-   the menu key, so there the name is sized for that row: 11.2px on a 360px
-   phone, 12.1 at 390, the desktop's 14.1 from 454px, with the emblem still
-   clear of the key. And the English mark stands in from the edge as far as
-   its plate hangs past it, so the acanthus stays on the screen. */
+/* On a phone both plates are cut at 136%, so equal plates are equal names:
+   the English face at 10.69 / 14.48 = 0.740 of the Han's, 11.3px at 390
+   (from 12.1). With the two names the same width the English plate hangs
+   past its box exactly as far as the Han one, and stands at the same
+   --mark-x — which also keeps the emblem caught beside it as clear of the
+   menu key as it is in Chinese. */
 @media (max-width: 40rem) {
-  html[lang='en'][data-theme='bright'] {
-    --mark-x: clamp(1.5rem, calc(8.8vw - 0.5rem), 2rem);
-  }
   html[lang='en'][data-theme='bright'] :is(.bh__lockup .bh__title, .gr__lock-name) {
-    font-size: clamp(0.67rem, 3.1vw, 0.88rem);
+    font-size: calc(var(--step-0) * 0.740);
   }
 }
-/* The Han name is laid out at fractional advances. Where a browser rounds a
+/* Both names are laid out at fractional advances. Where a browser rounds a
    glyph's advance to the whole pixel (Chromium on Linux does; macOS, iOS
-   and Windows do not), the hall's name, shrinking through every size between
-   the inscription and the mark, lost a pixel on all ten characters at once
-   every few frames — and its plate, cut at a share of the name's width and
-   centred on it, jumped 14px each time. The fold no longer re-sizes type,
-   so this is kept for the mark's own sake: a name laid out at fractional
-   advances is the same width in both languages' rooms. Where advances are
-   fractional already this changes nothing. */
-html[data-theme='bright'] :is(.bh__lockup .bh__title, .gr__lock-name):lang(zh) {
+   and Windows do not), a name is a different width from the one its em
+   measure says, and the plate cut from it a different size: the Han mark
+   once jumped 14px with it while the fold re-sized the type, and the
+   English mark came out 3% wider than the Han one on the machine that
+   checks these pages. The two plates are equal by the names' em measures,
+   so the names are laid out by those. Where advances are fractional
+   already this changes nothing. */
+html[data-theme='bright'] :is(.bh__lockup .bh__title, .gr__lock-name) {
   text-rendering: geometricPrecision;
 }
 
