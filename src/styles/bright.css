@@ -477,15 +477,39 @@ html[data-theme='bright'] .bh__lockup .bh__title::before {
 }
 html[data-theme='bright'] .bh__lockup[data-small] .bh__title::before { opacity: 1; }
 /* English runs longer than the Han name, and the plate is sized off it — at
-   the same step the plate came out 90px tall and its crown went off the top
-   of the window. As Nobel Lecture Museum it ran a third longer and one step
-   down held the two languages to the same object; as Nobel Lecture Taiwan
-   Museum (2026-10-09) it runs half as long again and takes two: 186 and
-   182px of name at 1440, 170 and 161 at 390. At one step its plate came out
-   a fifth wider than the Han one, and on a phone pushed what is caught beside
-   the mark — a prize's piece, a room's emblem — under the menu key. */
+   the Han name's step the plate came out 90px tall and its crown went off
+   the top of the window, so English is set a step down. Since the name became
+   Nobel Lecture Taiwan Museum (2026-10-09), half as long again as the Han,
+   two more things, so that it reads clearly on the plate (the owner's word,
+   after two steps down at 600 proved too faint):
+   · bold, with its tracking taken in from 0.07em to 0.04em, which is what
+     lets a heavier face keep the width;
+   · its plate cut at 136% of the name rather than 150%. A line of Latin is
+     long for its height, so at 150% the panel stood far taller than the type
+     and the crown neared the top of the window; at 136% the margin round the
+     name is in proportion and the plate is a size with the Han one. */
 html[lang='en'][data-theme='bright'] :is(.bh__lockup[data-small] .bh__title, .gr__lock-name) {
-  font-size: var(--step--2);
+  font-size: var(--step--1);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-indent: 0.04em;
+}
+html[lang='en'][data-theme='bright'] :is(.bh__lockup .bh__title, .gr__lock-name)::before {
+  inline-size: 136%;
+}
+/* On a phone the plate shares one row with the emblem caught beside it and
+   the menu key, so there the bolder name grows with the screen: 11.2px on a
+   360px phone, 12.1 at 390, the desktop's 14.1 from 454px — as large as the
+   row allows with the emblem still clear of the key. And the English mark
+   stands in from the edge as far as its plate hangs past it, so the acanthus
+   stays on the screen at every size. */
+@media (max-width: 40rem) {
+  html[lang='en'][data-theme='bright'] {
+    --mark-x: clamp(1.5rem, calc(8.8vw - 0.5rem), 2rem);
+  }
+  html[lang='en'][data-theme='bright'] :is(.bh__lockup[data-small] .bh__title, .gr__lock-name) {
+    font-size: clamp(0.67rem, 3.1vw, 0.88rem);
+  }
 }
 
 /* No tablet under the mark: the plate is the ground, and a frosted rectangle

@@ -72,7 +72,9 @@ const FONTS = BRIGHT ? {
   // opsz is pinned to the size these are actually set at; carrying the whole
   // 8-60 optical range would ship deltas for text this site never renders
   'Source Serif 4': ['SourceSerif4-VF.ttf', 'source-serif-4', 'wght=400:700 opsz=20'],
-  'Source Sans 3': ['SourceSans3-VF.ttf', 'source-sans-3', 'wght=400:600'],
+  // to 700 for the museum's English name on its plate, set bold at the
+  // owner's word (2026-10-09) so it reads at the size the plate allows
+  'Source Sans 3': ['SourceSans3-VF.ttf', 'source-sans-3', 'wght=400:700'],
 } : {
   'Noto Sans TC': ['NotoSansTC-VF.ttf', 'noto-sans-tc', 'wght=300:500'],
   'Noto Serif TC': ['NotoSerifTC-VF.ttf', 'noto-serif-tc', 'wght=400:600'],
