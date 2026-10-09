@@ -8,9 +8,9 @@ export const HTML_LANG: Record<Lang, string> = { zh: 'zh-Hant-TW', en: 'en' };
 /** Every user-facing string on the site. No hardcoded copy in components. */
 export const ui = {
   zh: {
-    'site.title': '諾貝爾講座博物館',
+    'site.title': '諾貝爾講座臺灣博物館',
     'site.university': '國立臺灣大學',
-    'site.tagline': '諾貝爾講座博物館',
+    'site.tagline': '諾貝爾講座臺灣博物館',
     'site.description':
       '收錄臺灣橋樑計畫 32 場諾貝爾獎得主演講、導讀影片與專訪，為高中生、大學生與一般大眾打造的線上影音博物館。',
 
@@ -293,9 +293,9 @@ export const ui = {
     'about.title': '關於本館',
   },
   en: {
-    'site.title': 'Nobel Lecture Museum',
+    'site.title': 'Nobel Lecture Taiwan Museum',
     'site.university': 'National Taiwan University',
-    'site.tagline': 'Nobel Lecture Museum',
+    'site.tagline': 'Nobel Lecture Taiwan Museum',
     'site.description':
       '32 Nobel laureate lectures delivered in Taiwan, with guide videos and interviews — an online video museum for students and the curious public.',
 

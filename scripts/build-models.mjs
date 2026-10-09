@@ -186,7 +186,7 @@ for (const [cat, piece] of Object.entries(PIECES)) {
     continue;
   }
   await write(cat, piece.build);
-  CREDITS[cat] = { title: piece.title, author: 'Nobel Lecture Museum' };
+  CREDITS[cat] = { title: piece.title, author: 'Nobel Lecture Taiwan Museum' };
 }
 
 const file = 'data/model-credits.json';

@@ -336,10 +336,16 @@ html[data-theme='bright'] {
   /* Where the museum's mark stands in from the corner — wide enough for the
      plate, not just the name: the plate is drawn half again as wide as the
      name and centred on it, so a quarter of the name's width hangs past the
-     box at each side (41px in English), and a smaller inset puts the left end
-     of the plate off the screen. One number, used by the mark itself, by the
-     hall's folded name, and by everything that is placed beside them. */
-  --mark-x: clamp(1.9rem, 2.6vw, 2.1rem);
+     box at each side (46px in English since the name became Nobel Lecture
+     Taiwan Museum, two steps down; 41px before), and a smaller inset puts the
+     left end of the plate off the screen. Set on 2026-10-09 for the longer
+     name: the Han plate now hangs as far as the English one, and 2.45rem
+     keeps both 6.5px or more from the edge at every width above a phone (it
+     was clamp(1.9rem, 2.6vw, 2.1rem), and the mark's type stops growing at
+     1200px, so a range no longer buys anything). One number, used by the
+     mark itself, by the hall's folded name, and by everything placed beside
+     them. */
+  --mark-x: 2.45rem;
   --emb-h: calc(var(--gr-art) * 0.4374);
   --emb-k: 0.4;
   /* level with the mark's own top edge — .gr__lock's inset — less the rail's
@@ -470,12 +476,16 @@ html[data-theme='bright'] .bh__lockup .bh__title::before {
   transition: opacity var(--swap, 0s) var(--ease);
 }
 html[data-theme='bright'] .bh__lockup[data-small] .bh__title::before { opacity: 1; }
-/* English runs a third longer than the Han name, and the plate is sized off
-   it — at the same step the plate came out 90px tall and its crown went off
-   the top of the window. One step down holds the two languages to the same
-   object. */
+/* English runs longer than the Han name, and the plate is sized off it — at
+   the same step the plate came out 90px tall and its crown went off the top
+   of the window. As Nobel Lecture Museum it ran a third longer and one step
+   down held the two languages to the same object; as Nobel Lecture Taiwan
+   Museum (2026-10-09) it runs half as long again and takes two: 186 and
+   182px of name at 1440, 170 and 161 at 390. At one step its plate came out
+   a fifth wider than the Han one, and on a phone pushed what is caught beside
+   the mark — a prize's piece, a room's emblem — under the menu key. */
 html[lang='en'][data-theme='bright'] :is(.bh__lockup[data-small] .bh__title, .gr__lock-name) {
-  font-size: var(--step--1);
+  font-size: var(--step--2);
 }
 
 /* No tablet under the mark: the plate is the ground, and a frosted rectangle

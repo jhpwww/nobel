@@ -15,7 +15,11 @@ function, no database, no login. If a task seems to need one, stop and say so.
 
 These are decided. Do not reopen them, and do not let a tidy-up quietly reverse one.
 
-- **The museum's name and its main axis do not change.**
+- **The museum's name is 諾貝爾講座臺灣博物館 · Nobel Lecture Taiwan Museum**, renamed at the
+  owner's word on 2026-10-09 (it was 諾貝爾講座博物館 · Nobel Lecture Museum). It lives in
+  `site.title` and `site.tagline` in `src/i18n/ui.ts` and is read from there everywhere,
+  the hall's second-language line included. **The name and the main axis do not change**
+  except at the owner's word.
 - **The dark museum is preserved as it is**, in `jhpwww/taiwan-nobel-museum` at
   https://jhpwww.github.io/taiwan-nobel-museum/. This repository is the bright museum alone;
   nothing here touches the dark site. Its ~56 text styles below AA are deliberate and stay.

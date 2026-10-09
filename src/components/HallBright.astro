@@ -30,7 +30,7 @@
  * read as dirt on marble; motes are invisible against a hall this bright. The
  * light in this room is the photograph's own.
  */
-import { useT, type Lang } from '../i18n/ui';
+import { useT, HTML_LANG, type Lang } from '../i18n/ui';
 import { gallery, asset } from '../i18n/routing';
 import { catName, catNameAlt, categoryList } from '../data/catalog';
 import credits from '../../data/model-credits.json';
@@ -42,6 +42,7 @@ import { readFileSync } from 'node:fs';
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const t = useT(lang);
+const other: Lang = lang === 'zh' ? 'en' : 'zh';
 
 /* Sittings, not lecture records: Südhof's lecture was given twice and the room
    says so. See 'A lecture, and a sitting' in catalog.ts.
@@ -149,7 +150,9 @@ const PLATE = { w: 836, h: 470 };
         UNDER the Han title instead, the width of the title. */}
     <h1 id="hall-title" class="bh__title">{t('site.tagline')}</h1>
     <span class="bh__lock-rule" aria-hidden="true"></span>
-    <span class="bh__title-en" lang="en">{lang === 'zh' ? 'Nobel Lecture Museum' : '諾貝爾講座博物館'}</span>
+    {/* the name in the other language, from the same key, so the two lines
+        cannot fall out of step when the name changes (it did, 2026-10-09) */}
+    <span class="bh__title-en" lang={HTML_LANG[other]}>{useT(other)('site.tagline')}</span>
   </header>
 
   <div class="bh__stage">
@@ -407,7 +410,7 @@ const PLATE = { w: 836, h: 470 };
    * It does not scroll — it never moves with the page — but it cannot stay a
    * display headline either: the page below carries no ground of its own, so
    * everything that comes up passes straight under it, and 本館推薦 was landing
-   * inside 諾貝爾講座博物館. So the inscription becomes a mark: the rule, the
+   * inside 諾貝爾講座臺灣博物館. So the inscription becomes a mark: the rule, the
    * university and the English line fold away, the name shrinks, and it takes
    * the same frosted tablet the bar's keys wear, level with them. Coming back
    * up the page opens it out again. */
@@ -776,6 +779,18 @@ const PLATE = { w: 836, h: 470 };
     .bh__title-en { margin-block-start: -0.098rem; line-height: 1.05; }
     .bh__title { line-height: 1.06; }
     .bh__title { font-size: clamp(1.32rem, 7.4vw, 1.9rem); }
+    /* The English name is half as long again as the Han one — 16em of
+       letterspaced type to 11 — and at the Han name's size it ran under the
+       menu key: its last letter as 'Nobel Lecture Museum', and wrapped, with
+       'Taiwan' under the key, once the name grew (2026-10-09). So it is set
+       to end before the key in one line: 4.5rem is the lockup's own inset,
+       the key, and the air either side of it; 16.4em the name's measure as
+       rendered, which hinting widens at small sizes (15.9em at 414px, 16.4
+       at 320). Open state only — folded into the mark it takes the mark's
+       size. */
+    .bh__lockup:not([data-small]) .bh__title:lang(en) {
+      font-size: min(clamp(1.32rem, 7.4vw, 1.9rem), calc((100vw - 4.5rem) / 16.4));
+    }
     .bh__title-en { font-size: 0.62rem; letter-spacing: 0.16em; text-indent: 0.16em; }
 
     .bh__plinths {
