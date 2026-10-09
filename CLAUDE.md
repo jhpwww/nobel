@@ -473,6 +473,22 @@ Every descriptive string on the site is a museum wall label, not a lesson.
 - Chinese: 破折號 (——) sparingly, and never in a hook. Official lecture
   titles keep whatever punctuation they were delivered with.
 
+## The language flag keeps the reader's place
+
+At the owner's word (2026-10-09), switching language opens the other copy at the same
+place, not at its top. The flag already carries the query and hash; at the press,
+`Base.astro` also records where the reading line (30% down the window) falls, as a
+structural path from `<main>` — at each level the child count, the child the line crosses
+and how far into it — in `sessionStorage` (`nlm:lang-place`, read once, 20 s). The other
+copy walks the path while its structure agrees, applies it again at `load` and
+`fonts.ready` unless the reader has moved the page, and a line in a gap is held by the next
+block in pixels.
+
+- The walk stops where the two languages' structures differ, and lands only as well as
+  the level it stopped at. A language-only element is best a leaf inside a block (a
+  `.gloss` span in a heading), not an extra block among siblings.
+- `scrollY < 2` records nothing: a reader at the top arrives at the top.
+
 ## PageNav (the three standing controls, lower right)
 
 `src/components/PageNav.astro`, mounted once in `Base.astro`.

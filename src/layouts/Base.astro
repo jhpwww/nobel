@@ -259,6 +259,102 @@ const portable = process.env.PORTABLE === '1';
           carry();
           for (const ev of ['pointerdown', 'focus', 'keydown'] as const) flag.addEventListener(ev, carry);
         }
+
+        /* ...and to the same place on it (owner, 2026-10-09): changing
+           language mid-page used to open the other copy at its top. The two
+           copies are one set of components with text of different lengths,
+           so the same scroll offset would be a different paragraph; the place
+           is kept as structure instead. At the press: from <main> down, at
+           each level, how many parts there are, which one the reading line —
+           a third of the way down the window — crosses, and how far into the
+           block the line falls. The other copy walks the same path while its
+           structure agrees (a Chinese-only gloss is where it stops agreeing)
+           and puts the same point of the deepest block it reached on the same
+           line. A line that falls in the gap between two blocks is held by the
+           block below it, in pixels, since a share of the block around the gap
+           lands somewhere else in a text of another length. Applied again once
+           the page has loaded and once its faces have arrived, both of which
+           move text — unless the reader has moved the page by then. */
+        type Step = { n: number; f: number; i?: number; px?: number };
+        type Place = { to: string; at: number; path: Step[]; frac: number };
+        const PLACE = 'nlm:lang-place';
+        const LINE = 0.3;
+        const SKIP = new Set(['SCRIPT', 'STYLE', 'TEMPLATE', 'LINK', 'META', 'NOSCRIPT']);
+        const parts = (el: Element) => [...el.children].filter((c) => !SKIP.has(c.tagName));
+        const inFlow = (el: Element) => {
+          const cs = getComputedStyle(el);
+          return cs.display !== 'none' && cs.display !== 'contents'
+            && cs.position !== 'fixed' && cs.position !== 'absolute';
+        };
+        const here = (): Step[] => {
+          const line = innerHeight * LINE;
+          const path: Step[] = [];
+          let el: Element | null = document.getElementById('main');
+          for (let d = 0; el && d < 16; d++) {
+            const r = el.getBoundingClientRect();
+            const kids = parts(el);
+            const step: Step = { n: kids.length, f: r.height > 0 ? (line - r.top) / r.height : 0 };
+            path.push(step);
+            const boxes = kids.map((k) => (inFlow(k) ? k.getBoundingClientRect() : null));
+            const i = boxes.findIndex((q) => !!q && q.height > 0 && q.top <= line && q.bottom > line);
+            if (i < 0) {
+              const below = boxes.findIndex((q) => !!q && q.height > 0 && q.top > line);
+              if (below >= 0) { step.i = below; step.px = line - boxes[below]!.top; }
+              break;
+            }
+            step.i = i;
+            el = kids[i];
+          }
+          return path;
+        };
+        if (flag) flag.addEventListener('click', () => {
+          if (scrollY < 2) return;
+          const room = document.documentElement.scrollHeight - innerHeight;
+          const p: Place = {
+            to: new URL(flag.href, location.href).pathname, at: Date.now(),
+            path: here(), frac: room > 0 ? scrollY / room : 0,
+          };
+          try { sessionStorage.setItem(PLACE, JSON.stringify(p)); } catch { /* blocked: the top, as before */ }
+        });
+
+        let came: Place | null = null;
+        try {
+          came = JSON.parse(sessionStorage.getItem(PLACE) ?? 'null') as Place | null;
+          sessionStorage.removeItem(PLACE);
+        } catch { came = null; }
+        if (came && came.to === location.pathname && Date.now() - came.at < 20000) {
+          const p = came;
+          const go = () => {
+            let y = p.frac * (document.documentElement.scrollHeight - innerHeight);
+            let el: Element | null = document.getElementById('main');
+            if (el && p.path.length) {
+              let f = p.path[0].f;
+              let px: number | undefined;
+              for (let k = 0; k < p.path.length; k++) {
+                const step = p.path[k];
+                f = step.f;
+                if (step.i === undefined) break;
+                if (k === p.path.length - 1 && step.px === undefined) break;
+                const kids: Element[] = parts(el);
+                const next: Element | undefined = kids[step.i];
+                if (kids.length !== step.n || !next || !inFlow(next)) break;
+                el = next;
+                if (step.px !== undefined) { px = step.px; break; }
+              }
+              const r = el.getBoundingClientRect();
+              y = scrollY + r.top + (px ?? f * r.height) - innerHeight * LINE;
+            }
+            scrollTo({ top: Math.max(0, Math.round(y)), behavior: 'instant' });
+          };
+          let moved = false;
+          for (const ev of ['wheel', 'touchstart', 'keydown', 'pointerdown'] as const) {
+            addEventListener(ev, () => { moved = true; }, { passive: true, once: true });
+          }
+          const again = () => { if (!moved) go(); };
+          go();
+          addEventListener('load', again, { once: true });
+          document.fonts?.ready.then(again);
+        }
     </script>
 
     {!bare && (
