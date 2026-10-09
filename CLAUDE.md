@@ -890,6 +890,14 @@ reintroduce a scroll-driven mask.
 - Stop a Playwright check before editing source: an HMR navigation destroys its
   execution context mid-run.
 - Never write a `pgrep -f` wait loop — it matches itself and never exits.
+- The museum's name plate is cut at a share of the name's LAYOUT width (`::before`,
+  136% / 150%), so enlarging the name by `font-size` enlarges the plate — the owner wants
+  the plate fixed and only the letters larger. Enlarge with `scale` on the letters:
+  `.gr__lock-txt` in a room, the h1 in the hall (whose `::before` then takes the inverse).
+  A transform on `.gr__lock-name` itself does nothing: it is an inline box.
+- The hall's plate fades in over the last 45% of the fold and out over the first 40% of
+  the unfold. Faded with the name from the start, it is still cut for the inscription's
+  size and hangs off the left edge of a phone while half visible.
 
 ## Colour is measured, not eyeballed
 
