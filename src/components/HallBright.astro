@@ -359,7 +359,12 @@ const PLATE = { w: 836, h: 470 };
   }
   /* the halo belongs to the inscription and goes out as the plate comes in —
      the two are a cross-fade, over the same half second the name shrinks in */
-  .bh__lockup::before { transition: opacity var(--swap) var(--ease); }
+  .bh__lockup::before { transition: opacity calc(var(--swap) * 0.4) var(--ease); }
+  /* and crossed with the plate where the plate now comes in: the last 45% of
+     the fold — see the plate's own rule in bright.css */
+  .bh__lockup[data-small]::before {
+    transition: opacity calc(var(--swap) * 0.45) var(--ease) calc(var(--swap) * 0.55);
+  }
   .bh__lock-rule, .bh__title-en, .bh__title {
     transition: opacity var(--swap) var(--ease),
                 block-size var(--swap) var(--ease),

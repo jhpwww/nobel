@@ -473,9 +473,23 @@ html[data-theme='bright'] :is(.bh__lockup .bh__title, .gr__lock-name)::before {
    name measures at each frame. */
 html[data-theme='bright'] .bh__lockup .bh__title::before {
   opacity: 0;
-  transition: opacity var(--swap, 0s) var(--ease), scale var(--swap, 0s) var(--ease);
+  /* going back up: the plate is gone in the first two fifths, before the
+     name it is cut for has grown past the edge of the screen */
+  transition: opacity calc(var(--swap, 0s) * 0.4) var(--ease),
+              scale var(--swap, 0s) var(--ease);
 }
-html[data-theme='bright'] .bh__lockup[data-small] .bh__title::before { opacity: 1; }
+/* Coming down, the plate arrives in the last 45% of the fold. It is cut at a
+   share of the name's width and the name starts at the inscription's size, so
+   at the first frame the plate is 425px across with its left end 43px off
+   the screen; faded in from the start, it was half there and still hanging
+   off the edge a tenth of a second in, and was seen to slide back into place
+   (the owner, on a phone, in English). From 55% on it is within a pixel of
+   where it stops. */
+html[data-theme='bright'] .bh__lockup[data-small] .bh__title::before {
+  opacity: 1;
+  transition: opacity calc(var(--swap, 0s) * 0.45) var(--ease) calc(var(--swap, 0s) * 0.55),
+              scale var(--swap, 0s) var(--ease);
+}
 /* English runs longer than the Han name, and the plate is sized off it — at
    the Han name's step the plate came out 90px tall and its crown went off
    the top of the window, so English is set a step down. Since the name became
@@ -488,39 +502,62 @@ html[data-theme='bright'] .bh__lockup[data-small] .bh__title::before { opacity: 
      long for its height, so at 150% the panel stood far taller than the type
      and the crown neared the top of the window; at 136% the margin round the
      name is in proportion and the plate is a size with the Han one. */
-/* Then, still at the owner's word, 5% larger again and drawn a tenth taller
-   than the face at the same width — a vertical stretch of the letters alone.
-   `scale` leaves the layout as it was, so the name's width, the mark's and
-   everything measured off them (mark.ts) are those of the unstretched name;
-   the plate is the name's own ::before, so it is scaled back by the inverse
-   and stays exactly the plate it was. */
+/* Then, still at the owner's word, the letters 5% larger again and a tenth
+   taller than that at the same width — and the plate not at all: it stays the
+   size it was cut for the name at --step--1 (the owner, 2026-10-09). So the
+   name keeps that size for layout, and the enlargement is a `scale` of the
+   letters alone, 1.05 across and 1.05 x 1.1 down. `scale` leaves the layout
+   as it was, so the name's box, the mark's width and everything mark.ts and
+   the emblems measure off them are those of the name at --step--1; the plate
+   is the name's own ::before, so it is scaled back by the inverse and stays
+   exactly the plate it was. The letters overrun the name's box by 2.5% each
+   side, well inside the plate's panel.
+   In a room the name is an inline box, which a transform does not reach, so
+   the letters there stand in a box of their own, .gr__lock-txt, and that is
+   what is scaled; the plate on .gr__lock-name is not touched at all. */
 html[lang='en'][data-theme='bright'] :is(.bh__lockup[data-small] .bh__title, .gr__lock-name) {
-  font-size: calc(var(--step--1) * 1.05);
+  font-size: var(--step--1);
   font-weight: 700;
   letter-spacing: 0.04em;
   text-indent: 0.04em;
-  scale: 1 1.1;
+}
+html[lang='en'][data-theme='bright'] :is(.bh__lockup[data-small] .bh__title, .gr__lock-txt) {
+  scale: 1.05 1.155;
 }
 html[lang='en'][data-theme='bright'] :is(.bh__lockup .bh__title, .gr__lock-name)::before {
   inline-size: 136%;
 }
-html[lang='en'][data-theme='bright'] :is(.bh__lockup[data-small] .bh__title, .gr__lock-name)::before {
-  scale: 1 0.90909;
+html[lang='en'][data-theme='bright'] .bh__lockup[data-small] .bh__title::before {
+  scale: 0.95238 0.86580;
+}
+/* the letters' own box: no indent of its own (an inline name never had one),
+   so it is exactly as wide as the letters were and the plate is unchanged */
+html[data-theme='bright'] .gr__lock-txt {
+  display: inline-block;
+  text-indent: 0;
 }
 /* On a phone the plate shares one row with the emblem caught beside it and
-   the menu key, so there the name grows with the screen as far as the row
-   allows with the emblem still clear of the key: 11.2px on a 360px phone,
-   where there is nothing to spare, 12.7 at 390, 13.5 at 414, the desktop's
-   14.8 from 454px. And the English mark stands in from the edge as far as
-   its plate hangs past it, so the acanthus stays on the screen at every
-   size. */
+   the menu key, so there the name is sized for that row: 11.2px on a 360px
+   phone, 12.1 at 390, the desktop's 14.1 from 454px, with the emblem still
+   clear of the key. And the English mark stands in from the edge as far as
+   its plate hangs past it, so the acanthus stays on the screen. */
 @media (max-width: 40rem) {
   html[lang='en'][data-theme='bright'] {
-    --mark-x: clamp(1.5rem, calc(9.2vw - 0.57rem), 2.1rem);
+    --mark-x: clamp(1.5rem, calc(8.8vw - 0.5rem), 2rem);
   }
   html[lang='en'][data-theme='bright'] :is(.bh__lockup[data-small] .bh__title, .gr__lock-name) {
-    font-size: clamp(0.67rem, min(3.255vw, 5.1vw - 7.2px), 0.924rem);
+    font-size: clamp(0.67rem, 3.1vw, 0.88rem);
   }
+}
+/* The Han name is laid out at fractional advances. Where a browser rounds a
+   glyph's advance to the whole pixel (Chromium on Linux does; macOS, iOS
+   and Windows do not), the hall's name, shrinking through every size between
+   the inscription and the mark, lost a pixel on all ten characters at once
+   every few frames — and its plate, cut at a share of the name's width and
+   centred on it, jumped 14px each time. Where advances are fractional
+   already this changes nothing. */
+html[data-theme='bright'] :is(.bh__lockup .bh__title, .gr__lock-name):lang(zh) {
+  text-rendering: geometricPrecision;
 }
 
 /* No tablet under the mark: the plate is the ground, and a frosted rectangle
