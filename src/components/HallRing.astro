@@ -93,19 +93,21 @@ const still = (id: string, yt: string) =>
      row of pieces does. */
   .hr {
     /* --n, the number of panels, is set on the element from the list above */
-    /* Eight on the circle since 2026-10-09, where there were six. Left at the
-       six's width and radius, neighbours stood 0.7cqw apart at the front: one
-       band, not eight things in the air. So the circle is wider than the
-       six's and the pane narrower, by exactly as much as standing nearer the
-       eye enlarges it, so the pane at the front is the size it was — 24.1cqw
-       across, frame included. How far apart they stand is the owner's: two
-       thirds of the air the six had between neighbours, measured on screen —
-       4.5cqw at the front where it was 6.7, and 5.5 between the two either
-       side of the axis where it was 8.2. It was drawn in so the turn happens
-       within the room's own colonnade, a lit pane behind a gold figure rather
-       than beside one, and it still turns inside the outermost two pieces. */
-    --pane-w: 14.18cqw;
-    --radius: 24.7cqw;
+    /* Eight on the circle since 2026-10-09, where there were six. Size and
+       spacing are both the owner's, set that day and measured on screen with
+       the ring stopped: the pane at the front a fifth larger than the six's
+       (28.9cqw across, frame included, where it was 24.1), and the air
+       between neighbours a little under half what the six had — 3.2cqw at the
+       front where it was 6.7, 3.8 between the two either side of the axis
+       where it was 8.2 (two thirds, then seven tenths of that). Perspective
+       makes the near pane larger than its own width, so the two cannot be set
+       separately: the radius and the width below are the pair that give both.
+       It was drawn in so the turn happens within the room's own colonnade, a
+       lit pane behind a gold figure rather than beside one; at this size it
+       reaches 30cqw either side of the axis, inside the outermost pieces at
+       38.8. */
+    --pane-w: 16.47cqw;
+    --radius: 26.38cqw;
     --dur: 96s;
     /* A pane's own height. The picture is 1619x971. */
     --pane-h: calc(var(--pane-w) * 971 / 1619);
@@ -243,15 +245,16 @@ const still = (id: string, yt: string) =>
 
      Bigger in the frame than on a desktop, and on a shorter perspective.
      Panes 15cqw wide on a 220px band are 58px each — a stamp, not a picture —
-     and a phone is looked at from a third of the distance. Eight are spaced as
-     on the desktop: at the six's 24cqw on a 26cqw circle neighbours would cut
-     into each other, so the circle widens and the pane narrows until the one
-     at the front is the six's size, 41.7cqw, with two thirds of the six's gap
-     between neighbours — 3.7cqw at the front where it was 5.6. */
+     and a phone is looked at from a third of the distance. With eight, the
+     pane at the front stays the six's size, 41.7cqw (at the six's 24cqw on a
+     26cqw circle neighbours would cut into each other), and the air between
+     neighbours is the owner's: 3.0cqw at the front where the six had 5.6,
+     4.0 between the two either side of the axis where they had 7.7 (two
+     thirds, then four fifths of that). */
   @media (max-width: 48rem) {
     .hr {
-      --pane-w: 21.58cqw;
-      --radius: 29.62cqw;
+      --pane-w: 21.81cqw;
+      --radius: 29.28cqw;
       /* Neither the rise nor the seventh: both were asked for on the desktop,
          and this band is 220px tall with the row of pieces already in it. */
       --pane-k: 1;
