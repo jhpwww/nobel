@@ -95,16 +95,17 @@ const still = (id: string, yt: string) =>
     /* --n, the number of panels, is set on the element from the list above */
     /* Eight on the circle since 2026-10-09, where there were six. Left at the
        six's width and radius, neighbours stood 0.7cqw apart at the front: one
-       band, not eight things in the air. So the circle widens until
-       neighbours keep the air the six had between them (7cqw at the front),
-       and the pane narrows by exactly as much as standing nearer the eye
-       enlarges it, so the pane at the front is the size it was — 23.9cqw
-       across, frame included. It was drawn in so the turn happens within the
-       room's own colonnade, a lit pane behind a gold figure rather than beside
-       one; it now reaches 29cqw either side of the axis where it reached 24,
-       which is still inside the outermost two pieces. */
-    --pane-w: 13.75cqw;
-    --radius: 26.3cqw;
+       band, not eight things in the air. So the circle is wider than the
+       six's and the pane narrower, by exactly as much as standing nearer the
+       eye enlarges it, so the pane at the front is the size it was — 24.1cqw
+       across, frame included. How far apart they stand is the owner's: two
+       thirds of the air the six had between neighbours, measured on screen —
+       4.5cqw at the front where it was 6.7, and 5.5 between the two either
+       side of the axis where it was 8.2. It was drawn in so the turn happens
+       within the room's own colonnade, a lit pane behind a gold figure rather
+       than beside one, and it still turns inside the outermost two pieces. */
+    --pane-w: 14.18cqw;
+    --radius: 24.7cqw;
     --dur: 96s;
     /* A pane's own height. The picture is 1619x971. */
     --pane-h: calc(var(--pane-w) * 971 / 1619);
@@ -244,12 +245,13 @@ const still = (id: string, yt: string) =>
      Panes 15cqw wide on a 220px band are 58px each — a stamp, not a picture —
      and a phone is looked at from a third of the distance. Eight are spaced as
      on the desktop: at the six's 24cqw on a 26cqw circle neighbours would cut
-     into each other, so the circle widens until they keep the six's gap and
-     the pane narrows until the one at the front is the six's size, 41cqw. */
+     into each other, so the circle widens and the pane narrows until the one
+     at the front is the six's size, 41.7cqw, with two thirds of the six's gap
+     between neighbours — 3.7cqw at the front where it was 5.6. */
   @media (max-width: 48rem) {
     .hr {
-      --pane-w: 21cqw;
-      --radius: 30.5cqw;
+      --pane-w: 21.58cqw;
+      --radius: 29.62cqw;
       /* Neither the rise nor the seventh: both were asked for on the desktop,
          and this band is 220px tall with the row of pieces already in it. */
       --pane-k: 1;
