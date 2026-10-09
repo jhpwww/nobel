@@ -1,6 +1,6 @@
 ---
 /**
- * HallRing.astro — six lectures, framed and turning in the air of the hall.
+ * HallRing.astro — eight lectures, framed and turning in the air of the hall.
  *
  * A ring of stills orbiting the room's axis, behind the sculptures. It is
  * ambience, not navigation: the panels are aria-hidden and take no clicks,
@@ -9,12 +9,13 @@
  *
  * WHAT IS IN THE RING
  * The six lectures NTU itself hosted — the ones the About page names, and the
- * only six with a second, NTU-hosted recording of the same talk. That is a
- * fact in the data rather than a hand-picked list, so the ring cannot drift
- * out of step with the catalogue.
+ * only six with a second, NTU-hosted recording of the same talk; that part is
+ * a fact in the data, so it cannot drift out of step with the catalogue. And,
+ * since 2026-10-09 at the owner's word, two more, chosen for the picture:
+ * the stills in which the laureate is largest and clearest (see PORTRAITS).
  *
  * HOW IT TURNS
- * One `rotateY` on the parent, six children at fixed angles inside a
+ * One `rotateY` on the parent, eight children at fixed angles inside a
  * `preserve-3d` box. The browser z-sorts them and perspective sizes them, so
  * nothing has to be computed per frame and the whole thing is one composited
  * layer — which is why it can run behind six model-viewers without costing
@@ -32,35 +33,48 @@ import posters from '../data/posters.json';
 import { cutStill } from '../data/stills';
 import { asset } from '../i18n/routing';
 
-/* the six lectures NTU itself hosted, oldest first, so the ring reads as the
-   series ran. By host, not by which channel the recording came from: the
-   recording every lecture plays is now its host's own where one exists. */
-const six = lectures
-  .filter((l) => l.event.host_key === 'NTU')
+/* The two added for their portraits (owner, 2026-10-09: 人像較大較清楚的優先).
+   Every other lecture's still — both collections — was ranked by the height
+   of the laureate's recognised face in the part of the frame a pane shows,
+   with scripts/facecheck.py's detector, recogniser and threshold, then looked
+   at. Of the five that scored above Murad, one is a printed banner (Karman),
+   three are designed title cards (Roth, Kobilka, E. Moser) and one a film
+   shown inside the recording with subtitles across it (Südhof). Stiglitz and
+   Murad are the largest faces of a laureate in the room, and both are cut
+   stills at 1280x720 where the near-equals are 480x360 YouTube frames. */
+const PORTRAITS = ['stiglitz', 'murad'];
+
+/* the six lectures NTU itself hosted and the two portraits, oldest first, so
+   the ring reads as the series ran. By host, not by which channel the
+   recording came from: the recording every lecture plays is now its host's
+   own where one exists. */
+const ring = lectures
+  .filter((l) => l.event.host_key === 'NTU' || PORTRAITS.includes(l.id))
   .sort((a, b) => a.event.date.localeCompare(b.event.date));
 
 /* ---- a cloud, not a carousel ----
- * Six panels at one height on one circle is a fairground ride. What makes the
+ * Eight panels at one height on one circle is a fairground ride. What makes the
  * reference read as things floating is that no two are at the same height or
- * quite square to the axis. These are fixed per panel rather than random, so
- * the arrangement is the same on every visit and can be judged as a
- * composition; the numbers are in cqw of the plate and in degrees, and they
- * sum to nothing so the ring stays centred on the room's axis. Kept small, at
- * the owner's word: spread wider, the ring reads as six panels at six heights
- * and the highest reaches the pieces' own heads.
+ * quite square to the axis. These are fixed per place on the ring rather than
+ * random, so the arrangement is the same on every visit and can be judged as a
+ * composition; the numbers are in cqw of the plate and in degrees, they
+ * alternate up and down round the ring, and each list sums to nothing so the
+ * ring stays centred on the room's axis. Kept small, at the owner's word —
+ * within the range the six had: spread wider, the ring reads as panels at
+ * separate heights and the highest reaches the pieces' own heads.
  */
-const DRIFT = [0, -1.7, 1.3, -0.7, 1.6, -0.5];      // cqw, up is negative
-const TILT  = [0.9, -1.6, 1.4, -0.8, 1.7, -1.6];    // degrees about the axis
+const DRIFT = [0, -1.7, 1.3, -0.7, 1.6, -0.5, 0.9, -0.9];   // cqw, up is negative
+const TILT  = [0.9, -1.6, 1.4, -0.8, 1.7, -1.3, 0.6, -0.9]; // degrees about the axis
 
 const frames = posters as Record<string, string>;
 const still = (id: string, yt: string) =>
   cutStill(yt) ?? `https://i.ytimg.com/vi/${yt}/${frames[id] ?? 'hqdefault'}.jpg`;
 ---
 
-<div class="hr" aria-hidden="true" data-hall-ring>
+<div class="hr" aria-hidden="true" data-hall-ring style={`--n:${ring.length}`}>
   <div class="hr__ring">
-    {six.map((l, i) => (
-      <div class="hr__panel" style={`--i:${i}; --drift:${DRIFT[i]}cqw; --tilt:${TILT[i]}deg`}>
+    {ring.map((l, i) => (
+      <div class="hr__panel" style={`--i:${i}; --drift:${DRIFT[i % DRIFT.length]}cqw; --tilt:${TILT[i % TILT.length]}deg`}>
         <span class="hr__pane">
           <img class="hr__still" src={still(l.id, l.video.lecture!)} alt=""
                width="480" height="270" loading="lazy" decoding="async" />
@@ -78,18 +92,28 @@ const still = (id: string, yt: string) =>
      keeps its place in the architecture at every window size, exactly as the
      row of pieces does. */
   .hr {
-    --n: 6;                    /* panels */
-    --pane-w: 15cqw;
-    /* Drawn in so the whole turn happens within the room's own colonnade: any
-       wider and the ring passes outside the sculptures at the sides, putting a
-       lit pane beside a gold figure instead of behind it. */
-    --radius: 21.6cqw;
+    /* --n, the number of panels, is set on the element from the list above */
+    /* Eight on the circle since 2026-10-09, where there were six. Left at the
+       six's width and radius, neighbours stood 0.7cqw apart at the front: one
+       band, not eight things in the air. So the circle widens until
+       neighbours keep the air the six had between them (7cqw at the front),
+       and the pane narrows by exactly as much as standing nearer the eye
+       enlarges it, so the pane at the front is the size it was — 23.9cqw
+       across, frame included. It was drawn in so the turn happens within the
+       room's own colonnade, a lit pane behind a gold figure rather than beside
+       one; it now reaches 29cqw either side of the axis where it reached 24,
+       which is still inside the outermost two pieces. */
+    --pane-w: 13.75cqw;
+    --radius: 26.3cqw;
     --dur: 96s;
-    /* A pane's own height, which two of the owner's figures are taken from:
-       the ring rises by three tenths of it, and each pane is drawn a seventh
-       larger about its own middle. The picture is 1619x971. */
+    /* A pane's own height. The picture is 1619x971. */
     --pane-h: calc(var(--pane-w) * 971 / 1619);
+    /* Two of the owner's figures: each pane is drawn a seventh larger about
+       its own middle, and the ring rises by three tenths of a pane's height —
+       the pane it was set on, the six's 15cqw one, so narrowing the panes for
+       eight leaves the ring where the owner put it. */
     --pane-k: 1.15;
+    --rise: calc(0.3 * 15cqw * 971 / 1619);
     position: absolute;
     inset-inline-start: 50%;
     /* mid-air: above the horizon at 69.2% and below the springing of the
@@ -99,10 +123,10 @@ const still = (id: string, yt: string) =>
        The offset is in cqw and the inset is a per cent of the plate's HEIGHT,
        which are different units of the same box; calc holds both, and the
        plate's 1672:941 is what converts between them. */
-    inset-block-start: calc(46% - 0.3 * var(--pane-h));
+    inset-block-start: calc(46% - var(--rise));
     inline-size: 0;
     block-size: 0;
-    /* Shorter than it looks. A long perspective flattens the ring into six
+    /* Shorter than it looks. A long perspective flattens the ring into eight
        equal rectangles; 78cqw is about two and a half panel-widths of eye
        distance, which is close enough that the near panel is visibly larger
        than the far one and far enough that nothing shears. */
@@ -156,9 +180,9 @@ const still = (id: string, yt: string) =>
      all the depth a flat ring gets for free — every panel arrives at the same
      strength whether it is two metres away or ten. Air is what is missing.
      Each panel dims on the way round and brightens coming back, once per
-     revolution, phase-shifted by its own place in the six — so the animation
+     revolution, phase-shifted by its own place in the ring — so the animation
      needs no clock of its own and cannot drift from the turn, because both
-     run on the same duration. A negative delay of (i/6 - 1) revolutions puts
+     run on the same duration. A negative delay of (i/n - 1) revolutions puts
      panel i at its brightest exactly when it is nearest. */
   .hr__pane {
     filter: drop-shadow(0 1.2cqw 2.2cqw rgba(40, 52, 72, 0.24));
@@ -216,13 +240,16 @@ const still = (id: string, yt: string) =>
      left edge and is meant to: the name is the one thing in this room that is
      never obscured, and a pane passing behind it reads as depth.
 
-     Bigger in the frame than on a desktop, and on a shorter radius. Six panes
-     15cqw wide on a 220px band are 58px each — a stamp, not a picture — and a
-     phone is looked at from a third of the distance. */
+     Bigger in the frame than on a desktop, and on a shorter perspective.
+     Panes 15cqw wide on a 220px band are 58px each — a stamp, not a picture —
+     and a phone is looked at from a third of the distance. Eight are spaced as
+     on the desktop: at the six's 24cqw on a 26cqw circle neighbours would cut
+     into each other, so the circle widens until they keep the six's gap and
+     the pane narrows until the one at the front is the six's size, 41cqw. */
   @media (max-width: 48rem) {
     .hr {
-      --pane-w: 24cqw;
-      --radius: 26cqw;
+      --pane-w: 21cqw;
+      --radius: 30.5cqw;
       /* Neither the rise nor the seventh: both were asked for on the desktop,
          and this band is 220px tall with the row of pieces already in it. */
       --pane-k: 1;

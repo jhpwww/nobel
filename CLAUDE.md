@@ -261,7 +261,9 @@ src/
   re-running recognition when the owner says so: re-point the existing stills and frame picks
   to the new id in `local-posters.json` / `video-posters.json` (same film, same frames). There
   is no `lecture_ntu` any more: `HallRing`
-  picks the hall's six turning panels by `event.host_key === 'NTU'`, not by a field. Every
+  picks six of the hall's eight turning panels by `event.host_key === 'NTU'`, not by a field;
+  the other two are `PORTRAITS`, the stills with the largest, clearest laureate (owner,
+  2026-10-09). The ring's width and radius are solved for eight — see `.hr` in HallRing. Every
   change of a lecture id is a change of poster frame — run `scripts/pick-posters.py` and, for
   any id it cannot verify, `scripts/cut-poster-frames.py --only`, both locally.
 - **A lecture's title is the talk as delivered**, not as the programme book announced it:
