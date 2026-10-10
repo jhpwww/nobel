@@ -556,8 +556,14 @@ bar's key or the hall's sculpture would open, and the room the visitor is in was
   1000px across, lossless — a lossy encode rings round the Han labels). The regions are
   written in the SOURCE file's coordinates and the SVG `viewBox` states the trim the script
   prints; a re-export with a different margin changes that one attribute, not eleven shapes.
-  One drawing for both languages: the English page wears the Han-labelled plan with English
-  `aria-label`s on its regions.
+- **The English plan is made, not drawn** (owner, 2026-10-11): the same script paints each
+  Han label out with its room's own fill and sets a short English word in its place —
+  Physics · Chemistry · Medicine · All Videos · Peace · Economics · Literature down the seven
+  rooms, Nobel Prize · Learning · About · Hall across the rest — in the drawing's two voices
+  (Source Serif 4 in its brown for the rooms, Source Sans 3 in black for the rest) and writes
+  `floorplan-en.webp`. It refuses to write an English plan whose trim differs from the Han
+  one, because the two share one overlay. Change a word in `LABELS` there, never in the
+  picture; the label boxes are measured off the drawing and move with a re-export.
 - The wash is three tokens in `bright.css` (`--map-here`, `--map-here-hi`, `--map-hover`);
   nothing is read on it. Shapes are `fill: transparent`, never `none` — a shape with no fill
   takes no click. Hover is gated on `(hover: hover) and (pointer: fine)` like everything that

@@ -41,9 +41,12 @@
  * each shape stands a few units inside its walls so a wash never covers the
  * line between two rooms.
  *
- * One drawing for both languages: the owner supplied the plan with its Han
- * labels, and the English page wears the same picture with its regions
- * named in English for the reader who cannot see it.
+ * Two pictures, one overlay: the owner supplied the plan with its Han labels,
+ * and scripts/make-floorplan.py makes the English one from it — the labels
+ * painted out and the short English words set in their place — so the two
+ * trim to the same box and the regions below serve both. The English page
+ * wears the English plan, and its regions are named in English for the
+ * reader who cannot see it.
  *
  * Bright museum only.
  */
@@ -127,7 +130,7 @@ const rooms: { key: Area; shape: Shape }[] = [
 <nav class="fp" data-fp aria-label={t('map.label')}>
   <div class="fp__sheet">
     {/* the picture is decoration; the links over it are what is read */}
-    <img class="fp__img" src={asset('assets/ui/floorplan.webp')} alt=""
+    <img class="fp__img" src={asset(lang === 'en' ? 'assets/ui/floorplan-en.webp' : 'assets/ui/floorplan.webp')} alt=""
          width="1000" height="722" decoding="async" />
     {/* the viewBox is the trim scripts/make-floorplan.py prints — the
         drawing's coordinates, cut to its own edges */}
