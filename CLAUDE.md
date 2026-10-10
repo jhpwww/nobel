@@ -542,9 +542,15 @@ bar's key or the hall's sculpture would open, and the room the visitor is in was
   measured off `#topbar-keys` — the one key on every page — and the nav's box, on load, on
   resize and on `fonts.ready`. It stands over the content column's top-right corner by design;
   the standing keys hold the lower right and the two never meet.
-- **Phone: lower left, ABOVE the way on**, not beside it: the cue is centred at the foot of the
-  window and reaches ±50px (±70 in English), which leaves a plan beside it too narrow to press
-  a room on. `inset-block-end` is the cue's own inset plus 4.8rem; the width `min(46vw, 12rem)`.
+- **Phone: the lower left, at the foot of the window, and the way on steps right** (owner,
+  2026-10-11): the plan takes the cue's own inset and `min(44vw, 12rem)` of width; `ScrollCue`
+  moves the cue out of the centre to stand a breath short of the standing keys' column, with
+  its side padding halved and the English word let onto two lines, so at 320px the two still
+  clear. The plan's first draft stood above the cue; the owner wanted it at the bottom.
+- **Links on the plan are SVG `<a>` elements.** On an `SVGAElement`, `.href` and `.target`
+  are `SVGAnimatedString`s, not strings; anything that intercepts clicks on links must read
+  `getAttribute('href')` and resolve it (`roomfade.ts` does) — the first version read `.href`
+  and sent every room on the plan to `…/[object SVGAnimatedString]`.
 - **The drawing is the owner's**: `assets-src/marks/museum-floorplan.png` →
   `scripts/make-floorplan.py` → `public/assets/ui/floorplan.webp` (trimmed to its edges,
   1000px across, lossless — a lossy encode rings round the Han labels). The regions are

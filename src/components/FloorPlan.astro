@@ -21,12 +21,16 @@
  * WHERE: on a desktop, under the bar's keys and flush with their right edge,
  * three key plates wide — measured off the one key that is on every page,
  * because a key's width is its label plus its padding and no stylesheet
- * knows it. On a phone, in the lower left, standing ABOVE the way on rather
- * than beside it: the way on is centred at the foot of the window and
- * reaches some 50px either side of centre (70 in English), which leaves a
- * plan beside it too narrow to press a room on; above it the plan can be
- * near half the screen wide and the two never meet. The standing keys keep
- * the lower right, so the two corners never meet either.
+ * knows it. On a phone, in the lower left, at the foot of the window — the
+ * owner's word (2026-10-11); a first draft stood it above the way on — and
+ * the way on, which is centred there, steps right out of its way to stand
+ * beside the standing keys' column (see ScrollCue). The keys keep the lower
+ * right, so none of the three meet.
+ *
+ * The regions are <a> elements inside an <svg>. On an SVGAElement `.href`
+ * is an SVGAnimatedString rather than a string, so a script that catches
+ * clicks on links — roomfade.ts — reads the attribute and resolves it; the
+ * first version read `.href` and every room opened a 404.
  *
  * The regions are written in the SOURCE drawing's own coordinates — the
  * owner's 1600×1134 file in assets-src/marks — and the overlay's viewBox
@@ -168,15 +172,16 @@ const rooms: { key: Area; shape: Shape }[] = [
   }
   :global(html[data-motion='off']) .fp { transition: none; }
 
-  /* a phone: the lower left, above the way on — its inset, its height, and
-     a breath between the two; see the note at the head of this file */
+  /* a phone: the lower left, at the foot of the window on the way on's own
+     line — the cue steps right to make room; see ScrollCue and the note at
+     the head of this file */
   @media (max-width: 48rem) {
     .fp {
       inset-block-start: auto;
       inset-inline-end: auto;
       inset-inline-start: 0.75rem;
-      inset-block-end: calc(clamp(0.7rem, 2vh, 1.5rem) + 4.8rem);
-      inline-size: min(46vw, 12rem);
+      inset-block-end: clamp(0.7rem, 2vh, 1.5rem);
+      inline-size: min(44vw, 12rem);
     }
   }
 

@@ -36,17 +36,25 @@ if (sheet) {
     if (ev.defaultPrevented || ev.button !== 0 || ev.metaKey || ev.ctrlKey ||
         ev.shiftKey || ev.altKey) return;
 
-    const a = (ev.target as Element)?.closest?.('a') as HTMLAnchorElement | null;
-    if (!a || !a.href || a.target === '_blank' || a.hasAttribute('download')) return;
+    const a = (ev.target as Element)?.closest?.('a');
+    if (!a) return;
+    /* The ATTRIBUTE, resolved here — never `a.href`. The floor plan's regions
+       are <a> elements inside an <svg>, and on an SVGAElement `.href` is an
+       SVGAnimatedString, not a string: `new URL()` stringified it to
+       '[object SVGAnimatedString]', the test below read that as a page of
+       this site, and every room on the plan opened a 404 (2026-10-11). The
+       same goes for `.target`. */
+    const raw = a.getAttribute('href');
+    if (!raw || a.getAttribute('target') === '_blank' || a.hasAttribute('download')) return;
 
-    const url = new URL(a.href, location.href);
+    const url = new URL(raw, location.href);
     if (url.origin !== location.origin) return;
     /* an anchor on this very page is a scroll, not a journey */
     if (url.pathname === location.pathname && url.search === location.search) return;
 
     e.preventDefault();
     sheet.setAttribute('data-on', '');
-    setTimeout(() => { location.href = a.href; }, OUT);
+    setTimeout(() => { location.href = url.href; }, OUT);
     setTimeout(clear, HOLD);
   });
 }

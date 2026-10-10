@@ -41,9 +41,11 @@ html[data-theme='bright'] {
      so the drawing's own lines and names read through it: the room the
      visitor is standing in, that room under the pointer, and any other room
      under the pointer. Not a text colour; nothing is read on it. */
-  --map-here:    rgba(255, 92, 160, 0.42);
-  --map-here-hi: rgba(255, 92, 160, 0.56);
-  --map-hover:   rgba(255, 92, 160, 0.2);
+  /* Lighter at the owner's word (2026-10-11): the standing room took what had
+     been the hover's 0.2, and the hover went a step paler again. */
+  --map-here:    rgba(255, 92, 160, 0.2);
+  --map-here-hi: rgba(255, 92, 160, 0.28);
+  --map-hover:   rgba(255, 92, 160, 0.12);
 
   /*
    * Gold is ornament and never load-bearing: plinths, the crest, a rule under
