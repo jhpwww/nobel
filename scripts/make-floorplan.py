@@ -9,7 +9,9 @@ Source: assets-src/marks/museum-floorplan.png (the owner's file, 1600x1134,
 transparent outside the walls, labelled in Han). Writes two pictures that
 FloorPlan.astro pins under the bar's keys:
 
-  public/assets/ui/floorplan.webp      the owner's drawing as supplied
+  public/assets/ui/floorplan.webp      the owner's drawing, with the two
+                                       sides of the rotunda exchanged — see
+                                       SWAP below
   public/assets/ui/floorplan-en.webp   the same drawing with its labels in
                                        English — made here, not drawn: each
                                        Han label is painted out with its own
@@ -25,18 +27,29 @@ FloorPlan.astro pins under the bar's keys:
                                        asked for (2026-10-11), the way 生醫
                                        stands for 生理學或醫學.
 
-Both are trimmed to the drawing's own edges and brought down to 1000px
-across — three times the widest the plan is ever drawn on screen (three key
-plates, about 330 CSS px), so sharp on a 3x phone — and lossless, because
-the drawing is flat colour and type and a lossy encode rings round every
-character.
+SWAP: the owner's file has the introduction room on the left of the rotunda
+and the learning area on the right; on 2026-10-11 they asked for the two
+sides exchanged — the learning area on the left, the introduction room and
+the colophon on the right. The file is not touched: everything from the
+rotunda down is mirrored about the drawing's axis, and the four labels in
+that part are copied back the right way round. The rotunda, its ring, its
+dots and the entrance are symmetric and land on themselves; the display
+cases are rectangles and read the same mirrored. Set SWAP = False to have
+the file as drawn.
+
+Both pictures are trimmed to the drawing's own edges and brought down to
+1000px across — three times the widest the plan is ever drawn on screen
+(three key plates, about 330 CSS px), so sharp on a 3x phone — and lossless,
+because the drawing is flat colour and type and a lossy encode rings round
+every character.
 
 The clickable regions in FloorPlan.astro are written in the SOURCE file's
-coordinates, and the overlay's viewBox states the trim, which is why this
-script prints the trim box and refuses to write an English plan whose trim
-differs from the Han one: the two share one overlay. If the owner's file is
-ever re-exported with a different margin, that viewBox is the one number to
-update — and the label boxes below, which are measured off the drawing.
+coordinates — mirrored by the same rule where SWAP applies — and the
+overlay's viewBox states the trim, which is why this script prints the trim
+box and refuses to write an English plan whose trim differs from the Han
+one: the two share one overlay. If the owner's file is ever re-exported with
+a different margin, that viewBox is the one number to update — and the label
+boxes below, which are measured off the drawing.
 
 The faces are the museum's own, from assets-src/fonts (scripts/subset-fonts.mjs
 fetches them if they are missing): Source Serif 4 and Source Sans 3.
@@ -52,6 +65,17 @@ OUT = ROOT / 'public/assets/ui'
 FONTS = ROOT / 'assets-src/fonts'
 W = 1000
 
+SWAP = True
+# The first row of the part that is mirrored: just under the corridor that
+# joins the index of films to the rotunda. The rotunda's circle is centred on
+# x = 799.5 to the pixel (measured on three rows), which is the axis a
+# 1600px-wide array flips about; the corridors are within a pixel of it.
+AXIS_Y = 691
+
+def mirror_box(b):
+    x0, y0, x1, y1 = b
+    return (1600 - x1, y0, 1600 - x0, y1)
+
 def write(plan, name):
     box = plan.getbbox()           # (left, top, right, bottom) of everything not transparent
     out = plan.crop(box)
@@ -62,11 +86,8 @@ def write(plan, name):
           f'  trim box (viewBox): {box[0]} {box[1]} {box[2] - box[0]} {box[3] - box[1]}')
     return box
 
-src = Image.open(SRC).convert('RGBA')
-box_zh = write(src, 'floorplan.webp')
-
 # ---------------------------------------------------------------------------
-# the English plan
+# the labels — in the owner's file's own coordinates
 # ---------------------------------------------------------------------------
 BROWN = (111, 81, 17)     # the drawing's own ink for the seven rooms — #6f5111, the museum's deep gold
 BLACK = (0, 0, 0)
@@ -87,6 +108,31 @@ LABELS = [
     ('home',       (670, 804, 930, 932), 'Hall',        'sans',  BLACK, False),
 ]
 
+# ---------------------------------------------------------------------------
+# the Han plan
+# ---------------------------------------------------------------------------
+src = Image.open(SRC).convert('RGBA')
+if SWAP:
+    a = np.array(src)
+    out = a.copy()
+    out[AXIS_Y:] = a[AXIS_Y:, ::-1]
+    # the labels go back the right way round: each box's own pixels, fill and
+    # all (the fills are flat, so the patch is seamless), copied from the
+    # file into the box's mirrored place
+    for key, box, *_ in LABELS:
+        if box[1] < AXIS_Y:
+            continue
+        x0, y0, x1, y1 = box
+        mx0, _, mx1, _ = mirror_box(box)
+        out[y0:y1, mx0:mx1] = a[y0:y1, x0:x1]
+    src = Image.fromarray(out)
+    LABELS = [(k, mirror_box(b) if b[1] >= AXIS_Y else b, *rest) for k, b, *rest in LABELS]
+
+box_zh = write(src, 'floorplan.webp')
+
+# ---------------------------------------------------------------------------
+# the English plan
+# ---------------------------------------------------------------------------
 def face(kind, size):
     path = FONTS / ('SourceSerif4-VF.ttf' if kind == 'serif' else 'SourceSans3-VF.ttf')
     if not path.exists():
@@ -103,22 +149,18 @@ def measure(kind, text, size):
     l, t, r, b = f.getbbox(text)
     return f, (r - l, b - t), (l, t)
 
-def fit(kind, text, max_long, max_short, vertical):
-    """the largest size at which the word fits its room: along the room and across it"""
+def fit(kind, text, max_w, max_h):
+    """the largest size at which the word fits its room"""
     size = 8
     while True:
         _, (w, h), _ = measure(kind, text, size + 1)
-        along, across = (w, h) if vertical else (w, h)
-        if vertical and (w > max_long or h > max_short): break
-        if not vertical and (w > max_long or h > max_short): break
+        if w > max_w or h > max_h:
+            return size
         size += 1
-    return size
 
 en = src.copy()
-arr = np.array(en)
-rgb = arr[:, :, :3].astype(int)
+rgb = np.array(en)[:, :, :3].astype(int)
 dark = rgb.sum(axis=2) < 330
-draw = ImageDraw.Draw(en)
 
 # 1. paint every Han label out with its own room's fill — the strokes and
 #    their anti-aliased fringe only (the ink, grown by three pixels), not the
@@ -133,13 +175,14 @@ for key, (x0, y0, x1, y1), *_ in LABELS:
     en.paste(fill + (255,), (x0, y0, x1, y1), mask)
 
 # 2. one size for the seven rooms (the longest word decides), one for the
-#    three rooms round the rotunda, and the rotunda's own
+#    three rooms round the rotunda, and the rotunda's own — a tenth under
+#    what would fill it, at the owner's word (2026-10-11)
 ROOM_LONG, ROOM_ACROSS = 400, 150          # down the room, across it
 tall = [l for l in LABELS if l[5]]
-size_tall = min(fit(l[3], l[2], ROOM_LONG, ROOM_ACROSS, True) for l in tall)
+size_tall = min(fit(l[3], l[2], ROOM_LONG, ROOM_ACROSS) for l in tall)
 low = [l for l in LABELS if not l[5] and l[0] != 'home']
-size_low = min(fit(l[3], l[2], (l[1][2] - l[1][0]) + 36, 92, False) for l in low)
-size_hall = fit('sans', 'Hall', 250, 110, False)
+size_low = min(fit(l[3], l[2], (l[1][2] - l[1][0]) + 36, 92) for l in low)
+size_hall = round(0.9 * fit('sans', 'Hall', 250, 110))
 print(f'type: rooms {size_tall}px, lower rooms {size_low}px, hall {size_hall}px')
 
 # 3. set each word where the Han label stood
@@ -154,7 +197,8 @@ for key, (x0, y0, x1, y1), text, kind, ink, vertical in LABELS:
     en.alpha_composite(tile, (round(cx - tile.width / 2), round(cy - tile.height / 2)))
 
 (ROOT / 'shots').mkdir(exist_ok=True)
-en.save(ROOT / 'shots/floorplan-en.png')      # the full-size English drawing, for checking
+src.save(ROOT / 'shots/floorplan-zh.png')     # the full-size drawings, for checking
+en.save(ROOT / 'shots/floorplan-en.png')
 box_en = write(en, 'floorplan-en.webp')
 if box_en != box_zh:
     sys.exit(f'the English plan trims to {box_en}, the Han one to {box_zh}: the two must share one viewBox')

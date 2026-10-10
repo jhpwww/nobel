@@ -4,9 +4,9 @@
  * been scrolled.
  *
  * The owner's drawing: seven rooms across the top — the six prizes with the
- * index of films between medicine and peace — the introduction room on the
- * left, the learning area on the right, the colophon below it, and the
- * rotunda in the middle of them all. It is a picture, and it is also the
+ * index of films between medicine and peace — the learning area on the
+ * left, the introduction room on the right with the colophon below it, and
+ * the rotunda in the middle of them all. It is a picture, and it is also the
  * bar's doors and the hall's six laid out as a building: every region is a
  * link to the same page the key or the sculpture would open, and the room
  * the visitor is standing in is washed pink.
@@ -117,13 +117,18 @@ const href = (k: Area) =>
   : gallery(lang, k);
 
 /* the hall first — it is the way back from everywhere — then the row across
-   the top left to right, then the three rooms round the rotunda */
+   the top left to right, then the three rooms round the rotunda, left to
+   right and down. The three stand where scripts/make-floorplan.py puts them:
+   the owner's file has the introduction room on the left and the learning
+   area on the right, and since 2026-10-11 the picture is drawn with the two
+   sides exchanged (SWAP there), so these are the file's boxes mirrored about
+   its axis — x → 1600 − x. */
 const rooms: { key: Area; shape: Shape }[] = [
   { key: 'home', shape: { kind: 'circle', cx: 800, cy: 844, r: 169 - INSET } },
   ...COLS.map(([key, x0, x1]) => ({ key, shape: rect(x0, ROW[0], x1, ROW[1]) })),
-  { key: INTRO, shape: rect(57, 691, 563, 927) },
-  { key: 'learn', shape: rect(1037, 691, 1543, 1017) },
-  { key: 'about', shape: rect(161, 973, 629, 1117) },
+  { key: 'learn', shape: rect(57, 691, 563, 1017) },      /* the file's 1037–1543 */
+  { key: INTRO, shape: rect(1037, 691, 1543, 927) },      /* the file's 57–563 */
+  { key: 'about', shape: rect(971, 973, 1439, 1117) },    /* the file's 161–629 */
 ];
 ---
 
