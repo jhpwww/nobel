@@ -82,6 +82,7 @@ scripts/                ~29 of them; these are the ones you will touch
   cut-poster-frames.py  -> public/assets/posters/ + src/data/local-posters.json
   facecheck.py          shared portrait/detector/threshold module for both of those
   make-backdrop-clips.py-> public/media/backdrop/ + src/data/backdrop.json
+  make-floorplan.py     assets-src/marks/museum-floorplan.png -> public/assets/ui/floorplan.webp
   normalise-models.mjs  the model pipeline's centre; writes both tinted and gold sets
   subset-fonts.mjs      this museum's faces (`--theme dark` re-cuts the dark set)
   check-links.py        four kinds of reference, over dist/
@@ -94,7 +95,7 @@ src/
   i18n/ui.ts            every user-facing string
   i18n/routing.ts       every internal URL
   theme.ts              the one place THEME is read: bright unless THEME=dark
-  scripts/              env, motion, plinth, roomfade, rotunda, study, walkin
+  scripts/              caught, env, motion, plinth, roomfade, rotunda, study, walkin
   components/ layouts/ pages/ styles/ vendor/
 ```
 
@@ -519,6 +520,42 @@ block in pixels.
   it, and clear of the switcher (60) and toggle (61).
 - The button keeps its slot when hidden (`visibility`), so nothing shifts as it fades in. Only
   the referrer and history checks use `hidden`, decided once at load.
+
+## The floor plan
+
+`src/components/FloorPlan.astro`, mounted once in `Base.astro` (bright museum only): the
+owner's drawing of the building, pinned to the window, every region a link to the page the
+bar's key or the hall's sculpture would open, and the room the visitor is in washed pink.
+
+- **It appears at the moment each room already has** — when the piece the room opened with
+  is caught into the mark: the hall's six withdrawing, a prize's sculpture, the medal, the
+  reel, the learning area's device, a laureate's name. The four scripts that decide those
+  moments (HallBright, GalleryPage, PageEmblem, LecturePage) each call `setCaught()` from
+  `src/scripts/caught.ts`, which sets `<html data-caught>`; the plan reads that attribute
+  alone. **A new room with a catch of its own must call it**, or the plan never appears there.
+- **Which room is lit** comes from `segments`: the hall (and the three variant routes that
+  open on it), the index, the learning area, the colophon, each gallery. A laureate's page
+  cannot be placed from its address and passes `area={cat}` to Base — it is in its prize's
+  room.
+- **Desktop: under the bar's keys, flush with their right edge, three key plates wide** (the
+  owner's figure). A key's width is its label plus its padding, so the three figures are
+  measured off `#topbar-keys` — the one key on every page — and the nav's box, on load, on
+  resize and on `fonts.ready`. It stands over the content column's top-right corner by design;
+  the standing keys hold the lower right and the two never meet.
+- **Phone: lower left, ABOVE the way on**, not beside it: the cue is centred at the foot of the
+  window and reaches ±50px (±70 in English), which leaves a plan beside it too narrow to press
+  a room on. `inset-block-end` is the cue's own inset plus 4.8rem; the width `min(46vw, 12rem)`.
+- **The drawing is the owner's**: `assets-src/marks/museum-floorplan.png` →
+  `scripts/make-floorplan.py` → `public/assets/ui/floorplan.webp` (trimmed to its edges,
+  1000px across, lossless — a lossy encode rings round the Han labels). The regions are
+  written in the SOURCE file's coordinates and the SVG `viewBox` states the trim the script
+  prints; a re-export with a different margin changes that one attribute, not eleven shapes.
+  One drawing for both languages: the English page wears the Han-labelled plan with English
+  `aria-label`s on its regions.
+- The wash is three tokens in `bright.css` (`--map-here`, `--map-here-hi`, `--map-hover`);
+  nothing is read on it. Shapes are `fill: transparent`, never `none` — a shape with no fill
+  takes no click. Hover is gated on `(hover: hover) and (pointer: fine)` like everything that
+  navigates.
 
 ## The way on travels a screen at a time
 

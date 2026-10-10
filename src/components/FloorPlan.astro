@@ -1,0 +1,258 @@
+---
+/**
+ * FloorPlan.astro — the museum's plan, pinned to the window once a room has
+ * been scrolled.
+ *
+ * The owner's drawing: seven rooms across the top — the six prizes with the
+ * index of films between medicine and peace — the introduction room on the
+ * left, the learning area on the right, the colophon below it, and the
+ * rotunda in the middle of them all. It is a picture, and it is also the
+ * bar's doors and the hall's six laid out as a building: every region is a
+ * link to the same page the key or the sculpture would open, and the room
+ * the visitor is standing in is washed pink.
+ *
+ * WHEN: the moment every room already has — the one at which the thing it
+ * opened with is caught into the mark beside the museum's name: the hall's
+ * six withdraw, a prize's sculpture is caught, the medal, the reel, the
+ * learning area's device, a laureate's name. Each of those scripts says so
+ * on <html data-caught> through src/scripts/caught.ts, and this reads that
+ * word alone.
+ *
+ * WHERE: on a desktop, under the bar's keys and flush with their right edge,
+ * three key plates wide — measured off the one key that is on every page,
+ * because a key's width is its label plus its padding and no stylesheet
+ * knows it. On a phone, in the lower left, standing ABOVE the way on rather
+ * than beside it: the way on is centred at the foot of the window and
+ * reaches some 50px either side of centre (70 in English), which leaves a
+ * plan beside it too narrow to press a room on; above it the plan can be
+ * near half the screen wide and the two never meet. The standing keys keep
+ * the lower right, so the two corners never meet either.
+ *
+ * The regions are written in the SOURCE drawing's own coordinates — the
+ * owner's 1600×1134 file in assets-src/marks — and the overlay's viewBox
+ * states the trim that scripts/make-floorplan.py applies, so every number
+ * here is read straight off the drawing, and a re-export with a different
+ * margin changes one attribute rather than eleven shapes. The wall lines
+ * were measured off the file (the dark rows and columns of the drawing);
+ * each shape stands a few units inside its walls so a wash never covers the
+ * line between two rooms.
+ *
+ * One drawing for both languages: the owner supplied the plan with its Han
+ * labels, and the English page wears the same picture with its regions
+ * named in English for the reader who cannot see it.
+ *
+ * Bright museum only.
+ */
+import { useT, type Lang } from '../i18n/ui';
+import { home, browse, about, learn, gallery, asset } from '../i18n/routing';
+import { catName, galleryKeys, INTRO, type GalleryKey } from '../data/catalog';
+
+/** where a page is in the building — a gallery, or one of the four other rooms */
+export type Area = GalleryKey | 'home' | 'lectures' | 'learn' | 'about';
+
+interface Props {
+  lang: Lang;
+  /** the page's path segments, from Base — enough to place every page but a laureate's */
+  segments?: (string | number)[];
+  /** said outright where the path does not say: a laureate's page is in its prize's room */
+  area?: Area;
+}
+const { lang, segments = [], area } = Astro.props;
+const t = useT(lang);
+
+/** which room this page is read in, from its address */
+function areaOf(path: (string | number)[]): Area | undefined {
+  const [a, b] = path.map(String);
+  /* the hall, and the three other halls that open on it in this museum */
+  if (!a || a === 'models' || a === 'room' || a === 'rotunda') return 'home';
+  if (a === 'gallery' && b && (galleryKeys() as string[]).includes(b)) return b as GalleryKey;
+  if (a === 'lectures' || a === 'learn' || a === 'about') return a;
+  return undefined;
+}
+const here = area ?? areaOf(segments);
+
+/* ---- the drawing's own measurements, in its own units ----
+   The top row's walls stand at these x, left to right; the row runs from
+   y 47 to 607. The three lower rooms and the rotunda are measured the same
+   way. INSET keeps each wash off the wall it shares with the next room. */
+const INSET = 3;
+const ROW: [number, number] = [47, 607];
+/* the drawing's order, not categoryList()'s: the picture is the owner's and
+   the index of films stands in the middle of it */
+const COLS: [Area, number, number][] = [
+  ['physics', 57, 297],
+  ['chemistry', 297, 511],
+  ['medicine', 511, 725],
+  ['lectures', 725, 875],
+  ['peace', 875, 1089],
+  ['economics', 1089, 1302],
+  ['literature', 1302, 1543],
+];
+
+type Shape =
+  | { kind: 'rect'; x: number; y: number; w: number; h: number }
+  | { kind: 'circle'; cx: number; cy: number; r: number };
+const rect = (x0: number, y0: number, x1: number, y1: number): Shape =>
+  ({ kind: 'rect', x: x0 + INSET, y: y0 + INSET, w: x1 - x0 - 2 * INSET, h: y1 - y0 - 2 * INSET });
+
+const label = (k: Area) =>
+  k === 'home' ? t('nav.hall')
+  : k === 'lectures' ? t('nav.all')
+  : k === 'learn' ? t('nav.learn')
+  : k === 'about' ? t('nav.about')
+  : k === INTRO ? t('nav.prize')
+  : catName(k, lang);
+const href = (k: Area) =>
+  k === 'home' ? home(lang)
+  : k === 'lectures' ? browse(lang)
+  : k === 'learn' ? learn(lang)
+  : k === 'about' ? about(lang)
+  : gallery(lang, k);
+
+/* the hall first — it is the way back from everywhere — then the row across
+   the top left to right, then the three rooms round the rotunda */
+const rooms: { key: Area; shape: Shape }[] = [
+  { key: 'home', shape: { kind: 'circle', cx: 800, cy: 844, r: 169 - INSET } },
+  ...COLS.map(([key, x0, x1]) => ({ key, shape: rect(x0, ROW[0], x1, ROW[1]) })),
+  { key: INTRO, shape: rect(57, 691, 563, 927) },
+  { key: 'learn', shape: rect(1037, 691, 1543, 1017) },
+  { key: 'about', shape: rect(161, 973, 629, 1117) },
+];
+---
+
+<nav class="fp" data-fp aria-label={t('map.label')}>
+  <div class="fp__sheet">
+    {/* the picture is decoration; the links over it are what is read */}
+    <img class="fp__img" src={asset('assets/ui/floorplan.webp')} alt=""
+         width="1000" height="722" decoding="async" />
+    {/* the viewBox is the trim scripts/make-floorplan.py prints — the
+        drawing's coordinates, cut to its own edges */}
+    <svg class="fp__map" viewBox="52 42 1496 1080" preserveAspectRatio="none">
+      {rooms.map(({ key, shape }) => (
+        <a href={href(key)} aria-label={label(key)} aria-current={key === here ? 'page' : undefined}>
+          {shape.kind === 'circle'
+            ? <circle cx={shape.cx} cy={shape.cy} r={shape.r} />
+            : <rect x={shape.x} y={shape.y} width={shape.w} height={shape.h} rx="4" />}
+        </a>
+      ))}
+    </svg>
+  </div>
+</nav>
+
+<style>
+  .fp {
+    position: fixed;
+    /* On a desktop: under the bar's keys, flush with their right edge, three
+       plates wide. The three figures are measured by the script below; these
+       are the fallbacks for the moment before it runs, which nobody sees,
+       because the plan is hidden until a catch that only a script reports. */
+    inset-block-start: calc(var(--fp-top, 2.9rem) + 0.5rem);
+    inset-inline-end: var(--fp-right, 1.25rem);
+    inline-size: var(--fp-w, 15rem);
+    /* with the rest of the pinned chrome: over the page (1), the band (10)
+       and the room change (30); level with the standing keys (35), which
+       keep the other corner; under the way on (45) and the bar (50) */
+    z-index: 35;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    translate: 0 6px;
+    transition:
+      opacity 0.45s var(--ease), translate 0.45s var(--ease), visibility 0.45s var(--ease);
+  }
+  :global(html[data-caught]) .fp {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    translate: none;
+  }
+  :global(html[data-motion='off']) .fp { transition: none; }
+
+  /* a phone: the lower left, above the way on — its inset, its height, and
+     a breath between the two; see the note at the head of this file */
+  @media (max-width: 48rem) {
+    .fp {
+      inset-block-start: auto;
+      inset-inline-end: auto;
+      inset-inline-start: 0.75rem;
+      inset-block-end: calc(clamp(0.7rem, 2vh, 1.5rem) + 4.8rem);
+      inline-size: min(46vw, 12rem);
+    }
+  }
+
+  .fp__sheet { position: relative; }
+  .fp__img {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+    /* The white edge the emblem and the way on carry: three white shadows
+       following the drawing's own alpha, so the plan stands off the
+       photograph and off the page alike without a panel behind it. */
+    filter:
+      drop-shadow(0 0 1px rgba(255, 255, 255, 0.98))
+      drop-shadow(0 0 4px rgba(255, 255, 255, 0.95))
+      drop-shadow(0 0 10px rgba(255, 255, 255, 0.8));
+  }
+  .fp__map {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    overflow: visible;
+  }
+  .fp__map a { outline: none; }
+  /* `transparent`, not `none`: a shape with no fill takes no click */
+  .fp__map a > * {
+    fill: transparent;
+    pointer-events: all;
+    transition: fill 0.25s var(--ease);
+  }
+  /* the room the visitor is standing in */
+  .fp__map a[aria-current] > * { fill: var(--map-here); }
+  /* a hover on a touch screen is the tap that never arrives — see CLAUDE.md */
+  @media (hover: hover) and (pointer: fine) {
+    .fp__map a:hover > * { fill: var(--map-hover); }
+    .fp__map a[aria-current]:hover > * { fill: var(--map-here-hi); }
+  }
+  .fp__map a:focus-visible > * {
+    fill: var(--map-hover);
+    stroke: var(--red-ink);
+    /* the drawing's units: about a pixel and a half on screen */
+    stroke-width: 8;
+  }
+  @media print { .fp { display: none; } }
+</style>
+
+<script>
+  /* Three figures a stylesheet cannot know, on a desktop: how wide one key
+     plate is — its label plus its padding — where the row of keys ends, and
+     where its right edge stands. Read off the bar on the same occasions the
+     mark is re-measured: the faces arrive after first paint, and a label is
+     a different width once they have. On a phone none of this applies; the
+     plan has a corner of its own there, and the phone's rule sets every one
+     of these aside. */
+  const plan = document.querySelector<HTMLElement>('[data-fp]');
+  /* the one key that is on every page — the index of films */
+  const key = document.getElementById('topbar-keys');
+  const nav = document.querySelector<HTMLElement>('.topbar--ghost .topbar__nav');
+  const WIDE = matchMedia('(min-width: 48.0625rem)');
+
+  if (plan && key && nav) {
+    const place = () => {
+      if (!WIDE.matches) return;
+      const k = key.getBoundingClientRect();
+      const n = nav.getBoundingClientRect();
+      if (!k.width || !n.height) return;
+      plan.style.setProperty('--fp-w', `${(3 * k.width).toFixed(1)}px`);
+      plan.style.setProperty('--fp-top', `${n.bottom.toFixed(1)}px`);
+      /* clientWidth, not innerWidth: a fixed inset is measured from the edge
+         of the layout viewport, which stops at the scrollbar */
+      plan.style.setProperty('--fp-right',
+        `${(document.documentElement.clientWidth - n.right).toFixed(1)}px`);
+    };
+    place();
+    addEventListener('resize', place, { passive: true });
+    WIDE.addEventListener('change', place);
+    document.fonts?.ready.then(place);
+  }
+</script>

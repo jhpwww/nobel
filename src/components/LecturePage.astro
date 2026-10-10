@@ -100,6 +100,7 @@ const piece = bright ? {
   title={`${who} — ${rec.title.en}`}
   description={rec.description[lang]}
   segments={['lecture', rec.id]}
+  area={cat}
   bare={bright}
 >
   {/* what the search drawer calls this page: whose talk and which, in the
@@ -551,6 +552,7 @@ const piece = bright ? {
   import '../../vendor/model-viewer.min.js';
   import { dressPlinths } from '../scripts/plinth';
   import { measureMark } from '../scripts/mark';
+  import { setCaught } from '../scripts/caught';
   dressPlinths();
 
   /* The name arrives when the real one leaves: the cue is the h1's own top
@@ -586,6 +588,8 @@ const piece = bright ? {
       pin.toggleAttribute('data-pinned', on);
       /* and the head lets go of the name in the same movement */
       who.toggleAttribute('data-handed', on);
+      /* the floor plan appears with the catch — see src/scripts/caught.ts */
+      setCaught(on);
     };
     measureMark();
     test();

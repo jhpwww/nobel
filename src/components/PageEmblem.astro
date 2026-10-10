@@ -118,6 +118,7 @@ const { src, srcSmall, w, h, outside = false } = Astro.props;
 
 <script>
   import { measureMark } from '../scripts/mark';
+  import { setCaught } from '../scripts/caught';
 
   /* The emblem is caught at half its own height of scrolling, and the mark it
      stands beside is a line of type rather than a share of the viewport — so
@@ -141,11 +142,16 @@ const { src, srcSmall, w, h, outside = false } = Astro.props;
     let ticking = false;
     const test = () => {
       ticking = false;
+      let caught = false;
       for (const rail of rails) {
         const img = rail.querySelector<HTMLElement>('img');
         if (!img) continue;
-        rail.toggleAttribute('data-pinned', scrollY >= img.offsetHeight / 2);
+        const on = scrollY >= img.offsetHeight / 2;
+        rail.toggleAttribute('data-pinned', on);
+        caught ||= on;
       }
+      /* the floor plan appears with the catch — see src/scripts/caught.ts */
+      setCaught(caught);
     };
 
     measure();

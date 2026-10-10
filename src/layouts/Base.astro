@@ -13,6 +13,7 @@ import { bright } from '../theme';
 /** this museum's faces: names, hashed URLs, and its own stylesheet */
 const face: Record<string, string> = bright ? fontsBright : fonts;
 import PageNav from '../components/PageNav.astro';
+import FloorPlan, { type Area } from '../components/FloorPlan.astro';
 import SiteSearch from '../components/SiteSearch.astro';
 import LangFlag from '../components/LangFlag.astro';
 import { useT, HTML_LANG, LANG_LABEL, type Lang } from '../i18n/ui';
@@ -26,8 +27,11 @@ interface Props {
   /** path segments of the current page, so the language switch lands on its twin */
   segments?: (string | number)[];
   bare?: boolean;              // the great hall supplies its own header
+  /** which room of the building this page is, where the address does not say
+      — a laureate's page is in its prize's room; see FloorPlan */
+  area?: Area;
 }
-const { lang, title, description, segments = [], bare = false } = Astro.props;
+const { lang, title, description, segments = [], bare = false, area } = Astro.props;
 const t = useT(lang);
 const other = otherLang(lang, ...segments);
 /**
@@ -404,6 +408,11 @@ const portable = process.env.PORTABLE === '1';
 
     <SiteSearch lang={lang} only="panel" />
     <PageNav lang={lang} />
+    {/* the museum's plan, under the bar's keys once the room has been
+        scrolled — see FloorPlan. `bright` is decided per build, so every page
+        of a build renders it or none does; the hoisting trap above is about
+        a choice made per page. */}
+    {bright && <FloorPlan lang={lang} segments={segments} area={area} />}
 
     <style>
       .topbar {

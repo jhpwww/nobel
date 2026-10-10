@@ -913,6 +913,7 @@ const PLATE = { w: 836, h: 470 };
 
 <script>
   import { dressPlinths } from '../scripts/plinth';
+  import { setCaught } from '../scripts/caught';
   import '../../vendor/model-viewer.min.js';
 
   /* The turn is an animation in the model, not auto-rotate — auto-rotate
@@ -1105,6 +1106,8 @@ const PLATE = { w: 836, h: 470 };
        the button in the bar sets the same one when it is pressed */
     document.documentElement.toggleAttribute('data-nav-open', v);
     document.querySelector('.topbar__menu')?.setAttribute('aria-expanded', String(v));
+    /* and the floor plan appears with the keys — see src/scripts/caught.ts */
+    setCaught(v);
     if (before) flip(before);
   }
 

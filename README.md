@@ -108,6 +108,14 @@ opens on the bright hall. Their backdrop (`LectureScreen.astro`, `AmbientVideo.a
 likewise here and on no bright page; the clip pipeline behind it (`scripts/make-backdrop-clips.py`,
 `src/data/backdrop.json`) is kept for whatever replaces the apse's video wall.
 
+### The floor plan
+
+Once a room has been scrolled — the moment its sculpture, emblem or name is caught into the
+mark beside the museum's name — the owner's plan of the building appears under the bar's keys
+(in the lower left on a phone): the room the visitor is in washed pink, and every room on it a
+link to its page, the same doors the bar and the hall open. See `src/components/FloorPlan.astro`
+and "The floor plan" in CLAUDE.md.
+
 ## Stack
 
 Astro 5 + TypeScript, no UI framework, no runtime database, no CMS, no login.

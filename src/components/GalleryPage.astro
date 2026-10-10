@@ -1164,6 +1164,7 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
   import '../../vendor/model-viewer.min.js';
   import { dressPlinths } from '../scripts/plinth';
   import { measureMark } from '../scripts/mark';
+  import { setCaught } from '../scripts/caught';
   /* one piece rather than six, but the same object — same drum, same rings,
      same name bent onto the same cylinder */
   dressPlinths();
@@ -1208,6 +1209,8 @@ const CAMERA_LIMIT = 'auto auto 1.55m';
         : rail.getBoundingClientRect().top
             <= (parseFloat(getComputedStyle(rail).insetBlockStart) || 0) + 1;
       rail.toggleAttribute('data-pinned', caught);
+      /* the floor plan appears with the catch — see src/scripts/caught.ts */
+      setCaught(caught);
     }
   };
   test();
